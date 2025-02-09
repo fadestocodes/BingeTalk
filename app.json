@@ -9,7 +9,12 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cinefyl",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app uses the photo library to allow you to upload images.",
+        "NSCameraUsageDescription": "This app uses the camera to allow you to take pictures."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +36,15 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-font",
+      "expo-video",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photo library to choose a picture.",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera to take a picture.",
         }
       ]
     ],

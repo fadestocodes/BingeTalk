@@ -14,5 +14,5 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
-  ]
+, "app/(root)/(tabs)/_layout.jsx", "app/(root)/(tabs)/badges.jsx", "app/(root)/(tabs)/homeIndex.jsxx.jsx", "components/Explorev2/SwipeCardChildren/SwipeCardChildren.jsx"  ]
 }

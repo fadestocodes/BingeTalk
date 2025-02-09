@@ -1,0 +1,269 @@
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity,Dimensions,  Keyboard, FlatList, Image, TouchableWithoutFeedback,  KeyboardAvoidingView, Platform } from 'react-native'
+import React, {useState, useEffect, useRef} from 'react'
+import { PeopleIcon, SlateIcon, ThreadsIcon, DownIcon, FilmIcon, TVIcon, PersonIcon, CloseIcon, BackIcon } from '../../../../assets/icons/icons'
+import { Colors } from '../../../../constants/Colors'
+import CreateDialogue from '../../../../components/CreateMenu/CreateDialogue'
+import CreateThread from '../../../../components/CreateMenu/CreateThread'
+import CreateShowcase from '../../../../components/CreateMenu/CreateShowcase'
+import CreateList from '../../../../components/CreateMenu/CreateList'
+import { searchAll } from '../../../../lib/TMDB'
+import debounce from 'lodash.debounce'
+import { getYear } from '../../../../lib/formatDate'
+import { DraggableGrid } from 'react-native-draggable-grid';
+import { create } from 'react-test-renderer'
+
+
+const CreateHome = () => {
+
+    const [ content, setContent ] = useState('');
+    const [ menuOpen, setMenuOpen ] = useState(false);
+    const [ createType, setCreateType ] = useState('Dialogue')
+    const [ resultsOpen, setResultsOpen ] = useState(false);
+    const [ results, setResults ] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [ listItems, setListItems ]  = useState([])
+    const [ flatlistVisible, setFlatlistVisible ] = useState(false);
+
+    const posterURL = 'https://image.tmdb.org/t/p/original';
+
+
+
+    const handleChange = (text) => {
+        setContent(text);
+    }
+
+    const handleSearch = debounce( async (text) => {
+        setResultsOpen(true)
+        if (text.length > 2) {
+            try {
+                const response = await searchAll(text);
+                setResults(response.results);
+                // console.log('results are ', results)
+            } catch (err) {
+                console.log(err)
+            }
+        } 
+    }, 300)
+
+
+
+    const toPascalCase = (str) => {
+        return str
+            .replace(/[^a-zA-Z0-9 ]/g, '') // Remove non-alphanumeric characters except spaces
+            .split(' ') // Split words
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter
+            .join(''); // Join words without spaces
+    };
+    
+    const handlePress = (item) => {
+        // setInputs(prev => ({
+        //     ...prev,
+        //     query: `/${toPascalCase(item.name || item.title)}` // Convert to PascalCase
+        // }));
+
+        setSearchQuery(  `/${toPascalCase(item.name || item.title)}` )
+        setResultsOpen(false);
+    };
+
+
+    const handleSearchPress = (item) => {
+        if (createType === 'Thread') {
+            setSearchQuery(  `/${toPascalCase(item.name || item.title)}` )
+            setResults([]);
+            setResultsOpen(false);
+        } else if (createType === 'List') {
+            setListItems((prev) => [
+                ...prev,
+                {
+                    item,  // Store the full item object
+                    key: item.id?.toString() || Date.now().toString(), // Ensure a unique key
+                },
+                ]);
+                setResults([]);
+                setSearchQuery('');
+            }
+
+    }
+
+    const handleRemoveListItem = (key) => {
+        setListItems(prev => (
+            prev.filter((item) => item.key !== key)
+        ))
+    }
+
+    const handleBackSearch = () => {
+        if (createType === 'Thread') {
+            setResultsOpen(false);
+        } else if (createType === 'List') {
+            
+        }
+    }
+
+    const renderItem = (item) => {
+        return (
+          <View className=' justify-start items-center relative '
+            style={{ width:'auto', height:200,  marginHorizontal:0, marginVertical:0, overflow:'hidden' }}
+            key={item.key}  // Set key here based on the item key
+          >
+           <Image 
+            source={ item.media_type === 'person' ? {uri:`${posterURL}${item.item.profile_path}`}  : {uri:`${posterURL}${item.item.poster_path}`}}
+            resizeMode='cover'
+            style={{ width:70, height:120, borderRadius:10, overflow:'hidden' }}
+            />
+            <Text  numberOfLines={2} style={{width:70}} className='text-mainGray text-xs'>{item.item.name || item.item.title}</Text>
+            <TouchableOpacity className='rounded-full' onPress={() => handleRemoveListItem(item.key)}  style={{ backgroundColor:Colors.primary, position:'absolute', top:4, right:1 }}>
+                <CloseIcon size={20} color={Colors.mainGray} />
+            </TouchableOpacity>
+          </View>
+        );
+      };
+
+    
+
+  return (
+    <TouchableWithoutFeedback className='h-full w-full'  onPress={Keyboard.dismiss} >
+          <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS uses padding, Android uses height
+        style={{ flex: 1 }}
+    >
+    <SafeAreaView className='bg-primary h-full w-full  items-center '  >
+    
+      
+      { resultsOpen ? (
+        <View className='w-full' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary }} >
+            <View className='thread-topic w-full  relative '>
+                <View className="flex-row justify-center items-center gap-3 px-4">
+                    <TouchableOpacity onPress={()=> setResultsOpen(false)}>
+                        <BackIcon size={20} color={Colors.mainGray}/>
+                    </TouchableOpacity>
+                    <TextInput
+                        autoFocus={true}
+                        autoCorrect={false}
+                        placeholder='Search for a movie, show, or person'
+                        placeholderTextColor={Colors.mainGray}
+                        onChangeText={(text)=> {setSearchQuery(text);  handleSearch(text)  }}
+                        className='w-full bg-white rounded-3xl text-lg font-pbold'
+                        style={{ height:50, paddingHorizontal:25, paddingBottom:0 }}
+                        value={searchQuery}
+                    />
+                </View>
+                <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:5, top:15 }}>
+                    <CloseIcon color={Colors.mainGray} size={24} className=' ' />
+                </TouchableOpacity>
+            </View>
+           
+                <FlatList
+                    data={results}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle = {{width:'auto', zIndex:40}}
+                    renderItem={({item}) =>  {
+                        // console.log(item.title || item.name)
+                        return (
+                        <>
+                            <View className=' '>
+                                <TouchableOpacity onPress={()=>handleSearchPress(item)} className='w-full gap-5 flex-row my-3 justify-start items-center'
+                                        disabled={ listItems.some( element => element.item.id === item.id) ? true : false}
+                                        style={{ opacity: listItems.some( element => element.item.id === item.id) ? 0.5 : 1    }}
+                                         
+                                    >
+                                    <Image 
+                                    source={ item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
+                                    resizeMode='cover'
+                                    style={{ width:50, height:75, borderRadius:10, overflow:'hidden' }}
+                                    />
+                                    <View className='flex flex-1 w-full justify-center pr-0'>
+                                    <View className='flex-row gap-2 flex-1 justify-center items-center'>
+                                        { item.media_type === 'person' ? <PersonIcon size={18} color={Colors.secondary} /> : item.media_type === 'movie' ? <FilmIcon size={18} color={Colors.secondary}/> : <TVIcon size={18} color={Colors.secondary}/>}
+                                        <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray   pr-3 font-pbold'>{ item.media_type === 'movie' ? item.title : item.name }</Text>
+
+                                    </View>
+                                    <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray text-sm  pr-3 font-pmedium'>{ item.media_type === 'person' 
+                                    ? `Known for ${item.known_for_department}` : item.media_type === 'movie' ? `Released ${getYear(item.release_date)}` 
+                                    : `First aired ${getYear(item.first_air_date)}` }</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{ borderTopWidth: .5, borderColor:Colors.mainGray }} />
+                        </>
+                    )}
+
+                }
+                >
+                </FlatList>
+
+                { searchQuery === '' && createType === 'List' && (
+
+                    <ScrollView className='pt-20 w-full h-full'  >
+                        <DraggableGrid
+                        numColumns={4}
+                        renderItem={renderItem}
+                        data={listItems}
+                        itemHeight={170}
+                        onDragRelease={(data) => {
+                           setListItems(data);// need reset the props data sort after drag release
+                        }}
+                        />
+                    </ScrollView>
+                                    ) }
+                
+            {/* </View> */}
+         </View>
+        ) : (
+            <>
+            
+            <ScrollView scrollEnabled={ createType === 'Showcase' ? false : true }  nestedScrollEnabled={true} onPress={Keyboard.dismiss}  className="relative w-full pt-6 gap-3" contentContainerStyle={{alignItems:'center' , justifyContent : 'center', gap:10, paddingBottom:200}}>
+        <TouchableOpacity onPress={()=>setMenuOpen(prev => !prev)}>
+            <View className='flex-row justify-center items-center gap-1'>
+                <Text className='text-mainGray text-xl '>{createType}</Text>
+                <DownIcon color={Colors.mainGray} size={20}></DownIcon>
+            </View>
+        </TouchableOpacity>
+        { menuOpen && (
+            <View className='w-44 h-50 bg-slate-100 rounded-3xl absolute z-40  top-8 justify-center items-start gap-3  py-3'>
+                <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Dialogue');setMenuOpen(false); setContent('')}}>
+                    <Text className='mb-2 px-4 py-1'>Dialogue</Text>
+                    <View className='border-t-[2px] border-mainGrayLight w-full'></View>
+                </TouchableOpacity>
+                <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Thread'); setMenuOpen(false); setSearchQuery(''); setListItems([])}}>
+                    <Text className='mb-2 px-4 py-1 '>Thread</Text>
+                    <View className='border-t-[2px] border-mainGrayLight  w-full '></View>
+                </TouchableOpacity>
+                <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Showcase'); setMenuOpen(false); setContent('')}}>
+                    <Text className='mb-2 px-4 py-1'>Showcase</Text>
+                    <View className='border-t-[2px] border-mainGrayLight  w-full '></View>
+                </TouchableOpacity>
+                <TouchableOpacity className='w-full' onPress={()=> {setCreateType('List'); setMenuOpen(false); setSearchQuery('')}}> 
+                    <Text className='mb-2 px-4 py-1'>List</Text>
+                </TouchableOpacity>
+
+            </View>
+        ) }
+
+        { createType === 'Dialogue' ? (
+            <CreateDialogue flatlistVisible={flatlistVisible} setFlatlistVisible={setFlatlistVisible} />
+        ) : createType === 'Thread' ? (
+            <CreateThread handleChange={handleChange} content={content} setContent={setContent}
+                results={results} setResults={setResults} resultsOpen={resultsOpen} setResultsOpen={setResultsOpen}
+                handleSearch={handleSearch} searchQuery={searchQuery} setSearchQuery={setSearchQuery}
+            />
+        ) : createType === 'Showcase' ? (
+            <CreateShowcase handleChange={handleChange} content={content} setContent={setContent} />
+        ) : createType === 'List' && (
+            <CreateList handleChange={handleChange} content={content} setContent={setContent} setResultsOpen={setResultsOpen}
+            setResults={setResults} setSearchQuery={setSearchQuery}  searchQuery={searchQuery} setListItems={setListItems} listItems={listItems} 
+            renderItem={renderItem} handleRemoveListItem={handleRemoveListItem}
+            />
+        )}
+      </ScrollView>
+      </>
+        )}  
+
+    </SafeAreaView>
+    </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+  )
+}
+
+export default CreateHome
+
+const styles = StyleSheet.create({})

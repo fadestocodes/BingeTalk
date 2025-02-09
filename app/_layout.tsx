@@ -1,4 +1,3 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -8,14 +7,15 @@ import {StyleSheet, Text, View} from 'react-native'
 import 'react-native-reanimated';
 import '../global.css'
 import { Slot } from "expo-router"
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Colors } from '@/constants/Colors';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [fontsLoaded, error] = useFonts({
     "Geist-Black": require("../assets/fonts/Geist-Black.ttf"),
     "Geist-Bold": require("../assets/fonts/Geist-Bold.ttf"),
@@ -26,6 +26,7 @@ export default function RootLayout() {
     "Geist-Regular": require("../assets/fonts/Geist-Regular.ttf"),
     "Geist-SemiBold": require("../assets/fonts/Geist-SemiBold.ttf"),
     "Geist-Thin": require("../assets/fonts/Geist-Thin.ttf"),
+    "Courier" : require("../assets/fonts/Courier.ttf"),
   });
 
 
@@ -40,14 +41,15 @@ export default function RootLayout() {
   }
 
   return (
-    <>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+       <StatusBar
+        backgroundColor={Colors.mainGray} // Any color for background, use a color or hex
+      />
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(root)" options={{headerShown: false}} />
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-    </>
+      </GestureHandlerRootView>
   );
 }
