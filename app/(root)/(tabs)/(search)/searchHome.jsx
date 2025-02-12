@@ -211,10 +211,10 @@ const SearchPage = () => {
               <Text className='text-mainGray font-pbold text-lg'>Trending TV</Text>
                 <DiscoverHorizontal data={flatListCategories.discoverTV} handlePress={handlePressTV} />
             </View>
-            <View className='gap-3 flex' style={{height:200}} >
+            {/* <View className='gap-3 flex' style={{height:200}} >
               <Text className='text-mainGray font-pbold text-lg'>Trending People</Text>
                 <DiscoverHorizontal data={flatListCategories.trendingPeople} handlePress={handlePressCast} />
-            </View>
+            </View> */}
           </View>
         </ScrollView>
         ) }
