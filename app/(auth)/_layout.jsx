@@ -1,14 +1,20 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Redirect, Stack } from 'expo-router'
+import { useAuth } from '@clerk/clerk-expo'
 
-const _layout = () => {
+export default function AuthRoutesLayout() {
+  const { isSignedIn } = useAuth()
+  console.log('from auth layout', isSignedIn)
+
+  if (isSignedIn) {
+    return <Redirect href={'/'} />
+  }
+
   return (
-    <View>
-      <Text>_layout</Text>
-    </View>
-  )
+  <Stack>
+    <Stack.Screen name='signIn' options={{headerShown:false}} />
+    <Stack.Screen name='signUp' options={{headerShown:false}} />
+  </Stack>
+
+    )
+
 }
-
-export default _layout
-
-const styles = StyleSheet.create({})

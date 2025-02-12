@@ -1,7 +1,13 @@
 import { StatusBar } from "expo-status-bar";
-import { Redirect, router } from "expo-router";
+import { Redirect, router, Link } from "expo-router";
 import { View, Text, Image, ScrollView, Button } from "react-native";
+// import { useNavigation } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
+import { useEffect } from "react";
+
 
 // import { images } from "../constants";
 // import { CustomButton, Loader } from "../components";
@@ -11,7 +17,38 @@ const Welcome = () => {
 //   const { loading, isLogged } = useGlobalContext();
 
 //   if (!loading && isLogged) return <Redirect href="/home" />;
+  const {user} = useUser();
+  const router = useRouter();  // Access navigation object
+
+  // If user is logged in, redirect immediately in the render
+  if (user) {
+    return <Redirect href="(home)/homeIndex" />
+    router.push('(home)/homeIndex'); // Perform the redirection to the Home screen
+    // return null; // This prevents rendering anything else while the navigation happens
+  }
+
+  console.log('signedIn is ', SignedIn)
+
+    return (
+      <View style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%' }} >
+        <SignedIn>
+          {/* <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
+          <Link href="/(home)/homeIndex">Home</Link> */}
+          
+        </SignedIn>
+        <SignedOut>
+          <Link href="/(auth)/signIn">
+            <Text>Sign in</Text>
+          </Link>
+          <Link href="/(auth)/signUp">
+            <Text>Sign up</Text>
+          </Link>
+        </SignedOut>
+      </View>
+    )
+
     return <Redirect href="/(home)/homeIndex" />;
+    
 
   return (
     <SafeAreaView className="bg-primary h-full">

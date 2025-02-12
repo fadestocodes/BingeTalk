@@ -10,12 +10,23 @@ import { Slot } from "expo-router"
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Colors } from '@/constants/Colors';
+import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo'
+import {tokenCache} from '@/cache'
+
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
+
+  if (!publishableKey) {
+    throw new Error(
+      'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
+    )
+  }
+
   const [fontsLoaded, error] = useFonts({
     "Geist-Black": require("../assets/fonts/Geist-Black.ttf"),
     "Geist-Bold": require("../assets/fonts/Geist-Bold.ttf"),
@@ -41,15 +52,20 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-       <StatusBar
-        backgroundColor={Colors.mainGray} // Any color for background, use a color or hex
-      />
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(root)" options={{headerShown: false}} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      </GestureHandlerRootView>
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+      <ClerkLoaded>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar
+            backgroundColor={Colors.mainGray} // Any color for background, use a color or hex
+          />
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(root)" options={{headerShown: false}} />
+            <Stack.Screen name="(auth)" options={{headerShown: false}} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          </GestureHandlerRootView>
+      </ ClerkLoaded >
+    </ClerkProvider >
   );
 }
