@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import SwipeCard from "./SwipeCard";
-import { getTrending } from "../../lib/TMDB";
+import { getTrending } from "../../api/tmdb";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";

@@ -2,7 +2,7 @@ import {  Text, View, Image, ScrollView, Dimensions, RefreshControl } from 'reac
 import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'expo-router/build/hooks'
 import { useLocalSearchParams } from 'expo-router/build/hooks'
-import {GetTVById} from '@/lib/TMDB'
+import {GetTVById} from '../../api/tmdb'
 import {BackIcon, DownIcon} from '../../assets/icons/icons'
 import { TouchableOpacity } from 'react-native'
 import {Colors} from '../../constants/Colors'

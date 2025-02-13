@@ -2,7 +2,6 @@
     import React, {useState, useEffect} from 'react'
     import { Colors } from '../../constants/Colors'
     import { SlateIcon, PeopleIcon, ThreadsIcon, CloseIcon, FilmIcon, PersonIcon, TVIcon , UploadPictureIcon} from '../../assets/icons/icons'
-    import { searchAll } from '../../lib/TMDB'
     import debounce from 'lodash.debounce';
     import { getYear } from '../../lib/formatDate'
     import { pickSingleImage } from '../../lib/pickImage'    

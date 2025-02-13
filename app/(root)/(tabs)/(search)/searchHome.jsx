@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { feed } from '../../../../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PersonIcon, FilmIcon, TVIcon, ArrowLeftIcon, CloseIcon, BackIcon, LayersIcon } from '../../../../assets/icons/icons'
 import { Colors } from '../../../../constants/Colors'
-import { searchAll, getTrending, getUpcoming, getTrendingPeople, getDiscoverTV } from '../../../../lib/TMDB'
+import { searchAll, getTrending, getUpcoming, getTrendingPeople, getDiscoverTV } from '../../../../api/tmdb'
 import debounce from 'lodash.debounce';
 import { useRouter } from 'expo-router'
 import { getYear } from '../../../../lib/formatDate'

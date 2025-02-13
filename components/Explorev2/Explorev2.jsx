@@ -5,7 +5,6 @@ import { SwipeCard } from '../ui/SwipeCard/SwipeCard';
 import Choice from './Choice/Choice';
 import UserActions from './UserActions/UserActions';
 import SwipeCardChildren from './SwipeCardChildren/SwipeCardChildren';
-import { getTrending } from '../../lib/TMDB';
 
 export const Explorev2 = ({ movies, setMovies, refetch }) => {
   const [watchlist, setWatchlist] = useState([]);

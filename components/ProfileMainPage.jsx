@@ -6,7 +6,9 @@ import {feed} from '../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
 
+
 const ProfileMainPage = () => {
+
   return (
    
         <FlatList
@@ -56,6 +58,7 @@ const ProfileMainPage = () => {
                         </View>
                     </View>
                 </View>
+               
                 <View  style={{ width:350, }}  className=' border-t-[.5px] mt-4 border-mainGray items-center self-center shadow-md shadow-black-200'/>
 
             </View>

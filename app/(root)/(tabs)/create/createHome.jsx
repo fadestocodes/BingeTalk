@@ -6,7 +6,7 @@ import CreateDialogue from '../../../../components/CreateMenu/CreateDialogue'
 import CreateThread from '../../../../components/CreateMenu/CreateThread'
 import CreateShowcase from '../../../../components/CreateMenu/CreateShowcase'
 import CreateList from '../../../../components/CreateMenu/CreateList'
-import { searchAll } from '../../../../lib/TMDB'
+import { searchAll } from '../../../../api/tmdb'
 import debounce from 'lodash.debounce'
 import { getYear } from '../../../../lib/formatDate'
 import { DraggableGrid } from 'react-native-draggable-grid';

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Colors } from '../../constants/Colors'
 import { SlateIcon, PeopleIcon, ThreadsIcon,UploadPictureIcon, CloseIcon } from '../../assets/icons/icons'
 import { pickSingleImage } from '../../lib/pickImage'
-import { searchAll } from '../../lib/TMDB'
+import { searchAll } from '../../api/tmdb'
 import { MentionInput } from 'react-native-controlled-mentions'
 import debounce from 'lodash.debounce'
 

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import ExploreComponent from '../../../../../components/Explore'
-import { getTrending } from '../../../../../lib/TMDB'
+import { getTrending } from '../../../../../api/tmdb'
 import { Explorev2 } from '../../../../../components/Explorev2'
 import TinderSwipeCard from '../../../../../components/TinderSwipeCard/TinderSwipeCard'
 
