@@ -5,9 +5,24 @@ import React from 'react'
 import {feed} from '../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
+import { useClerk } from '@clerk/clerk-expo'
+import { Redirect } from 'expo-router'
+import { useRouter } from 'expo-router'
 
 
-const ProfileMainPage = () => {
+
+    const ProfileMainPage = () => {
+        const { signOut } = useClerk();
+        const router = useRouter();
+
+        const handleSignOut = async () => {
+            try {
+                await signOut();
+                router.replace('/')
+            } catch (err) {
+                console.log(err)
+            } 
+        }
 
   return (
    
@@ -58,6 +73,10 @@ const ProfileMainPage = () => {
                         </View>
                     </View>
                 </View>
+
+                <TouchableOpacity onPress={handleSignOut}>
+                        <Text>Sign Out</Text>
+                </TouchableOpacity>
                
                 <View  style={{ width:350, }}  className=' border-t-[.5px] mt-4 border-mainGray items-center self-center shadow-md shadow-black-200'/>
 

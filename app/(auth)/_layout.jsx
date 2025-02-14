@@ -6,7 +6,7 @@ export default function AuthRoutesLayout() {
   console.log('from auth layout', isSignedIn)
 
   if (isSignedIn) {
-    return <Redirect href={'/'} />
+    return <Redirect href='/' />
   }
 
   return (

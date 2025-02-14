@@ -5,7 +5,7 @@ export const uploadToS3 = async ( fileUri, fileName, fileType ) => {
     console.log('filetype is ', fileType)
   
     try {
-      const response = await fetch (`${nodeServer.expressServerHotspot}/aws/s3-upload`, {
+      const response = await fetch (`${nodeServer.expressServer}/aws/s3-upload`, {
         method : 'POST',
         headers : {
           'Content-Type' : 'application/json'

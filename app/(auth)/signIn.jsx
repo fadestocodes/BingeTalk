@@ -1,7 +1,8 @@
 import { useSignIn } from '@clerk/clerk-expo'
 import { Link, useRouter } from 'expo-router'
-import { Text, TextInput, Button, View } from 'react-native'
+import { Text, TextInput, Button, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import React from 'react'
+import { Colors } from '../../constants/Colors'
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn()
@@ -39,26 +40,43 @@ export default function Page() {
   }, [isLoaded, emailAddress, password])
 
   return (
-    <View style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%' }} >
-      <TextInput
-        autoCapitalize="none"
-        value={emailAddress}
-        placeholder="Enter email"
-        onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-      />
-      <TextInput
-        value={password}
-        placeholder="Enter password"
-        secureTextEntry={true}
-        onChangeText={(password) => setPassword(password)}
-      />
-      <Button title="Sign in" onPress={onSignInPress} />
-      <View>
-        <Text>Don't have an account?</Text>
-        <Link href="/sign-up">
-          <Text>Sign up</Text>
-        </Link>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <View className="gap-5 " style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%', backgroundColor:Colors.primary }} >
+      <View className="items-center gap-8">
+      
+
+        <View className="items-start gap-5">
+          <TextInput
+            autoCapitalize="none"
+            value={emailAddress}
+            placeholder="Enter email"
+            placeholderTextColor={Colors.mainGray}
+          
+            style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
+            onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+          />
+          <TextInput
+            value={password}
+            placeholder="Enter password"
+            secureTextEntry={true}
+            placeholderTextColor={Colors.mainGray}
+            style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
+            onChangeText={(password) => setPassword(password)}
+          />
+        </View>
+        <View className="gap-3">
+          <TouchableOpacity onPress={onSignInPress}  style={{ borderRadius:10, backgroundColor:Colors.secondary, paddingVertical:5, paddingHorizontal:15, width:150, justifyContent:'center', alignItems:'center' }}>
+            <Text className='text-primary text-lg font-bold w-full text-center' >Sign in</Text>
+          </TouchableOpacity>
+          <View>
+            <Text className="text-white">Don't have an account?</Text>
+            <Link href="/signUp">
+              <Text className='text-white underline'>Sign up</Text>
+            </Link>
+          </View>
+        </View>
       </View>
     </View>
+  </TouchableWithoutFeedback>
   )
 }

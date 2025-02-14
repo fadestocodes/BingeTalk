@@ -205,22 +205,22 @@ const MoviePage = () => {
         </View>
         <View className="buttons flex gap-4 w-full items-center mb-6">
                     <TouchableOpacity>
-                        <View className='border-2 rounded-xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
                             <Text className='text-primary font-pbold text-sm'>Mark as Watched</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View className='border-2 rounded-xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
                             <Text className='text-primary font-pbold text-sm'>Add to Watchlist</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View className='border-2 rounded-xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View className='border-2 rounded-xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
                             <Text className='text-primary font-pbold text-sm'>Rate</Text>
                         </View>
                     </TouchableOpacity>

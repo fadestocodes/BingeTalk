@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Text, TextInput, Button, View } from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
 import { useRouter } from 'expo-router'
+import { Colors } from '../../constants/Colors'
 
 export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp()
@@ -11,6 +12,13 @@ export default function SignUpScreen() {
   const [password, setPassword] = React.useState('')
   const [pendingVerification, setPendingVerification] = React.useState(false)
   const [code, setCode] = React.useState('')
+
+  const [ inputs, setInputs ] = React.useState({
+    email:'',
+    password:''
+  })
+
+  const [ errors, setErrors ] = React.useState([]);
 
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
@@ -50,7 +58,7 @@ export default function SignUpScreen() {
       // and redirect the user
       if (signUpAttempt.status === 'complete') {
         await setActive({ session: signUpAttempt.createdSessionId })
-        router.replace('/')
+        router.replace('(onboarding)/step1')
       } else {
         // If the status is not complete, check why. User may need to
         // complete further steps.
@@ -65,10 +73,11 @@ export default function SignUpScreen() {
 
   if (pendingVerification) {
     return (
-      <View style={{ width:'100%', height:'100%', justifyContent:'center', alignItems:'center' }}>
-        <Text>Verify your email</Text>
+      <View style={{ width:'100%', height:'100%', justifyContent:'center', alignItems:'center', backgroundColor:Colors.primary }}>
+        <Text className="text-white">Verify your email</Text>
         <TextInput
           value={code}
+          style={{color:'white'}}
           placeholder="Enter your verification code"
           onChangeText={(code) => setCode(code)}
         />
@@ -78,21 +87,28 @@ export default function SignUpScreen() {
   }
 
   return (
-    <View  style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%' }} >
+    <View  style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%', backgroundColor:Colors.primary }} >
       <>
-        <Text>Sign up</Text>
-        <TextInput
-          autoCapitalize="none"
-          value={emailAddress}
-          placeholder="Enter email"
-          onChangeText={(email) => setEmailAddress(email)}
-        />
-        <TextInput
-          value={password}
-          placeholder="Enter password"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
+        <Text className='text-white'>Sign up</Text>
+        <View className="items-start gap-5">
+          <TextInput
+            autoCapitalize="none"
+            value={emailAddress}
+            placeholder="Enter email"
+            placeholderTextColor={Colors.mainGray}
+          
+            style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
+            onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+          />
+          <TextInput
+            value={password}
+            placeholder="Enter password"
+            secureTextEntry={true}
+            placeholderTextColor={Colors.mainGray}
+            style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
+            onChangeText={(password) => setPassword(password)}
+          />
+        </View>
         <Button title="Continue" onPress={onSignUpPress} />
       </>
     </View>

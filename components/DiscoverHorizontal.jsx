@@ -25,7 +25,7 @@ const DiscoverHorizontal = ({ data, handlePress }) => {
                     { item.poster_path && (
                         <Text className='text-xs text-mainGray font-pblack !py-0  !leading-3 text-left ' style={{ width:80, textAlign:'left'}}>{ item.poster_path ? item.title || item.name : item.profile_path ? item.name : item.name} </Text>
                     ) }
-                    <Text className='text-xs text-mainGray font-pblack  !py-0 text-left !leading-3 ' style={{ width:80, textAlign:'left', lineHeight: item.poster_path ? 1 : 0}}>{ item.name} </Text>
+                    <Text className='text-xs text-mainGray font-pblack  !py-0 text-left !leading-3 ' style={{ width:80, textAlign:'left', lineHeight: item.poster_path ? 1 : 0}}>{  item.type === 'person' ? item.name : ''} </Text>
                     <Text className='text-xs text-mainGray font-pregular !py-0 text-left  !leading-3' style={{ width:80, textAlign:'left'}}>{ item.media_type !== 'person' ? ''  : item.character ? (`as ${item.character}`  ) : item.job ? ( `${item.job}`) : '' }</Text>
                 </View>
             </TouchableOpacity>

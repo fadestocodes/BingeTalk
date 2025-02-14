@@ -1,17 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import { Redirect, router, Link } from "expo-router";
-import { View, Text, Image, ScrollView, Button } from "react-native";
+import { View, Text, Image, ScrollView, Button, TouchableOpacity } from "react-native";
 // import { useNavigation } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
 import { useEffect } from "react";
-
-
-// import { images } from "../constants";
-// import { CustomButton, Loader } from "../components";
-// import { useGlobalContext } from "../context/GlobalProvider";
+import { Colors } from "../constants/Colors";
 
 const Welcome = () => {
 //   const { loading, isLogged } = useGlobalContext();
@@ -27,23 +23,31 @@ const Welcome = () => {
     // return null; // This prevents rendering anything else while the navigation happens
   }
 
-  console.log('signedIn is ', SignedIn)
+  const handleSignUp = () => {
+    router.push('(auth)/signUp')
+  }
 
     return (
-      <View style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%' }} >
-        <SignedIn>
-          {/* <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
-          <Link href="/(home)/homeIndex">Home</Link> */}
+      <View style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%', backgroundColor:Colors.primary }} >
+        <View className="items-center gap-3 text-lg font-psemibold text-white">
+          <SignedIn>
+            {/* <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
+            <Link href="/(home)/homeIndex">Home</Link> */}
           
-        </SignedIn>
-        <SignedOut>
-          <Link href="/(auth)/signIn">
-            <Text>Sign in</Text>
-          </Link>
-          <Link href="/(auth)/signUp">
-            <Text>Sign up</Text>
-          </Link>
-        </SignedOut>
+          </SignedIn>
+          <SignedOut>
+          <Text className="text-4xl text-secondary font-pbold" style={{paddingBottom:20}}>BingeTalk</Text>
+
+            <TouchableOpacity onPress={handleSignUp}  style={{ borderRadius:10, backgroundColor:Colors.secondary, paddingVertical:10, paddingHorizontal:15, width:200, justifyContent:'center', alignItems:'center' }}>
+              <Link href="/(auth)/signUp"  >
+                <Text className="text-primary text-lg text-center font-pbold ">Create account </Text>
+              </Link>
+            </TouchableOpacity>
+            <Link  href="/(auth)/signIn">
+              <Text  className='text-white text-lg font-semibold w-full text-center' >Sign in</Text>
+            </Link>
+          </SignedOut>
+        </View>
       </View>
     )
 
