@@ -70,7 +70,7 @@ export default function Page() {
           </TouchableOpacity>
           <View>
             <Text className="text-white">Don't have an account?</Text>
-            <Link href="/signUp">
+            <Link href="(onboarding)/step1-firstName">
               <Text className='text-white underline'>Sign up</Text>
             </Link>
           </View>
