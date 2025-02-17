@@ -126,12 +126,12 @@ const CreateHome = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS uses padding, Android uses height
         style={{ flex: 1 }}
     >
-    <SafeAreaView className='bg-primary h-full w-full  items-center '  >
+    <SafeAreaView className='bg-primary h-full w-full  '  >
     
       
       { resultsOpen ? (
-        <View className='w-full' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary }} >
-            <View className='thread-topic w-full  relative '>
+        <View className='w-full h-full' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary}} >
+            <View className='thread-topic w-full h-full relative '>
                 <View className="flex-row justify-center items-center gap-3 px-4">
                     <TouchableOpacity onPress={()=> setResultsOpen(false)}>
                         <BackIcon size={20} color={Colors.mainGray}/>
@@ -151,7 +151,7 @@ const CreateHome = () => {
                     <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
             </View>
-           
+                
                 <FlatList
                     data={results}
                     keyExtractor={(item) => item.id}

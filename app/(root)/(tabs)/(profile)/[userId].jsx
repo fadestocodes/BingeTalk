@@ -10,9 +10,11 @@ import ProfileMainPage from '../../../../components/ProfileMainPage'
 import { Colors } from '../../../../constants/Colors'
 import Credits from '../../../../components/Credits'
 import { SignOutButton } from '@clerk/clerk-react'
+import { useUserDB } from '../../../../lib/UserDBContext'
 
 
 const ProfileHomepage = () => {
+  const { userDB, updateUserDB } = useUserDB();
 
   const router = useRouter();
   const [active, setActive] = useState(0);

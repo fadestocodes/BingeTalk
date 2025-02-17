@@ -90,6 +90,20 @@ export const GetNowPlaying = async () => {
       console.log(err)
     }
   }
+
+  export const searchTitles = async (query) => {
+      
+    try {
+        const encodedQuery = encodeURIComponent(query)
+        const response = await fetch (`${nodeServer.expressServer}/tmdb/search/all?query=${encodedQuery}`);
+        const data = await response.json();
+        const filteredData = data.results.filter(item => item.media_type !== 'person');
+        return filteredData
+      } catch (err) {
+        console.log(err)
+      }
+  }
+
   
   export const getTrending = async () => {
     try {

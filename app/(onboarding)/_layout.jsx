@@ -10,7 +10,6 @@ const Onboarding = () => {
       <Stack.Screen name='step3-email' options={{headerShown : false}} />
       <Stack.Screen name='step4-password' options={{headerShown : false}} />
       <Stack.Screen name='step5-confirmPassword' options={{headerShown : false}} />
-      <Stack.Screen name='step6-profilePic' options={{headerShown : false}} />
     </Stack>
   )
 }

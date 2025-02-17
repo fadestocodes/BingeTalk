@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Colors } from '@/constants/Colors';
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo'
 import {tokenCache} from '@/cache'
+import { UserDBProvider } from '../lib/UserDBContext'
 
 
 
@@ -54,6 +55,7 @@ export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
+        <UserDBProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar
             backgroundColor={Colors.mainGray} // Any color for background, use a color or hex
@@ -63,9 +65,11 @@ export default function RootLayout() {
             <Stack.Screen name="(root)" options={{headerShown: false}} />
             <Stack.Screen name="(auth)" options={{headerShown: false}} />
             <Stack.Screen name="(onboarding)" options={{headerShown: false}} />
+            <Stack.Screen name="(profileSetup)" options={{headerShown: false}} />
             <Stack.Screen name="+not-found" />
           </Stack>
           </GestureHandlerRootView>
+          </UserDBProvider>
       </ ClerkLoaded >
     </ClerkProvider >
   );

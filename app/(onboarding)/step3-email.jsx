@@ -9,7 +9,9 @@ import debounce from 'lodash.debounce'
 
 
 const step3 = () => {
-    const router = useRouter()
+  const { firstName, lastName, username } = useLocalSearchParams();
+  
+  const router = useRouter()
     const [ inputs, setInputs ] = React.useState({
       email:'',
     })
@@ -52,7 +54,7 @@ const step3 = () => {
     const handleContinue = () => {
       router.push({
         pathname:'/(onboarding)/step4-password',
-        params : {  email : inputs.email }
+        params : {  firstName, lastName, email:inputs.email, username }
       })
     }
         

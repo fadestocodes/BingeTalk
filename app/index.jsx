@@ -8,16 +8,35 @@ import { useRouter } from "expo-router";
 import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
 import { useEffect } from "react";
 import { Colors } from "../constants/Colors";
+import { fetchUser } from "../api/user";
+import { useUserDB } from '../lib/UserDBContext'
 
 const Welcome = () => {
 //   const { loading, isLogged } = useGlobalContext();
 
 //   if (!loading && isLogged) return <Redirect href="/home" />;
   const {user} = useUser();
+  const { userDB, updateUserDB } = useUserDB()
   const router = useRouter();  // Access navigation object
+  
+  useEffect(() => {
+    // Only fetch user data if the user is logged in
+    const fetchAndUpdateUserDB = async () => {
+      if (user) {
+        const userDBFetch = await fetchUser(user.emailAddresses[0].emailAddress);
+        updateUserDB(userDBFetch);  // Update the context
+        // console.log('this is working',userDBFetch);
+      }
+    };
+    
+    fetchAndUpdateUserDB();
+  }, []); 
 
   // If user is logged in, redirect immediately in the render
   if (user) {
+  // console.log('useremail', user.emailAddress)
+
+   
     return <Redirect href="(home)/homeIndex" />
     router.push('(home)/homeIndex'); // Perform the redirection to the Home screen
     // return null; // This prevents rendering anything else while the navigation happens

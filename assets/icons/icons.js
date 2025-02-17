@@ -32,3 +32,4 @@ export const PeopleIcon = (props) => <FontAwesome6 name="users-rectangle" {...pr
 export const SlateIcon = (props) => <MaterialIcons name="movie-creation" {...props} />;
 export const ThreadsIcon = (props) => <Entypo name="list" {...props} />;
 export const UploadPictureIcon = (props) => <FontAwesome name="file-picture-o" {...props} />;
+export const LinkIcon = (props) => <Feather name="link" {...props} />;

@@ -5,12 +5,14 @@ import { useUser, useSignUp } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
 import { signupSchema, signupConfirmPasswordSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams } from 'expo-router'
-
+import { addUser } from '../../api/user'
+import { useUserDB } from '../../lib/UserDBContext'
 
 const step5 = () => {
+    const { userDB, updateUserDB } = useUserDB();
     const length = 6;
-    const { email, password } = useLocalSearchParams() // Get email from params
-    console.log('email and password', email, password)
+    const { firstName, lastName, username, email, password } = useLocalSearchParams() // Get email from params
+    // console.log('username and password', username, password)
     const { isLoaded, signUp, setActive } = useSignUp()
     const [pendingVerification, setPendingVerification] = React.useState(false)
     // const [code, setCode] = React.useState('')
@@ -18,6 +20,7 @@ const step5 = () => {
     const [ confirmPassword, setConfirmPassword ] = useState('')
     const router = useRouter();
     const [code, setCode] = useState(Array(length).fill(''));
+    const [ userFromDB, setUserFromDB ] = useState(null)
     // const [ finalCode, setFinalCode ] = useState(null)
     const verificationInputs = useRef([]);
 
@@ -27,7 +30,6 @@ const step5 = () => {
         const results = signupConfirmPasswordSchema(password).safeParse( {confirmPassword:value} )
         if (!results.success) {
             const errorObj = results.error.format();
-            console.log(errorObj)
             setErrors( prev => ({
                 ...prev,
                 confirmPassword: errorObj.confirmPassword ? errorObj.confirmPassword._errors : undefined,
@@ -42,14 +44,16 @@ const step5 = () => {
     }
 
     const onSignUpPress = async () => {
-        console.log(errors)
         if (!isLoaded) return
     
         // Start sign-up process using email and password provided
         try {
             await signUp.create({
             emailAddress : email,
-            password
+            password,
+            firstName,
+            lastName,
+            username
             })
     
             // Send user an email with verification code
@@ -58,6 +62,17 @@ const step5 = () => {
             // Set 'pendingVerification' to true to display second form
             // and capture OTP code
             setPendingVerification(true)
+            try {
+                const response = await addUser( { firstName, lastName, email, username } );
+                updateUserDB(response)
+
+                if (!response) {
+                    console.log('Error trying to add user')
+                }
+            } catch (err) {
+                console.log(err)
+            }
+
         } catch (err) {
             // See https://clerk.com/docs/custom-flows/error-handling
             // for more info on error handling
@@ -79,8 +94,9 @@ const step5 = () => {
             // and redirect the user
             if (signUpAttempt.status === 'complete') {
             await setActive({ session: signUpAttempt.createdSessionId })
-            router.replace('/step6-profilePic')
-
+            router.replace({
+                pathname:'(profileSetup)/profile1',
+            })
 
             } else {
             // If the status is not complete, check why. User may need to

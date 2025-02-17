@@ -1,19 +1,28 @@
-import {  Text, View, FlatList, Image, TouchableOpacity, ScrollView } from 'react-native'
+import {  Text, View, FlatList, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native'
 import { ImageBackground,  } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import React from 'react'
+import React, {useState} from 'react'
 import {feed} from '../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
 import { useClerk } from '@clerk/clerk-expo'
 import { Redirect } from 'expo-router'
 import { useRouter } from 'expo-router'
+import { LinkIcon } from '../assets/icons/icons'
+import { useUserDB } from '../lib/UserDBContext'
+import { fetchUser } from '../api/user'
 
 
+    const ProfileMainPage = ( ) => {
 
-    const ProfileMainPage = () => {
+
         const { signOut } = useClerk();
         const router = useRouter();
+        const posterURL = 'https://image.tmdb.org/t/p/original';
+        const [ refreshing, setRefreshing ] = useState(false)
+        const { userDB, updateUserDB } = useUserDB()
+
+
 
         const handleSignOut = async () => {
             try {
@@ -23,12 +32,37 @@ import { useRouter } from 'expo-router'
                 console.log(err)
             } 
         }
+        const handleRotationPress = (item) => {
+            console.log(item)
+            if (item.movie) {
+                router.push(`/movie/${item.movieTMDBId}`)
+            } else if (item.tv) {
+                router.push(`/tv/${item.tvTMDBId}`)
+            }
+        }
+
+        const refreshData = async () => {
+            setRefreshing(true);
+            try {
+                const userDBFetch = await fetchUser(userDB.email); // Example of refetching by email
+                updateUserDB(userDBFetch);
+            } catch (err) {
+                console.log('Error trying to fetch user from profile',err)
+            }
+            setRefreshing(false)
+        }
 
   return (
    
         <FlatList
         data={feed}
-        
+        refreshControl={
+            <RefreshControl
+            tintColor={Colors.secondary}
+            refreshing={refreshing}
+            onRefresh={refreshData}
+          />
+        }
         keyExtractor={ (item) => item.id }
         ListHeaderComponent={(
            
@@ -36,7 +70,7 @@ import { useRouter } from 'expo-router'
                 <ImageBackground
                     className='top-0'
                     style={{width : '100%', height: 400, position:'absolute', top:0}}
-                    source={require('../assets/images/drewcamera.jpg')}
+                    source={{ uri:userDB.profilePic }}
                     resizeMethod='cover'
                     
                     >
@@ -46,7 +80,7 @@ import { useRouter } from 'expo-router'
                         style={{height : '100%', width : '100%'}}>
                     </LinearGradient>
                 </ImageBackground>
-                <View className='px-4 items-center ' style={{marginTop:245, gap:15}}>
+                <View className='px-4 items-center ' style={{marginTop:275, gap:15}}>
                     {/* <Image
                         source={require('../assets/images/drewcamera.jpg')}
                         style={{ width:100, height:100, borderRadius:50, marginBottom:18 }}
@@ -54,10 +88,18 @@ import { useRouter } from 'expo-router'
                         className='w-full mt-20'
                         /> */}
                     <View className='items-center' style={{gap:10}}>
-                        <Text className='text-secondary font-pblack text-2xl'>Andrew Jung</Text>
-                        <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>Cinematographer from Vancouver, Canada.</Text>
+                        <View className='gap-1 justify-center items-center mb-5'>
+                            <Text className='text-secondary font-pblack text-2xl'>{userDB.firstName} {userDB.lastName}</Text>
+                            <Text className='text-white font-pbold '>@{userDB.username}</Text>
+                        </View>
+                        <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{userDB.bio}</Text>
                     </View>
-                    <Text className='text-gray-400  font-psemibold'>www.andrewjungdp.com</Text>
+                    { userDB.bioLink && (
+                    <TouchableOpacity className='flex-row gap-2 opacity-60'  style={{backgroundColor:'black', paddingVertical:5, paddingHorizontal:20, borderRadius:10}}>
+                        <LinkIcon size={16} color={Colors.mainGray} />
+                        <Text className='text-mainGray text-sm  font-psemibold' >{userDB.bioLink}</Text>
+                    </TouchableOpacity>
+                    ) }
                     <View className='flex-row gap-6' style={{marginTop:0}}>
                         <View className='flex-row gap-2 justify-center items-center'>
                             <Text className='text-gray-400 text-lg font-pblack'>210</Text>
@@ -71,6 +113,30 @@ import { useRouter } from 'expo-router'
                             <Text className='text-gray-400 text-lg font-pblack'>21</Text>
                             <Text className='text-gray-400 text-sm font-psemibold'>Credits</Text>
                         </View>
+                    </View>
+                    <View className='w-full justify-center items-center mt-4' >
+                        <Text className='font-pbold text-mainGray'>Current Rotation</Text>
+                        <FlatList
+                            data={userDB.currentRotation}
+                            horizontal
+                          
+                            contentContainerStyle={{ width:'100%', height:100, justifyContent:'center', alignItems:'center' }}
+                            scrollEnabled={false}
+                            keyExtractor={item => item.id}
+                            renderItem={ ({item}) => {
+                                return (
+
+                                <TouchableOpacity onPress={() => handleRotationPress(item)} style={{ marginRight:10 }}>
+                                    <Image
+                                        source={{uri: item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : null }}
+                                        resizeMode='cover'
+                                        style={{ width:50, height:80, borderRadius:10, overflow:'hidden' }}
+                                    />
+                                </TouchableOpacity>
+                            ) }}
+                        >
+
+                        </FlatList>
                     </View>
                 </View>
 

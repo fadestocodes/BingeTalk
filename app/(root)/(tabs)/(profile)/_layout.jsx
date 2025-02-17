@@ -7,6 +7,10 @@ const ProfileLayout = () => {
     <Stack  >
         <Stack.Screen name='[userId]' options={{headerShown : false}} />
         <Stack.Screen name='settings' options={{headerShown : false}} />
+        <Stack.Screen name='movie' options={{headerShown : false}} />
+        <Stack.Screen name='tv' options={{headerShown : false}} />
+        <Stack.Screen name='cast' options={{headerShown : false}} />
+        <Stack.Screen name='threads' options={{headerShown : false}} />
     </Stack>
   )
 }

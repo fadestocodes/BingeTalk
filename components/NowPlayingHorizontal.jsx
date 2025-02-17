@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 
 
 
-const posterURL = 'https://image.tmdb.org/t/p/w500';
+const posterURL = 'https://image.tmdb.org/t/p/original';
 
 
 const NowPlayingItem = ({ item}) => {

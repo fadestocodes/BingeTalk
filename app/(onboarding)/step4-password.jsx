@@ -9,7 +9,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 const step4 = () => {
     const length = 6;
     const router = useRouter();
-    const { email } = useLocalSearchParams() // Get email from params
+    const { firstName, lastName, username, email } = useLocalSearchParams() // Get email from params
     const { isLoaded, signUp, setActive } = useSignUp()
     const [ errors, setErrors ] = useState({})
     const [ password, setPassword ] = useState('')
@@ -40,7 +40,7 @@ const step4 = () => {
     const handleContinue = () => {
         router.push({
             pathname : '/step5-confirmPassword',
-            params : { email, password  }
+            params : { firstName, lastName, username, email, password  }
         });
     }
         
