@@ -5,7 +5,10 @@ import { SlateIcon, PeopleIcon, ThreadsIcon,UploadPictureIcon, CloseIcon } from 
 import { pickSingleImage } from '../../lib/pickImage'
 import { searchAll } from '../../api/tmdb'
 import { MentionInput } from 'react-native-controlled-mentions'
+import { createDialogue } from '../../api/dialogue'
 import debounce from 'lodash.debounce'
+import { useUserDB } from '../../lib/UserDBContext'
+import { findOrCreateEntity } from '../../api/db'
 
 const toPascalCase = (str) => {
         return str
@@ -29,7 +32,11 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const [ suggestionOpen, setSuggestionOpen ] = useState(true)
     const inputRef = useRef(null);  // Create a ref for the MentionInput
     const [filteredMentions, setFilteredMentions] = useState([]);
+    const [ uploadingPost, setUploadingPost ] = useState(false);
 
+    const { userDB, updateUserDB } = useUserDB();
+
+    const userId = userDB.id
 
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -70,13 +77,10 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
 
 
 
-    const handleMentionSelect = (selectedItem) => {
-        setMentions(selectedItem);
-    }
 
-    useEffect(( ) => {
-        console.log('mentions array ', mentions)
-    }, [mentions])
+    // useEffect(( ) => {
+    //     console.log('mentions array ', mentions)
+    // }, [mentions])
 
 
     const removeMention = (mentionId) => {
@@ -107,7 +111,13 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                                 const exists = prev.some((mention) => mention.pascalName === mentionText);
                               
                                 if (!exists) {
-                                  return [...prev, { mentionObj: item.name || item.title, pascalName: mentionText }];
+                                  return [...prev, { mentionObj: item.name || item.title, pascalName: mentionText, mediaType : item.media_type, title : item.title || item.original_name || null, name : item.name || null,
+                                    releaseDate : item.release_date || item.first_air_date, posterPath : item.poster_path || item.profile_path, backdropPath : item.backdrop_path || null, dob : item.birthday || null,
+                                    tmdbId : item.id, movieId : item.mediaType==='movie' ? item.id : null, userId, mentionType : item.media_type === 'movie' ? 'MOVIE' : item.media_type === 'tv' ? 'TV' : 'CASTCREW',
+                                    tvId : item.media_type === 'tv' ? item.id : null, castId : item.media_type === 'person' ? item.id : null,
+
+                                
+                                }];
                                 }
                               
                                 return prev; // If it exists, return the same array without adding a duplicate
@@ -129,6 +139,79 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     }
 //------------------
 
+const parseMentions = (text, mentions) => {
+        // Create the mention string to search for, like /[MovieTitle](ID)
+        mentions.forEach(mention => {
+            // Create the mention string to search for, like /[MovieTitle](ID)
+            const mentionString = `/\\[${mention.pascalName}\\]\\(${mention.tmdbId}\\)`; // escape square brackets and parentheses
+            
+            // Replace the mention in the text with the desired format (/MovieTitle)
+            const regex = new RegExp(mentionString, 'g'); // 'g' for global search
+            text = text.replace(regex, `/${mention.pascalName}`);
+        });
+        console.log('text',text)
+        return text;
+}
+    const handlePost = async () => {
+        const formattedString = parseMentions(input, mentions)
+        console.log('content is ', formattedString);
+        setUploadingPost(true);
+        const mentionsForPrisma = await Promise.all(
+            mentions.map(async (mention) => {
+                console.log('mentino being mapped',mention)
+                const type = mention.mediaType;
+                const tmdbId = mention.tmdbId;
+                const movieData = {
+                    tmdbId : mention.tmdbId,
+                    title : mention.title,
+                    releaseDate : mention.releaseDate,
+                    posterPath : mention.posterPath,
+                    backdropPath : mention.backdropPath,
+                };
+                const personData = {
+                    tmdbId : mention.tmdbId,
+                    name : mention.name,
+                    dob : mention.dob,
+                    posterPath : mention.posterPath
+                }
+                try {
+                    console.log('trying to get entity')
+                    const entity = await findOrCreateEntity(type, movieData, personData);
+                    console.log('entity is ', entity)
+                    console.log('mention type', mention.mentionType)
+                    return {
+                      userId,
+                      tmdbId,
+                      mentionType : mention.mentionType,
+                      movieId: mention.mentionType === 'MOVIE' ? entity.id : null,
+                      tvId: mention.mentionType === 'TV' ? entity.id : null,
+                      castId: mention.mentionType === 'CASTCREW' ? entity.id : null,
+                    };
+
+                } catch(err){
+                    console.log(err)
+                    return null
+                }
+            })
+          ).catch((err)=>{
+            console.log('promise all failed', err)
+          })
+        console.log('mentino for prisma',mentionsForPrisma)
+        const postData = {
+            userId,
+            content : formattedString,
+            mentions : mentionsForPrisma
+        }
+        console.log('trying to create dialogue')
+        try {
+            const newPost = await createDialogue(postData);
+            console.log('new post', newPost)
+        } catch (error) {
+            console.log('Error trying to create dialogue post', err)
+        }
+        setUploadingPost(false);
+        setInput('')
+    }
     
 
 
@@ -138,6 +221,11 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
 
   return (
     <View onPress={()=>{setResultsOpen(false); setFlatlistVisible(false)}} className='w-full px-6 relative items-center justify-center' style={{  }} >
+        { uploadingPost && (
+            <View style={{ position:'absolute', inset:0, justifyContent:'center', alignItems:'center', zIndex:30 }} >
+                <ActivityIndicator />
+            </View>
+        ) }
 
         {/* { resultsOpen && flatlistVisible && (
             <View style ={{ position:'absolute', width:300, zIndex:30, paddingVertical:20, paddingHorizontal:10,  height:'auto', backgroundColor:Colors.primary, top:inputLayout.y + inputLayout.height - 40 , borderRadius:24, borderWidth:2, borderColor:Colors.mainGray }}>
@@ -278,7 +366,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                         </TouchableOpacity>
                         <View className="flex-row justify-center items-center gap-3">
                             <Text className='text-mainGray text-right '>{input.length}/800</Text>
-                            <TouchableOpacity onPress={()=>console.log('mentinos when posting',mentions)}>
+                            <TouchableOpacity onPress={handlePost} disabled={!input} >
                         <Text className='font-pbold bg-secondary rounded-xl ' style={{paddingVertical:8, paddingHorizontal:20}} >Post</Text>
                     </TouchableOpacity>
 

@@ -86,6 +86,7 @@ const step3 = () => {
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
+              keyboardType='email-address'
               value={inputs.email}
               placeholder="Enter email"
               placeholderTextColor={Colors.mainGray}
