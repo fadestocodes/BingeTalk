@@ -13,7 +13,7 @@ import { useUserDB } from '../lib/UserDBContext'
 import { fetchUser } from '../api/user'
 
 
-    const ProfileMainPage = ( ) => {
+    const ProfileMainPage = ( { dialogues, setDialogues }) => {
 
 
         const { signOut } = useClerk();
@@ -21,6 +21,7 @@ import { fetchUser } from '../api/user'
         const posterURL = 'https://image.tmdb.org/t/p/original';
         const [ refreshing, setRefreshing ] = useState(false)
         const { userDB, updateUserDB } = useUserDB()
+        console.log('dialogues passed', dialogues)
 
 
 
@@ -52,10 +53,20 @@ import { fetchUser } from '../api/user'
             setRefreshing(false)
         }
 
+        const handleMentionPress = (mention) => {
+            if (mention.movie) {
+                router.push(`/movie/${mention.tmdbId}`)
+            } else if (mention.tv) {
+                router.push(`/tv/${mention.tmdbId}`)
+            } else {
+                router.push(`/cast/${mention.tmdbId}`)
+            }
+        }
+
   return (
    
         <FlatList
-        data={feed}
+        data={dialogues}
         refreshControl={
             <RefreshControl
             tintColor={Colors.secondary}
@@ -144,53 +155,38 @@ import { fetchUser } from '../api/user'
                         <Text>Sign Out</Text>
                 </TouchableOpacity>
                
-                <View  style={{ width:350, }}  className=' border-t-[.5px] mt-4 border-mainGray items-center self-center shadow-md shadow-black-200'/>
+                <View  style={{ width:350, }}  className=' border-t-[.5px] my-10 border-mainGray items-center self-center shadow-md shadow-black-200'/>
 
             </View>
         )}
+
         renderItem={({item}) => (
-        <View className='px-6'>
-            <View className='flex justify-center items-start gap-2 mt-4 mb-1 w-full '>
-            <View className='flex-row justify-center items-center gap-4'>
-                <Image
-                source = {require( "../assets/images/drewcamera.jpg")}
-                style = {{ width:30, height: 30, borderRadius:50 }}
-                resizeMethod='cover'
-                />
-                <Text className='text-gray-400   font-pregular text-wrap flex-wrap flex-1'>{ item.notification } </Text>
+        <View className='' style={{ backgroundColor:Colors.mainGrayDark, paddingVertical:20, paddingHorizontal:10, borderRadius:15, marginVertical:10, marginHorizontal:15, gap:15 }} >
+            <View className='flex justify-center items-start gap-3 mt-4 mb-1 w-full '>
+           
+            
+                <View className='my-2 justify-center items-center w-full gap-3 mb-10'>
+                <Text className='text-secondary font-pcourier uppercase  ' >{userDB.username}</Text>
 
-            </View>
-            { item.parentComment && (
-
-                <View className='my-2 justify-center items-center w-full'>
-                <Text className='text-secondary font-pcourier uppercase text-lg ' >{item.parentAuthor}</Text>
-
-                    <Text className='text-third font-pcourier text-lg leading-5 px-6' numberOfLines={3}> { item.parentComment } </Text>
+                    <Text className='text-third font-pcourier leading-5 px-2 text-left w-full'> { item.content } </Text>
                 </View>
-            ) }
-            { item.dialogue && (
-                <View className='my-2 justify-center items-center w-full'>
-                <Text className='text-secondary font-pcourier uppercase text-lg ' >{item.user}</Text>
 
-                    <Text className='text-third font-pcourier text-lg leading-5 px-6'> { item.dialogue } </Text>
-                </View>
-            )  }
-
-                { item.poster ? (
-                <View className='w-full items-center'>
-                <Image
-                    source={{uri:item.poster}}
-                    style={{ width:300, height:200, borderRadius:10 }}
-                    resizeMethod='contain'
+                <View className='flex-row gap-3 w-full item-center justify-start' >
+                { item.mentions && item.mentions.map( mention => (
+                <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
+                    <Image
+                        source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew.posterPath}` }}
+                        resizeMode='cover'
+                        style={{ width:50, height:65, borderRadius:10, overflow:'hidden' }}
                     />
+                </TouchableOpacity>
+                ) ) 
+                }
                 </View>
-                ) : (
-                <View></View>
-                )}
             <View className=' flex-row items-end justify-between  w-full my-2'>
                 <View className='flex-row gap-4 items-center justify-center '>
                     <TouchableOpacity >
-                    <View className='flex-row  justify-center items-center border-2 rounded-xl border-mainGray py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
+                    <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
                         <ArrowUpIcon className=' ' size='18' color={Colors.mainGray} />
                         { item.upVotes && item.upVotes > 0 && (
                         <Text className='text-xs font-pbold text-gray-400  '> {item.upVotes}</Text>
@@ -198,7 +194,7 @@ import { fetchUser } from '../api/user'
                     </View>
                     </TouchableOpacity>
                     <TouchableOpacity >
-                    <View  className='flex-row  justify-center items-center border-2 rounded-xl border-mainGray py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
+                    <View  className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
                         <ArrowDownIcon className=' ' size='18' color={Colors.mainGray} />
                         { item.downVotes && item.downVotes > 0 && (
                         <Text className='text-xs font-pbold text-gray-400  '> {item.downVotes}</Text>
@@ -206,7 +202,7 @@ import { fetchUser } from '../api/user'
                     </View>
                     </TouchableOpacity>
                     <TouchableOpacity >
-                    <View className='flex-row  justify-center items-center border-2 rounded-xl border-mainGray py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
+                    <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
                         <MessageIcon className='' size='18' color={Colors.mainGray} />
                         { item.downVotes && item.downVotes > 0 && (
                         <Text className='text-xs font-pbold text-gray-400  '> {item.downVotes}</Text>
@@ -215,7 +211,7 @@ import { fetchUser } from '../api/user'
                     </TouchableOpacity>
                    
                     <TouchableOpacity >
-                    <View className='flex-row  justify-center items-center border-2 rounded-xl border-mainGray py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
+                    <View className='flex-row  justify-center items-center  py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
                         <RepostIcon className='' size='14' color={Colors.mainGray} />
                         { item.credits && item.reposts > 0 && (
                         <Text className='text-xs font-pbold text-gray-400  '> {item.reposts}</Text>
@@ -223,7 +219,7 @@ import { fetchUser } from '../api/user'
                     </View>
                     </TouchableOpacity>
                     <TouchableOpacity >
-                    <View className='flex-row  justify-center items-center border-2 rounded-xl border-mainGray py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
+                    <View className='flex-row  justify-center items-center  py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
                         <PrayingHandsIcon className='' size='20' color={Colors.mainGray} />
                         { item.credits && item.credits > 0 && (
                         <Text className='text-xs font-pbold text-gray-400  '>{item.credits}</Text>
@@ -233,7 +229,7 @@ import { fetchUser } from '../api/user'
                 </View>
             </View>
             </View>
-            <View className='w-full border-t-[.5px] border-mainGray items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGray}}/>
+            {/* <View className='w-full border-t-[.5px] border-mainGray items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGray}}/> */}
         </View>
         ) }
         >

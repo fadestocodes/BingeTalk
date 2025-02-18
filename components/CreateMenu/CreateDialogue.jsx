@@ -9,6 +9,7 @@ import { createDialogue } from '../../api/dialogue'
 import debounce from 'lodash.debounce'
 import { useUserDB } from '../../lib/UserDBContext'
 import { findOrCreateEntity } from '../../api/db'
+import { addActivity } from '../../api/activity'
 
 const toPascalCase = (str) => {
         return str
@@ -25,20 +26,14 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const [ loadingImage, setLoadingImage ] = useState(false);
     const [ results, setResults ] = useState([]);
     const [ resultsOpen, setResultsOpen ] = useState(false);
-    const [ mentionIndex, setMentionIndex ] = useState(null);
-    const [inputLayout, setInputLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
     const [ textParts, setTextParts ] = useState([])
     const [ mentions, setMentions ] = useState([])
     const [ suggestionOpen, setSuggestionOpen ] = useState(true)
     const inputRef = useRef(null);  // Create a ref for the MentionInput
-    const [filteredMentions, setFilteredMentions] = useState([]);
     const [ uploadingPost, setUploadingPost ] = useState(false);
 
     const { userDB, updateUserDB } = useUserDB();
-
     const userId = userDB.id
-
-
     const posterURL = 'https://image.tmdb.org/t/p/original';
 
    
@@ -75,17 +70,10 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         setInput(text);
     }
 
-
-
-
     // useEffect(( ) => {
     //     console.log('mentions array ', mentions)
     // }, [mentions])
 
-
-    const removeMention = (mentionId) => {
-        setTextParts( prev => prev.filter((part) => part.id !== mentionId) )
-    }
 
 //-----------------
     const renderSuggestions = ( { keyword, onSuggestionPress } ) => {
@@ -139,7 +127,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     }
 //------------------
 
-const parseMentions = (text, mentions) => {
+    const parseMentions = (text, mentions) => {
         // Create the mention string to search for, like /[MovieTitle](ID)
         mentions.forEach(mention => {
             // Create the mention string to search for, like /[MovieTitle](ID)
@@ -151,7 +139,8 @@ const parseMentions = (text, mentions) => {
         });
         console.log('text',text)
         return text;
-}
+    }
+
     const handlePost = async () => {
         const formattedString = parseMentions(input, mentions)
         console.log('content is ', formattedString);
@@ -206,6 +195,16 @@ const parseMentions = (text, mentions) => {
         try {
             const newPost = await createDialogue(postData);
             console.log('new post', newPost)
+            try {
+                const activityData = {
+                    userId,
+                    description : `@${userDB.username} posted a new dialogue`,
+                    dialogueId : newPost.id
+                }
+                const newActivity = await addActivity(activityData);
+            } catch (err) {
+                console.log(err)
+            }
         } catch (error) {
             console.log('Error trying to create dialogue post', err)
         }

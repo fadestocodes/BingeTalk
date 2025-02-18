@@ -9,8 +9,10 @@ import ShowcasePage from '../../../../components/Showcase'
 import ProfileMainPage from '../../../../components/ProfileMainPage'
 import { Colors } from '../../../../constants/Colors'
 import Credits from '../../../../components/Credits'
-import { SignOutButton } from '@clerk/clerk-react'
+import { SignOutButton, useAuth } from '@clerk/clerk-react'
 import { useUserDB } from '../../../../lib/UserDBContext'
+import { fetchDialogues } from '../../../../api/dialogue'
+
 
 
 const ProfileHomepage = () => {
@@ -20,6 +22,20 @@ const ProfileHomepage = () => {
   const [active, setActive] = useState(0);
   const pagerRef = useRef(null)
   const posterURL = 'https://image.tmdb.org/t/p/original';
+  const { getToken } = useAuth();  // useAuth is used inside a functional component
+  const [ dialogues, setDialogues ] = useState([]);
+  
+
+
+  useEffect(() => {
+    const fetchDialoguesOnMount = async () => {
+      const token = await getToken();
+      const fetched = await fetchDialogues( token );
+      setDialogues(fetched);
+    }
+    fetchDialoguesOnMount();
+  }, [])
+
 
   const tabs = [
     {id : 0, label : 'Profile'},
@@ -62,7 +78,7 @@ const ProfileHomepage = () => {
             {/* Tab Content */}
             <View key="1" className='pb-20' >
               
-               <ProfileMainPage ></ProfileMainPage> 
+               <ProfileMainPage  dialogues={dialogues}  setDialogues={setDialogues} ></ProfileMainPage> 
             </View>
             <View key="2" className='pt-32 items-center w-full' >
                   <ShowcasePage></ShowcasePage>
