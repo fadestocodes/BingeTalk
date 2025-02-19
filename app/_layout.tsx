@@ -13,6 +13,8 @@ import { Colors } from '@/constants/Colors';
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo'
 import {tokenCache} from '@/cache'
 import { UserDBProvider } from '../lib/UserDBContext'
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '../lib/tanStackClient'; // Import the query client
 
 
 
@@ -53,8 +55,10 @@ export default function RootLayout() {
   }
 
   return (
+    
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
+        <QueryClientProvider client={queryClient}>
         <UserDBProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar
@@ -70,6 +74,7 @@ export default function RootLayout() {
           </Stack>
           </GestureHandlerRootView>
           </UserDBProvider>
+        </QueryClientProvider>
       </ ClerkLoaded >
     </ClerkProvider >
   );

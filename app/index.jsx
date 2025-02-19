@@ -11,6 +11,7 @@ import { Colors } from "../constants/Colors";
 import { fetchUser } from "../api/user";
 import { useUserDB } from '../lib/UserDBContext'
 
+
 const Welcome = () => {
 //   const { loading, isLogged } = useGlobalContext();
 

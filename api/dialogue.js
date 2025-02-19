@@ -1,4 +1,8 @@
 import * as nodeServer from '../lib/ipaddresses'
+import { useQuery } from '@tanstack/react-query';
+import { SignOutButton, useAuth } from '@clerk/clerk-react'
+
+
 
 
 export const createDialogue = async ( postData ) => {
@@ -23,7 +27,6 @@ export const createDialogue = async ( postData ) => {
 export const fetchDialogues = async ( token ) => {
     try {
         console.log('trying to fetch');
-        console.log('token', token)
         const request = await fetch (`${nodeServer.expressServer}/dialogue/fetch-all`, {
             method : 'GET',
             headers : {
@@ -37,4 +40,18 @@ export const fetchDialogues = async ( token ) => {
     } catch (err) {
         console.log(err)
     }
+}
+
+export const useFetchDialogues = () => {
+    const { getToken } = useAuth();
+    return useQuery({
+        queryKey: ['dialogues'],
+        queryFn: async () => {
+            const token = await getToken();
+            return fetchDialogues(token);
+        },
+        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        enabled: true, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refetch when app regains focus
+    });
 }

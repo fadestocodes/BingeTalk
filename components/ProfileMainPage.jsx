@@ -1,4 +1,4 @@
-import {  Text, View, FlatList, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native'
+import {  Text, View, FlatList, Image, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard } from 'react-native'
 import { ImageBackground,  } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import React, {useState} from 'react'
@@ -11,9 +11,12 @@ import { useRouter } from 'expo-router'
 import { LinkIcon } from '../assets/icons/icons'
 import { useUserDB } from '../lib/UserDBContext'
 import { fetchUser } from '../api/user'
+import { formatDate } from '../lib/formatDate'
+import DialogueCard from './Screens/DialoguePage'
+import { useFetchDialogues } from '../api/dialogue'
 
 
-    const ProfileMainPage = ( { dialogues, setDialogues }) => {
+    const ProfileMainPage = ( ) => {
 
 
         const { signOut } = useClerk();
@@ -21,7 +24,9 @@ import { fetchUser } from '../api/user'
         const posterURL = 'https://image.tmdb.org/t/p/original';
         const [ refreshing, setRefreshing ] = useState(false)
         const { userDB, updateUserDB } = useUserDB()
-        console.log('dialogues passed', dialogues)
+        
+        const { data: dialogues, refetch, isFetching } = useFetchDialogues();
+        // console.log('userdb is ', userDB)
 
 
 
@@ -42,201 +47,140 @@ import { fetchUser } from '../api/user'
             }
         }
 
-        const refreshData = async () => {
-            setRefreshing(true);
-            try {
-                const userDBFetch = await fetchUser(userDB.email); // Example of refetching by email
-                updateUserDB(userDBFetch);
-            } catch (err) {
-                console.log('Error trying to fetch user from profile',err)
-            }
-            setRefreshing(false)
-        }
+        // const refreshData = async () => {
+        //     setRefreshing(true);
+        //     try {
+        //         const userDBFetch = await fetchUser(userDB.email); // Example of refetching by email
+        //         updateUserDB(userDBFetch);
+        //     } catch (err) {
+        //         console.log('Error trying to fetch user from profile',err)
+        //     }
+        //     setRefreshing(false)
+        // }
 
-        const handleMentionPress = (mention) => {
-            if (mention.movie) {
-                router.push(`/movie/${mention.tmdbId}`)
-            } else if (mention.tv) {
-                router.push(`/tv/${mention.tmdbId}`)
-            } else {
-                router.push(`/cast/${mention.tmdbId}`)
-            }
+        
+
+        const handleDialoguePress = (dialogue) => {
+            router.push(`/dialogue/${dialogue.id}`)
         }
 
   return (
    
+    <View>
+        { isFetching ? <ActivityIndicator /> : (
+
         <FlatList
-        data={dialogues}
-        refreshControl={
-            <RefreshControl
-            tintColor={Colors.secondary}
-            refreshing={refreshing}
-            onRefresh={refreshData}
-          />
-        }
-        keyExtractor={ (item) => item.id }
-        ListHeaderComponent={(
-           
-            <View className='justify-center items-center flex gap-3 ' style={{  marginTop:0}}>
-                <ImageBackground
-                    className='top-0'
-                    style={{width : '100%', height: 400, position:'absolute', top:0}}
-                    source={{ uri:userDB.profilePic }}
-                    resizeMethod='cover'
-                    
-                    >
-
-                    <LinearGradient 
-                        colors={[ 'transparent',Colors.primary]} 
-                        style={{height : '100%', width : '100%'}}>
-                    </LinearGradient>
-                </ImageBackground>
-                <View className='px-4 items-center ' style={{marginTop:275, gap:15}}>
-                    {/* <Image
-                        source={require('../assets/images/drewcamera.jpg')}
-                        style={{ width:100, height:100, borderRadius:50, marginBottom:18 }}
-                        resizeMethod='cover'
-                        className='w-full mt-20'
-                        /> */}
-                    <View className='items-center' style={{gap:10}}>
-                        <View className='gap-1 justify-center items-center mb-5'>
-                            <Text className='text-secondary font-pblack text-2xl'>{userDB.firstName} {userDB.lastName}</Text>
-                            <Text className='text-white font-pbold '>@{userDB.username}</Text>
-                        </View>
-                        <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{userDB.bio}</Text>
-                    </View>
-                    { userDB.bioLink && (
-                    <TouchableOpacity className='flex-row gap-2 opacity-60'  style={{backgroundColor:'black', paddingVertical:5, paddingHorizontal:20, borderRadius:10}}>
-                        <LinkIcon size={16} color={Colors.mainGray} />
-                        <Text className='text-mainGray text-sm  font-psemibold' >{userDB.bioLink}</Text>
-                    </TouchableOpacity>
-                    ) }
-                    <View className='flex-row gap-6' style={{marginTop:0}}>
-                        <View className='flex-row gap-2 justify-center items-center'>
-                            <Text className='text-gray-400 text-lg font-pblack'>210</Text>
-                            <Text className='text-gray-400 text-sm font-psemibold'>Followers</Text>
-                        </View>
-                        <View className='flex-row gap-2 justify-center items-center'>
-                            <Text className='text-gray-400 text-lg font-pblack'>186</Text>
-                            <Text className='text-gray-400 text-sm font-psemibold'>Following</Text>
-                        </View>
-                        <View className='flex-row gap-2 justify-center items-center'>
-                            <Text className='text-gray-400 text-lg font-pblack'>21</Text>
-                            <Text className='text-gray-400 text-sm font-psemibold'>Credits</Text>
-                        </View>
-                    </View>
-                    <View className='w-full justify-center items-center mt-4' >
-                        <Text className='font-pbold text-mainGray'>Current Rotation</Text>
-                        <FlatList
-                            data={userDB.currentRotation}
-                            horizontal
-                          
-                            contentContainerStyle={{ width:'100%', height:100, justifyContent:'center', alignItems:'center' }}
-                            scrollEnabled={false}
-                            keyExtractor={item => item.id}
-                            renderItem={ ({item}) => {
-                                return (
-
-                                <TouchableOpacity onPress={() => handleRotationPress(item)} style={{ marginRight:10 }}>
-                                    <Image
-                                        source={{uri: item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : null }}
-                                        resizeMode='cover'
-                                        style={{ width:50, height:80, borderRadius:10, overflow:'hidden' }}
-                                    />
-                                </TouchableOpacity>
-                            ) }}
-                        >
-
-                        </FlatList>
-                    </View>
-                </View>
-
-                <TouchableOpacity onPress={handleSignOut}>
-                        <Text>Sign Out</Text>
-                </TouchableOpacity>
+            data={dialogues}
+            refreshControl={
+                <RefreshControl
+                tintColor={Colors.secondary}
+                refreshing={refreshing}
+                onRefresh={() => {
+                    setRefreshing(true);
+                    refetch().finally(() => setRefreshing(false)); 
+                }}
+              />
+            }
+            keyboardShouldPersistTaps="handled" 
+            keyExtractor={ (item) => item.id }
+            ListHeaderComponent={(
                
-                <View  style={{ width:350, }}  className=' border-t-[.5px] my-10 border-mainGray items-center self-center shadow-md shadow-black-200'/>
-
-            </View>
-        )}
-
-        renderItem={({item}) => (
-        <View className='' style={{ backgroundColor:Colors.mainGrayDark, paddingVertical:20, paddingHorizontal:10, borderRadius:15, marginVertical:10, marginHorizontal:15, gap:15 }} >
-            <View className='flex justify-center items-start gap-3 mt-4 mb-1 w-full '>
-           
-            
-                <View className='my-2 justify-center items-center w-full gap-3 mb-10'>
-                <Text className='text-secondary font-pcourier uppercase  ' >{userDB.username}</Text>
-
-                    <Text className='text-third font-pcourier leading-5 px-2 text-left w-full'> { item.content } </Text>
-                </View>
-
-                <View className='flex-row gap-3 w-full item-center justify-start' >
-                { item.mentions && item.mentions.map( mention => (
-                <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
-                    <Image
-                        source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew.posterPath}` }}
-                        resizeMode='cover'
-                        style={{ width:50, height:65, borderRadius:10, overflow:'hidden' }}
-                    />
-                </TouchableOpacity>
-                ) ) 
-                }
-                </View>
-            <View className=' flex-row items-end justify-between  w-full my-2'>
-                <View className='flex-row gap-4 items-center justify-center '>
-                    <TouchableOpacity >
-                    <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                        <ArrowUpIcon className=' ' size='18' color={Colors.mainGray} />
-                        { item.upVotes && item.upVotes > 0 && (
-                        <Text className='text-xs font-pbold text-gray-400  '> {item.upVotes}</Text>
-                        )  }
+                <View className='justify-center items-center flex gap-3 ' style={{  marginTop:0}}>
+                    <ImageBackground
+                        className='top-0'
+                        style={{width : '100%', height: 400, position:'absolute', top:0}}
+                        source={{ uri:userDB.profilePic }}
+                        resizeMethod='cover'
+                        
+                        >
+    
+                        <LinearGradient 
+                            colors={[ 'transparent',Colors.primary]} 
+                            style={{height : '100%', width : '100%'}}>
+                        </LinearGradient>
+                    </ImageBackground>
+                    <View className='px-4 items-center ' style={{marginTop:275, gap:15}}>
+                        {/* <Image
+                            source={require('../assets/images/drewcamera.jpg')}
+                            style={{ width:100, height:100, borderRadius:50, marginBottom:18 }}
+                            resizeMethod='cover'
+                            className='w-full mt-20'
+                            /> */}
+                        <View className='items-center' style={{gap:10}}>
+                            <View className='gap-1 justify-center items-center mb-5'>
+                                <Text className='text-secondary font-pblack text-2xl'>{userDB.firstName} {userDB.lastName}</Text>
+                                <Text className='text-white font-pbold '>@{userDB.username}</Text>
+                            </View>
+                            <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{userDB.bio}</Text>
+                        </View>
+                        { userDB.bioLink && (
+                        <TouchableOpacity className='flex-row gap-2 opacity-60'  style={{backgroundColor:'black', paddingVertical:5, paddingHorizontal:20, borderRadius:10}}>
+                            <LinkIcon size={16} color={Colors.mainGray} />
+                            <Text className='text-mainGray text-sm  font-psemibold' >{userDB.bioLink}</Text>
+                        </TouchableOpacity>
+                        ) }
+                        <View className='flex-row gap-6' style={{marginTop:0}}>
+                            <View className='flex-row gap-2 justify-center items-center'>
+                                <Text className='text-gray-400 text-lg font-pblack'>210</Text>
+                                <Text className='text-gray-400 text-sm font-psemibold'>Followers</Text>
+                            </View>
+                            <View className='flex-row gap-2 justify-center items-center'>
+                                <Text className='text-gray-400 text-lg font-pblack'>186</Text>
+                                <Text className='text-gray-400 text-sm font-psemibold'>Following</Text>
+                            </View>
+                            <View className='flex-row gap-2 justify-center items-center'>
+                                <Text className='text-gray-400 text-lg font-pblack'>21</Text>
+                                <Text className='text-gray-400 text-sm font-psemibold'>Credits</Text>
+                            </View>
+                        </View>
+                        <View className='w-full justify-center items-center mt-4' >
+                            <Text className='font-pbold text-mainGray'>Current Rotation</Text>
+                            <FlatList
+                                data={userDB.currentRotation}
+                                horizontal
+                              
+                                contentContainerStyle={{ width:'100%', height:100, justifyContent:'center', alignItems:'center' }}
+                                scrollEnabled={false}
+                                keyExtractor={item => item.id}
+                                renderItem={ ({item}) => {
+                                    return (
+    
+                                    <TouchableOpacity onPress={() => handleRotationPress(item)} style={{ marginRight:10 }}>
+                                        <Image
+                                            source={{uri: item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : null }}
+                                            resizeMode='cover'
+                                            style={{ width:50, height:80, borderRadius:10, overflow:'hidden' }}
+                                        />
+                                    </TouchableOpacity>
+                                ) }}
+                            >
+    
+                            </FlatList>
+                        </View>
                     </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity >
-                    <View  className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                        <ArrowDownIcon className=' ' size='18' color={Colors.mainGray} />
-                        { item.downVotes && item.downVotes > 0 && (
-                        <Text className='text-xs font-pbold text-gray-400  '> {item.downVotes}</Text>
-                        )  }
-                    </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity >
-                    <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                        <MessageIcon className='' size='18' color={Colors.mainGray} />
-                        { item.downVotes && item.downVotes > 0 && (
-                        <Text className='text-xs font-pbold text-gray-400  '> {item.downVotes}</Text>
-                        )  }
-                    </View>
+    
+                    <TouchableOpacity onPress={handleSignOut}>
+                            <Text>Sign Out</Text>
                     </TouchableOpacity>
                    
-                    <TouchableOpacity >
-                    <View className='flex-row  justify-center items-center  py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
-                        <RepostIcon className='' size='14' color={Colors.mainGray} />
-                        { item.credits && item.reposts > 0 && (
-                        <Text className='text-xs font-pbold text-gray-400  '> {item.reposts}</Text>
-                        )  }
-                    </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity >
-                    <View className='flex-row  justify-center items-center  py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
-                        <PrayingHandsIcon className='' size='20' color={Colors.mainGray} />
-                        { item.credits && item.credits > 0 && (
-                        <Text className='text-xs font-pbold text-gray-400  '>{item.credits}</Text>
-                        )  }
-                    </View>
-                    </TouchableOpacity>
+                    <View  style={{ width:350, }}  className=' border-t-[.5px] my-10 border-mainGray items-center self-center shadow-md shadow-black-200'/>
+    
                 </View>
-            </View>
-            </View>
-            {/* <View className='w-full border-t-[.5px] border-mainGray items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGray}}/> */}
-        </View>
+            )}
+    
+            renderItem={({item}) => (
+            
+                <TouchableOpacity key={item.id} onPress={()=>handleDialoguePress(item)}  style={{ backgroundColor:Colors.mainGrayDark, paddingVertical:10, paddingHorizontal:20, borderRadius:15, marginVertical:10, marginHorizontal:15, gap:15 }}>
+                    <DialogueCard  dialogue={item}  />
+                </TouchableOpacity>
+            ) }
+            >
+    
+    
+    
+        </FlatList>
         ) }
-        >
-
-
-
-    </FlatList>
+    </View>
   )
 }
 

@@ -11,7 +11,7 @@ import { Colors } from '../../../../constants/Colors'
 import Credits from '../../../../components/Credits'
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
 import { useUserDB } from '../../../../lib/UserDBContext'
-import { fetchDialogues } from '../../../../api/dialogue'
+import { useFetchDialogues } from '../../../../api/dialogue'
 
 
 
@@ -22,19 +22,20 @@ const ProfileHomepage = () => {
   const [active, setActive] = useState(0);
   const pagerRef = useRef(null)
   const posterURL = 'https://image.tmdb.org/t/p/original';
-  const { getToken } = useAuth();  // useAuth is used inside a functional component
-  const [ dialogues, setDialogues ] = useState([]);
+  // const { getToken } = useAuth();  
+  // const [ dialogues, setDialogues ] = useState([]);
   
 
 
-  useEffect(() => {
-    const fetchDialoguesOnMount = async () => {
-      const token = await getToken();
-      const fetched = await fetchDialogues( token );
-      setDialogues(fetched);
-    }
-    fetchDialoguesOnMount();
-  }, [])
+
+  // useEffect(() => {
+  //   const fetchDialoguesOnMount = async () => {
+  //     const token = await getToken();
+  //     const fetched = await fetchDialogues( token );
+  //     setDialogues(fetched);
+  //   }
+  //   fetchDialoguesOnMount();
+  // }, [])
 
 
   const tabs = [
@@ -78,7 +79,7 @@ const ProfileHomepage = () => {
             {/* Tab Content */}
             <View key="1" className='pb-20' >
               
-               <ProfileMainPage  dialogues={dialogues}  setDialogues={setDialogues} ></ProfileMainPage> 
+               <ProfileMainPage   ></ProfileMainPage> 
             </View>
             <View key="2" className='pt-32 items-center w-full' >
                   <ShowcasePage></ShowcasePage>

@@ -33,3 +33,5 @@ export const SlateIcon = (props) => <MaterialIcons name="movie-creation" {...pro
 export const ThreadsIcon = (props) => <Entypo name="list" {...props} />;
 export const UploadPictureIcon = (props) => <FontAwesome name="file-picture-o" {...props} />;
 export const LinkIcon = (props) => <Feather name="link" {...props} />;
+export const SendIcon = (props) => <Feather name="send" {...props} />;
+export const UpArrowIcon = (props) => <FontAwesome5 name="arrow-up" {...props} />;
