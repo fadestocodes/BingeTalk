@@ -1,11 +1,14 @@
 import * as nodeServer from '../lib/ipaddresses'
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
 
 
 
 
 export const createDialogue = async ( postData ) => {
+    console.log('hello')
+    // const queryClient = useQueryClient(); // Get query client
+    console.log('post data for createdialogue', postData)
 
     try {
         console.log('trying to createDialogue')
@@ -14,10 +17,12 @@ export const createDialogue = async ( postData ) => {
             headers : {
                 'Content-type' : 'application/json'
             },
-            body : JSON.stringify( postData )
+            body : JSON.stringify( {postData} )
         })
         const response = await request.json();
-        console.log('response', response)
+        console.log('response', response)           
+        // queryClient.invalidateQueries(['dialogues']);
+
         return response
     } catch (err) {
         console.log(err)
@@ -35,7 +40,8 @@ export const fetchDialogues = async ( token ) => {
             }
         });
         const response = await request.json();
-        // console.log('resposne ', response.dialogues)
+
+        console.log('resposne ', response)
         return response.dialogues
     } catch (err) {
         console.log(err)
@@ -43,7 +49,10 @@ export const fetchDialogues = async ( token ) => {
 }
 
 export const useFetchDialogues = () => {
+
     const { getToken } = useAuth();
+    // const queryClient = useQueryClient(); // Get query client
+
     return useQuery({
         queryKey: ['dialogues'],
         queryFn: async () => {

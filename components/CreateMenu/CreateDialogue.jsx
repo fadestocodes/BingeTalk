@@ -193,7 +193,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         }
         console.log('trying to create dialogue')
         try {
-            const newPost = await createDialogue(postData);
+            const newPost = await createDialogue(postData); 
             console.log('new post', newPost)
             try {
                 const activityData = {

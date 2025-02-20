@@ -186,7 +186,8 @@ const TVPage = () => {
                     
                     <Text className='text-third text-2xl font-pbold'>{movie.name}</Text>
                     <View className='gap-0'>
-                        <Text className='text-mainGray text-sm font-pmedium'>First aired {movie.first_air_date}</Text>
+                        <Text className='text-mainGray text-sm font-pmedium'>First aired: {movie.first_air_date}</Text>
+                        <Text className='text-mainGray text-sm font-pmedium'>Last aired: {movie.last_air_date}</Text>
                         <Text className='text-mainGray text-sm font-pmedium'>Number of seasons: {movie.number_of_seasons}</Text>
                         { movie.original_language && (
                         <View className='flex gap-2 justify-center items-start '>

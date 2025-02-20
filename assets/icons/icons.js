@@ -35,3 +35,5 @@ export const UploadPictureIcon = (props) => <FontAwesome name="file-picture-o" {
 export const LinkIcon = (props) => <Feather name="link" {...props} />;
 export const SendIcon = (props) => <Feather name="send" {...props} />;
 export const UpArrowIcon = (props) => <FontAwesome5 name="arrow-up" {...props} />;
+export const HeartIcon = (props) => <FontAwesome5 name="heart" {...props} />;
+export const ThreeDotsIcon = (props) => <Entypo name="dots-three-vertical" {...props} />;

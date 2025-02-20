@@ -22,8 +22,8 @@ import { useFetchDialogues } from '../api/dialogue'
         const { signOut } = useClerk();
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
-        const [ refreshing, setRefreshing ] = useState(false)
         const { userDB, updateUserDB } = useUserDB()
+        const [ refreshing, setRefreshing ] = useState(false)
         
         const { data: dialogues, refetch, isFetching } = useFetchDialogues();
         // console.log('userdb is ', userDB)
@@ -58,6 +58,12 @@ import { useFetchDialogues } from '../api/dialogue'
         //     setRefreshing(false)
         // }
 
+        const onRefresh = async () => {
+            setRefreshing(true); // Show refresh indicator
+            await refetch(); // Fetch new data
+            setRefreshing(false); // Hide refresh indicator after fetching
+        };
+
         
 
         const handleDialoguePress = (dialogue) => {
@@ -67,18 +73,16 @@ import { useFetchDialogues } from '../api/dialogue'
   return (
    
     <View>
-        { isFetching ? <ActivityIndicator /> : (
+      
 
         <FlatList
             data={dialogues}
             refreshControl={
                 <RefreshControl
                 tintColor={Colors.secondary}
-                refreshing={refreshing}
-                onRefresh={() => {
-                    setRefreshing(true);
-                    refetch().finally(() => setRefreshing(false)); 
-                }}
+                refreshing={isFetching}
+                onRefresh={refetch} 
+                
               />
             }
             keyboardShouldPersistTaps="handled" 
@@ -163,14 +167,14 @@ import { useFetchDialogues } from '../api/dialogue'
                             <Text>Sign Out</Text>
                     </TouchableOpacity>
                    
-                    <View  style={{ width:350, }}  className=' border-t-[.5px] my-10 border-mainGray items-center self-center shadow-md shadow-black-200'/>
+                    <View  style={{ width:350, }}  className=' border-t-[2px] my-10 border-mainGray items-center self-center shadow-md shadow-black-200'/>
     
                 </View>
             )}
     
             renderItem={({item}) => (
             
-                <TouchableOpacity key={item.id} onPress={()=>handleDialoguePress(item)}  style={{ backgroundColor:Colors.mainGrayDark, paddingVertical:10, paddingHorizontal:20, borderRadius:15, marginVertical:10, marginHorizontal:15, gap:15 }}>
+                <TouchableOpacity key={item.id} onPress={()=>handleDialoguePress(item)}  style={{ paddingHorizontal:15 }}>
                     <DialogueCard  dialogue={item}  />
                 </TouchableOpacity>
             ) }
@@ -179,7 +183,6 @@ import { useFetchDialogues } from '../api/dialogue'
     
     
         </FlatList>
-        ) }
     </View>
   )
 }

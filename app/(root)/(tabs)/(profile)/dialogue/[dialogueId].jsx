@@ -28,7 +28,7 @@ const dialoguePage = () => {
             <ScrollView  className='bg-primary' style={{ width:'100%', height:'100%' }}>
                 <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()} style={{width:'100%', height:'100%'}}>
 
-                    <View className='' style={{paddingHorizontal:25, gap:30}} >
+                    <View className='' style={{paddingHorizontal:15, gap:30}} >
                         <DialogueCard dialogue={dialogue} />
                     </View>
 
