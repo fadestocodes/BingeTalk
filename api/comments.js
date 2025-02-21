@@ -4,7 +4,7 @@ export const createComment = async ( commentData ) => {
     console.log('commentData',commentData)
     try {
         console.log('trting to create comment')
-        const request = await fetch(`${nodeServer.expressServer}/comment/create`, {
+        const request = await fetch(`${nodeServer.expressServerHotspot}/comment/create`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'

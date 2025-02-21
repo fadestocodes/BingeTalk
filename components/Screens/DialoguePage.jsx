@@ -4,11 +4,15 @@ import React, {useState} from 'react'
 import { formatDate } from '../../lib/formatDate'
 import { Colors } from '../../constants/Colors'
 import { useUserDB } from '../../lib/UserDBContext'
+import { useUser } from '@clerk/clerk-expo'
+import { useFetchUser } from '../../api/user'
 import { useRouter } from 'expo-router'
 
 const DialogueCard = ( { dialogue } ) => {
 
-    const { userDB, updateUserDB } = useUserDB();
+    // const { userDB, updateUserDB } = useUserDB();
+    const { user : clerkUser } = useUser();
+    const { data: userDB, refetch } = useFetchUser( clerkUser.emailAddresses[0].emailAddress )
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
     const [ textInputFocus, setTextInputFocus ] = useState(false);

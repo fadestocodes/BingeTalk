@@ -12,11 +12,14 @@ import Credits from '../../../../components/Credits'
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
 import { useUserDB } from '../../../../lib/UserDBContext'
 import { useFetchDialogues } from '../../../../api/dialogue'
+import { useFetchUser } from '../../../../api/user'
 
 
 
 const ProfileHomepage = () => {
-  const { userDB, updateUserDB } = useUserDB();
+  // const { userDB, updateUserDB } = useUserDB();
+  const {data:userDB, refetch  } = useFetchUser()
+  
 
   const router = useRouter();
   const [active, setActive] = useState(0);

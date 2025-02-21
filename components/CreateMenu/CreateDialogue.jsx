@@ -10,6 +10,8 @@ import debounce from 'lodash.debounce'
 import { useUserDB } from '../../lib/UserDBContext'
 import { findOrCreateEntity } from '../../api/db'
 import { addActivity } from '../../api/activity'
+import { useFetchDialogues } from '../../api/dialogue'
+import { FilmIcon, TVIcon, PersonIcon } from '../../assets/icons/icons'
 
 const toPascalCase = (str) => {
         return str
@@ -31,6 +33,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const [ suggestionOpen, setSuggestionOpen ] = useState(true)
     const inputRef = useRef(null);  // Create a ref for the MentionInput
     const [ uploadingPost, setUploadingPost ] = useState(false);
+    const { data : dialogues, refetch, isFetching } = useFetchDialogues();
+
 
     const { userDB, updateUserDB } = useUserDB();
     const userId = userDB.id
@@ -116,10 +120,21 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                             });
                            
                         }} 
-                        style={{ width:'100%', padding:10, paddingHorizontal:10, borderBottomWidth:.5, borderColor:Colors.mainGray }}
+                        style={{ width:'100%', padding:10, paddingHorizontal:10, borderBottomWidth:.5, borderColor:Colors.mainGray, flexDirection:'row',gap:10, justifyContent:'flex-start', alignItems:'center' }}
                     >
-                   
-                     <Text style={{ opacity : mentions.some((mention) => mention.pascalName === toPascalCase(item.name || item.title)) ? .2 : 1 }}  className='text-mainGray text-sm '>{item.name || item.title}</Text>
+                    <Image
+                        source = {{ uri: `${posterURL}${item.poster_path || item.profile_path}` }}
+                        resizeMethod='cover'
+                        style= {{ width:30, height: 50, borderRadius:10, overflow:'hidden' }}
+                    />
+                    <View className='gap-1' >
+                        <View className='flex-row gap-1 justify-start items-center'>
+                            {  item.media_type === 'movie' ? <FilmIcon size={14} color={Colors.secondary}  /> : item.media_type === 'tv' ? <TVIcon size={14} color={Colors.secondary} /> : <PersonIcon size={14} color={Colors.secondary} /> }
+                            <Text style={{ opacity : mentions.some((mention) => mention.pascalName === toPascalCase(item.name || item.title)) ? .2 : 1 }}  className='text-mainGray text-sm font-pbold'>{item.name || item.title}</Text>
+                        </View>
+                        <Text className='text-mainGray text-xs' >{ item.media_type === 'movie' ? `Released: ${item.release_date}` : item.media_type === 'tv' ? `First episode: ${item.first_air_date}` : item.birthday }</Text>
+
+                    </View>
                  </TouchableOpacity>
                 ) ) }
             </View>
@@ -210,6 +225,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         }
         setUploadingPost(false);
         setInput('')
+        refetch();
     }
     
 

@@ -129,7 +129,7 @@ const profile2 = () => {
                 bioLink,
                 profilePic : image,
             }
-            const response = await updateUser(params)
+            const response = await updateUser(params,user.emailAddresses[0].emailAddress )
             const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )
             console.log('rotationResposne', rotationResponse)
             updateUserDB(response)

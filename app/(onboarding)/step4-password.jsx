@@ -51,7 +51,7 @@ const step4 = () => {
    style={{ flex: 1, width:'100%', height:'100%' }}
    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
  >
-   <ScrollView  className='bg-primary' style={{ width:'100%', height:'100%' }}>
+   <ScrollView  className='bg-primary' style={{ width:'100%', height:'100%' }}  >
  <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()} style={{width:'100%', height:'100%'}}>
    <View  style={{ justifyContent:'center', alignItems:'center', height:'100%', height:'100%', paddingTop:150,  backgroundColor:Colors.primary, gap:15 }} >
 

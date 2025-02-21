@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { Colors } from "../constants/Colors";
 import { fetchUser } from "../api/user";
 import { useUserDB } from '../lib/UserDBContext'
+import { useFetchUser } from "../api/user";
 
 
 const Welcome = () => {
@@ -19,19 +20,16 @@ const Welcome = () => {
   const {user} = useUser();
   const { userDB, updateUserDB } = useUserDB()
   const router = useRouter();  // Access navigation object
-  
-  useEffect(() => {
-    // Only fetch user data if the user is logged in
-    const fetchAndUpdateUserDB = async () => {
-      if (user) {
-        const userDBFetch = await fetchUser(user.emailAddresses[0].emailAddress);
-        updateUserDB(userDBFetch);  // Update the context
+ 
+        // const userDBFetch = await fetchUser(user.emailAddresses[0].emailAddress);
+        // updateUserDB(userDBFetch);  // Update the context
         // console.log('this is working',userDBFetch);
-      }
-    };
-    
-    fetchAndUpdateUserDB();
-  }, []); 
+
+      const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchUser( user.emailAddresses[0].emailAddress )
+      console.log('fetched user from home', fetchedUser);
+
+
+  
 
   // If user is logged in, redirect immediately in the render
   if (user) {

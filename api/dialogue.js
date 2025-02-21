@@ -12,7 +12,7 @@ export const createDialogue = async ( postData ) => {
 
     try {
         console.log('trying to createDialogue')
-        const request = await fetch (`${nodeServer.expressServer}/dialogue/create`, {
+        const request = await fetch (`${nodeServer.expressServerHotspot}/dialogue/create`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -32,7 +32,7 @@ export const createDialogue = async ( postData ) => {
 export const fetchDialogues = async ( token ) => {
     try {
         console.log('trying to fetch');
-        const request = await fetch (`${nodeServer.expressServer}/dialogue/fetch-all`, {
+        const request = await fetch (`${nodeServer.expressServerHotspot}/dialogue/fetch-all`, {
             method : 'GET',
             headers : {
                 'Content-type' : 'application/json',

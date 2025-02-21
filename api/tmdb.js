@@ -1,4 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { SignOutButton, useAuth } from '@clerk/clerk-react'
 
 
 export const GetNowPlaying = async () => {
@@ -137,10 +139,31 @@ export const GetNowPlaying = async () => {
   
   export const getDiscoverTV = async () => {
     try {
-      const response = await fetch(`${nodeServer.expressServer}/tmdb/discover/tv`);
+      const response = await fetch(`${nodeServer.expressServerHotspot}/tmdb/discover/tv`);
       const data = await response.json();
       return data
     } catch (err) {
       console.log('Error fetching trending people', err)
     }
   }
+
+
+export const useTMDBHook = ( fetchFunction, keyName ) => {
+
+    const { getToken } = useAuth();
+    // const queryClient = useQueryClient(); // Get query client
+
+    return useQuery({
+        queryKey: [keyName],
+        queryFn: async () => {
+            if (typeof fetchFunction !== 'function') {
+                throw new Error('fetchFunction must be a function');
+            }
+            const token = await getToken();
+            return fetchFunction(token);
+        },
+        staleTime: 1000 * 60 * 10, // Cache for 5 minutes
+        enabled: !!fetchFunction, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refetch when app regains focus
+    });
+}

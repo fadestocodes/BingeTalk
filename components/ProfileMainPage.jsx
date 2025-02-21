@@ -5,7 +5,7 @@ import React, {useState} from 'react'
 import {feed} from '../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
-import { useClerk } from '@clerk/clerk-expo'
+import { useClerk, useUser } from '@clerk/clerk-expo'
 import { Redirect } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { LinkIcon } from '../assets/icons/icons'
@@ -14,21 +14,29 @@ import { fetchUser } from '../api/user'
 import { formatDate } from '../lib/formatDate'
 import DialogueCard from './Screens/DialoguePage'
 import { useFetchDialogues } from '../api/dialogue'
+import { useFetchUser } from '../api/user'
 
 
     const ProfileMainPage = ( ) => {
 
 
         const { signOut } = useClerk();
+        const { user:clerkUser } = useUser();
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
-        const { userDB, updateUserDB } = useUserDB()
+        // const { userDB, updateUserDB } = useUserDB()
+        const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchUser( clerkUser.emailAddresses[0].emailAddress )
+        console.log('userDB', userDB)
+
+
         const [ refreshing, setRefreshing ] = useState(false)
         
         const { data: dialogues, refetch, isFetching } = useFetchDialogues();
         // console.log('userdb is ', userDB)
 
-
+        if (isFetchingUser){
+            return <ActivityIndicator></ActivityIndicator>
+        }
 
         const handleSignOut = async () => {
             try {
@@ -70,6 +78,10 @@ import { useFetchDialogues } from '../api/dialogue'
             router.push(`/dialogue/${dialogue.id}`)
         }
 
+        const handleEditProfile = () => {
+            router.push('/edit-profile')
+        }
+
   return (
    
     <View>
@@ -93,7 +105,7 @@ import { useFetchDialogues } from '../api/dialogue'
                     <ImageBackground
                         className='top-0'
                         style={{width : '100%', height: 400, position:'absolute', top:0}}
-                        source={{ uri:userDB.profilePic }}
+                        source={{ uri:userDB?.profilePic }}
                         resizeMethod='cover'
                         
                         >
@@ -162,12 +174,17 @@ import { useFetchDialogues } from '../api/dialogue'
                             </FlatList>
                         </View>
                     </View>
+                    <View className='flex-row gap-2 mb-10'>
+                        <TouchableOpacity onPress={handleEditProfile} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }} >
+                            <Text className='text-mainGray'>Edit profile</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleSignOut}  style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }} >
+                                <Text className='text-mainGray'>Sign Out</Text>
+                        </TouchableOpacity>
+
+                    </View>
     
-                    <TouchableOpacity onPress={handleSignOut}>
-                            <Text>Sign Out</Text>
-                    </TouchableOpacity>
                    
-                    <View  style={{ width:350, }}  className=' border-t-[2px] my-10 border-mainGray items-center self-center shadow-md shadow-black-200'/>
     
                 </View>
             )}
