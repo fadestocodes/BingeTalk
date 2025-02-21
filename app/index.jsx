@@ -18,21 +18,21 @@ const Welcome = () => {
 
 //   if (!loading && isLogged) return <Redirect href="/home" />;
   const {user} = useUser();
-  const { userDB, updateUserDB } = useUserDB()
+  // const { userDB, updateUserDB } = useUserDB()
   const router = useRouter();  // Access navigation object
  
         // const userDBFetch = await fetchUser(user.emailAddresses[0].emailAddress);
         // updateUserDB(userDBFetch);  // Update the context
         // console.log('this is working',userDBFetch);
 
-      const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchUser( user.emailAddresses[0].emailAddress )
-      console.log('fetched user from home', fetchedUser);
-
-
-  
-
-  // If user is logged in, redirect immediately in the render
-  if (user) {
+        
+        
+        
+        
+        // If user is logged in, redirect immediately in the render
+        if (user) {
+    const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchUser( user.emailAddresses[0].emailAddress )
+    console.log('fetched user from home', fetchedUser);
   // console.log('useremail', user.emailAddress)
 
    

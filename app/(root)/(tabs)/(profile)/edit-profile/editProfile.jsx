@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Platform, Keyboard, FlatList , Image, ImageBackground, TouchableOpacity, TextInput, useWindowDimensions} from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Platform, Keyboard, FlatList , Image, ImageBackground, TouchableOpacity, TextInput, ActivityIndicator} from 'react-native'
 import React, { useState, useRef } from 'react'
 import { useFetchUser } from '../../../../../api/user'
 import { useUser } from '@clerk/clerk-expo'
@@ -7,6 +7,8 @@ import { Colors } from '../../../../../constants/Colors'
 import { CloseIcon } from '../../../../../assets/icons/icons'
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { router, useRouter } from 'expo-router'
+import { updateUser } from '../../../../../api/user'
+import { pickSingleImage } from '../../../../../lib/pickImage'
 
 
 const editProfile = () => {
@@ -15,6 +17,7 @@ const editProfile = () => {
     const router = useRouter();
     const { data : fetchedUser, refetch } = useFetchUser( clerkUser.emailAddresses[0].emailAddress )
     const [ image, setImage ] = useState(fetchedUser.profilePic);
+    const [ loadingImage, setLoadingImage] = useState(false) 
     const [ inputs, setInputs ] = useState({
         firstName : fetchedUser.firstName,
         lastName : fetchedUser.lastName,
@@ -48,13 +51,32 @@ const editProfile = () => {
         }) )
     }
 
-    const handleSave = () => {
-        console.log(inputs)
+    const handleSave = async () => {
+        console.log('image', image)
+        const params = {
+            id : fetchedUser.id,
+            firstName : inputs.firstName,
+            lastName : inputs.lastName,
+            bio : inputs.bio,
+            bioLink : inputs.bioLink,
+            profilePic : image
+        }
+        const updatedUser = await updateUser( params , fetchedUser.emailAddress);
+        console.log('updatedUser', updatedUser)
+        refetch();
+        router.back();
+
+
     }
 
     const handleEditRotation = () => {
         router.push('/edit-profile/editRotation')
     }
+
+
+    const handleImageUpload = () => {
+        pickSingleImage( setImage, setLoadingImage );
+      }
 
     
   return (
@@ -64,23 +86,29 @@ const editProfile = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}  >
         <ScrollView className="bg-primary">
         <View style={{   justifyContent: 'start', alignItems: 'center', paddingBottom:200 }}>
-            {  }
             <View className='relative w-full justify-center items-center' >
-                <ImageBackground
-                    source={{ uri:image }}
-                    resizeMode='cover'
-                    style = {{ width:'100%', height:250, position:'absolute', top:0 }}
-                >
-                <LinearGradient 
-                colors={[ 'transparent',Colors.primary]} 
-                style={{height : '100%', width : '100%'}}>
-                </LinearGradient>
-                    <View className='inset-0 justify-center items-center opacity-85 ' style={{zIndex:30 , position:'absolute'}} >
-                        <TouchableOpacity style={{ paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.mainGrayDark, borderRadius:10}} >
-                            <Text className='text-blue-100 ' >Change picture</Text>
-                        </TouchableOpacity>
+                { loadingImage ? (
+                    <View style = {{ width:'100%', height:250, position:'absolute', top:0 }} >
+                        <ActivityIndicator></ActivityIndicator>
                     </View>
-                </ImageBackground>
+                ) : (
+
+                    <ImageBackground
+                        source={{ uri:image }}
+                        resizeMode='cover'
+                        style = {{ width:'100%', height:250, position:'absolute', top:0 }}
+                    >
+                        <LinearGradient 
+                        colors={[ 'transparent',Colors.primary]} 
+                        style={{height : '100%', width : '100%'}}>
+                        </LinearGradient>
+                            <View className='inset-0 justify-center items-center opacity-85 ' style={{zIndex:30 , position:'absolute'}} >
+                                <TouchableOpacity onPress={handleImageUpload}  style={{ paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.mainGrayDark, borderRadius:10}} >
+                                    <Text className='text-blue-100 ' >Change picture</Text>
+                                </TouchableOpacity>
+                            </View>
+                    </ImageBackground>
+                ) }
             </View>
             <View className="w-full" style={{ paddingTop:270, paddingHorizontal:20, gap:10 }} >
                 <View className='flex-row w-full  justify-start items-start ' >
@@ -162,15 +190,15 @@ const editProfile = () => {
 
             </View>
 
-            <View className='gap-3 py-3 px-10  my-3 w-full justify-center items-center'>
+            <View className='gap-3 py-3 px-5  my-3 w-full justify-center items-center'>
                 <Text className='text-mainGray font-pbold'>Current Rotation</Text>
-                <TouchableOpacity onPress={handleEditRotation}  style={{ backgroundColor:Colors.mainGrayDark, paddingHorizontal:20, paddingVertical:10, height:120, borderRadius:15 }} >
+                <TouchableOpacity onPress={handleEditRotation}  style={{ width:'100%', backgroundColor:Colors.mainGrayDark, paddingHorizontal:20, paddingVertical:10, height:120, borderRadius:15 }} >
 
                     <FlatList
                         data={fetchedUser.currentRotation}
                         horizontal
                         
-                        contentContainerStyle={{ width:'100%', height:100, justifyContent:'flex-start', alignItems:'center' }}
+                        contentContainerStyle={{ width:'100%', height:100, justifyContent:'flex-start', gap:15, alignItems:'center' }}
                         scrollEnabled={false}
                         keyExtractor={item => item.id}
                         renderItem={ ({item}) => {
@@ -179,7 +207,7 @@ const editProfile = () => {
                                 <Image
                                     source={{uri: item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : null }}
                                     resizeMode='cover'
-                                    style={{ width:50, height:80, borderRadius:10, overflow:'hidden', marginRight:10 }}
+                                    style={{ width:50, height:80, borderRadius:10, overflow:'hidden'}}
                                 />
                         ) }}
                     />

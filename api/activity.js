@@ -2,7 +2,7 @@ import * as nodeServer from '../lib/ipaddresses'
 
 export const addActivity = async ( activityData ) => {
     try {
-        const request = await fetch (`${nodeServer.expressServerHotspot}/activity/create`, {
+        const request = await fetch (`${nodeServer.expressServer}/activity/create`, {
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'

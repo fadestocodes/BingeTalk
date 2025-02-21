@@ -139,7 +139,7 @@ export const GetNowPlaying = async () => {
   
   export const getDiscoverTV = async () => {
     try {
-      const response = await fetch(`${nodeServer.expressServerHotspot}/tmdb/discover/tv`);
+      const response = await fetch(`${nodeServer.expressServer}/tmdb/discover/tv`);
       const data = await response.json();
       return data
     } catch (err) {

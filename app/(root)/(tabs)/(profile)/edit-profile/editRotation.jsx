@@ -7,6 +7,7 @@ import debounce from 'lodash.debounce';
 import { Colors } from '../../../../../constants/Colors';
 import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
+import { updateRotation } from '../../../../../api/user';
 
 import React, {useEffect, useState} from 'react'
 import { useFetchUser } from '../../../../../api/user';
@@ -107,7 +108,7 @@ const editRotation = () => {
   const renderItem = (item) => {
     const movie = item.item.movie;
     const tv = item.item.tv;
-    const posterPath = movie ? movie.posterPath : tv ? tv.posterPath : null;
+    const posterPath = movie ? movie.posterPath : tv ? tv.posterPath : item.item.poster_path;
 
 
       return (
@@ -129,27 +130,47 @@ const editRotation = () => {
 
   const handleContinue = async () => {
       console.log('clicked')
-      const listItemObj = listItems.map((item) => item.item)
+      // const listItemObj = listItems.map((item) => (  item.item.movie ? item.item.movie : item.item.tv ? item.item.tv : item.item  ))
+      const listItemObj = listItems.map((item) => 
+        item.item.movie ?? item.item.tv ?? item.item
+    );
       console.log('listItemObj', listItemObj)
+      // const rotationItems = listItems.map((listItem) => {
+      //     return {
+      //         userId,
+      //         ...(listItem.item.media_type === 'movie' ? { movieTMDBId: listItem.item.id } : listItem.item.media_type === 'tv' ? { tvTMDBId: listItem.item.id } : listItem.item.movieTMDBId ? { movieTMDBId : listItem.item.movieTMDBId  } : {tvTMDBId : listItem.item.tvTMDBId})
+      //     };
+      // })
       const rotationItems = listItems.map((listItem) => {
-          return {
-              userId,
+        const { item } = listItem; // Extract item for easier access
+        let rotationObj = { userId }; // Start with userId
+        
+        if (item.media_type === 'movie') {
+            rotationObj.movieTMDBId = item.id;
+        } else if (item.media_type === 'tv') {
+            rotationObj.tvTMDBId = item.id;
+        } else if (item.movieTMDBId) {
+            rotationObj.movieTMDBId = item.movieTMDBId;
+        } else if (item.tvTMDBId) {
+            rotationObj.tvTMDBId = item.tvTMDBId;
+        }
 
-              ...(listItem.item.media_type === 'movie' ? { movieTMDBId: listItem.item.id } : { tvTMDBId: listItem.item.id })
-          };
-      })
+        return rotationObj;
+    });
       console.log('rotationItems', rotationItems)
       try {
-          const params = {
-              id : userId,
-              clerkId : user.id,
-              bio,
-              bioLink,
-              profilePic : image,
-          }
+          // const params = {
+          //     id : userId,
+          //     clerkId : user.id,
+          //     bio,
+          //     bioLink,
+          //     profilePic : image,
+          // }
           // const response = await updateUser(params,user.emailAddresses[0].emailAddress )
-          // const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )
-          // console.log('rotationResposne', rotationResponse)
+          const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )
+          console.log('rotationResposne', rotationResponse)
+          refetch();
+          router.back()
           // updateUserDB(response)
           console.log('complete')
           
@@ -223,8 +244,8 @@ return (
                       <>
                           <View className=''>
                               <TouchableOpacity onPress={()=>handleSearchPress(item)} className='w-full gap-5 flex-row my-3 justify-start items-center'
-                                      disabled={ listItems.some( element => element.item.id === item.id) ? true : false}
-                                      style={{ opacity: listItems.some( element => element.item.id === item.id) ? 0.5 : 1    }}
+                                      disabled={ listItems.some( element =>  element.item?.movieTMDBId === item.id || element.item?.tvTMDBId === item.id  ) ? true : false}
+                                      style={{ opacity: listItems.some( element =>  element.item?.movieTMDBId === item.id || element.item?.tvTMDBId === item.id  )  ? 0.5 : 1    }}
                                        
                                   >
                                   <Image 
@@ -296,7 +317,7 @@ return (
           </View>
          
           <TouchableOpacity onPress={handleContinue}  style={{ borderRadius:10, paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.secondary, width:100 }}  >
-            <Text className='text-primary text-lg font-pbold text-center'>Continue</Text>
+            <Text className='text-primary text-lg font-pbold text-center'>Save</Text>
           </TouchableOpacity>
           </View>
       </View>

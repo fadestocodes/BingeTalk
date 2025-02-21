@@ -92,11 +92,10 @@ import { useFetchUser } from '../api/user'
             refreshControl={
                 <RefreshControl
                 tintColor={Colors.secondary}
-                refreshing={isFetching}
-                onRefresh={refetch} 
-                
-              />
-            }
+                refreshing={isFetchingUser}
+                onRefresh={()=>{refetch(); refetchUser()}} 
+                />
+                }
             keyboardShouldPersistTaps="handled" 
             keyExtractor={ (item) => item.id }
             ListHeaderComponent={(
