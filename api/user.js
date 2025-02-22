@@ -6,7 +6,7 @@ import { SignOutButton, useAuth } from '@clerk/clerk-react'
 
 export const checkUsername = async ( username ) => {
     try {
-        const response = await fetch(`${nodeServer.expressServerHotspot}/user/check-username?username=${username}`)
+        const response = await fetch(`${nodeServer.currentIP}/user/check-username?username=${username}`)
         const data = await response.json();
         return data
     }  catch (err) {
@@ -17,7 +17,7 @@ export const checkUsername = async ( username ) => {
 
 export const checkEmail = async (email) => {
     try {
-        const response = await fetch(`${nodeServer.expressServerHotspot}/user/check-email`, {
+        const response = await fetch(`${nodeServer.currentIP}/user/check-email`, {
             method : 'POST',
             headers : {
                 'Content-Type' : 'application/json'
@@ -33,7 +33,7 @@ export const checkEmail = async (email) => {
 
 export const addUser =  async ( { firstName, lastName, email, username } ) => {
     try {
-        const response = await fetch (`${nodeServer.expressServerHotspot}/user/add-user`, {
+        const response = await fetch (`${nodeServer.currentIP}/user/add-user`, {
             method : 'POST',
             headers : {
                 'Content-Type' : 'application/json'
@@ -54,7 +54,7 @@ export const updateUser = async ( params, email ) => {
 
 
 
-        const request = await fetch(`${nodeServer.expressServerHotspot}/user/update-user`, {
+        const request = await fetch(`${nodeServer.currentIP}/user/update-user`, {
             method : 'PUT',
             headers : {
                 'Content-Type' : 'application/json'
@@ -73,7 +73,7 @@ export const updateUser = async ( params, email ) => {
 
 export const updateRotation =  async ( userId, rotationItems, listItemObj  ) => {
     try {
-        const request = await fetch(`${nodeServer.expressServerHotspot}/user/current-rotation`, {
+        const request = await fetch(`${nodeServer.currentIP}/user/current-rotation`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -90,7 +90,7 @@ export const updateRotation =  async ( userId, rotationItems, listItemObj  ) => 
 
 export const fetchUser = async ( email ) => {
     try {
-        const request = await fetch(`${nodeServer.expressServerHotspot}/user`, {
+        const request = await fetch(`${nodeServer.currentIP}/user`, {
             method:'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -124,4 +124,17 @@ export const useFetchUser = (email) => {
         enabled: true, // Ensures query runs when component mounts
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
+}
+
+export const searchUsers = async ( query ) => {
+    try {
+        console.log('trying to serch users')
+        const request = await fetch (`${nodeServer.currentIP}/user/search-all?query=${query}`)
+        console.log('worked')
+        const response = await request.json();
+        console.log('users', response);
+        return response;
+    } catch (err) {
+        console.log(err)
+    }
 }

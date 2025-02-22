@@ -24,15 +24,12 @@ import { useFetchUser } from '../api/user'
         const { user:clerkUser } = useUser();
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
-        // const { userDB, updateUserDB } = useUserDB()
         const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchUser( clerkUser.emailAddresses[0].emailAddress )
-        console.log('userDB', userDB)
 
 
         const [ refreshing, setRefreshing ] = useState(false)
         
         const { data: dialogues, refetch, isFetching } = useFetchDialogues();
-        // console.log('userdb is ', userDB)
 
         if (isFetchingUser){
             return <ActivityIndicator></ActivityIndicator>
@@ -55,23 +52,6 @@ import { useFetchUser } from '../api/user'
             }
         }
 
-        // const refreshData = async () => {
-        //     setRefreshing(true);
-        //     try {
-        //         const userDBFetch = await fetchUser(userDB.email); // Example of refetching by email
-        //         updateUserDB(userDBFetch);
-        //     } catch (err) {
-        //         console.log('Error trying to fetch user from profile',err)
-        //     }
-        //     setRefreshing(false)
-        // }
-
-        const onRefresh = async () => {
-            setRefreshing(true); // Show refresh indicator
-            await refetch(); // Fetch new data
-            setRefreshing(false); // Hide refresh indicator after fetching
-        };
-
         
 
         const handleDialoguePress = (dialogue) => {
@@ -85,8 +65,6 @@ import { useFetchUser } from '../api/user'
   return (
    
     <View>
-      
-
         <FlatList
             data={dialogues}
             refreshControl={

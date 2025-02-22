@@ -1,44 +1,21 @@
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, ImageBackground } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Redirect, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { TouchableOpacity } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
 import PagerView from 'react-native-pager-view';
 import ShowcasePage from '../../../../components/Showcase'
 import ProfileMainPage from '../../../../components/ProfileMainPage'
-import { Colors } from '../../../../constants/Colors'
 import Credits from '../../../../components/Credits'
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
-import { useUserDB } from '../../../../lib/UserDBContext'
-import { useFetchDialogues } from '../../../../api/dialogue'
 import { useFetchUser } from '../../../../api/user'
 
 
 
 const ProfileHomepage = () => {
-  // const { userDB, updateUserDB } = useUserDB();
-  const {data:userDB, refetch  } = useFetchUser()
-  
-
   const router = useRouter();
   const [active, setActive] = useState(0);
   const pagerRef = useRef(null)
   const posterURL = 'https://image.tmdb.org/t/p/original';
-  // const { getToken } = useAuth();  
-  // const [ dialogues, setDialogues ] = useState([]);
-  
-
-
-
-  // useEffect(() => {
-  //   const fetchDialoguesOnMount = async () => {
-  //     const token = await getToken();
-  //     const fetched = await fetchDialogues( token );
-  //     setDialogues(fetched);
-  //   }
-  //   fetchDialoguesOnMount();
-  // }, [])
 
 
   const tabs = [
