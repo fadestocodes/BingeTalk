@@ -10,6 +10,8 @@ import { useRouter } from 'expo-router'
 import { getYear } from '../../../../lib/formatDate'
 import DiscoverHorizontal from '../../../../components/DiscoverHorizontal'
 import { searchUsers } from '../../../../api/user'
+import { useQueryClient } from '@tanstack/react-query';
+
 
 
 const SearchPage = () => {
@@ -31,6 +33,13 @@ const SearchPage = () => {
     discoverTV : []
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
+
+  // const queryClient = useQueryClient();
+  // useEffect(()=>{
+  //   queryClient.invalidateQueries(['user'])
+  //   const cachedUsers = queryClient.getQueryData(['user']);
+  //   console.log('Cached users data:', cachedUsers);
+  // },[query])
 
   const handleChange = (text) => {
     setQuery(text)
@@ -117,8 +126,12 @@ const SearchPage = () => {
       router.push(`/cast/${item.id}`)
     } else if (item.media_type === 'tv') {
       router.push(`/tv/${item.id}`)
+    } else if ( item.firstName ){
+      router.push(`(search)/user/${item.id}`)
     }
   }
+
+
   const handlePressMovie = (item) => {
       router.push(`/movie/${item.id}`)
   }
@@ -151,7 +164,7 @@ const SearchPage = () => {
           </>
         ) }
         <View className='relative justify-center w-full items-center'>
-          <TextInput onChangeText={handleChange} onFocus={()=>{setInFocus(true); setDiscoverPage(false)}} onBlur={()=>setInFocus(false)} 
+          <TextInput onChangeText={handleChange} onFocus={()=>{setInFocus(true); setDiscoverPage(false)}}
             placeholder='Search...' placeholderTextColor={Colors.mainGray} value={query} autoCorrect={false}
             className=' w-full rounded-full h-14 pl-8 pr-14 mb-8 '
             style={{ backgroundColor:Colors.mainGrayDark, color:'white' }}
@@ -166,10 +179,10 @@ const SearchPage = () => {
       </View>
       { inFocus && (
               <View className='flex-row gap-3 justify-center items-center mb-3' style={{ borderRadius:10, paddingHorizontal:15, paddingVertical:10, backgroundColor:Colors.mainGrayDark, width:'auto' }}>
-                <TouchableOpacity onPress={()=>{setSearchingFor('users'); setResults([]); setQuery('')}}  style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'users' ? Colors.mainGray : null }} >
+                <TouchableOpacity onPress={()=>{setSearchingFor('users'); setResults([]); setQuery('')}}  style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'users' ? 'white' : null }} >
                   <Text className=' font-pbold' style={{ color : searchingFor === 'users' ? Colors.primary : Colors.mainGray }}>Users</Text>
                 </TouchableOpacity>
-                <TouchableOpacity  onPress={()=>{setSearchingFor('titles'); setResults([]); setQuery('')}} style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'titles' ? Colors.mainGray : null }} >
+                <TouchableOpacity  onPress={()=>{setSearchingFor('titles'); setResults([]); setQuery('')}} style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'titles' ? 'white' : null }} >
                 <Text className='font-pbold' style={{ color : searchingFor === 'titles' ? Colors.primary : Colors.mainGray }} >Title/Cast/Crew</Text>
                 </TouchableOpacity>
               </View>

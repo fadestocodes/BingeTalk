@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
 import { useEffect } from "react";
 import { Colors } from "../constants/Colors";
-import { fetchUser } from "../api/user";
+import { fetchUser, useFetchOwnerUser } from "../api/user";
 import { useUserDB } from '../lib/UserDBContext'
 import { useFetchUser } from "../api/user";
 
@@ -31,7 +31,7 @@ const Welcome = () => {
         
         // If user is logged in, redirect immediately in the render
         if (user) {
-    const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchUser( user.emailAddresses[0].emailAddress )
+    const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchOwnerUser( {email:user.emailAddresses[0].emailAddress} )
     console.log('fetched user from home', fetchedUser);
   // console.log('useremail', user.emailAddress)
 

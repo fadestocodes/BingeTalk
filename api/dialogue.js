@@ -29,35 +29,65 @@ export const createDialogue = async ( postData ) => {
     }
 }
 
-export const fetchDialogues = async ( token ) => {
+// export const fetchDialogues = async ( token ) => {
+//     try {
+//         console.log('trying to fetch');
+//         const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all`, {
+//             method : 'GET',
+//             headers : {
+//                 'Content-type' : 'application/json',
+//                 'Authorization' : `Bearer ${token}`
+//             }
+//         });
+//         const response = await request.json();
+
+//         console.log('resposne ', response)
+//         return response.dialogues
+//     } catch (err) {
+//         console.log(err)
+//     }
+// }
+
+// export const fetchDialogues = async ( token ) => {
+//     try {
+//         console.log('trying to fetch');
+//         const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all`, {
+//             method : 'GET',
+//             headers : {
+//                 'Content-type' : 'application/json',
+//                 'Authorization' : `Bearer ${token}`
+//             }
+//         });
+//         const response = await request.json();
+
+//         console.log('resposne ', response)
+//         return response.dialogues
+//     } catch (err) {
+//         console.log(err)
+//     }
+// }
+
+export const fetchDialogues = async ( id ) => {
     try {
-        console.log('trying to fetch');
-        const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all`, {
-            method : 'GET',
-            headers : {
-                'Content-type' : 'application/json',
-                'Authorization' : `Bearer ${token}`
-            }
-        });
+        console.log('trying to fetch dialogues');
+        const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all?id=${id}`);
         const response = await request.json();
 
-        console.log('resposne ', response)
-        return response.dialogues
+        console.log('dialogue resposne ', response)
+        return response
     } catch (err) {
         console.log(err)
     }
 }
 
-export const useFetchDialogues = () => {
+export const useFetchDialogues = ( id ) => {
 
-    const { getToken } = useAuth();
     // const queryClient = useQueryClient(); // Get query client
 
     return useQuery({
-        queryKey: ['dialogues'],
+        queryKey: ['dialogues', id],
         queryFn: async () => {
-            const token = await getToken();
-            return fetchDialogues(token);
+            return fetchDialogues(id);
         },
         staleTime: 1000 * 60 * 5, // Cache for 5 minutes
         enabled: true, // Ensures query runs when component mounts

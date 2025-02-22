@@ -12,16 +12,15 @@ const DialogueCard = ( { dialogue } ) => {
 
     // const { userDB, updateUserDB } = useUserDB();
     const { user : clerkUser } = useUser();
-    const { data: userDB, refetch } = useFetchUser( clerkUser.emailAddresses[0].emailAddress )
+    // const { data: userDB, refetch } = useFetchUser( {email : clerkUser.emailAddresses[0].emailAddress} )
+    const userDB = dialogue.user
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
     const [ textInputFocus, setTextInputFocus ] = useState(false);
     const [ input, setInput ] = useState('')
     const [height, setHeight] = useState(25);
     const [ menuOpen, setMenuOpen ] = useState(false)
-    console.log('dialogue tags', dialogue.tag)
     const tag = dialogue.tag;
-    console.log('tags', tag)
     
 
     const handleMentionPress = (mention) => {

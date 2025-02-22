@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import { updateRotation } from '../../../../../api/user';
 
 import React, {useEffect, useState} from 'react'
-import { useFetchUser } from '../../../../../api/user';
+import { useFetchOwnerUser } from '../../../../../api/user';
 
 const editRotation = () => {
   
@@ -22,7 +22,7 @@ const editRotation = () => {
   const posterURL = 'https://image.tmdb.org/t/p/original';
   const router = useRouter();
 
-  const { data : userDB, refetch } = useFetchUser( user.emailAddresses[0].emailAddress );
+  const { data : userDB, refetch } = useFetchOwnerUser( user.emailAddresses[0].emailAddress );
   const userId = userDB.id
   const oldRotation = userDB?.currentRotation
   

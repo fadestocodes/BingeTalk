@@ -1,7 +1,7 @@
 import {  Text, View, FlatList, Image, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard } from 'react-native'
 import { ImageBackground,  } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {feed} from '../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
@@ -17,19 +17,28 @@ import { useFetchDialogues } from '../api/dialogue'
 import { useFetchUser } from '../api/user'
 
 
-    const ProfileMainPage = ( ) => {
+    const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
 
+        if (!user || isFetchingUser) {
+            
+            refetchUser();
+            return <ActivityIndicator></ActivityIndicator>  
+        } 
+
+        // useEffect(()=> {
+        //     refetchUser();
+        // }, [ user ])
 
         const { signOut } = useClerk();
         const { user:clerkUser } = useUser();
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
-        const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchUser( clerkUser.emailAddresses[0].emailAddress )
 
 
         const [ refreshing, setRefreshing ] = useState(false)
-        
-        const { data: dialogues, refetch, isFetching } = useFetchDialogues();
+       
+
+        const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
 
         if (isFetchingUser){
             return <ActivityIndicator></ActivityIndicator>
@@ -70,7 +79,7 @@ import { useFetchUser } from '../api/user'
             refreshControl={
                 <RefreshControl
                 tintColor={Colors.secondary}
-                refreshing={isFetchingUser}
+                refreshing={isFetching}
                 onRefresh={()=>{refetch(); refetchUser()}} 
                 />
                 }
@@ -82,7 +91,7 @@ import { useFetchUser } from '../api/user'
                     <ImageBackground
                         className='top-0'
                         style={{width : '100%', height: 400, position:'absolute', top:0}}
-                        source={{ uri:userDB?.profilePic }}
+                        source={{ uri:user?.profilePic }}
                         resizeMethod='cover'
                         
                         >
@@ -101,15 +110,15 @@ import { useFetchUser } from '../api/user'
                             /> */}
                         <View className='items-center' style={{gap:10}}>
                             <View className='gap-1 justify-center items-center mb-5'>
-                                <Text className='text-secondary font-pblack text-2xl'>{userDB.firstName} {userDB.lastName}</Text>
-                                <Text className='text-white font-pbold '>@{userDB.username}</Text>
+                                <Text className='text-secondary font-pblack text-2xl'>{user.firstName} {user.lastName}</Text>
+                                <Text className='text-white font-pbold '>@{user.username}</Text>
                             </View>
-                            <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{userDB.bio}</Text>
+                            <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{user.bio}</Text>
                         </View>
-                        { userDB.bioLink && (
+                        { user.bioLink && (
                         <TouchableOpacity className='flex-row gap-2 opacity-60'  style={{backgroundColor:'black', paddingVertical:5, paddingHorizontal:20, borderRadius:10}}>
                             <LinkIcon size={16} color={Colors.mainGray} />
-                            <Text className='text-mainGray text-sm  font-psemibold' >{userDB.bioLink}</Text>
+                            <Text className='text-mainGray text-sm  font-psemibold' >{user.bioLink}</Text>
                         </TouchableOpacity>
                         ) }
                         <View className='flex-row gap-6' style={{marginTop:0}}>
@@ -129,7 +138,7 @@ import { useFetchUser } from '../api/user'
                         <View className='w-full justify-center items-center mt-4' >
                             <Text className='font-pbold text-mainGray'>Current Rotation</Text>
                             <FlatList
-                                data={userDB.currentRotation}
+                                data={user.currentRotation}
                                 horizontal
                               
                                 contentContainerStyle={{ width:'100%', height:100, justifyContent:'center', alignItems:'center' }}

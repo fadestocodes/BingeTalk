@@ -12,7 +12,7 @@ import { findOrCreateEntity } from '../../api/db'
 import { addActivity } from '../../api/activity'
 import { useFetchDialogues } from '../../api/dialogue'
 import { FilmIcon, TVIcon, PersonIcon } from '../../assets/icons/icons'
-import { useFetchUser } from '../../api/user'
+import { useFetchOwnerUser, useFetchUser } from '../../api/user'
 import { useUser } from '@clerk/clerk-expo'
 import { router } from 'expo-router'
 import { useTagsContext } from '../../lib/TagsContext'
@@ -43,15 +43,14 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
 
     // const { userDB, updateUserDB } = useUserDB();
     const { user } = useUser();
-    const { data:userDB, refetch: refetchUser } = useFetchUser( user.emailAddresses[0].emailAddress )
+    const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchOwnerUser({email: user.emailAddresses[0].emailAddress} )
     const userId = userDB.id
     const posterURL = 'https://image.tmdb.org/t/p/original';
 
-    useEffect(()=>{
-        console.log('tags', tags)
-    }, [ tags ])
-   
-
+    // if (!userDB || isFetchingUser) {
+            
+    //     return <ActivityIndicator></ActivityIndicator>  
+    // } 
 
     useEffect(() => {
       
@@ -212,7 +211,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
           })
         console.log('mentino for prisma',mentionsForPrisma)
         // console.log('tag name', tags[0].name)
-        console.log('tags data', tags)
         const postData = {
             userId,
             content : formattedString,

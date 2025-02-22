@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Platform, Keyboard, FlatList , Image, ImageBackground, TouchableOpacity, TextInput, ActivityIndicator} from 'react-native'
 import React, { useState, useRef } from 'react'
-import { useFetchUser } from '../../../../../api/user'
+import { useFetchOwnerUser, useFetchUser } from '../../../../../api/user'
 import { useUser } from '@clerk/clerk-expo'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Colors } from '../../../../../constants/Colors'
@@ -15,7 +15,7 @@ const editProfile = () => {
 
     const { user:clerkUser } = useUser()
     const router = useRouter();
-    const { data : fetchedUser, refetch } = useFetchUser( clerkUser.emailAddresses[0].emailAddress )
+    const { data : fetchedUser, refetch } = useFetchOwnerUser( {email:clerkUser.emailAddresses[0].emailAddress} )
     const [ image, setImage ] = useState(fetchedUser.profilePic);
     const [ loadingImage, setLoadingImage] = useState(false) 
     const [ inputs, setInputs ] = useState({

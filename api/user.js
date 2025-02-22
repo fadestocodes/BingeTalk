@@ -88,17 +88,18 @@ export const updateRotation =  async ( userId, rotationItems, listItemObj  ) => 
 }
 
 
-export const fetchUser = async ( email ) => {
+export const fetchUser = async ( emailOrId ) => {
+    console.log('hello here', emailOrId)
     try {
         const request = await fetch(`${nodeServer.currentIP}/user`, {
             method:'POST',
             headers:{
                 'Content-type' : 'application/json'
             },
-            body:JSON.stringify({email})
+            body:JSON.stringify(emailOrId)
         })
         const response = await request.json();
-        console.log('response ', response)
+        console.log('response here', response)
         return response
     } catch (err) {
         console.log('Error fetching user from db', err)
@@ -106,16 +107,31 @@ export const fetchUser = async ( email ) => {
 }
 
 
-export const useFetchUser = (email) => {
+export const useFetchUser = (emailOrId ) => {
 
     // const { getToken } = useAuth();
     // const queryClient = useQueryClient(); // Get query client
     // Get all cached queries
     // Log the entire queries object
-    console.log('trying to fetch user with email: ', email)
+    console.log('trying to fetch user with email: ', (emailOrId))
+
 
     return useQuery({
-        queryKey: ['user'],
+        queryKey: ['user', emailOrId],
+        queryFn: async () => {
+            console.log('Executing query function...');
+            const fetchedUser = await fetchUser(emailOrId);
+            return fetchedUser
+        },
+        staleTime: 1000 * 60 * 10, // Cache for 5 minutes
+        enabled: true, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refetch when app regains focus
+    });
+}
+
+export const useFetchOwnerUser = (email) => {
+    return useQuery({
+        queryKey: ['ownerUser', email],
         queryFn: async () => {
             const fetchedUser = await fetchUser(email);
             return fetchedUser
@@ -125,6 +141,7 @@ export const useFetchUser = (email) => {
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
 }
+
 
 export const searchUsers = async ( query ) => {
     try {
