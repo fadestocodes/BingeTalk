@@ -6,7 +6,7 @@ export const findOrCreateEntity = async (type, movieData, personData) => {
     if (type === 'movie') {
        
         try {
-            entity = await fetch (`${nodeServer.expressServer}/movie/find-or-create`, {
+            entity = await fetch (`${nodeServer.expressServerHotspot}/movie/find-or-create`, {
                 method : 'POST',
                 headers : {
                     'Content-type' : 'application/json'
@@ -21,7 +21,7 @@ export const findOrCreateEntity = async (type, movieData, personData) => {
         }
     } else if (type === 'tv') {
         try {
-            entity = await fetch (`${nodeServer.expressServer}/tv/find-or-create`, {
+            entity = await fetch (`${nodeServer.expressServerHotspot}/tv/find-or-create`, {
                 method : 'POST',
                 headers : {
                     'Content-type' : 'application/json'
@@ -36,7 +36,7 @@ export const findOrCreateEntity = async (type, movieData, personData) => {
         }
     } else if (type === 'person') {
         try {
-            entity = await fetch (`${nodeServer.expressServer}/person/find-or-create`, {
+            entity = await fetch (`${nodeServer.expressServerHotspot}/person/find-or-create`, {
                 method : 'POST',
                 headers : {
                     'Content-type' : 'application/json'

@@ -112,7 +112,6 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
         <GestureDetector gesture={panGesture}>
           <Animated.View style={[styles.modalContainer, { transform: [{ translateY }] }]}>
   
-            {/* FlatList */}
             <View style={{paddingBottom:100, paddingTop:30}}>
                 <FlatList
                 data={selectedDialogue.comments}
@@ -125,7 +124,7 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
                     const shownReplies = visibleReplies[item.id] || 0;
                     
                     return (
-                    <>
+                    <View>
                     { !item.parentId && (
 
                         <View className='w-full px-5 justify-center items-center gap-3 my-3'>
@@ -136,7 +135,7 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
                                         resizeMode='cover'
                                         style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                     />
-                                    <Text className='text-mainGrayDark   ' >@{item.user.username}</Text>
+                                    <Text className='text-mainGrayDark' >@{item.user.username}</Text>
                                 </View>
                                 <Text className='text-mainGrayDark '>{formatDate(item.createdAt)}</Text>
                             </View>
@@ -151,10 +150,11 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
 
                                 <TouchableOpacity >
                                 <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                    <HeartIcon className=' ' size='20' color={Colors.mainGray} />
-                                    { item.likes && item.likes > 0 && (
-                                    <Text className='text-xs font-pbold text-gray-400  '> {item.likes}</Text>
-                                    )  }
+                                    <HeartIcon  size='20' color={Colors.mainGray} />
+                                    {item?.likes !== undefined && item?.likes > 0 ? 
+                                    (
+                                        <Text className='text-xs font-pbold text-gray-400'>{item.likes}</Text>
+                                    ) : null}
                                 </View>
                                 </TouchableOpacity>
                                 
@@ -164,14 +164,10 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
                         </View>
                     ) }
 
-                    {  }
 
                     { item.replies.length > 0 && (
                         <>
-
                         { item.replies.slice(0, shownReplies).map((reply) => (
-                           
-
                            <View key={reply.id}  className=' ml-10 pr-5 justify-center items-center gap-3 my-3' style={{ borderLeftWidth:1, borderColor:Colors.secondary, borderBottomLeftRadius:10 }}>
                         <View className='flex-row w-full justify-between items-center'>
                                 <View className="flex-row items-center gap-2 pl-10">
@@ -196,14 +192,12 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
                                 <TouchableOpacity >
                                 <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
                                     <HeartIcon className=' ' size='20' color={Colors.mainGray} />
-                                    { reply.likes && reply.likes > 0 && (
-                                    <Text className='text-xs font-pbold text-gray-400  '> {reply.likes}</Text>
-                                    )  }
+                                    {item?.likes !== undefined && item?.likes > 0 ? 
+                                    (
+                                        <Text className='text-xs font-pbold text-gray-400'>{item.likes}</Text>
+                                    ) : null}
                                 </View>
                                 </TouchableOpacity>
-                                
-                            
-                            
                             </View>
                         </View>
 
@@ -221,14 +215,13 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
                     
                     
                     ) }
-                    </>
+                    </View>
 
                 )}}
                 />
     
 
             </View>
-            {/* Animated Input */}
             <Animated.View style={[styles.inputContainer, animatedStyle]}>
               <View className="relative gap-3">
                 { replying && (

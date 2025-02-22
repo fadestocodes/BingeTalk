@@ -19,6 +19,9 @@ const DialogueCard = ( { dialogue } ) => {
     const [ input, setInput ] = useState('')
     const [height, setHeight] = useState(25);
     const [ menuOpen, setMenuOpen ] = useState(false)
+    console.log('dialogue tags', dialogue.tag)
+    const tag = dialogue.tag;
+    console.log('tags', tag)
     
 
     const handleMentionPress = (mention) => {
@@ -56,7 +59,13 @@ const DialogueCard = ( { dialogue } ) => {
                             <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
                         </View>
                     <Text className='text-mainGrayDark '>{formatDate(dialogue.createdAt)}</Text>
+                    
                 </View>
+                { tag && (
+                        <View className=' '>
+                            <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:10}} >{tag.tagName}</Text>
+                        </View>
+                    ) }
                 <View className='my-0 justify-center items-center w-full gap-3  mb-6'>
                     <View className='flex gap-2 justify-center items-center'>
                         
