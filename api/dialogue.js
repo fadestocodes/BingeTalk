@@ -67,10 +67,11 @@ export const createDialogue = async ( postData ) => {
 //     }
 // }
 
-export const fetchDialogues = async ( id ) => {
+export const fetchDialogues = async ( userId ) => {
     try {
         console.log('trying to fetch dialogues');
-        const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all?id=${id}`);
+        console.log('userId', userId)
+        const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all?id=${userId}`);
         const response = await request.json();
 
         console.log('dialogue resposne ', response)
@@ -80,14 +81,14 @@ export const fetchDialogues = async ( id ) => {
     }
 }
 
-export const useFetchDialogues = ( id ) => {
+export const useFetchDialogues = ( userId ) => {
 
     // const queryClient = useQueryClient(); // Get query client
 
     return useQuery({
-        queryKey: ['dialogues', id],
+        queryKey: ['dialogues', userId],
         queryFn: async () => {
-            return fetchDialogues(id);
+            return fetchDialogues(userId);
         },
         staleTime: 1000 * 60 * 5, // Cache for 5 minutes
         enabled: true, // Ensures query runs when component mounts

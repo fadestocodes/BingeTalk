@@ -14,7 +14,7 @@ import { useFetchDialogues } from '../../api/dialogue'
 import { FilmIcon, TVIcon, PersonIcon } from '../../assets/icons/icons'
 import { useFetchOwnerUser, useFetchUser } from '../../api/user'
 import { useUser } from '@clerk/clerk-expo'
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { useTagsContext } from '../../lib/TagsContext'
 
 const toPascalCase = (str) => {
@@ -37,13 +37,19 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const [ suggestionOpen, setSuggestionOpen ] = useState(true)
     const inputRef = useRef(null);  // Create a ref for the MentionInput
     const [ uploadingPost, setUploadingPost ] = useState(false);
-    const { data : dialogues, refetch, isFetching } = useFetchDialogues();
+    // const { id } = useLocalSearchParams();
     const { tags, setTags } = useTagsContext();
+    const [ autoCorrect, setAutoCorrect ] = useState(true)
+    const [isMentioning, setIsMentioning] = useState(false);
+
 
 
     // const { userDB, updateUserDB } = useUserDB();
     const { user } = useUser();
     const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchOwnerUser({email: user.emailAddresses[0].emailAddress} )
+    const { data : dialogues, refetch, isFetching } = useFetchDialogues(userDB.id);
+
+
     const userId = userDB.id
     const posterURL = 'https://image.tmdb.org/t/p/original';
 
@@ -81,6 +87,15 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
 
     const handleInput = (text) => {
         setInput(text);
+        const words = text.split(' ');
+        const lastMentionIndex = text.lastIndexOf('/');
+    
+        if (lastMentionIndex !== -1) {
+          const mentionText = text.slice(lastMentionIndex + 1);
+          setIsMentioning(mentionText.length > 0); // Still in mention mode if text exists after '/'
+        } else {
+          setIsMentioning(false); // Reset when there's no '/'
+        }
     }
 
     // useEffect(( ) => {
@@ -288,7 +303,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             maxLength={800}
             placeholder="Use '/' to mention a movie, show, cast, or crew. "
             placeholderTextColor={Colors.mainGray}
-            autoCorrect={false}
+            autoCorrect={true}
             partTypes={ [
                 {
                     trigger : '/',

@@ -42,9 +42,9 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
    
             <View className='flex-row  bg-darkGray  h-12  absolute top-20 z-10 rounded-xl px-3 gap-4 items-center justify-center  shadow-black  shadow-lg '>
               { tabs.map((item)=>(
-                <TouchableOpacity key={item.id} onPress={()=>tabsChange(item.id)} className={`justify-center items-center flex  px-2 rounded-md ${item.id === active ? `border-2 bg-third border-third`: `` }`}>
+                <TouchableOpacity key={item.id} onPress={()=>tabsChange(item.id)} className={`justify-center items-center flex  px-2 rounded-md ${item.id === active ? `border-2 bg-white border-white`: `` }`}>
                   <Text
-                    className={ `text-center font-pbold rounded-md text-black ${ item.id === active ? `` : `text-gray-400` }` }
+                    className={ `text-center font-pbold rounded-md  ${ item.id === active ? `text-primary` : `text-gray-400` }` }
                   >{item.label}</Text>
                 </TouchableOpacity>
               )) }

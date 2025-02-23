@@ -28,8 +28,6 @@ const editProfile = () => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
 
 
-
-
     const [ focusedInput, setFocusedInput ] = useState(null)
     const keyboard = useAnimatedKeyboard();
 

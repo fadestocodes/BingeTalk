@@ -3,15 +3,18 @@ import React, {useState} from 'react'
 import DialogueCard from '../../../../../components/Screens/DialoguePage'
 import { useLocalSearchParams } from 'expo-router'
 import { useFetchDialogues } from '../../../../../api/dialogue'
+import { useFetchOwnerUser } from '../../../../../api/user'
+import { useUser } from '@clerk/clerk-expo'
 
 
 const dialoguePage = () => {
     const {dialogueId} = useLocalSearchParams();
     const [ textInputFocus, setTextInputFocus ] = useState(false);
-
+    const { user:clerkUser } = useUser()
+    const {data:user  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
 
     console.log(dialogueId)
-    const { data:dialogues, isFetching } = useFetchDialogues();
+    const { data:dialogues, isFetching } = useFetchDialogues( user.id );
     console.log('dialogue array', dialogues)
     const dialogue = dialogues?.find( item => item.id === Number(dialogueId) )
     console.log('founde dialogue', dialogue)
