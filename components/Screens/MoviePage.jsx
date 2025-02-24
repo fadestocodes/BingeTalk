@@ -1,4 +1,4 @@
-import {  Text, View, Image, ScrollView, RefreshControl } from 'react-native'
+import {  Text, View, Image, ScrollView, RefreshControl, FlatList } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'expo-router/build/hooks'
 import { useLocalSearchParams } from 'expo-router/build/hooks'
@@ -12,6 +12,8 @@ import YoutubePlayer from 'react-native-youtube-iframe';
 import CastCrewHorizontal from '../CastCrewHorizontal'
 import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
+import { getMovieMentions, useFetchMovieMentions } from '../../api/movie'
+import DialogueCard from './DialoguePage'
 
 
 
@@ -22,15 +24,11 @@ const MoviePage = () => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
 
-
-    // const { data: movie, refetch } = useTMDB(()=>GetMovieById(movieId));
     const [movie, setMovie] = useState([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false)
     const youtubeURL = 'https://www.youtube.com/watch?v='
     const [videoId, setVideoId] = useState(null)
-    const [isPlayerReady, setIsPlayerReady] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
     const playerRef = useRef(null);
     const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&mute=1&showinfo=0&rel=0&controls=1&loop=1`;
     const [creditsList, setCreditsList] = useState({});
@@ -40,6 +38,11 @@ const MoviePage = () => {
     })
     const [whichCredits, setWhichCredits] = useState('Cast');
     const [dropdownMenu, setDropdownMenu] = useState(false);
+    // const [ mentions, setMentions ] = useState([])
+
+    const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
+    console.log('mentions ', mentions)
+
 
     const fetchData = async () => {
         setLoading(true);    
@@ -67,6 +70,8 @@ const MoviePage = () => {
                 }))
             }
 
+            // const fetchedMentions = await getMovieMentions(movieId);
+            // setMentions(fetchedMentions);
           
         } catch (err) {
             console.log('Problem fetching data', err);
@@ -94,19 +99,6 @@ const MoviePage = () => {
             fetchData();
         }
     }, [movieId]); 
-
-    const handlePlayerReady = () => {
-        setIsPlayerReady(true);
-      };
-    
-    const handleVisibilityChange = (isVisible) => {
-    setIsVisible(isVisible);
-    };
-    
-    const handleLayout = (e) => {
-        const { height } = e.nativeEvent.layout;
-        setIsVisible(height > 220);  // Assume visible if height is greater than 0
-    };
 
 
     const backPress = () => {
@@ -141,6 +133,10 @@ const MoviePage = () => {
         router.push(`/cast/${item.id}`)
     }
 
+    const handleMentionPress = (item) => {
+        console.log('trying to routerpush with these params', item.dialogueId, movieId)
+        router.push(`/dialogue/${item.dialogueId}?movieId=${movieId}`)
+    }
 
 
 
@@ -313,7 +309,26 @@ const MoviePage = () => {
                     <CastCrewHorizontal  param={ fullCredits.crewList } handlePress={castPress} />
                 ) }
             </View>
-            <View className='w-full border-t-[.5px] border-mainGray items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGray}}/>
+            
+                <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
+            <View className='w-full justify-center items-center gap-3'>
+                <Text className='text-white font-pbold text-lg'>Mentions</Text>
+                <FlatList
+                    horizontal
+                    data={mentions}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={{ gap:15 }}
+                    renderItem = {({item}) => (
+                        <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
+                            <DialogueCard dialogue={item.dialogue} ></DialogueCard>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
+
+
+            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
             <DiscussionThread handlePress={threadsPress}></DiscussionThread>
             <View>
      

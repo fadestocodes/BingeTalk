@@ -19,7 +19,7 @@ const DiscussionThread = ({handlePress}) => {
       data={threads}
       keyExtractor={(item)=>item.id}
       ListHeaderComponent={(
-        <Text className='text-secondary font-pcourier uppercase underline text-center text-lg'>Threads</Text>
+        <Text className='text-white font-pbold   text-center text-lg'>Threads</Text>
       )}
       renderItem={({item}) => (
         <TouchableOpacity onPress={()=>handlePress(item)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, marginVertical:10, paddingVertical:20, paddingHorizontal:20}}  >

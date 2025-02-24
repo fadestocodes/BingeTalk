@@ -10,7 +10,7 @@ import { Redirect } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { LinkIcon } from '../assets/icons/icons'
 import { useUserDB } from '../lib/UserDBContext'
-import { fetchUser } from '../api/user'
+import { fetchUser, useFetchOwnerUser } from '../api/user'
 import { formatDate } from '../lib/formatDate'
 import DialogueCard from './Screens/DialoguePage'
 import { useFetchDialogues } from '../api/dialogue'
@@ -39,6 +39,8 @@ import { useFetchUser } from '../api/user'
        
 
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
+        const { data:ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+        const isOwnersProfilePage = user.id === ownerUser.id
 
         if (isFetchingUser){
             return <ActivityIndicator></ActivityIndicator>
@@ -91,7 +93,7 @@ import { useFetchUser } from '../api/user'
                     <ImageBackground
                         className='top-0'
                         style={{width : '100%', height: 400, position:'absolute', top:0}}
-                        source={{ uri:user?.profilePic }}
+                        source={{ uri:user.profilePic }}
                         resizeMethod='cover'
                         
                         >
@@ -160,6 +162,8 @@ import { useFetchUser } from '../api/user'
                             </FlatList>
                         </View>
                     </View>
+
+                    { isOwnersProfilePage && (
                     <View className='flex-row gap-2 mb-10'>
                         <TouchableOpacity onPress={handleEditProfile} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }} >
                             <Text className='text-mainGray'>Edit profile</Text>
@@ -169,6 +173,7 @@ import { useFetchUser } from '../api/user'
                         </TouchableOpacity>
 
                     </View>
+                    ) }
     
                    
     

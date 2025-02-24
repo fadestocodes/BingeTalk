@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform,TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform,TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
 import { UpIcon, DownIcon, MessageIcon, RepostIcon, ThreeDotsIcon } from '../../assets/icons/icons'
 import React, {useState} from 'react'
 import { formatDate } from '../../lib/formatDate'
@@ -12,8 +12,10 @@ const DialogueCard = ( { dialogue } ) => {
 
     // const { userDB, updateUserDB } = useUserDB();
     const { user : clerkUser } = useUser();
+    console.log('the dialogue passed is', dialogue)
     // const { data: userDB, refetch } = useFetchUser( {email : clerkUser.emailAddresses[0].emailAddress} )
     const userDB = dialogue.user
+    console.log('user from dialogue', userDB)
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
     const [ textInputFocus, setTextInputFocus ] = useState(false);
@@ -22,6 +24,9 @@ const DialogueCard = ( { dialogue } ) => {
     const [ menuOpen, setMenuOpen ] = useState(false)
     const tag = dialogue.tag;
     
+    if (!dialogue) {
+        return <ActivityIndicator></ActivityIndicator>
+    }
 
     const handleMentionPress = (mention) => {
         if (mention.movie) {
@@ -38,8 +43,17 @@ const DialogueCard = ( { dialogue } ) => {
     }
 
     const handleComment = (dialogue) => {
-        router.push(`/commentsModal?id=${dialogue.id}`)
+        console.log('userDB', userDB.id)
+
+        router.push({
+            pathname:`/commentsModal`,
+            params : { userId : userDB.id, dialogueId : dialogue.id }
+        })
     }
+
+    // const handleComment = (dialogue) => {
+    //     router.push(`/commentsModal?id=${dialogue.id}`)
+    // }
 
 
   return (

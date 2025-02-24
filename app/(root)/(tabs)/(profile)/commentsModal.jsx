@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity,FlatList,Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity,FlatList,Image, ActivityIndicator } from 'react-native';
 import React, { useState , useRef} from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
@@ -14,11 +14,15 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
   
   const CommentsModal = () => {
     const router = useRouter();
-    const {id} = useLocalSearchParams();
-    const dialogueId = id;
-    const { userDB, updateUserDB } = useUserDB()
-    const {data: dialogues, isFetching, refetch} = useFetchDialogues();
+    const {userId, dialogueId} = useLocalSearchParams();
+    console.log('params', userId, dialogueId)
+    // const dialogueId = id;
+    // const { userDB, updateUserDB } = useUserDB()
+
+    const {data: dialogues, isFetching, refetch} = useFetchDialogues( Number(userId) );
+    // console.log('dialogues here ', dialogues)
     const selectedDialogue = dialogues?.find( item => item.id === Number(dialogueId) )
+    console.log(selectedDialogue)
     const [ replyingTo, setReplyingTo ] = useState(null)
     const inputRef = useRef(null);  // Create a ref for the input
     const [ inputFocused, setInputFocused  ] = useState(false)
@@ -61,9 +65,9 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
     const handlePostComment =  async ({ parentId = null }) => {
         console.log(input)
 
-
+        console.log('will try to reate comment')
         const commentData = {
-            userId : userDB.id,
+            userId : Number(userId),
             dialogueId : Number(dialogueId),
             content : input,
             parentId : replyingTo ? replyingTo.parentId : null
@@ -125,6 +129,10 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
                     
                     return (
                     <View>
+                        { isFetching && (
+                            <ActivityIndicator></ActivityIndicator>
+                        ) }
+
                     { !item.parentId && (
 
                         <View className='w-full px-5 justify-center items-center gap-3 my-3'>

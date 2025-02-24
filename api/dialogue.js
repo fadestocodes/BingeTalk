@@ -95,3 +95,30 @@ export const useFetchDialogues = ( userId ) => {
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
 }
+
+export const fetchSingleDialogue =  async( dialogueId ) => {
+    console.log('trying to fethc single dialogue')
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
+        const response = await request.json();
+        console.log('the resposne is ', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const useFetchSingleDialogue = ( dialogueId ) => {
+    console.log('trying to use hook with ',dialogueId)
+    return useQuery({
+        queryKey : ['dialogues', dialogueId],
+        queryFn : async () => {
+            return fetchSingleDialogue(dialogueId)
+        },
+        // staleTime : 1000 * 60 * 30,
+        staleTime : 0,
+        refetchOnWindowFocus : true,
+        refetchOnMount: true, 
+
+    })
+}

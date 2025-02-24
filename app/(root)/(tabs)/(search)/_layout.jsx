@@ -12,6 +12,7 @@ const ProfileLayout = () => {
         <Stack.Screen name='threads' options={{headerShown : false}} />
         <Stack.Screen name='explore' options={{headerShown : false}} />
         <Stack.Screen name='user' options={{headerShown : false}} />
+        <Stack.Screen name='dialogue' options={{headerShown : false}} />
     </Stack>
   )
 }
