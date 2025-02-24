@@ -1,32 +1,41 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform,TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
 import { UpIcon, DownIcon, MessageIcon, RepostIcon, ThreeDotsIcon } from '../../assets/icons/icons'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { formatDate } from '../../lib/formatDate'
 import { Colors } from '../../constants/Colors'
 import { useUserDB } from '../../lib/UserDBContext'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchUser } from '../../api/user'
 import { useRouter } from 'expo-router'
+import { fetchSingleDialogue } from '../../api/dialogue'
 
-const DialogueCard = ( { dialogue } ) => {
+const DialogueCard = (  {dialogue} ) => {
 
-    // const { userDB, updateUserDB } = useUserDB();
-    const { user : clerkUser } = useUser();
+
+    // const [ dialogue, setDialogue ] = useState(null)
+
+    // useEffect(()=>{
+    //     const getSingleDialogue = async () => {
+    //         const dialogue = await fetchSingleDialogue( Number(dialogueId) );
+    //         setDialogue(dialogue);
+    //     }
+    //     getSingleDialogue();
+    // }, [dialogueId])
+    // if (!dialogue) {
+
+    //     return <ActivityIndicator></ActivityIndicator>
+    // }
+
+
     console.log('the dialogue passed is', dialogue)
     // const { data: userDB, refetch } = useFetchUser( {email : clerkUser.emailAddresses[0].emailAddress} )
     const userDB = dialogue.user
     console.log('user from dialogue', userDB)
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
-    const [ textInputFocus, setTextInputFocus ] = useState(false);
-    const [ input, setInput ] = useState('')
-    const [height, setHeight] = useState(25);
-    const [ menuOpen, setMenuOpen ] = useState(false)
     const tag = dialogue.tag;
     
-    if (!dialogue) {
-        return <ActivityIndicator></ActivityIndicator>
-    }
+  
 
     const handleMentionPress = (mention) => {
         if (mention.movie) {
@@ -38,9 +47,6 @@ const DialogueCard = ( { dialogue } ) => {
         }
     }
 
-    const handleInput = (text) => {
-        setInput( prev => text)
-    }
 
     const handleComment = (dialogue) => {
         console.log('userDB', userDB.id)
@@ -51,9 +57,6 @@ const DialogueCard = ( { dialogue } ) => {
         })
     }
 
-    // const handleComment = (dialogue) => {
-    //     router.push(`/commentsModal?id=${dialogue.id}`)
-    // }
 
 
   return (
@@ -150,7 +153,7 @@ const DialogueCard = ( { dialogue } ) => {
 
                         </TouchableOpacity>
                         <View className='relative' >
-                            <TouchableOpacity onPress={()=>setMenuOpen(prev => !prev)}  >
+                            <TouchableOpacity   >
                             <View className='flex-row  justify-center items-center  py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
                                 <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
                             </View>

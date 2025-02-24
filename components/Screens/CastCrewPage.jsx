@@ -1,4 +1,4 @@
-import {  ScrollView, Text, TouchableOpacity, View, Image, RefreshControl } from 'react-native'
+import {  ScrollView, Text, TouchableOpacity, View, Image, RefreshControl, FlatList } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -10,6 +10,8 @@ import { LinearGradient } from 'expo-linear-gradient'
 import DiscussionThread from '../DiscussionThread'
 import CastCrewHorizontal from '../CastCrewHorizontal'
 import { capitalize } from '../../lib/capitalize'
+import DialogueCard from './DialoguePage'
+import { useFetchCastMentions } from '../../api/castCrew'
 
 const CastIdPage = () => {
 
@@ -24,6 +26,9 @@ const CastIdPage = () => {
     const [readMore, setReadMore] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const {data:personData, loading, refetch} = useTMDB(()=>getPerson(castId));
+
+    const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchCastMentions( castId );
+
   
     useEffect(() => {
         if (personData.combined_credits) {
@@ -70,6 +75,14 @@ const CastIdPage = () => {
     const threadsPress = (item) => {
         router.push(`/threads/${item.id}`)
     }
+
+
+    const handleMentionPress = (item) => {
+        console.log('trying to routerpush with these params', item.dialogueId)
+        router.push(`/dialogue/${item.dialogueId}`)
+    }
+
+
 
 
   return (
@@ -194,7 +207,26 @@ const CastIdPage = () => {
                 ) }
           </View>
           </View>
-            <View className='w-full border-t-[.5px] border-mainGray items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGray, marginVertical:10}}/>
+
+          <View className='w-full border-t-[1px] border-mainGrayDark  my-5 items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
+          <View className='w-full justify-center items-center gap-3'>
+                <Text className='text-white font-pbold text-lg'>Mentions</Text>
+                <FlatList
+                    horizontal
+                    data={mentions}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={{ gap:15 }}
+                    renderItem = {({item}) => (
+                        <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
+                            <DialogueCard dialogue={item.dialogue} ></DialogueCard>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
+
+
+            <View className='w-full border-t-[1px] border-mainGrayDark my-5 items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
             <DiscussionThread handlePress={threadsPress}></DiscussionThread>
           </View>
       </View>

@@ -1,4 +1,4 @@
-import {  Text, View, Image, ScrollView, Dimensions, RefreshControl } from 'react-native'
+import {  Text, View, Image, ScrollView, Dimensions, RefreshControl, FlatList } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'expo-router/build/hooks'
 import { useLocalSearchParams } from 'expo-router/build/hooks'
@@ -13,6 +13,8 @@ import CastCrewHorizontal from '../CastCrewHorizontal'
 import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
 import DiscoverHorizontal from '../DiscoverHorizontal'
+import { useFetchTVMentions } from '../../api/tv'
+import DialogueCard from './DialoguePage'
 
 
 
@@ -43,6 +45,8 @@ const TVPage = () => {
     })
     const [whichCredits, setWhichCredits] = useState('Cast');
     const [dropdownMenu, setDropdownMenu] = useState(false);
+    const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
+
 
     const fetchData = async () => {
         setLoading(true);  
@@ -141,6 +145,11 @@ const TVPage = () => {
      
           router.push(`/tv/${item.id}`)
       }
+
+
+    const handleMentionPress = (item) => {
+        router.push(`/dialogue/${item.dialogueId}`)
+    }
 
     
 
@@ -314,7 +323,27 @@ const TVPage = () => {
                     <CastCrewHorizontal  param={ fullCredits.crewList } handlePress={castPress} />
                 ) }
             </View>
-            <View className='w-full border-t-[.5px] border-mainGray items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGray}}/>
+
+            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
+            <View className='w-full justify-center items-center gap-3'>
+                <Text className='text-white font-pbold text-lg'>Mentions</Text>
+                <FlatList
+                    horizontal
+                    data={mentions}
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(item) => item.id}
+                    contentContainerStyle={{ gap:15 }}
+                    renderItem = {({item}) => (
+                        <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
+                            <DialogueCard dialogue={item.dialogue} ></DialogueCard>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
+
+
+
+            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
             <DiscussionThread handlePress={threadsPress}></DiscussionThread>
             <Text className='text-mainGray font-pbold text-lg'>Similar Shows</Text>
             <View className="mb-10 h-96">

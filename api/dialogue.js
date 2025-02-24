@@ -1,7 +1,7 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
-
+import React, {useState,useEffect} from 'react';
 
 
 
@@ -121,4 +121,32 @@ export const useFetchSingleDialogue = ( dialogueId ) => {
         refetchOnMount: true, 
 
     })
+}
+
+export const useCustomFetchSingleDialogue = ( dialogueId ) => {
+    const [ dialogue, setDialogue ] = useState(null);
+    const [ isLoading, setIsLoading ] = useState(false)
+    const [ error, setEror ] = useState(null)
+
+    console.log('Initial render of component, dialogueId:', dialogueId);
+
+    useEffect(()=>{
+       
+        console.log('triggerd from useEffect')
+        const fetchDialogue = async () => {
+            try {
+                setIsLoading(true)
+                const fetchedDialogue = await fetchSingleDialogue(dialogueId);
+                setDialogue(fetchedDialogue)
+            } catch (err) {
+                console.log(err)
+                setEror(err)
+            } finally {
+                setIsLoading(false)
+            }
+        } 
+            fetchDialogue();
+    }, [])
+
+    return { dialogue, isLoading, error }
 }

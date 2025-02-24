@@ -41,8 +41,6 @@ const MoviePage = () => {
     // const [ mentions, setMentions ] = useState([])
 
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
-    console.log('mentions ', mentions)
-
 
     const fetchData = async () => {
         setLoading(true);    
@@ -134,8 +132,8 @@ const MoviePage = () => {
     }
 
     const handleMentionPress = (item) => {
-        console.log('trying to routerpush with these params', item.dialogueId, movieId)
-        router.push(`/dialogue/${item.dialogueId}?movieId=${movieId}`)
+        console.log('trying to routerpush with these params', item.dialogueId)
+        router.push(`/dialogue/${item.dialogueId}`)
     }
 
 
