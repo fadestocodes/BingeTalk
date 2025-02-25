@@ -87,11 +87,19 @@ const TVPage = () => {
                 setSimilarTitles(similar)
             }
 
+            const tvData = {
+                tmdbId : res.id,
+                title : res.name,
+                releaseDate : res.first_air_date,
+                posterPath  : res.poster_path,
+                backdropPath : res.backdrop_path
+            }
+
             const cachedTVShowFromDB = queryClient.getQueryData(['tv', tvId]);
             if (cachedTVShowFromDB){
                 setThreads(cachedTVShowFromDB.threads)
             } else {
-                const tvFromDB = await fetchTVFromDB({tvData : res})
+                const tvFromDB = await fetchTVFromDB({tvData})
                 queryClient.setQueryData(['tv', tvId]);
     
                 console.log('tvfromdb', tvFromDB)
@@ -371,10 +379,10 @@ const TVPage = () => {
 
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
             <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
-            <Text className='text-mainGray font-pbold text-lg'>Similar Shows</Text>
+            {/* <Text className='text-mainGray font-pbold text-lg'>Similar Shows</Text>
             <View className="mb-10 h-96">
                 <DiscoverHorizontal data={similarTitles} handlePress={handlePress}/>
-            </View>
+            </View> */}
      
         </View>
     </ScrollView>

@@ -9,8 +9,9 @@ import { GestureDetector, Gesture} from 'react-native-gesture-handler';
 import { createComment } from '../../api/comments'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
-import { useQueryClient } from '@tanstack/react-query'
-import { fetchSingleThread } from '../../api/thread'
+import { useQueryClient, useQuery } from '@tanstack/react-query'
+import { fetchSingleThread , useFetchSingleThread} from '../../api/thread'
+
 
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 
@@ -36,42 +37,45 @@ const ThreadsIdPage = () => {
 
     const { threadsId, tvId, movieId, castId }= useLocalSearchParams();
     console.log(threadsId, tvId)
-    const queryClient = useQueryClient();
+    // const queryClient = useQueryClient();
 
-    const [ thread, setThread ] = useState(null)
+    // const [ thread, setThread ] = useState(null)
+
+    const { data: thread , refetch, isFetching} = useFetchSingleThread(Number(threadsId))
+    console.log('thread from hook', thread)
 
 
-    const getThread = async () => {
-        let cachedThreads, existingThread;
+    // const getThread = async () => {
+    //     let cachedThreads, existingThread;
         
-        if (tvId) {
-            cachedThreads = queryClient.getQueryData(['threads', tvId]);
-        } else if (movieId) {
-            cachedThreads = queryClient.getQueryData(['threads', movieId]);
-        } else if (castId) {
-            cachedThreads = queryClient.getQueryData(['threads', castId]);
-        }
+    //     if (tvId) {
+    //         cachedThreads = queryClient.getQueryData(['threads', tvId]);
+    //     } else if (movieId) {
+    //         cachedThreads = queryClient.getQueryData(['threads', movieId]);
+    //     } else if (castId) {
+    //         cachedThreads = queryClient.getQueryData(['threads', castId]);
+    //     }
     
-        if (cachedThreads) {
-            existingThread = cachedThreads.find(item => item.id === Number(threadsId));
-        }
+    //     if (cachedThreads) {
+    //         existingThread = cachedThreads.find(item => item.id === Number(threadsId));
+    //     }
     
-        if (existingThread) {
-            console.log("Using cached thread:", existingThread);
-            setThread({ ...existingThread });  // ⬅️ Force new object reference
-        } else {
-            console.log("Fetching thread from API...");
-            const thread = await fetchSingleThread(threadsId);
-            console.log("Thread fetched:", thread);
-            setThread({ ...thread });  // ⬅️ Force new object reference
-        }
-    };
+    //     if (existingThread) {
+    //         console.log("Using cached thread:", existingThread);
+    //         setThread({ ...existingThread });  // ⬅️ Force new object reference
+    //     } else {
+    //         console.log("Fetching thread from API...");
+    //         const thread = await fetchSingleThread(threadsId);
+    //         console.log("Thread fetched:", thread);
+    //         setThread({ ...thread });  // ⬅️ Force new object reference
+    //     }
+    // };
     
 
-    useEffect(()=>{
+    // useEffect(()=>{
        
-        getThread();
-    }, [])
+    //     getThread();
+    // }, [])
     
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
     const translateY = useSharedValue(0); // Tracks modal position
@@ -82,10 +86,7 @@ const ThreadsIdPage = () => {
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
 
-    if (!thread) {
-        return <ActivityIndicator />;
-    }
-
+   
 
 
 
@@ -147,10 +148,16 @@ const ThreadsIdPage = () => {
         setReplying(false)
         inputRef.current?.blur();
         console.log('calling refetch')
-        await refetch();
+        // await refetch();
+        // await getThread()
+        refetch();
         console.log('after refetch')
 
     }   
+
+    if (isFetching){
+        return <ActivityIndicator></ActivityIndicator>
+    }
    
 
 
@@ -237,6 +244,7 @@ const ThreadsIdPage = () => {
                     renderItem={({ item }) =>{
     
                         const shownReplies = visibleReplies[item.id] || 0;
+                        console.log(item)
                         
                         return (
                         <View>

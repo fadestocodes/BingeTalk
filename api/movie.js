@@ -49,3 +49,20 @@ export const fetchMovieFromDB = async ( {movieData} ) => {
         console.log(err)
     }
 }
+
+
+export const useFetchMovieFromDB = (  movieData ) => {
+
+    // const queryClient = useQueryClient(); // Get query client
+
+
+    return useQuery({
+        queryKey: ['movieFromDB', movieData.id],
+        queryFn: async () => {
+            return fetchMovieFromDB({movieData});
+        },
+        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        enabled: true, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refetch when app regains focus
+    });
+}

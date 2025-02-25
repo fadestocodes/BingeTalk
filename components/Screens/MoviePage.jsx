@@ -75,11 +75,19 @@ const MoviePage = () => {
                 }))
             }
 
+            const movieData = {
+                tmdbId : res.id,
+                title : res.title,
+                releaseDate : res.release_date,
+                posterPath  : res.poster_path,
+                backdropPath : res.backdrop_path
+            }
+
             const cachedMovieFromDB = queryClient.getQueryData(['movie', movieId]);
             if (cachedMovieFromDB){
                 setThreads(cachedMovieFromDB.threads)
             } else {
-                const movieFromDB = await fetchMovieFromDB({movieData : res})
+                const movieFromDB = await fetchMovieFromDB({movieData})
                 queryClient.setQueryData(['movie', movieId]);
     
                 console.log('tvfromdb', movieFromDB)
