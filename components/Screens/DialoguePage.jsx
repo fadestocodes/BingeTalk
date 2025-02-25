@@ -27,10 +27,8 @@ const DialogueCard = (  {dialogue} ) => {
     // }
 
 
-    console.log('the dialogue passed is', dialogue)
     // const { data: userDB, refetch } = useFetchUser( {email : clerkUser.emailAddresses[0].emailAddress} )
     const userDB = dialogue.user
-    console.log('user from dialogue', userDB)
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
     const tag = dialogue.tag;
@@ -63,7 +61,7 @@ const DialogueCard = (  {dialogue} ) => {
 
    
     <View  className=''  style={{ backgroundColor:Colors.mainGrayDark ,paddingVertical:12, paddingHorizontal:15, borderRadius:15, marginBottom:15, gap:15 }}  >
-            <View className='flex justify-center items-start gap-2  mb-1 w-full '>
+            <View className='flex justify-center items-start gap-3  mb-1 w-full '>
            
                 <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
@@ -91,7 +89,7 @@ const DialogueCard = (  {dialogue} ) => {
                         
                     </View>
 
-                    <Text className='text-third font-pcourier leading-5 text-left w-full'> { dialogue.content } </Text>
+                    <Text className='text-third font-pcourier text-custom text-left w-full'> { dialogue.content } </Text>
                 </View>
 
                     

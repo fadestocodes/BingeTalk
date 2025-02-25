@@ -99,7 +99,6 @@ export const fetchUser = async ( emailOrId ) => {
             body:JSON.stringify(emailOrId)
         })
         const response = await request.json();
-        console.log('response here', response)
         return response
     } catch (err) {
         console.log('Error fetching user from db', err)

@@ -74,7 +74,6 @@ export const fetchDialogues = async ( userId ) => {
         const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all?id=${userId}`);
         const response = await request.json();
 
-        console.log('dialogue resposne ', response)
         return response
     } catch (err) {
         console.log(err)
@@ -101,7 +100,6 @@ export const fetchSingleDialogue =  async( dialogueId ) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
         const response = await request.json();
-        console.log('the resposne is ', response)
         return response
     } catch (err) {
         console.log(err)

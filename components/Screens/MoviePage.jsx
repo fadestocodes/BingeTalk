@@ -14,6 +14,9 @@ import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
 import { getMovieMentions, useFetchMovieMentions } from '../../api/movie'
 import DialogueCard from './DialoguePage'
+import { fetchMovieFromDB } from '../../api/movie'
+import { useQueryClient } from '@tanstack/react-query';
+
 
 
 
@@ -23,6 +26,8 @@ const MoviePage = () => {
     const movieId = params.movieId
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
+    const queryClient = useQueryClient();
+
 
     const [movie, setMovie] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -39,6 +44,8 @@ const MoviePage = () => {
     const [whichCredits, setWhichCredits] = useState('Cast');
     const [dropdownMenu, setDropdownMenu] = useState(false);
     // const [ mentions, setMentions ] = useState([])
+    const [ threads, setThreads ] = useState([])
+
 
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
 
@@ -66,6 +73,18 @@ const MoviePage = () => {
                     castList : castCredits,
                     crewList : crewCredits,
                 }))
+            }
+
+            const cachedMovieFromDB = queryClient.getQueryData(['movie', movieId]);
+            if (cachedMovieFromDB){
+                setThreads(cachedMovieFromDB.threads)
+            } else {
+                const movieFromDB = await fetchMovieFromDB({movieData : res})
+                queryClient.setQueryData(['movie', movieId]);
+    
+                console.log('tvfromdb', movieFromDB)
+                setThreads( movieFromDB.threads );
+                queryClient.setQueryData(['threads', movieId], movieFromDB.threads);
             }
 
             // const fetchedMentions = await getMovieMentions(movieId);
@@ -123,8 +142,9 @@ const MoviePage = () => {
         }
       }
 
-    const threadsPress = (item) => {
-        router.push(`/threads/${item.id}`)
+      const threadsPress = (id) => {
+        console.log('id', id)
+        router.push(`/threads/${id}?movieId=${movieId}`)
     }
     
     const castPress = (item) => {
@@ -327,7 +347,7 @@ const MoviePage = () => {
 
 
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <DiscussionThread handlePress={threadsPress}></DiscussionThread>
+            <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
             <View>
      
     </View>

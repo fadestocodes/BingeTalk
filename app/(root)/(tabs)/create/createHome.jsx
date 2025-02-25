@@ -10,7 +10,6 @@ import { searchAll } from '../../../../api/tmdb'
 import debounce from 'lodash.debounce'
 import { getYear } from '../../../../lib/formatDate'
 import { DraggableGrid } from 'react-native-draggable-grid';
-import { create } from 'react-test-renderer'
 
 
 const CreateHome = () => {
@@ -23,6 +22,7 @@ const CreateHome = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [ listItems, setListItems ]  = useState([])
     const [ flatlistVisible, setFlatlistVisible ] = useState(false);
+    const [ threadObject, setThreadObject ] = useState(null)
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
 
@@ -69,6 +69,9 @@ const CreateHome = () => {
     const handleSearchPress = (item) => {
         if (createType === 'Thread') {
             setSearchQuery(  `/${toPascalCase(item.name || item.title)}` )
+            setThreadObject(item)
+
+
             setResults([]);
             setResultsOpen(false);
         } else if (createType === 'List') {
@@ -130,8 +133,8 @@ const CreateHome = () => {
     
       
       { resultsOpen ? (
-        <View className='w-full h-full' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary}} >
-            <View className='thread-topic w-full h-full relative '>
+        <View className='w-full h-full justify-center items-center' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary}} >
+            <View className='thread-topic w-full h-full relative  gap-3'>
                 <View className="flex-row justify-center items-center gap-3 px-4">
                     <TouchableOpacity onPress={()=> setResultsOpen(false)}>
                         <BackIcon size={20} color={Colors.mainGray}/>
@@ -150,17 +153,16 @@ const CreateHome = () => {
                 <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:5, top:15 }}>
                     <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
-            </View>
-                
                 <FlatList
                     data={results}
                     keyExtractor={(item) => item.id}
-                    contentContainerStyle = {{width:'auto', zIndex:40}}
+                    contentContainerStyle = {{width:'100%' , zIndex:45}}
                     renderItem={({item}) =>  {
-                        // console.log(item.title || item.name)
+                        console.log(item.title || item.name)
                         return (
-                        <>
-                            <View className=' '>
+                        <View  >
+
+                            <View className=''>
                                 <TouchableOpacity onPress={()=>handleSearchPress(item)} className='w-full gap-5 flex-row my-3 justify-start items-center'
                                         disabled={ listItems.some( element => element.item.id === item.id) ? true : false}
                                         style={{ opacity: listItems.some( element => element.item.id === item.id) ? 0.5 : 1    }}
@@ -184,12 +186,14 @@ const CreateHome = () => {
                                 </TouchableOpacity>
                             </View>
                             <View style={{ borderTopWidth: .5, borderColor:Colors.mainGray }} />
-                        </>
+                        </View>
                     )}
 
                 }
                 >
                 </FlatList>
+            </View>
+
 
                 { searchQuery === '' && createType === 'List' && (
 
@@ -219,7 +223,7 @@ const CreateHome = () => {
             </View>
         </TouchableOpacity>
         { menuOpen && (
-            <View className='w-44 h-50 bg-slate-100 rounded-3xl absolute z-40  top-8 justify-center items-start gap-3  py-3'>
+            <View className='w-44 h-50 bg-slate-100 rounded-3xl absolute z-50  top-8 justify-center items-start gap-3  py-3'>
                 <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Dialogue');setMenuOpen(false); setContent('')}}>
                     <Text className='mb-2 px-4 py-1'>Dialogue</Text>
                     <View className='border-t-[2px] border-mainGrayLight w-full'></View>
@@ -242,7 +246,7 @@ const CreateHome = () => {
         { createType === 'Dialogue' ? (
             <CreateDialogue flatlistVisible={flatlistVisible} setFlatlistVisible={setFlatlistVisible} />
         ) : createType === 'Thread' ? (
-            <CreateThread handleChange={handleChange} content={content} setContent={setContent}
+            <CreateThread threadObject={threadObject}  handleChange={handleChange} content={content} setContent={setContent}
                 results={results} setResults={setResults} resultsOpen={resultsOpen} setResultsOpen={setResultsOpen}
                 handleSearch={handleSearch} searchQuery={searchQuery} setSearchQuery={setSearchQuery}
             />

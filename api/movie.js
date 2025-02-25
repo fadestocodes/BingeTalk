@@ -30,3 +30,22 @@ export const useFetchMovieMentions = ( movieId ) => {
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
 }
+
+
+export const fetchMovieFromDB = async ( {movieData} ) => {
+    console.log('movieData', movieData)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/movie/find-or-create`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify( {movieData} )
+        })
+        const response = await request.json();
+        return response;
+    } catch (err) {
+
+        console.log(err)
+    }
+}

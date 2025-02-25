@@ -1,4 +1,4 @@
-import {  Text, View, Image, ScrollView, Dimensions, RefreshControl, FlatList } from 'react-native'
+import {  Text, View, Image, ScrollView, Dimensions, RefreshControl, FlatList, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'expo-router/build/hooks'
 import { useLocalSearchParams } from 'expo-router/build/hooks'
@@ -15,6 +15,10 @@ import { capitalize } from '../../lib/capitalize'
 import DiscoverHorizontal from '../DiscoverHorizontal'
 import { useFetchTVMentions } from '../../api/tv'
 import DialogueCard from './DialoguePage'
+import { useFetchTVThreads } from '../../api/tv'
+import { fetchTVFromDB } from '../../api/tv'
+import { useQueryClient } from '@tanstack/react-query';
+
 
 
 
@@ -26,9 +30,11 @@ const TVPage = () => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
 
+    const queryClient = useQueryClient();
+
 
     // const { data: movie, refetch } = useTMDB(()=>GetMovieById(tvId));
-    const [movie, setMovie] = useState([]);
+    const [movie, setMovie] = useState('');
     const [loading, setLoading] = useState(false);
     const youtubeURL = 'https://www.youtube.com/watch?v='
     const [videoId, setVideoId] = useState(null)
@@ -46,6 +52,12 @@ const TVPage = () => {
     const [whichCredits, setWhichCredits] = useState('Cast');
     const [dropdownMenu, setDropdownMenu] = useState(false);
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
+    const [ threads, setThreads ] = useState([])
+
+   
+
+    // const { data : threads, refetch: refetchThreads, isFetching:isFetchingThreads } = useFetchTVThreads( {tvId:tvId, tvObj} );
+    console.log('threads', threads)
 
 
     const fetchData = async () => {
@@ -74,6 +86,19 @@ const TVPage = () => {
             if (similar) {
                 setSimilarTitles(similar)
             }
+
+            const cachedTVShowFromDB = queryClient.getQueryData(['tv', tvId]);
+            if (cachedTVShowFromDB){
+                setThreads(cachedTVShowFromDB.threads)
+            } else {
+                const tvFromDB = await fetchTVFromDB({tvData : res})
+                queryClient.setQueryData(['tv', tvId]);
+    
+                console.log('tvfromdb', tvFromDB)
+                setThreads( tvFromDB.threads );
+                queryClient.setQueryData(['threads', tvId], tvFromDB.threads);
+            }
+
 
           
         } catch (err) {
@@ -119,7 +144,7 @@ const TVPage = () => {
       router.back();
     }
 
-    const creditOptions = [
+    const creditOptions = [     
         'Cast',
         'Crew',
     ]
@@ -137,8 +162,9 @@ const TVPage = () => {
         }
     }
 
-    const threadsPress = (item) => {
-        router.push(`/threads/${item.id}`)
+    const threadsPress = (id) => {
+        console.log('id', id)
+        router.push(`/threads/${id}?tvId=${tvId}`)
     }
 
     const handlePress = (item) => {
@@ -275,7 +301,7 @@ const TVPage = () => {
             </View>
             <View className=' gap-5'>
                 <Text className='text-mainGray font-pcourier text-lg uppercase  text-center underline '>Logline</Text>
-                <Text className='text-mainGray font-pcourier  '>{movie.overview}</Text>
+                <Text className='text-mainGray font-pcourier text-custom  '>{movie.overview}</Text>
                 {videoId && (
                     <YoutubePlayer
                     style={{}}
@@ -344,7 +370,7 @@ const TVPage = () => {
 
 
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <DiscussionThread handlePress={threadsPress}></DiscussionThread>
+            <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
             <Text className='text-mainGray font-pbold text-lg'>Similar Shows</Text>
             <View className="mb-10 h-96">
                 <DiscoverHorizontal data={similarTitles} handlePress={handlePress}/>

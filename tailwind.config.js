@@ -35,6 +35,9 @@ module.exports = {
         pblack: ["Geist-Black", "sans-serif"],
         pcourier : ["Courier", "serif"]
       },
+      fontSize: {
+        custom: ["15px", "16px"], // 15px font size with a 20px line height (close to `leading-5`)
+      },
     },
   },
   plugins: [],

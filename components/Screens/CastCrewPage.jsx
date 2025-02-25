@@ -12,6 +12,9 @@ import CastCrewHorizontal from '../CastCrewHorizontal'
 import { capitalize } from '../../lib/capitalize'
 import DialogueCard from './DialoguePage'
 import { useFetchCastMentions } from '../../api/castCrew'
+import { fetchPersonFromDB } from '../../api/castCrew'
+import { useQueryClient } from '@tanstack/react-query';
+
 
 const CastIdPage = () => {
 
@@ -26,8 +29,67 @@ const CastIdPage = () => {
     const [readMore, setReadMore] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const {data:personData, loading, refetch} = useTMDB(()=>getPerson(castId));
+    const [ loadingDB, setLoading] = useState(false)
+    const queryClient = useQueryClient();
+
 
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchCastMentions( castId );
+
+    const [ threads, setThreads ] = useState([])
+
+
+
+    const fetchData = async () => {
+        setLoading(true);    
+        try {
+            // const personData = await getPerson(castId);  // Pass movieId here
+            // setMovie(personData);
+            // const credits = personData.credits;
+            // if (personData.combined_credits) {
+            //     const dropdownOptions = Object.keys(personData.combined_credits)
+            //     .filter(key => {
+            //       const credits = personData.combined_credits[key];
+            //       return (key === 'cast' && credits.length > 0) || (key === 'crew' && credits.length > 0)});
+          
+            //     console.log('Dropdown options:', dropdownOptions);
+            //     setCreditOptions(dropdownOptions);
+          
+            //     // Safely set the initial value for whichCredits
+            //     if (dropdownOptions.length > 0) {
+            //       setWhichCredits(dropdownOptions[0]);
+            //     }
+            //   }
+
+            const cachedCastFromDB = queryClient.getQueryData(['cast', castId]);
+            if (cachedCastFromDB){
+                setThreads(cachedCastFromDB.threads)
+            } else {
+                console.log('personData', personData)
+                const castFromDB = await fetchPersonFromDB({castData : personData})
+                queryClient.setQueryData(['cast', castId]);
+    
+                console.log('tvfromdb', castFromDB)
+                setThreads( castFromDB.threads );
+                queryClient.setQueryData(['threads', castId], castFromDB.threads);
+            }
+
+            // const fetchedMentions = await getMovieMentions(movieId);
+            // setMentions(fetchedMentions);
+          
+        } catch (err) {
+            console.log('Problem fetching data', err);
+            Alert.alert("Error", err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (castId) {  // Only fetch if castId is available
+            fetchData();
+        }
+    }, []); 
+
 
   
     useEffect(() => {
@@ -71,11 +133,10 @@ const CastIdPage = () => {
         }
       }
 
-
-    const threadsPress = (item) => {
-        router.push(`/threads/${item.id}`)
+      const threadsPress = (id) => {
+        console.log('id', id)
+        router.push(`/threads/${id}?castId=${castId}`)
     }
-
 
     const handleMentionPress = (item) => {
         console.log('trying to routerpush with these params', item.dialogueId)
@@ -100,7 +161,7 @@ const CastIdPage = () => {
       <TouchableOpacity className='border-white rounded-md w-16 flex items-center left-2 py-1 absolute   ' style={{}}   onPress={backPress}>
                       <BackIcon className='' color={Colors.third}  size='22'/>
       </TouchableOpacity>
-      <View className='gap-8 w-full px-8'>
+      <View className='gap-8 w-full px-6'>
         <View className='image-and-name items-center justify-center gap-5  w-full pt-20 '>
           <View className="px-8 flex-row items-center w-full justify-center">
             <Image className=''
@@ -134,7 +195,7 @@ const CastIdPage = () => {
                         </View>
                     </TouchableOpacity>
         </View>
-          <View>
+          <View style={{paddingBottom:70}} >
             <View className="bio relative gap-8 w-full" style={{  height:readMore ? 'auto' : 65 }}>
               <Text className=' text-sm text-mainGray w-full  ' numberOfLines={!readMore && 3} >{personData.biography} </Text>
               <LinearGradient className=''
@@ -227,7 +288,7 @@ const CastIdPage = () => {
 
 
             <View className='w-full border-t-[1px] border-mainGrayDark my-5 items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <DiscussionThread handlePress={threadsPress}></DiscussionThread>
+            <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
           </View>
       </View>
     </ScrollView>

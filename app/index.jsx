@@ -32,7 +32,6 @@ const Welcome = () => {
         // If user is logged in, redirect immediately in the render
         if (user) {
     const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchOwnerUser( {email:user.emailAddresses[0].emailAddress} )
-    console.log('fetched user from home', fetchedUser);
   // console.log('useremail', user.emailAddress)
 
    

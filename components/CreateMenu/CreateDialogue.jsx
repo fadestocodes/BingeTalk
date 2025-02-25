@@ -41,6 +41,10 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const { tags, setTags } = useTagsContext();
     const [ autoCorrect, setAutoCorrect ] = useState(true)
     const [isMentioning, setIsMentioning] = useState(false);
+   
+    useEffect(()=>{
+        setTags({})
+    }, [])
 
 
 

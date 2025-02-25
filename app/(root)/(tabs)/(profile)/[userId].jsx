@@ -92,7 +92,6 @@ const UserIDPage = () => {
   const { user:clerkUser } = useUser();
 
   const { data:user, refetch: refetchUser, isFetching: isFetchingUser } = useFetchOwnerUser( {email : clerkUser.emailAddresses[0].emailAddress} )
-  console.log('user from profile page', user)
 
 
   return (

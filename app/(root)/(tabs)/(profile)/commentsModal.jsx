@@ -10,7 +10,7 @@ import { useUser } from '@clerk/clerk-expo';
 import { createComment } from '../../../../api/comments';
 import { useFetchDialogues } from '../../../../api/dialogue';
 import { formatDate } from '../../../../lib/formatDate';
-import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
+import { UpIcon, DownIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
   
   const CommentsModal = () => {
     const router = useRouter();
@@ -25,8 +25,6 @@ import { UpIcon, HeartIcon, CloseIcon } from '../../../../assets/icons/icons';
     console.log(selectedDialogue)
     const [ replyingTo, setReplyingTo ] = useState(null)
     const inputRef = useRef(null);  // Create a ref for the input
-    const [ inputFocused, setInputFocused  ] = useState(false)
-    const [ parentId, setParentId ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
 

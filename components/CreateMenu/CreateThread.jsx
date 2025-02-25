@@ -4,23 +4,38 @@
     import { SlateIcon, PeopleIcon, ThreadsIcon, CloseIcon, FilmIcon, PersonIcon, TVIcon , UploadPictureIcon} from '../../assets/icons/icons'
     import debounce from 'lodash.debounce';
     import { getYear } from '../../lib/formatDate'
-    import { pickSingleImage } from '../../lib/pickImage'    
+    import { pickSingleImage } from '../../lib/pickImage'  
+    import { useTagsContext } from '../../lib/TagsContext'
+    import { useRouter } from 'expo-router';
+    import { useFetchOwnerUser } from '../../api/user';
+    import { useUser } from '@clerk/clerk-expo';
+    import { createThread } from '../../api/thread';
+  
 
 
 
-    const CreateThread = ( {handleChange, content, setContent, handleSearch, results, setResults, resultsOpen, setResultsOpen, searchQuery, setSearchQuery} ) => {
+    const CreateThread = ( {threadObject, handleChange, content, setContent, handleSearch, results, setResults, resultsOpen, setResultsOpen, searchQuery, setSearchQuery} ) => {
 
         const [ inputs, setInputs ] = useState({
-            // query : '',
             title : '',
             caption : ''
         })
         const [ image, setImage ] = useState(null); 
         const [ loadingImage, setLoadingImage ]  = useState(false);
-        const [contentHeight, setContentHeight] = useState(0); 
         const posterURL = 'https://image.tmdb.org/t/p/original';
+        const router = useRouter();
+        const { tags, setTags } = useTagsContext();
+        const { user : clerkUser } = useUser();
+        const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress}  );
+
+        useEffect(()=>{
+            setTags({})
+        }, [])
 
        
+    const handleTagOptions = () => {
+        router.push('/create/tagOptionsModal')
+    }
 
       
 
@@ -39,6 +54,31 @@
         //     }));
         //     setResultsOpen(false);
         // };
+
+        const handlePost = async () => {
+            console.log('the data from thread post',searchQuery, content, inputs, tags, threadObject )
+
+
+            const threadData = {
+                userId : Number(ownerUser.id),
+                movieId : threadObject.media_type === 'movie' ? threadObject.id : null  ,
+                tvId : threadObject.media_type === 'tv' ? threadObject.id : null ,
+                castId :threadObject.media_type === 'person' ? threadObject.id : null ,
+                title : inputs.title,
+                caption : inputs.caption ,
+                tags : Object.keys(tags).length > 0 ? tags : null,
+                threadObject
+            }
+
+            const newThread = await createThread( threadData )
+
+
+            setInputs({
+                title : '',
+                caption : ''
+            })
+            setTags({})
+        }
         
 
     return (
@@ -65,6 +105,23 @@
             
 
             <View className='thread-title w-full relative flex-1 '>
+
+            <View className='flex-row justify-start items-center ' style={{ position:'absolute', top:10 , zIndex:40, width:'100%', gap:5 , paddingLeft:20}} >
+                
+                { Object.keys(tags).length > 0 && (
+                    <View   className='flex-row gap-1 justify-between items-center' style={{ backgroundColor: tags.color , padding:5, borderRadius:10}}>
+                        <Text className= 'font-pbold text-primary  uppercase text-xs'  >{tags.name}</Text>
+                    <TouchableOpacity onPress={()=>setTags({})} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={18} color={Colors.mainGray} /></TouchableOpacity>
+                    </View>
+                ) }
+                    {/* { tags.map( (tag, index) => (
+                        <View  key={index} className='flex-row gap-1 justify-between items-center' style={{ backgroundColor: tag.color , padding:5, borderRadius:10}}>
+                            <Text className= 'font-pbold text-primary  uppercase text-xs'  >{tag.name}</Text>
+                        <TouchableOpacity onPress={()=>setTags([])} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={18} color={Colors.mainGray} /></TouchableOpacity>
+                        </View>
+                    ) ) } */}
+            </View>
+
                 <View className='w-full relative items-center justify-between ' style={{marginBottom:20}}>
                     <TextInput
                         placeholder='Thread title'
@@ -74,7 +131,7 @@
                         maxLength={150}
                         multiline
                         value={inputs.title}
-                        style={{ minHeight: 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop:20, paddingBottom:40 , borderTopLeftRadius: 24, borderTopRightRadius:24}}
+                        style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 45 : 30, paddingBottom:40 , borderTopLeftRadius: 24, borderTopRightRadius:24}}
                         
                     />
                 {   loadingImage ? (
@@ -95,7 +152,7 @@
                                     <CloseIcon color={Colors.mainGray} size={22} className='' style={{  }} />
                                 </TouchableOpacity>
                             </View>
-                    </View>
+                    </View> 
                     ) }
                     </View>
                 <View className='w-full justify-center items-center gap-3 bg-white' style={{width:'100%',backgroundColor:Colors.mainGrayDark, position:'absolute',bottom:0, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , paddingHorizontal:25, paddingBottom:15}}>
@@ -103,9 +160,14 @@
                     <View className='border-t-[1px] border-slate-300 w-full' style={{ borderTopWidth:1, borderColor:Colors.mainGray }}
                     />
                     <View className='flex-row justify-end items-center  gap-3' style={{width:'100%',  justifyContent:'space-between'}}>
-                        <TouchableOpacity>
-                            <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={24} />
-                        </TouchableOpacity>
+                        <View className='flex-row justify-center items-center gap-3'>
+                            <TouchableOpacity>
+                                <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={24} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleTagOptions} style={{ paddingHorizontal:5, paddingVertical:3, borderRadius:5, borderWidth:1.5 , borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
+                                    <Text className='text-xs text-mainGray'>TAGS 🏷️</Text>
+                                </TouchableOpacity>
+                        </View>
                         <Text className='text-mainGray text-right '>{inputs.title.length}/150</Text>
                     </View>
                 </View>
@@ -124,7 +186,7 @@
                 />
                 { inputs.caption && (
                     <View style={{position:"absolute", top:30, alignItems:'center', justifyContent:'center', width:'100%'}}>
-                        <Text className='font-pcourier uppercase text-lg text-white' >Drew</Text>
+                        <Text className='font-pcourier uppercase text-lg text-secondary' >{ownerUser.firstName}</Text>
                     </View>
                 ) }
                 <View className='justify-center items-center z-10 gap-3 w-full bg-white  '  style={{ position:'absolute',backgroundColor:Colors.mainGrayDark, bottom:0, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , height : 70 }}>
@@ -141,7 +203,7 @@
                 </View>
                 </View>
             </View>
-                <TouchableOpacity className=' bg-secondary rounded-xl justify-center items-center' onPress={()=>{console.log(content)}} style={{paddingVertical:8, width:200, height:45, paddingHorizontal:20 }}>
+                <TouchableOpacity className=' bg-secondary rounded-xl justify-center items-center' onPress={handlePost} style={{paddingVertical:8, width:200, height:45, paddingHorizontal:20 }}>
                     <Text className='font-pbold text-center ' style={{}} >Post</Text>
                 </TouchableOpacity>
         </View>

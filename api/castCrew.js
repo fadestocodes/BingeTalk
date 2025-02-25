@@ -28,3 +28,21 @@ export const useFetchCastMentions = ( castId ) => {
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
 }
+
+export const fetchPersonFromDB = async ( {castData} ) => {
+    console.log('castData', castData)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/person/find-or-create`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify( {castData} )
+        })
+        const response = await request.json();
+        return response;
+    } catch (err) {
+
+        console.log(err)
+    }
+}
