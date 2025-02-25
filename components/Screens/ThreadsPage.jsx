@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform , ActivityIndicator} from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Colors } from '../../constants/Colors'
@@ -9,11 +9,16 @@ import { GestureDetector, Gesture} from 'react-native-gesture-handler';
 import { createComment } from '../../api/comments'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
+import { useQueryClient } from '@tanstack/react-query'
+import { fetchSingleThread } from '../../api/thread'
 
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 
 
-const ThreadsIdPage = ({thread, refetch}) => {
+const ThreadsIdPage = () => {
+
+
+    
 
    
     const [ input, setInput ] = useState('')
@@ -28,13 +33,46 @@ const ThreadsIdPage = ({thread, refetch}) => {
     // console.log('threads array', threads)
     const [replyTracker, setReplyTracker] = useState({});
 
-    const loadMoreReplies = (commentId) => {
-        setReplyTracker((prevData) => ({
-            ...prevData,
-            [commentId] : ( commentId || 2 ) + 5
-        }));
-    }
 
+    const { threadsId, tvId, movieId, castId }= useLocalSearchParams();
+    console.log(threadsId, tvId)
+    const queryClient = useQueryClient();
+
+    const [ thread, setThread ] = useState(null)
+
+
+    const getThread = async () => {
+        let cachedThreads, existingThread;
+        
+        if (tvId) {
+            cachedThreads = queryClient.getQueryData(['threads', tvId]);
+        } else if (movieId) {
+            cachedThreads = queryClient.getQueryData(['threads', movieId]);
+        } else if (castId) {
+            cachedThreads = queryClient.getQueryData(['threads', castId]);
+        }
+    
+        if (cachedThreads) {
+            existingThread = cachedThreads.find(item => item.id === Number(threadsId));
+        }
+    
+        if (existingThread) {
+            console.log("Using cached thread:", existingThread);
+            setThread({ ...existingThread });  // ⬅️ Force new object reference
+        } else {
+            console.log("Fetching thread from API...");
+            const thread = await fetchSingleThread(threadsId);
+            console.log("Thread fetched:", thread);
+            setThread({ ...thread });  // ⬅️ Force new object reference
+        }
+    };
+    
+
+    useEffect(()=>{
+       
+        getThread();
+    }, [])
+    
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
     const translateY = useSharedValue(0); // Tracks modal position
     const atTop = useSharedValue(true); // Track if at top of FlatList
@@ -43,6 +81,21 @@ const ThreadsIdPage = ({thread, refetch}) => {
     const animatedStyle = useAnimatedStyle(() => ({
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
+
+    if (!thread) {
+        return <ActivityIndicator />;
+    }
+
+
+
+
+    const loadMoreReplies = (commentId) => {
+        setReplyTracker((prevData) => ({
+            ...prevData,
+            [commentId] : ( commentId || 2 ) + 5
+        }));
+    }
+
 
 
     const handleReply= (item, parentId) => {

@@ -1,4 +1,4 @@
-import {  ScrollView, Text, TouchableOpacity, View, Image, RefreshControl, FlatList } from 'react-native'
+import {  ScrollView, Text, TouchableOpacity, View, Image, RefreshControl, FlatList, ActivityIndicator } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -28,12 +28,15 @@ const CastIdPage = () => {
     const [whichCredits, setWhichCredits] = useState('')
     const [readMore, setReadMore] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    const {data:personData, loading, refetch} = useTMDB(()=>getPerson(castId));
-    const [ loadingDB, setLoading] = useState(false)
+    // const {data:personData, loading, refetch} = useTMDB(()=>getPerson(castId));
+    const [ loadingDB, setLoading] = useState(true)
     const queryClient = useQueryClient();
+    const [personData, setPersonData] = useState(null)
+    const [ mentions, setMentions ] = useState([])
 
 
-    const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchCastMentions( castId );
+
+    // const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchCastMentions( castId );
 
     const [ threads, setThreads ] = useState([])
 
@@ -42,34 +45,37 @@ const CastIdPage = () => {
     const fetchData = async () => {
         setLoading(true);    
         try {
-            // const personData = await getPerson(castId);  // Pass movieId here
+            const fetchedPerson = await getPerson(castId);  // Pass movieId here
+            setPersonData(fetchedPerson)
             // setMovie(personData);
-            // const credits = personData.credits;
-            // if (personData.combined_credits) {
-            //     const dropdownOptions = Object.keys(personData.combined_credits)
-            //     .filter(key => {
-            //       const credits = personData.combined_credits[key];
-            //       return (key === 'cast' && credits.length > 0) || (key === 'crew' && credits.length > 0)});
+            const credits = fetchedPerson.credits;
+            if (fetchedPerson.combined_credits) {
+                const dropdownOptions = Object.keys(fetchedPerson.combined_credits)
+                .filter(key => {
+                  const credits = fetchedPerson.combined_credits[key];
+                  return (key === 'cast' && credits.length > 0) || (key === 'crew' && credits.length > 0)});
           
-            //     console.log('Dropdown options:', dropdownOptions);
-            //     setCreditOptions(dropdownOptions);
+                console.log('Dropdown options:', dropdownOptions);
+                setCreditOptions(dropdownOptions);
           
-            //     // Safely set the initial value for whichCredits
-            //     if (dropdownOptions.length > 0) {
-            //       setWhichCredits(dropdownOptions[0]);
-            //     }
-            //   }
+                // Safely set the initial value for whichCredits
+                if (dropdownOptions.length > 0) {
+                  setWhichCredits(dropdownOptions[0]);
+                }
+              }
 
             const cachedCastFromDB = queryClient.getQueryData(['cast', castId]);
             if (cachedCastFromDB){
                 setThreads(cachedCastFromDB.threads)
+                setMentions(cachedCastFromDB.mentions)
             } else {
-                console.log('personData', personData)
-                const castFromDB = await fetchPersonFromDB({castData : personData})
+                console.log('fetchedPerson', fetchedPerson)
+                const castFromDB = await fetchPersonFromDB({castData : fetchedPerson})
                 queryClient.setQueryData(['cast', castId]);
     
                 console.log('tvfromdb', castFromDB)
                 setThreads( castFromDB.threads );
+                setMentions(castFromDB.mentions)
                 queryClient.setQueryData(['threads', castId], castFromDB.threads);
             }
 
@@ -88,26 +94,26 @@ const CastIdPage = () => {
         if (castId) {  // Only fetch if castId is available
             fetchData();
         }
-    }, []); 
+    }, [castId]); 
 
 
   
-    useEffect(() => {
-        if (personData.combined_credits) {
-          const dropdownOptions = Object.keys(personData.combined_credits)
-          .filter(key => {
-            const credits = personData.combined_credits[key];
-            return (key === 'cast' && credits.length > 0) || (key === 'crew' && credits.length > 0)});
+    // useEffect(() => {
+    //     if (personData.combined_credits) {
+    //       const dropdownOptions = Object.keys(personData.combined_credits)
+    //       .filter(key => {
+    //         const credits = personData.combined_credits[key];
+    //         return (key === 'cast' && credits.length > 0) || (key === 'crew' && credits.length > 0)});
     
-          console.log('Dropdown options:', dropdownOptions);
-          setCreditOptions(dropdownOptions);
+    //       console.log('Dropdown options:', dropdownOptions);
+    //       setCreditOptions(dropdownOptions);
     
-          // Safely set the initial value for whichCredits
-          if (dropdownOptions.length > 0) {
-            setWhichCredits(dropdownOptions[0]);
-          }
-        }
-      }, [personData.combined_credits]); 
+    //       // Safely set the initial value for whichCredits
+    //       if (dropdownOptions.length > 0) {
+    //         setWhichCredits(dropdownOptions[0]);
+    //       }
+    //     }
+    //   }, [personData.combined_credits]); 
 
     const refreshData = () => {
         setRefreshing(true);
@@ -143,7 +149,9 @@ const CastIdPage = () => {
         router.push(`/dialogue/${item.dialogueId}`)
     }
 
-
+    if (loadingDB) {
+        return <ActivityIndicator></ActivityIndicator>
+    }
 
 
   return (
@@ -153,7 +161,7 @@ const CastIdPage = () => {
         <RefreshControl
           tintColor={Colors.secondary}
           refreshing={refreshing}
-          onRefresh={refreshData}
+          onRefresh={fetchData}
         />
          }
     
