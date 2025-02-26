@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Colors } from '../../constants/Colors'
 import { useLocalSearchParams } from 'expo-router'
-import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon } from '../../assets/icons/icons'
+import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon, RepostIcon, ThreeDotsIcon } from '../../assets/icons/icons'
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
 import { createComment } from '../../api/comments'
@@ -11,6 +11,8 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { fetchSingleThread , useFetchSingleThread} from '../../api/thread'
+import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+
 
 
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
@@ -198,40 +200,44 @@ const ThreadsIdPage = () => {
               </View>
             ) }
 
-                <View className='flex-row gap-3 w-full justify-start items-center'>
-
-                    {/* <TouchableOpacity onPress={()=>handleReply(thread, thread.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
-                        <Text className='text-mainGray text-sm'>Reply</Text>
-                    </TouchableOpacity> */}
-
-                    <TouchableOpacity >
-                        <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <UpIcon  size='20' color={Colors.mainGray} />
-                            {thread?.likes !== undefined && thread?.likes > 0 ? 
-                            (
-                                <Text className='text-xs font-pbold text-gray-400'>{thread.upvotes}</Text>
-                            ) : null}
+                    <View className='flex-row  justify-between w-full my-3 items-center'>
+                        <View className='flex-row gap-5 justify-center items-center'>
+                            <TouchableOpacity  >
+                                <View className='flex-row gap-2 justify-center items-center'>
+                                    <ThumbsUp size={16} color={Colors.mainGray} ></ThumbsUp>
+                                    <Text className='text-xs font-pbold text-mainGray'>{ thread.upvotes }</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity  >
+                            <View className='flex-row gap-2 justify-center items-center'>
+                                <ThumbsDown size={18} color={Colors.mainGray} ></ThumbsDown>
+                                <Text  className='text-xs font-pbold text-mainGray'>{ thread.downvotes }</Text>
+                            </View>
+                            </TouchableOpacity>
+                            <View className='flex-row  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <MessageIcon   className='' size='18' color={Colors.mainGray} />
+                                { thread.downVotes && thread.downVotes > 0 && (
+                                <Text className='text-xs font-pbold text-gray-400  '> {thread.downVotes}</Text>
+                                )  }
+                            </View>
+                            <TouchableOpacity >
+                            <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <RepostIcon className='' size='14' color={Colors.mainGray} />
+                                { thread.credits && thread.reposts > 0 && (
+                                <Text className='text-xs font-pbold text-gray-400  '> {thread.reposts}</Text>
+                                )  }
+                            </View>
+                            </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity >
-                        <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <DownIcon  size='20' color={Colors.mainGray} />
-                            {thread?.likes !== undefined && thread?.likes > 0 ? 
-                            (
-                                <Text className='text-xs font-pbold text-gray-400'>{thread.downvotes}</Text>
-                            ) : null}
+                        <View className='relative' >
+                            <TouchableOpacity   >
+                            <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                            </View>
+                            </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
-                        <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <MessageIcon  size='20' color={Colors.mainGray} />
-                                {thread?.likes !== undefined && thread?.likes > 0 ? 
-                                (
-                                    <Text className='text-xs font-pbold text-gray-400'>{thread.dialogues.length}</Text>
-                                ) : null}
-                        </View>
-
-
-                </View>
+                            
+                    </View>
 
                 { thread.comments.length > 0 && (
                     <>

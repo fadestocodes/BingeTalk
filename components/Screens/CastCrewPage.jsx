@@ -278,7 +278,7 @@ const CastIdPage = () => {
           </View>
 
           <View className='w-full border-t-[1px] border-mainGrayDark  my-5 items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-          <View className='w-full justify-center items-center gap-3'>
+          <View className='w-full justify-center items-center gap-0'>
                 <Text className='text-white font-pbold text-lg'>Mentions</Text>
                 <FlatList
                     horizontal
@@ -297,6 +297,8 @@ const CastIdPage = () => {
 
             <View className='w-full border-t-[1px] border-mainGrayDark my-5 items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
             <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
+            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200 my-5' style={{borderColor:Colors.mainGrayDark}}/>
+
           </View>
       </View>
     </ScrollView>

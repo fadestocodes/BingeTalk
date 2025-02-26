@@ -2,10 +2,12 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react
 import React from 'react'
 // import { threads } from '../lib/fakeData'
 import { Colors } from '../constants/Colors'
-import { ArrowUpIcon, MessageIcon } from '../assets/icons/icons'
+import { ArrowUpIcon, MessageIcon, RepostIcon,ThreeDotsIcon } from '../assets/icons/icons'
 import { ArrowDownIcon } from '../assets/icons/icons'
 import { useRouter } from 'expo-router'
 import { formatDate } from '../lib/formatDate'
+import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+
 
 const DiscussionThread = ({threadsPress, threads}) => {
   const router = useRouter();
@@ -23,7 +25,7 @@ const DiscussionThread = ({threadsPress, threads}) => {
         <Text className='text-white font-pbold   text-center text-lg'>Threads</Text>
       )}
       renderItem={({item}) => {
-        console.log('tiem from thread flatlist', item)
+        console.log('tiem from item flatlist', item)
         
         return (
         <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, marginVertical:10, paddingTop:15, paddingBottom:20, paddingHorizontal:20}}  >
@@ -55,17 +57,45 @@ const DiscussionThread = ({threadsPress, threads}) => {
                 <Text className="text-white  text-custom font-pcourier" numberOfLines={10} >{item.caption}</Text>
               </View>
             ) }
-            <View className='flex-row gap-3'>
-              <View  className='flex-row gap-1 ' style={{borderRadius:10, paddingHorizontal:10, paddingVertical:0, borderWidth:0, borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
-                <ArrowUpIcon size='18' color={Colors.mainGray}></ArrowUpIcon><Text className='text-mainGray'>{item.upVotes}</Text>
-              </View>
-              <View  className='flex-row gap-1' style={{borderRadius:10, paddingHorizontal:5, paddingVertical:0, borderWidth:0, borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
-                <ArrowDownIcon size='18' color={Colors.mainGray}></ArrowDownIcon><Text className='text-mainGray'>{item.downVotes}</Text>
-              </View>
-              <View  className='flex-row gap-1' style={{borderRadius:10, paddingHorizontal:5, paddingVertical:0, borderWidth:0, borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
-                <MessageIcon size='18' color={Colors.mainGray}></MessageIcon><Text className='text-mainGray'>{item.downVotes}</Text>
-              </View>
-            </View>
+            
+            <View className='flex-row  justify-between w-full my-3 items-center'>
+                        <View className='flex-row gap-5 justify-center items-center'>
+                            <TouchableOpacity  >
+                                <View className='flex-row gap-2 justify-center items-center'>
+                                    <ThumbsUp size={16} color={Colors.mainGray} ></ThumbsUp>
+                                    <Text className='text-xs font-pbold text-mainGray'>{ item.upvotes }</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity  >
+                            <View className='flex-row gap-2 justify-center items-center'>
+                                <ThumbsDown size={18} color={Colors.mainGray} ></ThumbsDown>
+                                <Text  className='text-xs font-pbold text-mainGray'>{ item.downvotes }</Text>
+                            </View>
+                            </TouchableOpacity>
+                            <View className='flex-row  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <MessageIcon   className='' size='18' color={Colors.mainGray} />
+                                { item.downVotes && item.downVotes > 0 && (
+                                <Text className='text-xs font-pbold text-gray-400  '> {item.downVotes}</Text>
+                                )  }
+                            </View>
+                            <TouchableOpacity >
+                            <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <RepostIcon className='' size='14' color={Colors.mainGray} />
+                                { item.credits && item.reposts > 0 && (
+                                <Text className='text-xs font-pbold text-gray-400  '> {item.reposts}</Text>
+                                )  }
+                            </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View className='relative' >
+                            <TouchableOpacity   >
+                            <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                            </View>
+                            </TouchableOpacity>
+                        </View>
+                            
+                    </View>
           </View>
           </TouchableOpacity>
       )}}

@@ -383,6 +383,8 @@ const TVPage = () => {
             <View className="mb-10 h-96">
                 <DiscoverHorizontal data={similarTitles} handlePress={handlePress}/>
             </View> */}
+                        <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
+
      
         </View>
     </ScrollView>

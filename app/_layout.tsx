@@ -66,7 +66,7 @@ export default function RootLayout() {
           <StatusBar
             backgroundColor={Colors.mainGray} // Any color for background, use a color or hex
           />
-          <Stack>
+          <Stack  >
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="(root)" options={{headerShown: false}} />
             <Stack.Screen name="(auth)" options={{headerShown: false}} />

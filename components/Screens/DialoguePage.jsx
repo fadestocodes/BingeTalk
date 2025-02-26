@@ -8,6 +8,8 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchUser } from '../../api/user'
 import { useRouter } from 'expo-router'
 import { fetchSingleDialogue } from '../../api/dialogue'
+import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+
 
 const DialogueCard = (  {dialogue} ) => {
 
@@ -116,23 +118,20 @@ const DialogueCard = (  {dialogue} ) => {
 
                 
 
-                    <View className='flex-row gap-3 '>
-                        <TouchableOpacity >
-                        <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <UpIcon className=' ' size='18' color={Colors.mainGray} />
-                            { dialogue.upVotes && dialogue.upVotes > 0 && (
-                            <Text className='text-xs font-pbold text-gray-400  '> {dialogue.upVotes}</Text>
-                            )  }
-                        </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity >
-                        <View  className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <DownIcon className=' ' size='18' color={Colors.mainGray} />
-                            { dialogue.downVotes && dialogue.downVotes > 0 && (
-                            <Text className='text-xs font-pbold text-gray-400  '> {dialogue.downVotes}</Text>
-                            )  }
-                        </View>
-                        </TouchableOpacity>
+                    <View className='flex-row gap-3 justify-center items-center'>
+                    <TouchableOpacity  >
+                                    <View className='flex-row gap-2 justify-center items-center'>
+                                        <ThumbsUp size={16} color={Colors.mainGray} ></ThumbsUp>
+                                        <Text className='text-xs font-pbold text-mainGray'>{ dialogue.upvotes }</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity  >
+
+                                <View className='flex-row gap-2 justify-center items-center'>
+                                    <ThumbsDown size={18} color={Colors.mainGray} ></ThumbsDown>
+                                    <Text  className='text-xs font-pbold text-mainGray'>{ dialogue.downvotes }</Text>
+                                </View>
+                                </TouchableOpacity>
                         <TouchableOpacity >
                         <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
                             <MessageIcon  onPress={()=>handleComment(dialogue)} className='' size='18' color={Colors.mainGray} />

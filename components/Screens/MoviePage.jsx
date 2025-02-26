@@ -356,6 +356,8 @@ const MoviePage = () => {
 
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
             <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
+            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
+
             <View>
      
     </View>
