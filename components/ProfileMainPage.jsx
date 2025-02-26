@@ -16,7 +16,7 @@ import DialogueCard from './Screens/DialoguePage'
 import { useFetchDialogues } from '../api/dialogue'
 import { useFetchUser } from '../api/user'
 import { followUser, unfollowUser } from '../api/user'
-
+import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'; // Example icons
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
 
@@ -181,6 +181,7 @@ import { followUser, unfollowUser } from '../api/user'
                         </View>
                         <View className='w-full justify-center items-center mt-4' >
                             <Text className='font-pbold text-mainGray'>Current Rotation</Text>
+                            { user.currentRotation.length > 0 ? (
                             <FlatList
                                 data={user.currentRotation}
                                 horizontal
@@ -202,26 +203,43 @@ import { followUser, unfollowUser } from '../api/user'
                             >
     
                             </FlatList>
+
+                            ) : (
+                                <Text className='text-mainGray text-sm mb-5'>(No titles added)</Text>
+                            ) }
                         </View>
                     </View>
 
                     { isOwnersProfilePage ? (
                     <View className='flex-row gap-2 mb-10'>
-                        <TouchableOpacity onPress={handleEditProfile} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }} >
-                            <Text className='text-mainGray'>Edit profile</Text>
+                        <TouchableOpacity onPress={handleEditProfile} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }} >
+                            <UserPen color={Colors.mainGray} size={16}/>
+                            <Text style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray  }}>Edit profile</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={handleSignOut}  style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }} >
-                                <Text className='text-mainGray'>Sign Out</Text>
+                        <TouchableOpacity onPress={handleSignOut}  style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }} >
+                        <LogOut color={Colors.mainGray} size={16}/>
+                                <Text className='' style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray}}>Sign Out</Text>
                         </TouchableOpacity>
 
                     </View>
                     ) :(
                         <View className='flex-row gap-2 '>
-                            <TouchableOpacity onPress={handleFollow} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }}>
-                                <Text className='text-mainGray'>{isFollowing ? 'Following' : 'Follow'}</Text>
+                            <TouchableOpacity onPress={handleFollow} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, backgroundColor:isFollowing ? Colors.secondary : null , borderColor:Colors.secondary, borderRadius:10,  flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
+
+                                 { isFollowing ? (
+                                    < View className='flex-row gap-3'>
+                                    <UserCheck strokeWidth={2.5} color={ isFollowing ? Colors.primary : Colors.secondary} size={18}/>
+                                    <Text style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.primary }} >Following</Text>
+                                    </View>
+                                ) : (
+                                    <View className='flex-row gap-3'>
+                                    <UserPlus strokeWidth={2.5} color={Colors.secondary} size={18} />
+                                    <Text style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.secondary }} >Follow</Text>
+                                    </View>
+                                ) } 
                             </TouchableOpacity>
-                            <TouchableOpacity style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }}>
-                                <Text className='text-mainGray'>Message</Text>
+                            <TouchableOpacity style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.secondary, borderRadius:10, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
+                                <Send color={Colors.secondary} size={18} ></Send><Text style={{ fontWeight:'bold', fontFamily:'Geist-Medium', color:Colors.secondary  }}>Message</Text>
                             </TouchableOpacity>
                         </View>
                     )}
