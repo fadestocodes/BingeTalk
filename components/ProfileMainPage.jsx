@@ -15,6 +15,7 @@ import { formatDate } from '../lib/formatDate'
 import DialogueCard from './Screens/DialoguePage'
 import { useFetchDialogues } from '../api/dialogue'
 import { useFetchUser } from '../api/user'
+import { followUser, unfollowUser } from '../api/user'
 
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
@@ -22,9 +23,15 @@ import { useFetchUser } from '../api/user'
         if (!user || isFetchingUser) {
             
             refetchUser();
-            return <ActivityIndicator></ActivityIndicator>  
+            return (
+                <View className='w-full h-full bg-primary'>
+            <ActivityIndicator></ActivityIndicator>  
+                </View>
+
+            )
         } 
 
+        console.log('user', user)
         // useEffect(()=> {
         //     refetchUser();
         // }, [ user ])
@@ -41,10 +48,22 @@ import { useFetchUser } from '../api/user'
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
         const { data:ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
         const isOwnersProfilePage = user.id === ownerUser.id
+        const [ isFollowing, setIsFollowing ] = useState(null)
 
-        if (isFetchingUser){
-            return <ActivityIndicator></ActivityIndicator>
+        useEffect(()=>{
+            // const checkFollow = ownerUser.following.some( item => item.followingId === user.id );
+            const checkFollow = user.followers.some( item => item.followerId === ownerUser.id );
+            console.log('check follow', checkFollow)
+        if (checkFollow){
+            setIsFollowing(true);
+
+        } else {
+            setIsFollowing(false)
         }
+        console.log(isFollowing)
+        }, [])
+
+       
 
         const handleSignOut = async () => {
             try {
@@ -73,9 +92,32 @@ import { useFetchUser } from '../api/user'
             router.push('/edit-profile')
         }
 
+        const handleFollow = async () => {
+
+            const followData = {
+                followerId : Number(ownerUser.id),
+                followingId : Number(user.id)
+            }
+            if (isFollowing){
+                const unfollow = await unfollowUser( followData )
+            } else {
+                const follow = await followUser( followData )
+            }
+            setIsFollowing(prev => !prev)
+            await refetchUser();
+        }
+
+        if (isFetchingUser){
+            return (
+            <View className="bg-primary w-full h-full">
+                <ActivityIndicator></ActivityIndicator>
+            </View>
+            )
+        }
+
   return (
    
-    <View>
+    <View className='w-full h-full bg-primary'>
         <FlatList
             data={dialogues}
             refreshControl={
@@ -125,11 +167,11 @@ import { useFetchUser } from '../api/user'
                         ) }
                         <View className='flex-row gap-6' style={{marginTop:0}}>
                             <View className='flex-row gap-2 justify-center items-center'>
-                                <Text className='text-gray-400 text-lg font-pblack'>210</Text>
+                                <Text className='text-gray-400 text-lg font-pblack'>{user.followers.length}</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Followers</Text>
                             </View>
                             <View className='flex-row gap-2 justify-center items-center'>
-                                <Text className='text-gray-400 text-lg font-pblack'>186</Text>
+                                <Text className='text-gray-400 text-lg font-pblack'>{user.following.length}</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Following</Text>
                             </View>
                             <View className='flex-row gap-2 justify-center items-center'>
@@ -163,7 +205,7 @@ import { useFetchUser } from '../api/user'
                         </View>
                     </View>
 
-                    { isOwnersProfilePage && (
+                    { isOwnersProfilePage ? (
                     <View className='flex-row gap-2 mb-10'>
                         <TouchableOpacity onPress={handleEditProfile} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }} >
                             <Text className='text-mainGray'>Edit profile</Text>
@@ -173,7 +215,16 @@ import { useFetchUser } from '../api/user'
                         </TouchableOpacity>
 
                     </View>
-                    ) }
+                    ) :(
+                        <View className='flex-row gap-2 '>
+                            <TouchableOpacity onPress={handleFollow} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }}>
+                                <Text className='text-mainGray'>{isFollowing ? 'Following' : 'Follow'}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10 }}>
+                                <Text className='text-mainGray'>Message</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
     
                    
     

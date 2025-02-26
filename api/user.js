@@ -154,3 +154,37 @@ export const searchUsers = async ( query ) => {
         console.log(err)
     }
 }
+
+export const followUser = async ( followData ) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/follow`, {
+            method : 'POST',
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify( followData )
+        })
+        const response = await request.json();
+        console.log(response);
+        return response
+    } catch (err){
+        console.log(err)
+    }
+}
+
+export const unfollowUser = async ( followData ) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/unfollow`, {
+            method : 'POST',
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify( followData )
+        })
+        const response = await request.json();
+        console.log(response);
+        return response
+    } catch (err){
+        console.log(err)
+    }
+}

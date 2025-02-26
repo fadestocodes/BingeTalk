@@ -63,7 +63,7 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
             // }}
           >
             {/* Tab Content */}
-            <View key="1" className='pb-20' >
+            <View key="1" className='pb-10' >
               
                <ProfileMainPage user={user} isFetchingUser={isFetchingUser} refetchUser={refetchUser}  ></ProfileMainPage> 
             </View>
