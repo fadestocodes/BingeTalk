@@ -1,0 +1,62 @@
+import { SafeAreaView, StyleSheet, Text, View, FlatList, Image, RefreshControl, TouchableOpacity } from 'react-native'
+import React from 'react'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useFetchSpecificList } from '../../../../../api/list'
+import { Colors } from '../../../../../constants/Colors'
+import { getYear } from '../../../../../lib/formatDate'
+
+const ListId = () => {
+
+    const { listId } = useLocalSearchParams();
+    const { data:list, refetch, isFetching } = useFetchSpecificList(listId);
+    console.log('LIST FOR LISTID PAGE',list)
+    const posterURL = 'https://image.tmdb.org/t/p/original';
+    const router = useRouter()
+
+    if (isFetching){
+        return <RefreshControl tintColor={Colors.secondary}   />
+    }
+
+    const handlePress = (item) => {
+        
+        if ( item.movie ){
+            router.push(`/movie/${item.movie.tmdbId}`)
+        } else if (item.tv) {
+            router.push(`/tv/${item.tv.tmdbId}`)
+        } else {
+            router.push(`/cast/${item.castCrew.tmdbId}`)
+        }
+    }
+
+  return (
+    <SafeAreaView style={{ backgroundColor : Colors.primary, width:'100%', height : '100%'}} >
+        <View className='w-full justify-center ' >
+        <FlatList
+            data={list.listItem}
+            keyExtractor={item => item.id}
+            columnWrapperStyle={{ justifyContent: 'flex-start', gap: 10, paddingHorizontal: 15 }}  
+            
+            numColumns={4}
+            contentContainerStyle={{ paddingVertical:50, marginLeft:20, rowGap:20, height:'100%'}}
+            renderItem={({item}) => {
+                console.log('item from flatlist', item)
+                return (
+                <TouchableOpacity onPress={()=>handlePress(item)}  >
+                    <Image 
+                        source = {{ uri : item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : `${posterURL}${item.castCrew.posterPath}` }}
+                        style= {{ width: 70, height :100, borderRadius:10  }}
+                        resizeMode='cover'
+                    />
+                    <Text className='text-mainGray text-sm font-pbold' style={{width:70 }} numberOfLines={2}>{ item.castCrew ? `${item.castCrew.name}` : item.movie ? `${item.movie.title}` : `${item.tv.title}` }</Text>
+                    <Text className='text-mainGray text-xs'>{ item.castCrew ? `(${getYear(item.castCrew.dob)})` : item.movie ? `(${getYear(item.movie.releaseDate)})` : `(${ getYear(item.tv.releaseDate) })` }</Text>
+                </TouchableOpacity>
+            )}}
+        />
+        </View>
+    </SafeAreaView>
+  )
+}
+
+export default ListId
+
+const styles = StyleSheet.create({})

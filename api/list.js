@@ -18,7 +18,7 @@ export const createList = async (postData) => {
 
 export const fetchUsersLists = async ( userId ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/list?userId=${userId}`)
+        const request = await fetch(`${nodeServer.currentIP}/list/user?userId=${userId}`)
         const response = await request.json()
         console.log('Fetched users lists', response)
         return response
@@ -56,4 +56,28 @@ export const listInteraction = async (data) => {
     } catch (err) {
         console.log(err)
     }
+}
+
+export const fetchSpecificList = async (listId) => {
+    try {
+        const request = await fetch (`${nodeServer.currentIP}/list?listId=${listId}`)
+        const response = await request.json();
+        console.log('fetched list ', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const useFetchSpecificList = ( listId ) => {
+    return useQuery({
+        queryKey : ['lists', listId],
+        queryFn : async () => {
+            return fetchSpecificList(listId)
+        },
+        staleTime : 1000 * 60 * 30,
+        refetchOnWindowFocus : true,
+        refetchOnMount: true, 
+
+    })
 }

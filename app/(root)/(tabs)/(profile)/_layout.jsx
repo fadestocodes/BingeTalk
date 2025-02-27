@@ -14,6 +14,7 @@ const ProfileLayout = () => {
         <Stack.Screen name='threads' options={{headerShown : false}} />
         <Stack.Screen name='dialogue' options={{headerShown : false}} />
         <Stack.Screen name='edit-profile' options={{headerShown : false}} />
+        <Stack.Screen name='list' options={{headerShown : false}} />
         <Stack.Screen name='commentsModal'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:200  , borderRadius:30, backgroundColor:Colors.primary }}} />
     </Stack>
   )

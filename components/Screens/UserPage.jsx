@@ -71,7 +71,7 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
             <View key="2" className='pt-32 items-center w-full' >
                   <ShowcasePage></ShowcasePage>
             </View>
-            <View key="3" >
+            <View key="3" className='pb-8'>
               <UserListsPage  userId={user.id}></UserListsPage>
             </View>
             <View key="4" className='pt-20' >
