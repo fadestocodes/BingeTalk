@@ -10,8 +10,10 @@ import { createComment } from '../../api/comments'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
-import { fetchSingleThread , useFetchSingleThread} from '../../api/thread'
+import { fetchSingleThread , threadInteraction, useFetchSingleThread} from '../../api/thread'
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import ThreadCard from '../ThreadCard'
+
 
 
 
@@ -32,6 +34,8 @@ const ThreadsIdPage = () => {
     const { user : clerkUser } = useUser();
     const { data: ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
     const userId = ownerUser.id
+    const queryClient = useQueryClient();
+
 
     // console.log('threads array', threads)
     const [replyTracker, setReplyTracker] = useState({});
@@ -87,6 +91,12 @@ const ThreadsIdPage = () => {
     const animatedStyle = useAnimatedStyle(() => ({
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
+
+
+    if (!thread){
+        return <ActivityIndicator/>
+    }
+    
 
    
 
@@ -157,87 +167,32 @@ const ThreadsIdPage = () => {
 
     }   
 
-    if (isFetching){
-        return <ActivityIndicator></ActivityIndicator>
+
+    const handleInteraction =  async (type, thread) => {
+        console.log('type', type)
+        const data = {
+            type,
+            threadId : Number(threadsId),
+            userId : ownerUser.id
+        }
+        const updatedDialogue = await threadInteraction(data)
+        refetch();
     }
-   
+
+
+
 
 
   return (
     <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
-       
-        {/* <Animated.View style={[styles.modalContainer, { transform: [{ translateY }] }]}> */}
+     
+        <>
         <ScrollView className='bg-primary pt-12  relative ' >
 
         <View style={{gap:10, marginVertical:10, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
           <View className='gap-3'>
 
-          <View className='flex-row w-full justify-between items-center'>
-                        <View className="flex-row items-center gap-2 ">
-                            <Image
-                                source={{ uri: thread.user.profilePic }}
-                                resizeMode='cover'
-                                style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
-                            />
-                            <Text className='text-mainGrayDark   ' >@{thread.user.username}</Text>
-                        </View>
-                    <Text className='text-mainGrayDark '>{formatDate(thread.createdAt)}</Text>
-                    
-                </View>
-
-            <View className='flex-row gap-3' >
-            { thread.tag && (
-                  <Text className= 'mt-3 font-pbold text-primary text-xs ' style={{ backgroundColor: thread.tag.color , padding:5, borderRadius:10}}>{thread.tag.tagName}</Text>
-            ) }
-            </View>
-
-
-            <Text className="text-white  font-pbold text-2xl leading-6  ">{thread.title}</Text>
-            { thread.caption && (
-              <View className='gap-3 mt-5'>
-                <Text className='text-secondary text-lg leading-5 font-pcourier uppercase text-center'  >{thread.user.firstName}</Text>
-                <Text className="text-white  text-custom font-pcourier">{thread.caption}</Text>
-              </View>
-            ) }
-
-                    <View className='flex-row  justify-between w-full my-3 items-center'>
-                        <View className='flex-row gap-5 justify-center items-center'>
-                            <TouchableOpacity  >
-                                <View className='flex-row gap-2 justify-center items-center'>
-                                    <ThumbsUp size={16} color={Colors.mainGray} ></ThumbsUp>
-                                    <Text className='text-xs font-pbold text-mainGray'>{ thread.upvotes }</Text>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity  >
-                            <View className='flex-row gap-2 justify-center items-center'>
-                                <ThumbsDown size={18} color={Colors.mainGray} ></ThumbsDown>
-                                <Text  className='text-xs font-pbold text-mainGray'>{ thread.downvotes }</Text>
-                            </View>
-                            </TouchableOpacity>
-                            <View className='flex-row  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <MessageIcon   className='' size='18' color={Colors.mainGray} />
-                                { thread.downVotes && thread.downVotes > 0 && (
-                                <Text className='text-xs font-pbold text-gray-400  '> {thread.downVotes}</Text>
-                                )  }
-                            </View>
-                            <TouchableOpacity >
-                            <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <RepostIcon className='' size='14' color={Colors.mainGray} />
-                                { thread.credits && thread.reposts > 0 && (
-                                <Text className='text-xs font-pbold text-gray-400  '> {thread.reposts}</Text>
-                                )  }
-                            </View>
-                            </TouchableOpacity>
-                        </View>
-                        <View className='relative' >
-                            <TouchableOpacity   >
-                            <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
-                            </View>
-                            </TouchableOpacity>
-                        </View>
-                            
-                    </View>
+          <ThreadCard thread={thread} refetch={refetch} />
 
                 { thread.comments.length > 0 && (
                     <>
@@ -396,6 +351,7 @@ const ThreadsIdPage = () => {
                 )}
               </View>
             </Animated.View>
+            </>
 
 
     </SafeAreaView>

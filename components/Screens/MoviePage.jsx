@@ -16,6 +16,7 @@ import { getMovieMentions, useFetchMovieMentions } from '../../api/movie'
 import DialogueCard from './DialoguePage'
 import { fetchMovieFromDB } from '../../api/movie'
 import { useQueryClient } from '@tanstack/react-query';
+import ThreadCard from '../ThreadCard'
 
 
 
@@ -165,6 +166,11 @@ const MoviePage = () => {
     }
 
 
+    const refetchMentionsThreads =  () => {
+        queryClient.invalidateQueries(['mentions']);
+        queryClient.invalidateQueries(['threads']);
+        // fetchData()
+    };
 
 
 
@@ -347,7 +353,7 @@ const MoviePage = () => {
                     contentContainerStyle={{ gap:15 }}
                     renderItem = {({item}) => (
                         <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
-                            <DialogueCard dialogue={item.dialogue} ></DialogueCard>
+                            <DialogueCard dialogue={item.dialogue} refetch={refetchMentionsThreads} ></DialogueCard>
                         </TouchableOpacity>
                     )}
                 />
@@ -355,7 +361,24 @@ const MoviePage = () => {
 
 
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
+            {/* <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread> */}
+            <FlatList
+                        scrollEnabled={false}
+                        data={threads}
+                        keyExtractor={(item)=>item.id}
+                        contentContainerStyle={{ }}
+                        ListHeaderComponent={(
+                            <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
+                        )}
+                        renderItem={({item}) => {
+                            console.log('tiem from item flatlist', item)
+                            
+                            return (
+                            <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >
+                                <ThreadCard thread={item} refetch={ refreshData} ></ThreadCard>
+                            </TouchableOpacity>
+                        )}}
+                    />
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
             <View>

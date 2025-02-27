@@ -14,6 +14,7 @@ import DialogueCard from './DialoguePage'
 import { useFetchCastMentions } from '../../api/castCrew'
 import { fetchPersonFromDB } from '../../api/castCrew'
 import { useQueryClient } from '@tanstack/react-query';
+import ThreadCard from '../ThreadCard'
 
 
 const CastIdPage = () => {
@@ -29,7 +30,7 @@ const CastIdPage = () => {
     const [readMore, setReadMore] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     // const {data:personData, loading, refetch} = useTMDB(()=>getPerson(castId));
-    const [ loadingDB, setLoading] = useState(true)
+    const [ loadingDB, setLoading] = useState(false)
     const queryClient = useQueryClient();
     const [personData, setPersonData] = useState(null)
     const [ mentions, setMentions ] = useState([])
@@ -64,16 +65,23 @@ const CastIdPage = () => {
                 }
               }
 
+              const castData = {
+                tmdbId : fetchedPerson.id,
+                name : fetchedPerson.name,
+                dob : fetchedPerson.birthday,
+                posterPath  : fetchedPerson.profile_path,
+            }
+
             const cachedCastFromDB = queryClient.getQueryData(['cast', castId]);
             if (cachedCastFromDB){
                 setThreads(cachedCastFromDB.threads)
                 setMentions(cachedCastFromDB.mentions)
             } else {
                 console.log('fetchedPerson', fetchedPerson)
-                const castFromDB = await fetchPersonFromDB({castData : fetchedPerson})
+                const castFromDB = await fetchPersonFromDB({castData})
                 queryClient.setQueryData(['cast', castId]);
     
-                console.log('tvfromdb', castFromDB)
+                console.log('castfromDB', castFromDB)
                 setThreads( castFromDB.threads );
                 setMentions(castFromDB.mentions)
                 queryClient.setQueryData(['threads', castId], castFromDB.threads);
@@ -149,8 +157,13 @@ const CastIdPage = () => {
         router.push(`/dialogue/${item.dialogueId}`)
     }
 
-    if (loadingDB) {
-        return <ActivityIndicator></ActivityIndicator>
+    if (!personData) {
+
+        return (
+          <View className='w-full h-full bg-primary'>
+        <ActivityIndicator></ActivityIndicator>
+        </View>
+        )
     }
 
 
@@ -285,10 +298,10 @@ const CastIdPage = () => {
                     data={mentions}
                     showsHorizontalScrollIndicator={false}
                     keyExtractor={(item) => item.id}
-                    contentContainerStyle={{ gap:15 }}
+                    contentContainerStyle={{ gap:15, marginTop:10 }}
                     renderItem = {({item}) => (
                         <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
-                            <DialogueCard dialogue={item.dialogue} ></DialogueCard>
+                            <DialogueCard dialogue={item.dialogue} refetch={fetchData}></DialogueCard>
                         </TouchableOpacity>
                     )}
                 />
@@ -296,7 +309,24 @@ const CastIdPage = () => {
 
 
             <View className='w-full border-t-[1px] border-mainGrayDark my-5 items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
+            {/* <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread> */}
+            <FlatList
+                        scrollEnabled={false}
+                        data={threads}
+                        keyExtractor={(item)=>item.id}
+                        contentContainerStyle={{ }}
+                        ListHeaderComponent={(
+                            <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
+                        )}
+                        renderItem={({item}) => {
+                            console.log('tiem from item flatlist', item)
+                            
+                            return (
+                            <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >
+                                <ThreadCard thread={item} refetch={ fetchData} ></ThreadCard>
+                            </TouchableOpacity>
+                        )}}
+                    />
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200 my-5' style={{borderColor:Colors.mainGrayDark}}/>
 
           </View>

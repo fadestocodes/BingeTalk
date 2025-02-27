@@ -30,15 +30,17 @@ export const useFetchTVMentions = ( tvId ) => {
 }
 
 
-export const fetchTVThreads = async ( {tvId, tvObj} ) => {
+export const fetchTVThreads = async ( data ) => {
+    console.log('data from fetch tv threads', data)
+    const { tvId, tvObj } = data
+    console.log('TVOBJ', tvObj)
     try {
-        console.log('fetching thread', tvId, tvObj)
         const request = await fetch(`${nodeServer.currentIP}/tv/threads?tvId=${tvId}`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
             },
-            body : JSON.stringify( {tvId, tvObj} )
+            body : JSON.stringify( {tvObj} )
         })
         const response = await request.json();
         console.log('thread response ', response)
@@ -49,16 +51,16 @@ export const fetchTVThreads = async ( {tvId, tvObj} ) => {
 }
 
 
-export const useFetchTVThreads = ( { tvId, tvObj } ) => {
+export const useFetchTVThreads = ( data ) => {
+    console.log('DATAAAA',data)
 
     // const queryClient = useQueryClient(); // Get query client
-    console.log('will use fetch threads', tvId, tvObj)
 
 
     return useQuery({
-        queryKey: ['tvThreads', tvId],
+        queryKey: ['tvThreads', tvObj.id],
         queryFn: async () => {
-            return fetchTVThreads({tvId, tvObj});
+            return fetchTVThreads(data);
         },
         staleTime: 1000 * 60 * 5, // Cache for 5 minutes
         enabled: true, // Ensures query runs when component mounts
@@ -96,6 +98,33 @@ export const useFetchTVFromDB = (  tvData ) => {
             return fetchTVFromDB({tvData});
         },
         staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        enabled: true, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refetch when app regains focus
+    });
+}
+
+
+export const getTVThreads = async (tvId) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/tv/threads?tvId=${tvId}`)
+        const response = await request.json()
+        return response
+    } catch(err){
+        console.log(err)
+    }
+}
+
+export const useGetTVThreads = (  tvId ) => {
+
+    // const queryClient = useQueryClient(); // Get query client
+
+
+    return useQuery({
+        queryKey: ['threads',tvId],
+        queryFn: async () => {
+            return getTVThreads(tvId);
+        },
+        staleTime: 0, // Cache for 5 minutes
         enabled: true, // Ensures query runs when component mounts
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });

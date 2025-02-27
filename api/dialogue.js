@@ -148,3 +148,20 @@ export const useCustomFetchSingleDialogue = ( dialogueId ) => {
 
     return { dialogue, isLoading, error }
 }
+
+export const dialogueInteraction = async ( data ) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/dialogue/interact`, {
+            method : 'POST',
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body:JSON.stringify( data )
+        })
+        const response = await request.json();
+        console.log('updated dialogue', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+} 

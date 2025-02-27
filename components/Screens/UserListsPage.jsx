@@ -1,0 +1,132 @@
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, RefreshControl, ActivityIndicator } from 'react-native'
+import React from 'react'
+import { useFetchUsersLists, listInteraction } from '../../api/list'
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '../../constants/Colors';
+import { ThumbsUp, ThumbsDown } from 'lucide-react-native';
+import {  MessageIcon, RepostIcon, ThreeDotsIcon} from '../../assets/icons/icons'
+import { useFetchOwnerUser } from '../../api/user';
+import { useUser } from '@clerk/clerk-expo';
+
+const UserListsPage = ( { userId } ) => {
+  
+    const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
+    console.log('lists are', lists)
+    const posterURL = 'https://image.tmdb.org/t/p/original';
+    const { user : clerkUser } = useUser()
+
+    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+
+
+
+
+    const handleInteraction =  async (type, item) => {
+        console.log('type', type)
+        const data = {
+            type,
+            listId : item.id,
+            userId : ownerUser.id
+        }
+        const updatedDialogue = await listInteraction(data)
+        refetch();
+    }
+
+
+    return (
+        <SafeAreaView style={{ paddingTop : 100, paddingHorizontal : 20 }}>
+    <View  >
+        <FlatList
+        refreshControl={
+            <RefreshControl
+                tintColor={Colors.secondary}
+                refreshing={isFetching}
+                onRefresh={refetch}
+            />
+        }
+            data={lists}
+            keyExtractor={item => item.id}
+            contentContainerStyle={{ gap:15, height:'100%' }}
+            renderItem={ ({item}) => {
+
+                
+                const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
+                const alreadyDownvoted = item.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser.id )
+                const alreadyReposted = item.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
+
+                
+                return (
+                <View className='w-full' >
+                    <TouchableOpacity style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:15, paddingHorizontal:15, gap:15 }} >
+                        <View className=''>
+                            <Text className='text-white font-pbold text-xl' >{ item.title }</Text>
+                            <Text className='text-mainGray text-sm font-pregular' numberOfLines={2}>{ item.caption }</Text>
+                        </View>
+
+                            <View style={{ flexDirection:'row', gap:10}} >
+                        { item.listItem.slice(0,5).map( (element, index) => {
+                        console.log('EACH ELEMENT', element)
+                        return (
+
+                            <View key={index} className='flex-row gap-2' > 
+
+                                <Image
+                                    source={{ uri : element.movie ? `${posterURL}${element.movie.posterPath}` : element.tv ? `${posterURL}${element.tv.posterPath}` : `${posterURL}${element.castCrew.posterPath}` }}
+                                    resizeMode='cover'
+                                    style= {{ borderRadius : 10, width:40, height:60 }}
+                                />
+                            </View>
+                        )} ) }
+                        { item.listItem.length - 5 > 0 && (
+                        <View
+                            style={{ width:40, height : 60, borderRadius:10, backgroundColor:Colors.mainGrayDark }}
+                        >
+                            <Text className='text-white font-pbold'>+ {item.listItem.length - 5 } more</Text>
+                            </View>
+
+                        ) }
+                        </View>
+                        <View className='w-full flex-row justify-between items-center'>
+                            <View className='flex-row gap-5 justify-center items-center'>
+                                <TouchableOpacity onPress={()=> handleInteraction('upvotes',item) } >
+                                    <View className='flex-row gap-1 justify-center items-center'>
+                                        <ThumbsUp size={16} color={ alreadyUpvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                        <Text className='text-xs font-pbold ' style={{ color: alreadyUpvoted ? Colors.secondary : Colors.mainGray }}>{ item.upvotes }</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                <TouchableOpacity  onPress={()=> handleInteraction('downvotes',item) } >
+                                <View className='flex-row gap-1 justify-center items-center'>
+                                    <ThumbsDown size={18}  color={ alreadyDownvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                                    <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvoted ? Colors.secondary : Colors.mainGray }}>{ item.downvotes }</Text>
+                                </View>
+                                </TouchableOpacity>
+                                
+                                <TouchableOpacity onPress={()=> handleInteraction('reposts',item) } >
+                                <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
+                                    <RepostIcon className='' size='14'  color={ alreadyReposted ? Colors.secondary :  Colors.mainGray}/>
+                                    <Text className='text-xs font-pbold text-gray-400  'style={{ color: alreadyReposted ? Colors.secondary : Colors.mainGray }}> {item.reposts}</Text>
+                                </View>
+
+                                </TouchableOpacity>
+                            </View>
+                            <View className='relative' >
+                                <TouchableOpacity   >
+                                    <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                                </TouchableOpacity>
+                            </View>
+                            
+                        </View>
+
+
+                    </TouchableOpacity>
+                </View>
+            )} }
+        />
+
+    </View>
+    </SafeAreaView>
+  )
+}
+
+export default UserListsPage
+
+const styles = StyleSheet.create({})

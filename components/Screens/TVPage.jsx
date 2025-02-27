@@ -1,4 +1,4 @@
-import {  Text, View, Image, ScrollView, Dimensions, RefreshControl, FlatList, ActivityIndicator } from 'react-native'
+import {  Text, View, Image, ScrollView, Dimensions, RefreshControl, FlatList, ActivityIndicator, LoadingComponent} from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'expo-router/build/hooks'
 import { useLocalSearchParams } from 'expo-router/build/hooks'
@@ -17,8 +17,10 @@ import { useFetchTVMentions } from '../../api/tv'
 import DialogueCard from './DialoguePage'
 import { useFetchTVThreads } from '../../api/tv'
 import { fetchTVFromDB } from '../../api/tv'
-import { useQueryClient } from '@tanstack/react-query';
-
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import ThreadCard from '../ThreadCard'
+import { useGetTVById } from '../../api/tmdb'
+import { fetchTVThreads, useGetTVThreads } from '../../api/tv'
 
 
 
@@ -29,36 +31,37 @@ const TVPage = () => {
     const tvId = params.tvId
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
-
     const queryClient = useQueryClient();
 
 
     // const { data: movie, refetch } = useTMDB(()=>GetMovieById(tvId));
     const [movie, setMovie] = useState('');
     const [loading, setLoading] = useState(false);
-    const youtubeURL = 'https://www.youtube.com/watch?v='
     const [videoId, setVideoId] = useState(null)
     const [refreshing, setRefreshing] = useState(false);
-    const [ similarTitles, setSimilarTitles ] = useState([]);
-    const [isPlayerReady, setIsPlayerReady] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
-    const playerRef = useRef(null);
-    const videoUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&mute=1&showinfo=0&rel=0&controls=1&loop=1`;
-    const [creditsList, setCreditsList] = useState({});
     const [ fullCredits, setFullCredits ] = useState({
         castList : [],
         crewList : [],
     })
     const [whichCredits, setWhichCredits] = useState('Cast');
     const [dropdownMenu, setDropdownMenu] = useState(false);
-    const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
-    const [ threads, setThreads ] = useState([])
+    const [threads, setThreads] = useState(null)
+    console.log('MOVIE',movie)
+    const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
+    
+    const threadData = {
+        tvObj:movie
+    }
+    // const { data : threads, refetch : refetchThreads, isFetching:isFetchingThreads } = useGetTVThreads( tvId )
+    console.log('THREADSSSS', threads)
+
+    // const [ threads, setThreads ] = useState([])
+
+    
 
    
 
     // const { data : threads, refetch: refetchThreads, isFetching:isFetchingThreads } = useFetchTVThreads( {tvId:tvId, tvObj} );
-    console.log('threads', threads)
-
 
     const fetchData = async () => {
         setLoading(true);  
@@ -72,7 +75,6 @@ const TVPage = () => {
             console.log('tv id ', tvId)
             const credits = res.credits;
             if (credits) {
-                setCreditsList(credits);
                 const castCredits = credits.cast;
                 const crewCredits = credits.crew;
                 setFullCredits(prevData => ({
@@ -82,10 +84,7 @@ const TVPage = () => {
                 }))
             }
 
-            const similar = res.similar.results;
-            if (similar) {
-                setSimilarTitles(similar)
-            }
+          
 
             const tvData = {
                 tmdbId : res.id,
@@ -94,18 +93,20 @@ const TVPage = () => {
                 posterPath  : res.poster_path,
                 backdropPath : res.backdrop_path
             }
+            const tvFromDB = await fetchTVFromDB({tvData})
+            setThreads(tvFromDB.threads)
 
-            const cachedTVShowFromDB = queryClient.getQueryData(['tv', tvId]);
-            if (cachedTVShowFromDB){
-                setThreads(cachedTVShowFromDB.threads)
-            } else {
-                const tvFromDB = await fetchTVFromDB({tvData})
-                queryClient.setQueryData(['tv', tvId]);
+            // const cachedTVShowFromDB = queryClient.getQueryData(['tv', tvId]);
+            // if (cachedTVShowFromDB){
+            //     setThreads(cachedTVShowFromDB.threads)
+            // } else {
+            //     const tvFromDB = await fetchTVFromDB({tvData})
+            //     queryClient.setQueryData(['tv', tvId], tvFromDB);
     
-                console.log('tvfromdb', tvFromDB)
-                setThreads( tvFromDB.threads );
-                queryClient.setQueryData(['threads', tvId], tvFromDB.threads);
-            }
+            //     console.log('tvfromdb', tvFromDB)
+            //     setThreads( tvFromDB.threads );
+            //     queryClient.setQueryData(['threads', tvId], tvFromDB.threads);
+            // }
 
 
           
@@ -116,7 +117,22 @@ const TVPage = () => {
             setLoading(false);
         }
     };
+
+    const refetchMentionsThreads =  () => {
+        queryClient.invalidateQueries(['mentions']);
+        queryClient.invalidateQueries(['threads']);
+        // fetchData()
+    };
     
+    // const fetchThreads = async () => {
+    //     const data = {
+    //         tvId,
+    //         tvObj : movie
+    //     }
+    //     const fetchedThreads = await fetchTVThreads(data)
+    //     console.log('FETCHEDTHREADS', fetchedThreads)
+    //     setThreads(fetchTVThreads)
+    // }
 
     const refreshData = () => {
         setRefreshing(true);
@@ -126,26 +142,22 @@ const TVPage = () => {
     
     useEffect(() => {
             fetchData();
-    }, [tvId]); 
+    }, []); 
 
-    const handlePlayerReady = () => {
-        setIsPlayerReady(true);
-      };
-    
-    const handleVisibilityChange = (isVisible) => {
-    setIsVisible(isVisible);
-    };
-    
-    const handleLayout = (e) => {
-        const { height } = e.nativeEvent.layout;
-        setIsVisible(height > 220);  // Assume visible if height is greater than 0
-    };
-
-    // useEffect(() => {
-    // if (isVisible && isPlayerReady) {
-    //     playerRef.current.playVideo();
+    // const refetchThreads = async () => {
+    //     const tvData = {
+    //         tmdbId : res.id,
+    //         title : res.name,
+    //         releaseDate : res.first_air_date,
+    //         posterPath  : res.poster_path,
+    //         backdropPath : res.backdrop_path
+    //     }
+    //     const tvFromDB = await fetchTVFromDB({tvData})
+    //     setThreads(tvFromDB.threads)
     // }
-    // }, [isVisible, isPlayerReady]);
+
+    
+    
 
 
     const backPress = () => {
@@ -176,18 +188,16 @@ const TVPage = () => {
     }
 
     const handlePress = (item) => {
-     
           router.push(`/tv/${item.id}`)
       }
-
 
     const handleMentionPress = (item) => {
         router.push(`/dialogue/${item.dialogueId}`)
     }
 
-    
-
-
+    // if (isFetchingMentions ){
+    //     return <ActivityIndicator/>
+    // }
 
 
 
@@ -202,6 +212,7 @@ const TVPage = () => {
         />
          }
     >
+
         <View className="flex ">
             <ImageBackground
                 style={{width : '100%', height: 300, marginBottom:40, position:'absolute' }}
@@ -359,31 +370,52 @@ const TVPage = () => {
             </View>
 
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <View className='w-full justify-center items-center gap-3'>
-                <Text className='text-white font-pbold text-lg'>Mentions</Text>
-                <FlatList
-                    horizontal
-                    data={mentions}
-                    showsHorizontalScrollIndicator={false}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={{ gap:15 }}
-                    renderItem = {({item}) => (
-                        <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
-                            <DialogueCard dialogue={item.dialogue} ></DialogueCard>
-                        </TouchableOpacity>
-                    )}
-                />
+            <View className='w-full justify-center items-center '>
+              
+                    <Text className='text-white font-pbold text-lg '>Mentions</Text>
+                    <FlatList
+                        horizontal
+                        data={mentions}
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item) => item.id}
+                        contentContainerStyle={{ gap:15, marginTop:10 }}
+                        renderItem = {({item}) => (
+                            <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
+                                <DialogueCard dialogue={item.dialogue}  refetch={refetchMentionsThreads} ></DialogueCard>
+                            </TouchableOpacity>
+                        )}
+                        />
+                  
             </View>
 
 
 
-            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread>
+            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200 ' style={{borderColor:Colors.mainGrayDark}}/>
+              
+                    <FlatList
+                        scrollEnabled={false}
+                        data={threads}
+                        keyExtractor={(item)=>item.id}
+                        contentContainerStyle={{ }}
+                        ListHeaderComponent={(
+                            <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
+                        )}
+                        renderItem={({item}) => {
+                            console.log('tiem from item flatlist', item)
+                            
+                            return (
+                            <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >
+                                <ThreadCard thread={item} refetch={ fetchData} ></ThreadCard>
+                            </TouchableOpacity>
+                        )}}
+                    />
+                    <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
+                    
+            {/* <DiscussionThread threadsPress={threadsPress} threads={threads} refetch={refetchMentionsThreads}></DiscussionThread> */}
             {/* <Text className='text-mainGray font-pbold text-lg'>Similar Shows</Text>
             <View className="mb-10 h-96">
                 <DiscoverHorizontal data={similarTitles} handlePress={handlePress}/>
             </View> */}
-                        <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
      
         </View>

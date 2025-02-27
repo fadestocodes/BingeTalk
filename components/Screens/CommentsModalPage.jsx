@@ -206,9 +206,7 @@ const CommentsModalPage = () => {
 
                         <View className='flex-row gap-3 w-full justify-start items-center  pl-10'>
 
-                            <TouchableOpacity onPress={()=>handleReply(reply, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
-                                <Text className='text-mainGray text-sm'>Reply</Text>
-                            </TouchableOpacity>
+                            
 
                             <TouchableOpacity onPress={()=>handleReply(item, item.id)}  style={{borderRadius:10, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:5, paddingHorizontal:8}} >
                                 <Text className='text-mainGray text-sm'>Reply</Text>

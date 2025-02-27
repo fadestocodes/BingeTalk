@@ -8,6 +8,7 @@ import ProfileMainPage from '../ProfileMainPage';
 import Credits from '../Credits';
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
 import { useFetchUser } from '../../api/user';
+import UserListsPage from './UserListsPage';
 
 
 const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
@@ -71,7 +72,7 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
                   <ShowcasePage></ShowcasePage>
             </View>
             <View key="3" >
-              <Text className='text-white'>Watched Content</Text>
+              <UserListsPage  userId={user.id}></UserListsPage>
             </View>
             <View key="4" className='pt-20' >
               <Credits></Credits>

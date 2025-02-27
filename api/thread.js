@@ -43,3 +43,22 @@ export const useFetchSingleThread = ( threadId ) => {
 
     })
 }
+
+
+export const threadInteraction = async ( data ) => {
+    console.log('trying to create thread interaction')
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/thread/interact`, {
+            method : 'POST',
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body:JSON.stringify( data )
+        })
+        const response = await request.json();
+        console.log('updated thread', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+} 

@@ -3,17 +3,19 @@ import React, {useState, useEffect} from 'react'
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DraggableGrid } from 'react-native-draggable-grid';
+import { createList } from '../../api/list';
 
 import { Colors } from '../../constants/Colors'
 import { SlateIcon, PeopleIcon, ThreadsIcon, CloseIcon } from '../../assets/icons/icons'
 
-const CreateList = ( {handleChange, content, setResults, setResultsOpen, searchQuery, setSearchQuery,listItems, setListItems, renderItem, handleRemoveListItem } ) => {
+const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen, searchQuery, setSearchQuery,listItems, setListItems, renderItem, handleRemoveListItem } ) => {
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
     // console.log('listItems from child component', listItems);
     // useEffect(() => {
     //     console.log('Updated listItems in child:', listItems); // This will log when the state updates
     //   }, [listItems]);  //  
+
 
     const [ inputs, setInputs ] = useState({
         title : '',
@@ -26,6 +28,26 @@ const CreateList = ( {handleChange, content, setResults, setResultsOpen, searchQ
             [name] : value
         }) )
     }
+
+    const handlePost = async () => {
+        const postData = {
+            title : inputs.title ,
+            caption : inputs.description,
+            userId,
+            listItems
+        }
+        console.log('POST DATA', postData);
+        const newList = await createList(postData)
+        console.log('NEW CREATED LIST', newList)
+        setInputs({
+            title : '',
+            description : ''
+        })
+        setSearchQuery('')
+        setListItems([])
+    }
+
+
     
      
 
@@ -101,7 +123,7 @@ const CreateList = ( {handleChange, content, setResults, setResultsOpen, searchQ
                 </View>
                 
             </View>
-            <TouchableOpacity className=' bg-secondary rounded-xl justify-center items-center' onPress={()=>{console.log(content)}} style={{paddingVertical:8, width:200, height:45, paddingHorizontal:20, marginBottom:50 }}>
+            <TouchableOpacity className=' bg-secondary rounded-xl justify-center items-center' onPress={handlePost} style={{paddingVertical:8, width:200, height:45, paddingHorizontal:20, marginBottom:50 }}>
                     <Text className='font-pbold text-center ' style={{}} >Post</Text>
             </TouchableOpacity>
             <View className=" w-full " style={{paddingBottom:120}}>
@@ -109,7 +131,7 @@ const CreateList = ( {handleChange, content, setResults, setResultsOpen, searchQ
                             numColumns={4}
                             renderItem={renderItem}
                             data={listItems}
-                            itemHeight={170}
+                            itemHeight={140}
                             onDragRelease={(data) => {
                                setListItems(data);// need reset the props data sort after drag release
                             }}

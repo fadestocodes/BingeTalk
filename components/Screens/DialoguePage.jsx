@@ -9,9 +9,12 @@ import { useFetchUser } from '../../api/user'
 import { useRouter } from 'expo-router'
 import { fetchSingleDialogue } from '../../api/dialogue'
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import { dialogueInteraction } from '../../api/dialogue'
+import { useFetchOwnerUser } from '../../api/user'
 
 
-const DialogueCard = (  {dialogue} ) => {
+
+const DialogueCard = (  {dialogue, refetch} ) => {
 
 
     // const [ dialogue, setDialogue ] = useState(null)
@@ -34,7 +37,14 @@ const DialogueCard = (  {dialogue} ) => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
     const tag = dialogue.tag;
+    const { user: clerkUser } = useUser()
+    const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
+
+    console.log('DIALOGUE', dialogue)
     
+    const alreadyUpvoted = dialogue.dialogueInteractions.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
+    const alreadyDownvoted = dialogue.dialogueInteractions.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
+    const alreadyReposted = dialogue.dialogueInteractions.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
   
 
     const handleMentionPress = (mention) => {
@@ -56,6 +66,22 @@ const DialogueCard = (  {dialogue} ) => {
             params : { userId : userDB.id, dialogueId : dialogue.id }
         })
     }
+
+    const handleInteraction =  async (type, dialogue) => {
+        console.log('type', type)
+        const data = {
+            type,
+            dialogueId : dialogue.id,
+            userId : ownerUser.id
+        }
+        const updatedDialogue = await dialogueInteraction(data)
+        refetch();
+    }
+
+    if (!dialogue) {
+        return <ActivityIndicator></ActivityIndicator>
+    }
+
 
 
 
@@ -114,44 +140,36 @@ const DialogueCard = (  {dialogue} ) => {
                 ) ) 
                 }
                 </View>
-               
 
-                
-
-                    <View className='flex-row gap-3 justify-center items-center'>
-                    <TouchableOpacity  >
-                                    <View className='flex-row gap-2 justify-center items-center'>
-                                        <ThumbsUp size={16} color={Colors.mainGray} ></ThumbsUp>
-                                        <Text className='text-xs font-pbold text-mainGray'>{ dialogue.upvotes }</Text>
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity  >
-
-                                <View className='flex-row gap-2 justify-center items-center'>
-                                    <ThumbsDown size={18} color={Colors.mainGray} ></ThumbsDown>
-                                    <Text  className='text-xs font-pbold text-mainGray'>{ dialogue.downvotes }</Text>
-                                </View>
-                                </TouchableOpacity>
-                        <TouchableOpacity >
-                        <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <MessageIcon  onPress={()=>handleComment(dialogue)} className='' size='18' color={Colors.mainGray} />
-                            { dialogue.downVotes && dialogue.downVotes > 0 && (
-                            <Text className='text-xs font-pbold text-gray-400  '> {dialogue.downVotes}</Text>
-                            )  }
+                    <View className='flex-row gap-5 justify-center items-center'>
+                        <TouchableOpacity onPress={()=> handleInteraction('upvotes',dialogue) } >
+                            <View className='flex-row gap-1 justify-center items-center'>
+                                <ThumbsUp size={16} color={ alreadyUpvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                <Text className='text-xs font-pbold ' style={{ color: alreadyUpvoted ? Colors.secondary : Colors.mainGray }}>{ dialogue.upvotes }</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity  onPress={()=> handleInteraction('downvotes',dialogue) } >
+                        <View className='flex-row gap-1 justify-center items-center'>
+                            <ThumbsDown size={18}  color={ alreadyDownvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                            <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvoted ? Colors.secondary : Colors.mainGray }}>{ dialogue.downvotes }</Text>
                         </View>
                         </TouchableOpacity>
-                        <TouchableOpacity >
-                        <View className='flex-row  justify-center items-center  py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
-                            <RepostIcon className='' size='14' color={Colors.mainGray} />
-                            { dialogue.credits && dialogue.reposts > 0 && (
-                            <Text className='text-xs font-pbold text-gray-400  '> {dialogue.reposts}</Text>
-                            )  }
+                        <TouchableOpacity  >
+                        <View className='flex-row gap-1  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
+                            <MessageIcon  onPress={()=>handleComment(dialogue)} className='' size='18'  color={   Colors.mainGray}/>
+                            <Text className='text-xs font-pbold text-gray-400  '> {dialogue.comments.length}</Text>
+                        </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> handleInteraction('reposts',dialogue) } >
+                        <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
+                            <RepostIcon className='' size='14'  color={ alreadyReposted ? Colors.secondary :  Colors.mainGray}/>
+                            <Text className='text-xs font-pbold text-gray-400  'style={{ color: alreadyReposted ? Colors.secondary : Colors.mainGray }}> {dialogue.reposts}</Text>
                         </View>
 
                         </TouchableOpacity>
                         <View className='relative' >
                             <TouchableOpacity   >
-                            <View className='flex-row  justify-center items-center  py-1 px-2' style={{height:32, borderColor:Colors.mainGray}}>
+                            <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
                                 <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
                             </View>
                             </TouchableOpacity>

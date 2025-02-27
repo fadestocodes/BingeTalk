@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
 
 
+
 export const GetNowPlaying = async () => {
     try {
       const response = await fetch(`${nodeServer.currentIP}/tmdb/now-playing`);
@@ -35,6 +36,19 @@ export const GetNowPlaying = async () => {
     } catch (err) {
       console.log(err.message)
     }
+  }
+
+  export const useGetTVById = ( tvId ) => {
+
+    return useQuery({
+      queryKey: ['tv', tvId],
+      queryFn: async () => {
+          return GetTVById(tvId);
+      },
+      staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+      enabled: true, // Ensures query runs when component mounts
+      refetchOnWindowFocus: true, // Auto refetch when app regains focus
+  });
   }
   
   export const getTrailer = async ({movieId, showId}) => {

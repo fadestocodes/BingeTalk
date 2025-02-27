@@ -252,7 +252,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
             renderItem={({item}) => (
             
                 <TouchableOpacity key={item.id} onPress={()=>handleDialoguePress(item)}  style={{ paddingHorizontal:15 }}>
-                    <DialogueCard  dialogue={item}  />
+                    <DialogueCard  dialogue={item} refetch={refetch} />
                 </TouchableOpacity>
             ) }
             >

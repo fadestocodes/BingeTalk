@@ -10,6 +10,8 @@ import { searchAll } from '../../../../api/tmdb'
 import debounce from 'lodash.debounce'
 import { getYear } from '../../../../lib/formatDate'
 import { DraggableGrid } from 'react-native-draggable-grid';
+import { useUser } from '@clerk/clerk-expo'
+import { useFetchOwnerUser } from '../../../../api/user'
 
 
 const CreateHome = () => {
@@ -25,6 +27,10 @@ const CreateHome = () => {
     const [ threadObject, setThreadObject ] = useState(null)
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
+
+    const {user:clerkUser} = useUser();
+    const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
+    userId = ownerUser.id
 
 
 
@@ -105,13 +111,13 @@ const CreateHome = () => {
     const renderItem = (item) => {
         return (
           <View className=' justify-start items-center relative '
-            style={{ width:'auto', height:200,  marginHorizontal:0, marginVertical:0, overflow:'hidden' }}
+            style={{ width:'auto', height:170,  marginHorizontal:0, marginVertical:0, overflow:'hidden' }}
             key={item.key}  // Set key here based on the item key
           >
            <Image 
             source={ item.media_type === 'person' ? {uri:`${posterURL}${item.item.profile_path}`}  : {uri:`${posterURL}${item.item.poster_path}`}}
             resizeMode='cover'
-            style={{ width:70, height:120, borderRadius:10, overflow:'hidden' }}
+            style={{ width:70, height:100, borderRadius:10, overflow:'hidden' }}
             />
             <Text  numberOfLines={2} style={{width:70}} className='text-mainGray text-xs'>{item.item.name || item.item.title}</Text>
             <TouchableOpacity className='rounded-full' onPress={() => handleRemoveListItem(item.key)}  style={{ backgroundColor:Colors.primary, position:'absolute', top:4, right:1 }}>
@@ -129,12 +135,12 @@ const CreateHome = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS uses padding, Android uses height
         style={{ flex: 1 }}
     >
-    <SafeAreaView className='bg-primary h-full w-full  '  >
+    <SafeAreaView className='bg-primary h-full w-full  '  style={{ paddingBottom:0 }} >
     
       
       { resultsOpen ? (
         <View className='w-full h-full justify-center items-center' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary}} >
-            <View className='thread-topic w-full h-full relative  gap-3'>
+            <View className='thread-topic w-full h-full relative  gap-3' style={{paddingBottom:100}}>
                 <View className="flex-row justify-center items-center gap-3 px-4">
                     <TouchableOpacity onPress={()=> setResultsOpen(false)}>
                         <BackIcon size={20} color={Colors.mainGray}/>
@@ -153,6 +159,7 @@ const CreateHome = () => {
                 <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:5, top:15 }}>
                     <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
+
                 <FlatList
                     data={results}
                     keyExtractor={(item) => item.id}
@@ -192,25 +199,24 @@ const CreateHome = () => {
                 }
                 >
                 </FlatList>
-            </View>
-
 
                 { searchQuery === '' && createType === 'List' && (
-
-                    <ScrollView className='pt-20 w-full h-full'  >
+                    <ScrollView className='pt-20  w-full h-full'   >
                         <DraggableGrid
-                        numColumns={4}
-                        renderItem={renderItem}
-                        data={listItems}
-                        itemHeight={170}
-                        onDragRelease={(data) => {
-                           setListItems(data);// need reset the props data sort after drag release
-                        }}
+                            numColumns={4}
+                            renderItem={renderItem}
+                            data={listItems}
+                            itemHeight={140}
+                            onDragRelease={(data) => {
+                            setListItems(data);// need reset the props data sort after drag release
+                            }}
                         />
                     </ScrollView>
                                     ) }
+            </View>
+
+
                 
-            {/* </View> */}
          </View>
         ) : (
             <>
@@ -253,7 +259,7 @@ const CreateHome = () => {
         ) : createType === 'Showcase' ? (
             <CreateShowcase handleChange={handleChange} content={content} setContent={setContent} />
         ) : createType === 'List' && (
-            <CreateList handleChange={handleChange} content={content} setContent={setContent} setResultsOpen={setResultsOpen}
+            <CreateList userId={userId}  handleChange={handleChange} content={content} setContent={setContent} setResultsOpen={setResultsOpen}
             setResults={setResults} setSearchQuery={setSearchQuery}  searchQuery={searchQuery} setListItems={setListItems} listItems={listItems} 
             renderItem={renderItem} handleRemoveListItem={handleRemoveListItem}
             />
