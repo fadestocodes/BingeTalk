@@ -188,3 +188,73 @@ export const unfollowUser = async ( followData ) => {
         console.log(err)
     }
 }
+
+export const fetchRecentlyWatched = async (userId) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/recently-watched?userId=${userId}`)
+        const response = await request.json()
+        return response
+    } catch (Err){
+        console.log(Err)
+    }
+}
+
+export const useFetchRecentlyWatched = (userId) => {
+    return useQuery({
+        queryKey : ['recentlyWatched', userId],
+        queryFn: async () => {
+            const recentlyWatched = await fetchRecentlyWatched(userId)
+            return recentlyWatched
+        },
+        staleTime: 1000 * 60 * 10, // Cache for 5 minutes
+        enabled: true, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refet
+    })
+}
+
+export const fetchWatchlist = async (userId) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/watchlist?userId=${userId}`)
+        const response = await request.json()
+        console.log('response getting watchlist', response)
+        return response
+    } catch (Err){
+        console.log(Err)
+    }
+}
+
+export const useFetchWatchlist = (userId) => {
+    return useQuery({
+        queryKey : ['watchlist', userId],
+        queryFn: async () => {
+            const recentlyWatched = await fetchWatchlist(userId)
+            return recentlyWatched
+        },
+        staleTime: 1000 * 60 * 10, // Cache for 5 minutes
+        enabled: true, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refet
+    })
+}
+
+export const fetchInterested = async (userId) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/interested?userId=${userId}`)
+        const response = await request.json()
+        return response
+    } catch (Err){
+        console.log(Err)
+    }
+}
+
+export const useFetchInterested = (userId) => {
+    return useQuery({
+        queryKey : ['interested', userId],
+        queryFn: async () => {
+            const recentlyWatched = await fetchInterested(userId)
+            return recentlyWatched
+        },
+        staleTime: 1000 * 60 * 10, // Cache for 5 minutes
+        enabled: true, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refet
+    })
+}

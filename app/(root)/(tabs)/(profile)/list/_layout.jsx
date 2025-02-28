@@ -6,6 +6,9 @@ const ListLayout = () => {
   return (
     <Stack>
       <Stack.Screen name='[listId]' options={{headerShown : false}} />
+      <Stack.Screen name='recently-watched' options={{headerShown : false}} />
+      <Stack.Screen name='interested' options={{headerShown : false}} />
+      <Stack.Screen name='watchlist' options={{headerShown : false}} />
     </Stack>
   )
 }

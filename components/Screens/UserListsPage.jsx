@@ -33,8 +33,20 @@ const UserListsPage = ( { userId } ) => {
         refetch();
     }
 
-    const handlePress = ( item ) => {
+    const handleListPress = ( item ) => {
         router.push(`/list/${item.id}`)
+    }
+
+    const handleRecentlyWatchedPress = (userId) => {
+        router.push(`/list/recently-watched/${userId}`)
+    }
+
+    const handleWatchlistPress = (userId) => {
+        router.push(`/list/watchlist/${userId}`)
+    }
+
+    const handleInterestedPress = (userId) => {
+        router.push(`/list/interested/${userId}`)
     }
 
 
@@ -43,15 +55,15 @@ const UserListsPage = ( { userId } ) => {
     <View style={{ height:'100%', gap:15 }} >
 
         <View className='flex-row justify-evenly items-center'>
-            <TouchableOpacity className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
+            <TouchableOpacity onPress={()=>handleRecentlyWatchedPress(userId)} className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
                 <Text className='text-mainGray text-sm font-pbold '>Recently Watched</Text>
                 <Clock9 color={Colors.mainGray} strokeWidth={2.5} />
             </TouchableOpacity>
-            <TouchableOpacity className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
+            <TouchableOpacity  onPress={()=>handleWatchlistPress(userId)}  className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
                 <Text className='text-mainGray text-sm font-pbold '>Watchlist</Text>
                 <ListChecks  color={Colors.mainGray} strokeWidth={2.5}/>
             </TouchableOpacity>
-            <TouchableOpacity className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
+            <TouchableOpacity  onPress={()=>handleInterestedPress(userId)}  className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
                 <Text className='text-mainGray text-sm font-pbold '>Interested</Text>
                 <BadgeHelp color={Colors.mainGray} strokeWidth={2}/>
             </TouchableOpacity>
@@ -78,7 +90,7 @@ const UserListsPage = ( { userId } ) => {
                 
                 return (
                 <View className='w-full' >
-                    <TouchableOpacity onPress={()=>handlePress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:15, paddingHorizontal:15, gap:15 }} >
+                    <TouchableOpacity onPress={()=>handleListPress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:15, paddingHorizontal:15, gap:15 }} >
                         <View className=''>
                             <Text className='text-white font-pbold text-xl' >{ item.title }</Text>
                             <Text className='text-mainGray text-sm font-pregular' numberOfLines={2}>{ item.caption }</Text>
