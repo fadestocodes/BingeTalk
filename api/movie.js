@@ -66,3 +66,21 @@ export const useFetchMovieFromDB = (  movieData ) => {
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
 }
+
+export const markMovieWatch =  async ( data ) => {
+    console.log('DATA', data)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/movie/update-hasWatched`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response after marking movie as watched', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}

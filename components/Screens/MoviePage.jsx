@@ -12,11 +12,14 @@ import YoutubePlayer from 'react-native-youtube-iframe';
 import CastCrewHorizontal from '../CastCrewHorizontal'
 import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
-import { getMovieMentions, useFetchMovieMentions } from '../../api/movie'
+import { getMovieMentions, useFetchMovieMentions, markMovieWatch } from '../../api/movie'
 import DialogueCard from './DialoguePage'
 import { fetchMovieFromDB } from '../../api/movie'
 import { useQueryClient } from '@tanstack/react-query';
 import ThreadCard from '../ThreadCard'
+import { useFetchOwnerUser } from '../../api/user'
+import { useUser } from '@clerk/clerk-expo'
+import { Eye, EyeOff, ListChecks, Handshake, Star } from 'lucide-react-native'
 
 
 
@@ -31,6 +34,7 @@ const MoviePage = () => {
 
 
     const [movie, setMovie] = useState([]);
+    const [ DBmovieId, setDBmovieId ] = useState(null)
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false)
     const youtubeURL = 'https://www.youtube.com/watch?v='
@@ -47,8 +51,11 @@ const MoviePage = () => {
     // const [ mentions, setMentions ] = useState([])
     const [ threads, setThreads ] = useState([])
 
-
+    const {user: clerkUser} = useUser();
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
+    const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
+    const alreadyWatched = ownerUser.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
+    console.log('already watched?', alreadyWatched)
 
     const fetchData = async () => {
         setLoading(true);    
@@ -87,12 +94,14 @@ const MoviePage = () => {
             const cachedMovieFromDB = queryClient.getQueryData(['movie', movieId]);
             if (cachedMovieFromDB){
                 setThreads(cachedMovieFromDB.threads)
+                setDBmovieId(cachedMovieFromDB.id)
             } else {
                 const movieFromDB = await fetchMovieFromDB({movieData})
                 queryClient.setQueryData(['movie', movieId]);
     
                 console.log('tvfromdb', movieFromDB)
                 setThreads( movieFromDB.threads );
+                setDBmovieId( movieFromDB.id )
                 queryClient.setQueryData(['threads', movieId], movieFromDB.threads);
             }
 
@@ -173,6 +182,12 @@ const MoviePage = () => {
     };
 
 
+    const handleMarkWatched = async (  ) => {
+        console.log('owneruserid', ownerUser.id)
+        await markMovieWatch({ movieId : DBmovieId, userId : ownerUser.id })
+        refetchOwnerUser();
+    }
+
 
 
   return (
@@ -232,23 +247,27 @@ const MoviePage = () => {
             
         </View>
         <View className="buttons flex gap-4 w-full items-center mb-6">
-                    <TouchableOpacity>
-                        <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
-                            <Text className='text-primary font-pbold text-sm'>Mark as Watched</Text>
+                    <TouchableOpacity onPress={handleMarkWatched} >
+                        <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyWatched ? 'none' : Colors.secondary }} >
+                                { alreadyWatched ? <EyeOff size={20}  color={Colors.secondary} /> : <Eye size={20} color={Colors.primary} /> }
+                            <Text className='text-primary font-pbold text-sm' style={{ color : alreadyWatched ? Colors.secondary : Colors.primary }}>{ alreadyWatched ? 'Remove from watched' : 'Mark as watched' }</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                            <ListChecks color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Add to Watchlist</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                            <Handshake color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                            <Star color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Rate</Text>
                         </View>
                     </TouchableOpacity>
