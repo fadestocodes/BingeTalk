@@ -3,6 +3,9 @@ import React from 'react'
 import { useFetchWatchlist } from '../../../../../../api/user'
 import { useLocalSearchParams } from 'expo-router'
 import { Colors } from '../../../../../../constants/Colors'
+import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
+
+
 
 const WatchlistFromProfile = () => {
     const {userId} = useLocalSearchParams();
@@ -17,7 +20,10 @@ const WatchlistFromProfile = () => {
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
         <View style={{ paddingTop:30, gap:5 }}>
         <View className='justify-center items-center'>
+        <View className="flex-row justify-center items-center gap-2">
+                <ListChecks color='white' />
                 <Text className='text-white text-2xl font-pbold'>Watchlist</Text>
+                </View>
                 <Text className='text-mainGray text-center '>Titles to watch next</Text>
             </View>
             <View style={{ paddingTop:50 }}>

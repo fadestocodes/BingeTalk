@@ -258,3 +258,26 @@ export const useFetchInterested = (userId) => {
         refetchOnWindowFocus: true, // Auto refet
     })
 }
+
+export const fetchRecommended = async (userId) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/recommended?userId=${userId}`)
+        const response = await request.json()
+        return response
+    } catch (Err){
+        console.log(Err)
+    }
+}
+
+export const useFetchRecommended = (userId) => {
+    return useQuery({
+        queryKey : ['recommended', userId],
+        queryFn: async () => {
+            const recommended = await fetchRecommended(userId)
+            return recommended
+        },
+        staleTime: 1000 * 60 * 10, // Cache for 5 minutes
+        enabled: true, // Ensures query runs when component mounts
+        refetchOnWindowFocus: true, // Auto refet
+    })
+}

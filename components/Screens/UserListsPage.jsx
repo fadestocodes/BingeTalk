@@ -3,11 +3,12 @@ import React from 'react'
 import { useFetchUsersLists, listInteraction } from '../../api/list'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
-import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp } from 'lucide-react-native';
+import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
 import {  MessageIcon, RepostIcon, ThreeDotsIcon} from '../../assets/icons/icons'
 import { useFetchOwnerUser } from '../../api/user';
 import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
+
 
 const UserListsPage = ( { userId } ) => {
   
@@ -48,24 +49,31 @@ const UserListsPage = ( { userId } ) => {
     const handleInterestedPress = (userId) => {
         router.push(`/list/interested/${userId}`)
     }
+    const handleRecommendedPress = (userId) => {
+        router.push(`/list/recommended/${userId}`)
+    }
 
 
     return (
         <SafeAreaView className='w-full h-full' style={{ paddingTop : 70, paddingHorizontal : 20 }}>
     <View style={{ height:'100%', gap:15 }} >
 
-        <View className='flex-row justify-evenly items-center'>
-            <TouchableOpacity onPress={()=>handleRecentlyWatchedPress(userId)} className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
-                <Text className='text-mainGray text-sm font-pbold '>Recently Watched</Text>
+        <View className='flex-row justify-evenly items-center gap-1 '>
+            <TouchableOpacity onPress={()=>handleRecentlyWatchedPress(userId)} className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:80, height:80, padding:8, borderRadius:15}}>
+                <Text className='text-mainGray text-xs font-pbold '>Recently Watched</Text>
                 <Clock9 color={Colors.mainGray} strokeWidth={2.5} />
             </TouchableOpacity>
-            <TouchableOpacity  onPress={()=>handleWatchlistPress(userId)}  className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
-                <Text className='text-mainGray text-sm font-pbold '>Watchlist</Text>
+            <TouchableOpacity  onPress={()=>handleWatchlistPress(userId)}  className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:80, height:80, padding:8, borderRadius:15}}>
+                <Text className='text-mainGray text-xs font-pbold '>Watchlist</Text>
                 <ListChecks  color={Colors.mainGray} strokeWidth={2.5}/>
             </TouchableOpacity>
-            <TouchableOpacity  onPress={()=>handleInterestedPress(userId)}  className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:100, height:100, padding:15, borderRadius:15}}>
-                <Text className='text-mainGray text-sm font-pbold '>Interested</Text>
+            <TouchableOpacity  onPress={()=>handleInterestedPress(userId)}  className='justify-center items-center gap-3'style={{backgroundColor:Colors.mainGrayDark, width:80, height:80, padding:8, borderRadius:15}}>
+                <Text className='text-mainGray text-xs font-pbold '>Interested</Text>
                 <BadgeHelp color={Colors.mainGray} strokeWidth={2}/>
+            </TouchableOpacity>
+            <TouchableOpacity  onPress={()=>handleRecommendedPress(userId)}  className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:80, height:80, padding:8, borderRadius:15}}>
+                <Text className='text-mainGray text-xs font-pbold '>Recommended</Text>
+                <Handshake color={Colors.mainGray} strokeWidth={2}/>
             </TouchableOpacity>
         </View>
         <FlatList
