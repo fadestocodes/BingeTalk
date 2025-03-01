@@ -37,3 +37,4 @@ export const SendIcon = (props) => <Feather name="send" {...props} />;
 export const UpArrowIcon = (props) => <FontAwesome5 name="arrow-up" {...props} />;
 export const HeartIcon = (props) => <FontAwesome5 name="heart" {...props} />;
 export const ThreeDotsIcon = (props) => <Entypo name="dots-three-vertical" {...props} />;
+export const ProgressCheckIcon = (props) => <MaterialCommunityIcons name="progress-check" {...props} />;

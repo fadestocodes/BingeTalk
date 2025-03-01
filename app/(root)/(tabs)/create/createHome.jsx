@@ -238,10 +238,10 @@ const CreateHome = () => {
                     <Text className='mb-2 px-4 py-1 '>Thread</Text>
                     <View className='border-t-[2px] border-mainGrayLight  w-full '></View>
                 </TouchableOpacity>
-                <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Showcase'); setMenuOpen(false); setContent('')}}>
+                {/* <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Showcase'); setMenuOpen(false); setContent('')}}>
                     <Text className='mb-2 px-4 py-1'>Showcase</Text>
                     <View className='border-t-[2px] border-mainGrayLight  w-full '></View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity className='w-full' onPress={()=> {setCreateType('List'); setMenuOpen(false); setSearchQuery('')}}> 
                     <Text className='mb-2 px-4 py-1'>List</Text>
                 </TouchableOpacity>

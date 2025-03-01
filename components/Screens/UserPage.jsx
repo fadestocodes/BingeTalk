@@ -27,9 +27,9 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
 
   const tabs = [
     {id : 0, label : 'Profile'},
-    {id : 1, label : 'Showcase'},
-    {id : 2, label : 'Lists'},
-    {id : 3, label : 'Credits'}
+    // {id : 1, label : 'Showcase'},
+    {id : 1, label : 'Lists'},
+    // {id : 3, label : 'Credits'}
   ]
 
   const tabsChange = (id) => {
@@ -68,15 +68,15 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
               
                <ProfileMainPage user={user} isFetchingUser={isFetchingUser} refetchUser={refetchUser}  ></ProfileMainPage> 
             </View>
-            <View key="2" className='pt-32 items-center w-full' >
+            {/* <View key="2" className='pt-32 items-center w-full' >
                   <ShowcasePage></ShowcasePage>
-            </View>
-            <View key="3" className='pb-8'>
+            </View> */}
+            <View key="2" className='pb-8'>
               <UserListsPage  userId={user.id}></UserListsPage>
             </View>
-            <View key="4" className='pt-20' >
+            {/* <View key="4" className='pt-20' >
               <Credits></Credits>
-            </View>
+            </View> */}
           </PagerView>
 
           

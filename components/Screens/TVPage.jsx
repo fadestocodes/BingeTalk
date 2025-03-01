@@ -21,6 +21,11 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ThreadCard from '../ThreadCard'
 import { useGetTVById } from '../../api/tmdb'
 import { fetchTVThreads, useGetTVThreads } from '../../api/tv'
+import { Eye, EyeOff, ListChecks, Handshake, Star } from 'lucide-react-native'
+import { useUser } from '@clerk/clerk-expo'
+import { useFetchOwnerUser } from '../../api/user'
+import { markTVWatch } from '../../api/tv'
+
 
 
 
@@ -46,8 +51,15 @@ const TVPage = () => {
     const [whichCredits, setWhichCredits] = useState('Cast');
     const [dropdownMenu, setDropdownMenu] = useState(false);
     const [threads, setThreads] = useState(null)
+    const [ DBtvId, setDBtvId ] = useState(null)
+
     console.log('MOVIE',movie)
+    const { user:clerkUser } = useUser();
+    const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
+
+    const alreadyWatched = ownerUser.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
+    console.log('already watched?', alreadyWatched)
     
     const threadData = {
         tvObj:movie
@@ -95,6 +107,7 @@ const TVPage = () => {
             }
             const tvFromDB = await fetchTVFromDB({tvData})
             setThreads(tvFromDB.threads)
+            setDBtvId(tvFromDB.id)
 
             // const cachedTVShowFromDB = queryClient.getQueryData(['tv', tvId]);
             // if (cachedTVShowFromDB){
@@ -200,6 +213,13 @@ const TVPage = () => {
     // }
 
 
+    const handleMarkWatched = async (  ) => {
+        console.log('owneruserid', ownerUser.id)
+        await markTVWatch({ tvId : DBtvId, userId : ownerUser.id })
+        refetchOwnerUser();
+    }
+
+
 
   return (
     <View className='bg-primary h-full flex  pt-0 gap-10 relative ' style={{}}>
@@ -259,23 +279,27 @@ const TVPage = () => {
             
         </View>
         <View className="buttons flex gap-4 w-full items-center mb-6">
-                    <TouchableOpacity>
-                        <View className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
-                            <Text className='text-primary font-pbold text-sm'>Mark as Watched</Text>
+                    <TouchableOpacity onPress={handleMarkWatched} >
+                        <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyWatched ? 'none' : Colors.secondary }} >
+                                { alreadyWatched ? <EyeOff size={20}  color={Colors.secondary} /> : <Eye size={20} color={Colors.primary} /> }
+                            <Text className='text-primary font-pbold text-sm' style={{ color : alreadyWatched ? Colors.secondary : Colors.primary }}>{ alreadyWatched ? 'Remove from watched' : 'Mark as watched' }</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                            <ListChecks color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Add to Watchlist</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                            <Handshake color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <View className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center'>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                            <Star color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Rate</Text>
                         </View>
                     </TouchableOpacity>

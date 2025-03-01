@@ -1,7 +1,7 @@
 import * as nodeServer from '../lib/ipaddresses'
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
-
+import React, {useState, useCallback, useEffect, useRef} from 'react'
 
 
 export const checkUsername = async ( username ) => {
@@ -189,28 +189,78 @@ export const unfollowUser = async ( followData ) => {
     }
 }
 
-export const fetchRecentlyWatched = async (userId) => {
-    try {
-        const request = await fetch(`${nodeServer.currentIP}/user/recently-watched?userId=${userId}`)
-        const response = await request.json()
-        return response
-    } catch (Err){
-        console.log(Err)
+export const useRecentlyWatched = (userId, limit=10) => {
+    const [ data, setData  ]= useState([])
+    const [ cursor, setCursor ] = useState(null)
+    // const cursorRef = useRef(null); 
+    const [ loading, setLoading ] = useState(false)
+    const [ hasMore, setHasMore ] = useState(true)
+
+    const getRecentlyWatched =  async () => {
+        if ( !hasMore) return
+        console.log('HAS MORE?', hasMore)
+
+        setLoading(true)
+        try {
+            const response = await fetch (`${nodeServer.currentIP}/user/recently-watched?userId=${userId}&cursor=${cursor}&take=${limit}`)
+            const result = await response.json();
+            console.log('next CURSOR', result.nextCursor)
+            setData(prev => [...prev, ...result.items]);
+            setCursor(result.nextCursor)
+            // cursorRef.current = result.nextCursor;
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
     }
+    
+    useEffect(() => {
+        getRecentlyWatched(true);
+    }, [userId ]);
+    return { data, hasMore, loading, refetch : getRecentlyWatched }
+
 }
 
-export const useFetchRecentlyWatched = (userId) => {
-    return useQuery({
-        queryKey : ['recentlyWatched', userId],
-        queryFn: async () => {
-            const recentlyWatched = await fetchRecentlyWatched(userId)
-            return recentlyWatched
-        },
-        staleTime: 1000 * 60 * 10, // Cache for 5 minutes
-        enabled: true, // Ensures query runs when component mounts
-        refetchOnWindowFocus: true, // Auto refet
-    })
-}
+
+export const fetchRecentlyWatched = async ( { pageParam = null, userId } ) => {
+    // const { userId, cursor, take } = data
+    const request  = await fetch(`${nodeServer.currentIP}/user/recently-watched?userId=${userId}&cursor=${pageParam}&limit=5`);
+    const response = await request.json();
+    console.log('THE RESPONSE', response)
+    return response;
+};
+
+export const useFetchRecentlyWatched = (userId) => {    
+    return useInfiniteQuery({
+        queryKey: ['recentlyWatched', userId],
+        queryFn: ({ pageParam }) => fetchRecentlyWatched({ pageParam, userId }),
+        getNextPageParam: (lastPage) => lastPage?.nextCursor ?? null, // Determines next batch
+    });
+};
+
+// export const fetchRecentlyWatched = async (userId) => {
+//     try {
+//         const request = await fetch(`${nodeServer.currentIP}/user/recently-watched?userId=${userId}`)
+//         const response = await request.json()
+//         return response
+//     } catch (Err){
+//         console.log(Err)
+//     }
+// }
+
+// export const useFetchRecentlyWatched = (userId) => {
+//     return useQuery({
+//         queryKey : ['recentlyWatched', userId],
+//         queryFn: async () => {
+//             const recentlyWatched = await fetchRecentlyWatched(userId)
+//             return recentlyWatched
+//         },
+//         staleTime: 1000 * 60 * 10, // Cache for 5 minutes
+//         enabled: true, // Ensures query runs when component mounts
+//         refetchOnWindowFocus: true, // Auto refet
+//     })
+// }
 
 export const fetchWatchlist = async (userId) => {
     try {

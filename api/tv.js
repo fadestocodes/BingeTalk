@@ -129,3 +129,22 @@ export const useGetTVThreads = (  tvId ) => {
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
 }
+
+
+export const markTVWatch =  async ( data ) => {
+    console.log('DATAAA', data)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/tv/update-hasWatched`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response after marking tv as watched', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
