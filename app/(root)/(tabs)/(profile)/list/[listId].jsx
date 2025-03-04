@@ -43,12 +43,12 @@ const ListId = () => {
                 return (
                 <TouchableOpacity onPress={()=>handlePress(item)}  >
                     <Image 
-                        source = {{ uri : item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : `${posterURL}${item.castCrew.posterPath}` }}
+                        source = {{ uri : item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : item.castCrew &&  `${posterURL}${item.castCrew.posterPath}` }}
                         style= {{ width: 70, height :100, borderRadius:10  }}
                         resizeMode='cover'
                     />
-                    <Text className='text-mainGray text-sm font-pbold' style={{width:70 }} numberOfLines={2}>{ item.castCrew ? `${item.castCrew.name}` : item.movie ? `${item.movie.title}` : `${item.tv.title}` }</Text>
-                    <Text className='text-mainGray text-xs'>{ item.castCrew ? `(${getYear(item.castCrew.dob)})` : item.movie ? `(${getYear(item.movie.releaseDate)})` : `(${ getYear(item.tv.releaseDate) })` }</Text>
+                    <Text className='text-mainGray text-sm font-pbold' style={{width:70 }} numberOfLines={2}>{ item.castCrew ? `${item.castCrew.name}` : item.movie ? `${item.movie.title}` : item.tv && `${item.tv.title}` }</Text>
+                    <Text className='text-mainGray text-xs'>{ item.castCrew ? `(${getYear(item.castCrew.dob)})` : item.movie ? `(${getYear(item.movie.releaseDate)})` : item.tv && `(${ getYear(item.tv.releaseDate) })` }</Text>
                 </TouchableOpacity>
             )}}
         />

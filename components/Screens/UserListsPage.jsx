@@ -116,7 +116,7 @@ const UserListsPage = ( { userId } ) => {
                             <View key={index} className='flex-row gap-2' > 
 
                                 <Image
-                                    source={{ uri : element.movie ? `${posterURL}${element.movie.posterPath}` : element.tv ? `${posterURL}${element.tv.posterPath}` : `${posterURL}${element.castCrew.posterPath}` }}
+                                    source={{ uri : element.movie ? `${posterURL}${element.movie.posterPath}` : element.tv ? `${posterURL}${element.tv.posterPath}` : element.castCrew &&  `${posterURL}${element?.castCrew.posterPath}` }}
                                     resizeMode='cover'
                                     style= {{ borderRadius : 10, width:40, height:60 }}
                                 />

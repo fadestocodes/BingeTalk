@@ -1,3 +1,18 @@
+// import { StyleSheet, Text, View } from 'react-native'
+// import React from 'react'
+
+// const addToListModal = () => {
+//   return (
+//     <View className='w-full h-full bg-primary justify-center items-center'>
+//       <Text className='text-white text-xl font-pbold'>addToListModal</Text>
+//     </View>
+//   )
+// }
+
+// export default addToListModal
+
+// const styles = StyleSheet.create({})
+
 import { ScrollView, StyleSheet, Text, View, FlatList , TouchableOpacity, TextInput, Keyboard, KeyboardAvoidingView, ActivityIndicator} from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { Colors } from '../../../../constants/Colors'
@@ -48,7 +63,7 @@ const addToListModal = () => {
 
 
 
-    // const userLists = fetchUsersLists(ownerUser.id)
+
     const { data : userLists, refetch: refetchUserLists } = useFetchUsersLists(ownerUser.id)
     console.log("USER LISTS", userLists)
     const handleChange = (name, text) => {
@@ -86,7 +101,6 @@ const addToListModal = () => {
               media_type : movieObj.media_type,
             } 
         }
-        
         const listData = {
             title : inputs.title,
             caption : inputs.description,
@@ -158,16 +172,16 @@ const addToListModal = () => {
                         renderItem={({item}) => {
                             console.log('ITEM',item)
                             const alreadyIncluded = item.listItem.some( item => item.movieId === Number(DBMovieId) || item.tvId === Number(DBtvId) )
-                            return (
-                                <TouchableOpacity onPress={()=>handleSelectList(item)} disabled={ alreadyIncluded }  style={{  opacity: alreadyIncluded ? 0.5 : 1, height:'auto', width:'100%',backgroundColor:Colors.mainGrayDark, borderRadius:15, paddingHorizontal:30, paddingVertical:15, gap:10}} >
-                                        <View className=' gap-0 justify-center items-start' >
-                                            <Text className='text-white font-pbold text-lg' >{ item.title }</Text>
-                                            <Text className='text-white text-sm '>{`(${item.listItem.length} ${item.listItem.length > 1 ? `items` : 'item'})`}</Text>
-                                        </View>
-                                        <Text className='text-mainGray text-sm font-pregular' numberOfLines={2}>{ item.caption }</Text>
-                                        { alreadyIncluded && <Text className='text-secondary text-sm text-center '>*Already included in this list!</Text>}
-                                </TouchableOpacity>
-                            )}}
+                        return (
+                            <TouchableOpacity onPress={()=>handleSelectList(item)} disabled={ alreadyIncluded }  style={{  opacity: alreadyIncluded ? 0.5 : 1, height:'auto', width:'100%',backgroundColor:Colors.mainGrayDark, borderRadius:15, paddingHorizontal:30, paddingVertical:15, gap:10}} >
+                                    <View className=' gap-0 justify-center items-start' >
+                                        <Text className='text-white font-pbold text-lg' >{ item.title }</Text>
+                                        <Text className='text-white text-sm '>{`(${item.listItem.length} ${item.listItem.length > 1 ? `items` : 'item'})`}</Text>
+                                    </View>
+                                    <Text className='text-mainGray text-sm font-pregular' numberOfLines={2}>{ item.caption }</Text>
+                                    { alreadyIncluded && <Text className='text-secondary text-sm text-center '>*Already included in this list!</Text>}
+                            </TouchableOpacity>
+                        )}}
                         ListFooterComponent={
 
 
@@ -238,3 +252,5 @@ const addToListModal = () => {
 }
 
 export default addToListModal
+
+const styles = StyleSheet.create({})

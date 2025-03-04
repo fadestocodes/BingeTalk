@@ -13,7 +13,6 @@ import { markMovieInterested, markMovieCurrentlyWatching, markMovieWatchlist } f
 const moreInteractions = () => {
     const router = useRouter()
     const { DBtvId, DBMovieId, tmdbId } = useLocalSearchParams();
-    console.log("PARAMS", DBtvId, DBMovieId, tmdbId)
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress });
     console.log(ownerUser.interestedItems)
