@@ -99,9 +99,13 @@ const UserListsPage = ( { userId } ) => {
                 return (
                 <View className='w-full' >
                     <TouchableOpacity onPress={()=>handleListPress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:15, paddingHorizontal:15, gap:15 }} >
-                        <View className=''>
-                            <Text className='text-white font-pbold text-xl' >{ item.title }</Text>
-                            <Text className='text-mainGray text-sm font-pregular' numberOfLines={2}>{ item.caption }</Text>
+                        <View className='gap-3'>
+                            {/* <Text className='text-white font-pbold text-xl' >{ item.title }</Text> */}
+                            <View className=' gap-0 justify-center items-start' >
+                                        <Text className='text-white font-pbold text-xl' >{ item.title }</Text>
+                                        <Text className='text-white text-sm '>{`(${item.listItem.length} ${item.listItem.length > 1 ? `items` : 'item'})`}</Text>
+                                    </View>
+                            <Text className='text-mainGray  font-pregular' numberOfLines={2}>{ item.caption }</Text>
                         </View>
 
                             <View style={{ flexDirection:'row', gap:10}} >

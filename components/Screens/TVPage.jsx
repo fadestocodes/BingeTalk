@@ -13,7 +13,7 @@ import CastCrewHorizontal from '../CastCrewHorizontal'
 import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
 import DiscoverHorizontal from '../DiscoverHorizontal'
-import { useFetchTVMentions } from '../../api/tv'
+import { markTVWatchlist, useFetchTVMentions } from '../../api/tv'
 import DialogueCard from './DialoguePage'
 import { useFetchTVThreads } from '../../api/tv'
 import { fetchTVFromDB } from '../../api/tv'
@@ -59,10 +59,8 @@ const TVPage = () => {
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
 
     const alreadyWatched = ownerUser.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
-    console.log('alreadywatched',alreadyWatched)
-    console.log('owner user', ownerUser)
     const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) )
-    console.log('interested?', alreadyInterested)
+    const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.tvId === Number(DBtvId) )
     
     const threadData = {
         tvObj:movie
@@ -225,8 +223,14 @@ const TVPage = () => {
     const handleMore = () => {
         router.push({
             pathname: "/moreInteractions",
-            params: { DBtvId: String(DBtvId) }, // Convert to string
+            params: { DBtvId: String(DBtvId), tmdbId : tvId }, // Convert to string
         });
+    }
+
+    const handleWatchlist = async (  ) => {
+        console.log('owneruserid', ownerUser.id)
+        await markTVWatchlist({ tvId : DBtvId, userId : ownerUser.id })
+        refetchOwnerUser();
     }
 
 
@@ -295,13 +299,13 @@ const TVPage = () => {
                             <Text className='text-primary font-pbold text-sm' style={{ color : alreadyWatched ? Colors.secondary : Colors.primary }}>{ alreadyWatched ? 'Remove from watched' : 'Mark as watched' }</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
-                            <ListChecks color={Colors.primary} size={20} />
-                            <Text className='text-primary font-pbold text-sm'>Add to Watchlist</Text>
+                    <TouchableOpacity  onPress={handleWatchlist}>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyInWatchlist ? 'none' : Colors.secondary }}>
+                        { alreadyInWatchlist ? <ListChecks color={Colors.secondary} size={20} /> : <ListChecks color={Colors.primary} size={20} /> }
+                            <Text className='text-primary font-pbold text-sm' style={{ color : alreadyInWatchlist ? Colors.secondary : Colors.primary }}>{ alreadyInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist' }</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity  >
                         <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
                             <Handshake color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>

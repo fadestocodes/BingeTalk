@@ -174,10 +174,10 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
                                 <Text className='text-gray-400 text-lg font-pblack'>{user.following.length}</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Following</Text>
                             </View>
-                            <View className='flex-row gap-2 justify-center items-center'>
+                            {/* <View className='flex-row gap-2 justify-center items-center'>
                                 <Text className='text-gray-400 text-lg font-pblack'>21</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Credits</Text>
-                            </View>
+                            </View> */}
                         </View>
                         <View className='w-full justify-center items-center mt-4' >
                             <Text className='font-pbold text-mainGray'>Current Rotation</Text>

@@ -10,6 +10,7 @@ export const SearchIcon = (props) => <FontAwesome name="search" {...props} />;
 export const MedalIcon = (props) => <FontAwesome5 name="medal" {...props} />;
 export const UserIcon = (props) => <FontAwesome name="user" {...props} />;
 export const BackIcon = (props) => <FontAwesome6 name="arrow-left-long" {...props} />;
+export const ForwardIcon = (props) => <FontAwesome6 name="arrow-right-long" {...props} />;
 export const RepostIcon = (props) => <FontAwesome6 name="retweet" {...props} />;
 export const UpIcon = (props) => <AntDesign name="up" {...props} />;
 export const DownIcon = (props) => <AntDesign name="down" {...props} />;

@@ -11,8 +11,27 @@ export const createList = async (postData) => {
             },
             body : JSON.stringify(postData)
         })
+        const response = await request.json();
+        return response;
     } catch (err) {
         console.log(err)
+    }
+}
+
+export const addToList = async (data) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/list/add-to-list`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        return response
+    } catch (err) {
+        console.log(err)
+        return err
     }
 }
 

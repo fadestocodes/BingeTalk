@@ -13,7 +13,7 @@ const HomeLayout = () => {
       <Stack.Screen name='cast' options={{headerShown : false}} />
       <Stack.Screen name='threads' options={{headerShown : false}} />
       <Stack.Screen name='moreInteractions'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:400  , borderRadius:30, backgroundColor:Colors.primary }}} />
-      <Stack.Screen name='addToList'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:400  , borderRadius:30, backgroundColor:Colors.primary }}} />
+      <Stack.Screen name='addToListModal'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:400  , borderRadius:30, backgroundColor:Colors.primary }}} />
 
     </Stack>
   )

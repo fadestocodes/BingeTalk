@@ -148,3 +148,57 @@ export const markTVWatch =  async ( data ) => {
         console.log(err)
     }
 }
+
+export const markTVInterested =  async ( data ) => {
+    console.log('DATAAA', data)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/tv/update-interested`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response after marking tv as watched', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const markTVCurrentlyWatching =  async ( data ) => {
+    console.log('DATAAA', data)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/tv/update-currentlyWatching`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response after marking tv as watched', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const markTVWatchlist =  async ( data ) => {
+    console.log('DATAAA', data)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/tv/update-watchlist`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response after marking tv as watched', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
