@@ -29,7 +29,7 @@
 // });
 
 
-import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
+import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import React, {useRef} from 'react'
 import { useFetchRecentlyWatched , useRecentlyWatched} from '../../../api/user'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -37,6 +37,7 @@ import { Colors } from '../../../constants/Colors'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
 import { formatDate } from '../../../lib/formatDate'
 import { FilmIcon, TVIcon } from '../../../assets/icons/icons'
+// import InfiniteScroll from '../../../components/InfiniteScroll'
 
 
 const RecentlyWatchedFromProfile = () => {
@@ -55,21 +56,21 @@ const RecentlyWatchedFromProfile = () => {
     // console.log('DATAAA', data)
 
     // const recentlyWatched = data?.pages.flatMap(page => page.items) || [];
-    // const { data : recentlyWatched, loading, refetch, hasMore } = useRecentlyWatched(userId)
+    const { data : recentlyWatched, loading, refetch, hasMore,  } = useRecentlyWatched(userId)
 
-    const { 
-      data, 
-      fetchNextPage, 
-      hasNextPage, 
-      isFetchingNextPage ,
-      isFetching
+  //   const { 
+  //     data, 
+  //     fetchNextPage, 
+  //     hasNextPage, 
+  //     isFetchingNextPage ,
+  //     isFetching
       
-  } = useFetchRecentlyWatched(userId);
+  // } = useFetchRecentlyWatched(userId);
 
 
-  console.log('data', data)
-  const flattenData = data?.pages.flatMap((page) => page.items) || [];
-  console.log(flattenData)
+  console.log('data', recentlyWatched)
+  // const flattenData = data?.pages.flatMap((page) => page.items) || [];
+  // console.log(flattenData)
 
 
 
@@ -82,7 +83,12 @@ const RecentlyWatchedFromProfile = () => {
     
     const handlePress = (item) => {
         console.log('tmbdbId', item.tmdbId)
-        router.push(`/movie/${item.movie.tmdbId}`)
+        if (item.movie){
+          router.push(`/movie/${item.movie.tmdbId}`)
+        }
+        if (item.tv){
+          router.push(`/tv/${item.tv.tmdbId}`)
+        }
     }
     
 
@@ -94,24 +100,24 @@ const RecentlyWatchedFromProfile = () => {
         const ITEM_HEIGHT = 50
 
 
-  if (isFetching){
-    return(
-        <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>
-     <RefreshControl tintColor={Colors.secondary}   />
-     </View>
-)
-}
+  // if (loading  ){
+  //   return(
+  //       <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>
+  //    <RefreshControl tintColor={Colors.secondary}   />
+  //    </View>
+  //   )
+  // }
 
   return (
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
        <View 
-            // refreshControl={
-            //     <RefreshControl
-            //         tintColor={Colors.secondary}
-            //         refreshing={loading}
-            //         onRefresh={refetch}
-            //     />
-            // }
+            refreshControl={
+                <RefreshControl
+                    tintColor={Colors.secondary}
+                    refreshing={loading}
+                    onRefresh={refetch}
+                />
+            }
             style={{ paddingTop:30, gap:15, width:'100%', paddingHorizontal:20, paddingBottom:100 }}>
             <View className='justify-center items-center'>
             <View className="flex-row justify-center items-center gap-2">
@@ -121,27 +127,32 @@ const RecentlyWatchedFromProfile = () => {
                 {/* <Text className='text-mainGray text-center '>Recently watched titles from @{recentlyWatched.user.username}</Text> */}
             </View>
             <View style={{ paddingTop:50 }}>
-            { data.length < 1 ? (
+            { recentlyWatched.length < 1 ? (
                 <View>
                     <Text className='text-mainGray text-center text-xl font-pmedium' >(List is empty)</Text>
                 </View>
             ) : (
+
+                // <InfiniteScroll data={flattenData} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} isFetching={isFetching}  />
                 <FlatList
-                    ref={listRef}
                     scrollEnabled={true}
-                    data={flattenData}
+                    data={recentlyWatched}
                     keyExtractor={item => item.id}
                     contentContainerStyle={{ width:'100%', gap:50, paddingBottom:100 }}
                     // onEndReached={()=>reachedEnd()}
                     onEndReached={() => {
-                      if (hasNextPage && !isFetchingNextPage) {
-                          fetchNextPage();
+                      // if (hasNextPage && !isFetchingNextPage) {
+                      //     fetchNextPage();
+                      //     // refetch()
+                      // }
+                      if ( hasMore  ){
+                        refetch()
                       }
                   }}
                    
                     
-                    onEndReachedThreshold={0.2}
-                    // ListFooterComponent={hasMore && loading ? <ActivityIndicator /> : <TouchableOpacity onPress={reachedEnd}><Text className='text-white'>Load more</Text></TouchableOpacity>}
+                    onEndReachedThreshold={0.1}
+                    // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                     renderItem={({item})=>{
                         console.log('ITEM',item.id)
                         return (
@@ -150,7 +161,7 @@ const RecentlyWatchedFromProfile = () => {
                             <Text className='text-mainGray text-sm '>{formatDate(item.createdAt)}</Text>
                             <View className='flex-row gap-1 justify-center items-center'>
                                 { item.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
-                                <Text className='text-white text font-pbold'>{ item?.movie.title || item?.tv.title }</Text>
+                                <Text className='text-white text font-pbold'>{ item.movieId ? `${item.movie.title}` : `${item.tv.title}` }</Text>
                             </View>
                         </TouchableOpacity>
                             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>

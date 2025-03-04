@@ -189,20 +189,24 @@ export const unfollowUser = async ( followData ) => {
     }
 }
 
-export const useRecentlyWatched = (userId, limit=10) => {
+export const useRecentlyWatched = (userId, limit=5) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
     const [ loading, setLoading ] = useState(false)
     const [ hasMore, setHasMore ] = useState(true)
+    const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
     const getRecentlyWatched =  async () => {
-        if ( !hasMore) return
+        if ( !hasMore  ) return
         console.log('HAS MORE?', hasMore)
 
         setLoading(true)
+        // if (cursor){
+        //     set
+        // }
         try {
-            const response = await fetch (`${nodeServer.currentIP}/user/recently-watched?userId=${userId}&cursor=${cursor}&take=${limit}`)
+            const response = await fetch (`${nodeServer.currentIP}/user/recently-watched?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
             console.log('next CURSOR', result.nextCursor)
             setData(prev => [...prev, ...result.items]);
@@ -217,7 +221,7 @@ export const useRecentlyWatched = (userId, limit=10) => {
     
     useEffect(() => {
         getRecentlyWatched(true);
-    }, [userId ]);
+    }, [ userId]);
     return { data, hasMore, loading, refetch : getRecentlyWatched }
 
 }
@@ -235,6 +239,7 @@ export const useFetchRecentlyWatched = (userId) => {
     return useInfiniteQuery({
         queryKey: ['recentlyWatched', userId],
         queryFn: ({ pageParam }) => fetchRecentlyWatched({ pageParam, userId }),
+        
         getNextPageParam: (lastPage) => lastPage?.nextCursor ?? null, // Determines next batch
     });
 };

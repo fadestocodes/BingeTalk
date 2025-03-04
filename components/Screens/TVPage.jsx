@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'expo-router/build/hooks'
 import { useLocalSearchParams } from 'expo-router/build/hooks'
 import {GetTVById} from '../../api/tmdb'
-import {BackIcon, DownIcon} from '../../assets/icons/icons'
+import {BackIcon, DownIcon, ProgressCheckIcon} from '../../assets/icons/icons'
 import { TouchableOpacity } from 'react-native'
 import {Colors} from '../../constants/Colors'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -21,7 +21,7 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ThreadCard from '../ThreadCard'
 import { useGetTVById } from '../../api/tmdb'
 import { fetchTVThreads, useGetTVThreads } from '../../api/tv'
-import { Eye, EyeOff, ListChecks, Handshake, Star } from 'lucide-react-native'
+import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { markTVWatch } from '../../api/tv'
@@ -59,7 +59,10 @@ const TVPage = () => {
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
 
     const alreadyWatched = ownerUser.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
-    console.log('already watched?', alreadyWatched)
+    console.log('alreadywatched',alreadyWatched)
+    console.log('owner user', ownerUser)
+    const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) )
+    console.log('interested?', alreadyInterested)
     
     const threadData = {
         tvObj:movie
@@ -219,6 +222,13 @@ const TVPage = () => {
         refetchOwnerUser();
     }
 
+    const handleMore = () => {
+        router.push({
+            pathname: "/moreInteractions",
+            params: { DBtvId: String(DBtvId) }, // Convert to string
+        });
+    }
+
 
 
   return (
@@ -301,6 +311,12 @@ const TVPage = () => {
                         <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
                             <Star color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Rate</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleMore} >
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                            <Ellipsis  color={Colors.primary} size={20} />
+                            {/* <Text className='text-primary font-pbold text-sm'>...</Text> */}
                         </View>
                     </TouchableOpacity>
         </View>
