@@ -40,7 +40,6 @@ const DialogueCard = (  {dialogue, refetch} ) => {
     const { user: clerkUser } = useUser()
     const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
 
-    console.log('DIALOGUE', dialogue)
     
     const alreadyUpvoted = dialogue.dialogueInteractions.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
     const alreadyDownvoted = dialogue.dialogueInteractions.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
@@ -132,7 +131,7 @@ const DialogueCard = (  {dialogue, refetch} ) => {
                 { dialogue.mentions && dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (
                     <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
                         <Image
-                            source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew.posterPath}` }}
+                            source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
                             resizeMode='cover'
                             style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
                         />

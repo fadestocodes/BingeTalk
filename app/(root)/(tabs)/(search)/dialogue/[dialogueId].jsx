@@ -19,7 +19,6 @@ const DialoguePageFromSearch = () => {
    
 
     // const { dialogue, isLoading, error } = useCustomFetchSingleDialogue( Number(dialogueId) )
-    // console.log('DIALOGUE FROM HOOK', dialogue)
     const [ dialogue, setDialogue ] = useState(null)
     const [ isFetching ,setIsFetching  ] = useState(false)
     const posterURL = 'https://image.tmdb.org/t/p/original';

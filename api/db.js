@@ -26,7 +26,7 @@ export const findOrCreateEntity = async (type, movieData, personData) => {
                 headers : {
                     'Content-type' : 'application/json'
                 },
-                body:JSON.stringify({movieData})
+                body:JSON.stringify({tvData : movieData})
             })
             const response = await entity.json();
             console.log('response', response);

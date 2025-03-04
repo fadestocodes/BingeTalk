@@ -185,7 +185,9 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     }
 
     const handlePost = async () => {
+        console.log('MENTIONS', mentions)
         const formattedString = parseMentions(input, mentions)
+
         console.log('content is ', formattedString);
         setUploadingPost(true);
         const mentionsForPrisma = await Promise.all(
@@ -207,7 +209,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     posterPath : mention.posterPath
                 }
                 try {
-                    console.log('trying to get entity')
+                    console.log('trying to get entity with', movieData)
                     const entity = await findOrCreateEntity(type, movieData, personData);
                     console.log('entity is ', entity)
                     console.log('mention type', mention.mentionType)
