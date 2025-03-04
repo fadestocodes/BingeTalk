@@ -8,24 +8,29 @@ import { BackIcon, ForwardIcon } from '../../../../assets/icons/icons'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { useLocalSearchParams } from 'expo-router'
 import { fetchTVFromDB } from '../../../../api/tv'
-import { GetTVById } from '../../../../api/tmdb'
+import { GetTVById, GetMovieById } from '../../../../api/tmdb'
 
 
 const addToListModal = () => {
     const { user :clerkUser } = useUser()
-    const {tmdbId, DBtvId} = useLocalSearchParams();
+    const {tmdbId, DBtvId, DBMovieId} = useLocalSearchParams();
     const [ tvObj, setTvObj ] = useState(null)
+    const [ movieObj, setMovieObj ] = useState(null)
 
-    const useGetTVById = async () => {
-        const tvObj = await GetTVById(Number(tmdbId))
-        setTvObj(tvObj)
+    const useGetTitle = async () => {
+        if (DBtvId){
+            const tvObj = await GetTVById(Number(tmdbId))
+            setTvObj(tvObj)
+        } else if (DBMovieId){
+            const movieObj = await GetMovieById(Number(tmdbId))
+            setMovieObj(movieObj)
+        }
     }
     useEffect(()=>{
-        useGetTVById();
+        useGetTitle();
     }, [])
 
 
-    console.log('TVOBJ',tvObj)
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
     const [ isCreatingList, setIsCreatingList ] = useState(false)
     const [ isDescription, setIsDescription ] = useState(false)
@@ -56,14 +61,20 @@ const addToListModal = () => {
 
     const handleCreate = async () => {
         setUploadingNewList(true)
-        tvObj.media_type = 'tv';
-        const formattedTvObj = {}
-        formattedTvObj.item = tvObj 
+        let formattedTitle = {}
+        if (DBtvId){
+            tvObj.media_type = 'tv';
+            formattedTitle.item = tvObj 
+
+        } else if (DBMovieId){
+            movieObj.media_type = 'movie';
+            formattedTitle.item = movieObj
+        }
         const listData = {
             title : inputs.title,
             caption : inputs.description,
             userId :ownerUser.id ,
-            listItems : [formattedTvObj]
+            listItems : [formattedTitle]
         }
         console.log('list data', listData)
         const response = await createList(listData)
@@ -82,11 +93,23 @@ const addToListModal = () => {
 
     const handleSelectList = async (item) => {
 
+        console.log('adding to selected list')
+        let listIdType, mediaIdType, mediaId
+        if (DBtvId){
+            listIdType = 'tvId';
+            mediaIdType = 'tv';
+            mediaId = Number(DBtvId)
+        } else if (DBMovieId){
+            listIdType = 'movieId';
+            mediaIdType = 'movie';
+            mediaId = Number(DBMovieId)
+        }
+
         const data = {
-            listIdType : 'tvId',
-            listId : item.id ,
-            mediaIdType : 'tv',
-            mediaId : Number(DBtvId)
+            listIdType ,
+            listId : item.id,
+            mediaIdType ,
+            mediaId
         }
         console.log('DATA', data)
         try {
@@ -94,6 +117,8 @@ const addToListModal = () => {
             console.log('updated list', updatedList)
         } catch (err) {
             console.log(err)
+        } finally {
+            refetchUserLists();
         }
     }
 

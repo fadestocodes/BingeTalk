@@ -59,7 +59,6 @@ const TVPage = () => {
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
 
     const alreadyWatched = ownerUser.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
-    const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) )
     const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.tvId === Number(DBtvId) )
     
     const threadData = {

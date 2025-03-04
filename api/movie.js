@@ -84,3 +84,58 @@ export const markMovieWatch =  async ( data ) => {
         console.log(err)
     }
 }
+
+
+export const markMovieInterested =  async ( data ) => {
+    console.log('DATAAA', data)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/movie/update-interested`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response after marking movie as watched', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const markMovieCurrentlyWatching =  async ( data ) => {
+    console.log('DATAAA', data)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/movie/update-currentlyWatching`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response after marking movie as watched', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const markMovieWatchlist =  async ( data ) => {
+    console.log('DATAAA', data)
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/movie/update-watchlist`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response after marking movie as watched', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}

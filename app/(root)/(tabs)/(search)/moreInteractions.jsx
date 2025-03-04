@@ -7,33 +7,41 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 import { markTVInterested, markTVCurrentlyWatching, markTVWatchlist } from '../../../../api/tv'
+import { markMovieInterested, markMovieCurrentlyWatching, markMovieWatchlist } from '../../../../api/movie'
 
 const moreInteractions = () => {
     const router = useRouter()
-    const { DBtvId, tmdbId } = useLocalSearchParams();
-    console.log('DBtvId', DBtvId)
+    const { DBtvId, DBMovieId, tmdbId } = useLocalSearchParams();
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress });
     console.log(ownerUser.interestedItems)
-    const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) )
-    const alreadyWatching = ownerUser.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) )
+    const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
+    const alreadyWatching = ownerUser.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
 
 
     const handleInterested = async (  ) => {
         console.log('owneruserid', ownerUser.id)
-        await markTVInterested({ tvId : DBtvId, userId : ownerUser.id })
+        if (DBtvId){
+            await markTVInterested({ tvId : DBtvId, userId : ownerUser.id })
+        } else if (DBMovieId){
+            await markMovieInterested({ movieId : DBMovieId, userId : ownerUser.id })
+        }
         refetch();
     }
 
     const handleCurrentlyWatching = async () => {
-        await markTVCurrentlyWatching({ tvId : DBtvId, userId : ownerUser.id })
+        if (DBtvId){
+            await markTVCurrentlyWatching({ tvId : DBtvId, userId : ownerUser.id })
+        } else if (DBMovieId){
+            await markMovieCurrentlyWatching({ movieId : DBMovieId, userId : ownerUser.id })
+        }
         refetch()
     }
 
     const handleAddToList = () => {
         router.push({
             pathname : '/addToListModal',
-            params : { tmdbId, DBtvId }
+            params : { tmdbId, DBtvId, DBMovieId }
         })
     }
 

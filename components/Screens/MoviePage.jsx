@@ -12,14 +12,14 @@ import YoutubePlayer from 'react-native-youtube-iframe';
 import CastCrewHorizontal from '../CastCrewHorizontal'
 import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
-import { getMovieMentions, useFetchMovieMentions, markMovieWatch } from '../../api/movie'
+import { getMovieMentions, useFetchMovieMentions, markMovieWatch, markMovieWatchlist } from '../../api/movie'
 import DialogueCard from './DialoguePage'
 import { fetchMovieFromDB } from '../../api/movie'
 import { useQueryClient } from '@tanstack/react-query';
 import ThreadCard from '../ThreadCard'
 import { useFetchOwnerUser } from '../../api/user'
 import { useUser } from '@clerk/clerk-expo'
-import { Eye, EyeOff, ListChecks, Handshake, Star } from 'lucide-react-native'
+import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
 
 
 
@@ -55,7 +55,8 @@ const MoviePage = () => {
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
     const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
     const alreadyWatched = ownerUser.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
-    console.log('already watched?', alreadyWatched)
+    const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
+
 
     const fetchData = async () => {
         setLoading(true);    
@@ -190,6 +191,21 @@ const MoviePage = () => {
 
 
 
+    const handleMore = () => {
+        router.push({
+            pathname: "/moreInteractions",
+            params: { DBMovieId: String(DBmovieId), tmdbId : movieId }, // Convert to string
+        });
+    }
+
+    const handleWatchlist = async (  ) => {
+        console.log('owneruserid', ownerUser.id)
+        await markMovieWatchlist({ movieId : DBmovieId, userId : ownerUser.id })
+        refetchOwnerUser();
+    }
+
+
+
   return (
     <View className='bg-primary h-full flex  pt-0 gap-10 relative  ' style={{}}>
     <ScrollView 
@@ -246,6 +262,7 @@ const MoviePage = () => {
             </View>
             
         </View>
+        
         <View className="buttons flex gap-4 w-full items-center mb-6">
                     <TouchableOpacity onPress={handleMarkWatched} >
                         <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyWatched ? 'none' : Colors.secondary }} >
@@ -253,13 +270,13 @@ const MoviePage = () => {
                             <Text className='text-primary font-pbold text-sm' style={{ color : alreadyWatched ? Colors.secondary : Colors.primary }}>{ alreadyWatched ? 'Remove from watched' : 'Mark as watched' }</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
-                            <ListChecks color={Colors.primary} size={20} />
-                            <Text className='text-primary font-pbold text-sm'>Add to Watchlist</Text>
+                    <TouchableOpacity  onPress={handleWatchlist}>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyInWatchlist ? 'none' : Colors.secondary }}>
+                        { alreadyInWatchlist ? <ListChecks color={Colors.secondary} size={20} /> : <ListChecks color={Colors.primary} size={20} /> }
+                            <Text className='text-primary font-pbold text-sm' style={{ color : alreadyInWatchlist ? Colors.secondary : Colors.primary }}>{ alreadyInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist' }</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity  >
                         <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
                             <Handshake color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
@@ -271,7 +288,15 @@ const MoviePage = () => {
                             <Text className='text-primary font-pbold text-sm'>Rate</Text>
                         </View>
                     </TouchableOpacity>
+                    <TouchableOpacity onPress={handleMore} >
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                            <Ellipsis  color={Colors.primary} size={20} />
+                            {/* <Text className='text-primary font-pbold text-sm'>...</Text> */}
+                        </View>
+                    </TouchableOpacity>
         </View>
+
+
         <View className='genre-badges flex-row gap-3 flex-wrap px-6 w-full items-center justify-center ' >
                         <TouchableOpacity>
                             <Text className='text-mainGray text-xs border-[1px] rounded-md p-1' style={{borderColor:Colors.mainGray}}>Film</Text>
