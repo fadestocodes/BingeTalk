@@ -336,3 +336,29 @@ export const useFetchRecommended = (userId) => {
         refetchOnWindowFocus: true, // Auto refet
     })
 }
+
+export const checkMutual = async (data) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/check-mutual`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json();
+        return response
+    } catch (err){
+        console.log(err)
+    }
+}
+
+export const getAllMutuals = async (userId) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/all-mutuals?userId=${userId}`)
+        const response = await request.json();
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}

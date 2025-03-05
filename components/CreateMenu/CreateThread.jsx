@@ -135,7 +135,7 @@
                         
                     />
                 {   loadingImage ? (
-                    <View className='bg-white justify-center items-center' style={{ width:'100%', height : 200 }}>
+                    <View className='bg-primary justify-center items-center' style={{ width:'100%', height : 200 }}>
                         <ActivityIndicator></ActivityIndicator>
                     </View>
                 ) 

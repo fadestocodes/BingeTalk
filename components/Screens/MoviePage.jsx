@@ -20,6 +20,7 @@ import ThreadCard from '../ThreadCard'
 import { useFetchOwnerUser } from '../../api/user'
 import { useUser } from '@clerk/clerk-expo'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
+import { newRecommendation } from '../../api/recommendation'
 
 
 
@@ -205,6 +206,13 @@ const MoviePage = () => {
     }
 
 
+    const handleRecommendation = () => {
+        router.push({
+            pathname : '/recommendationModal',
+            params: { DBmovieId }
+        })
+    }
+
 
   return (
     <View className='bg-primary h-full flex  pt-0 gap-10 relative  ' style={{}}>
@@ -276,7 +284,7 @@ const MoviePage = () => {
                             <Text className='text-primary font-pbold text-sm' style={{ color : alreadyInWatchlist ? Colors.secondary : Colors.primary }}>{ alreadyInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist' }</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity  >
+                    <TouchableOpacity onPress={handleRecommendation} >
                         <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
                             <Handshake color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>

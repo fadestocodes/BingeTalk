@@ -30,6 +30,7 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
     }
 
     const handlePost = async () => {
+        console.log('listtitle', inputs.title)
         const postData = {
             title : inputs.title ,
             caption : inputs.description,
