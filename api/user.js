@@ -337,6 +337,46 @@ export const useFetchRecommended = (userId) => {
     })
 }
 
+export const useGetRecommendations = (userId, limit=5) => {
+    const [ data, setData  ]= useState([])
+    const [ cursor, setCursor ] = useState(null)
+    // const cursorRef = useRef(null); 
+    const [ loading, setLoading ] = useState(false)
+    const [ hasMore, setHasMore ] = useState(true)
+    const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
+
+    const getRecommendations =  async () => {
+        if ( !hasMore  ) return
+        console.log('HAS MORE?', hasMore)
+
+        setLoading(true)
+        // if (cursor){
+        //     set
+        // }
+        try {
+            const response = await fetch (`${nodeServer.currentIP}/user/recommendations?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+            const result = await response.json();
+            console.log('next CURSOR', result.nextCursor)
+            setData(prev => [...prev, ...result.items]);
+            setCursor(result.nextCursor)
+            // cursorRef.current = result.nextCursor;
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+    }
+    
+    useEffect(() => {
+        getRecommendations(true);
+    }, [ userId]);
+    return { data, hasMore, loading, refetch : getRecommendations }
+
+}
+
+
+
+
 export const checkMutual = async (data) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/user/check-mutual`, {

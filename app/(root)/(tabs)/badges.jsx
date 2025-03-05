@@ -58,15 +58,6 @@ const RecentlyWatchedFromProfile = () => {
     // const recentlyWatched = data?.pages.flatMap(page => page.items) || [];
     const { data : recentlyWatched, loading, refetch, hasMore,  } = useRecentlyWatched(userId)
 
-  //   const { 
-  //     data, 
-  //     fetchNextPage, 
-  //     hasNextPage, 
-  //     isFetchingNextPage ,
-  //     isFetching
-      
-  // } = useFetchRecentlyWatched(userId);
-
 
   console.log('data', recentlyWatched)
   // const flattenData = data?.pages.flatMap((page) => page.items) || [];
@@ -102,7 +93,7 @@ const RecentlyWatchedFromProfile = () => {
 
   // if (loading  ){
   //   return(
-  //       <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>
+  //       <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>   
   //    <RefreshControl tintColor={Colors.secondary}   />
   //    </View>
   //   )
