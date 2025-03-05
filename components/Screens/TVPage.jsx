@@ -64,16 +64,6 @@ const TVPage = () => {
     const threadData = {
         tvObj:movie
     }
-    // const { data : threads, refetch : refetchThreads, isFetching:isFetchingThreads } = useGetTVThreads( tvId )
-    console.log('THREADSSSS', threads)
-
-    // const [ threads, setThreads ] = useState([])
-
-    
-
-   
-
-    // const { data : threads, refetch: refetchThreads, isFetching:isFetchingThreads } = useFetchTVThreads( {tvId:tvId, tvObj} );
 
     const fetchData = async () => {
         setLoading(true);  
@@ -137,15 +127,7 @@ const TVPage = () => {
         // fetchData()
     };
     
-    // const fetchThreads = async () => {
-    //     const data = {
-    //         tvId,
-    //         tvObj : movie
-    //     }
-    //     const fetchedThreads = await fetchTVThreads(data)
-    //     console.log('FETCHEDTHREADS', fetchedThreads)
-    //     setThreads(fetchTVThreads)
-    // }
+   
 
     const refreshData = () => {
         setRefreshing(true);
@@ -157,20 +139,6 @@ const TVPage = () => {
             fetchData();
     }, []); 
 
-    // const refetchThreads = async () => {
-    //     const tvData = {
-    //         tmdbId : res.id,
-    //         title : res.name,
-    //         releaseDate : res.first_air_date,
-    //         posterPath  : res.poster_path,
-    //         backdropPath : res.backdrop_path
-    //     }
-    //     const tvFromDB = await fetchTVFromDB({tvData})
-    //     setThreads(tvFromDB.threads)
-    // }
-
-    
-    
 
 
     const backPress = () => {
@@ -208,10 +176,7 @@ const TVPage = () => {
         router.push(`/dialogue/${item.dialogueId}`)
     }
 
-    // if (isFetchingMentions ){
-    //     return <ActivityIndicator/>
-    // }
-
+  
 
     const handleMarkWatched = async (  ) => {
         console.log('owneruserid', ownerUser.id)
@@ -231,6 +196,15 @@ const TVPage = () => {
         await markTVWatchlist({ tvId : DBtvId, userId : ownerUser.id })
         refetchOwnerUser();
     }
+
+
+    const handleRecommendation = () => {
+        router.push({
+            pathname : '/recommendationModal',
+            params: { DBtvId }
+        })
+    }
+
 
 
 
@@ -304,7 +278,7 @@ const TVPage = () => {
                             <Text className='text-primary font-pbold text-sm' style={{ color : alreadyInWatchlist ? Colors.secondary : Colors.primary }}>{ alreadyInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist' }</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity  >
+                    <TouchableOpacity onPress={handleRecommendation} >
                         <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
                             <Handshake color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
