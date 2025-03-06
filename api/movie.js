@@ -1,5 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query';
+import { useState , useEffect} from 'react';
 
 export const getMovieMentions = async (movieId) => {
     try {
@@ -138,4 +139,31 @@ export const markMovieWatchlist =  async ( data ) => {
     } catch (err) {
         console.log(err)
     }
+}
+
+
+export const useGetMovieFromDB = ( DBmovieId ) => {
+
+    const [ movie, setMovie ] = useState(null)
+    const [ loading, setLoading ] = useState(false)
+
+    const getMovieFromDB = async () => {
+        setLoading(true)
+        try {
+            const request = await fetch(`${nodeServer.currentIP}/movie?DBmovieId=${DBmovieId}`)
+            const response = await request.json()
+            setMovie(response)
+        } catch (err){
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getMovieFromDB()
+    },[DBmovieId])
+
+    return { movie, loading }
+
 }

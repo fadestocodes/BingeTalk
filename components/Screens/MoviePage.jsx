@@ -213,6 +213,13 @@ const MoviePage = () => {
         })
     }
 
+    const handleRate = () => {
+        router.push({
+            pathname : '/ratingModal',
+            params: { DBmovieId : DBmovieId }
+        })
+    }
+
 
   return (
     <View className='bg-primary h-full flex  pt-0 gap-10 relative  ' style={{}}>
@@ -290,7 +297,7 @@ const MoviePage = () => {
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handleRate}>
                         <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
                             <Star color={Colors.primary} size={20} />
                             <Text className='text-primary font-pbold text-sm'>Rate</Text>
