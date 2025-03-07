@@ -14,7 +14,7 @@ import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
 import DiscoverHorizontal from '../DiscoverHorizontal'
 import { markTVWatchlist, useFetchTVMentions } from '../../api/tv'
-import DialogueCard from './DialoguePage'
+import DialogueCard from '../DialogueCard'
 import { useFetchTVThreads } from '../../api/tv'
 import { fetchTVFromDB } from '../../api/tv'
 import { useQueryClient, useQuery } from '@tanstack/react-query';
@@ -459,7 +459,7 @@ const TVPage = () => {
                         contentContainerStyle={{ gap:15, marginTop:10 }}
                         renderItem = {({item}) => (
                             <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
-                                <DialogueCard dialogue={item.dialogue}  refetch={refetchMentionsThreads} ></DialogueCard>
+                                <DialogueCard dialogue={item.dialogue}  refetch={refetchMentionsThreads} isBackground={true} ></DialogueCard>
                             </TouchableOpacity>
                         )}
                         />

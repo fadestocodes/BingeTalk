@@ -12,6 +12,7 @@ const HomeLayout = () => {
       <Stack.Screen name='tv' options={{headerShown : false}} />
       <Stack.Screen name='cast' options={{headerShown : false}} />
       <Stack.Screen name='threads' options={{headerShown : false}} />
+      <Stack.Screen name='dialogue' options={{headerShown : false}} />
       <Stack.Screen name='moreInteractions'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:400  , borderRadius:30, backgroundColor:Colors.primary }}} />
       <Stack.Screen name='addToListModal'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:200  , borderRadius:30, backgroundColor:Colors.primary }}} />
       <Stack.Screen name='recommendationModal'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:200  , borderRadius:30, backgroundColor:Colors.primary }}} />

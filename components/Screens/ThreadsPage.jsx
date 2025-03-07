@@ -51,37 +51,6 @@ const ThreadsIdPage = () => {
     console.log('thread from hook', thread)
 
 
-    // const getThread = async () => {
-    //     let cachedThreads, existingThread;
-        
-    //     if (tvId) {
-    //         cachedThreads = queryClient.getQueryData(['threads', tvId]);
-    //     } else if (movieId) {
-    //         cachedThreads = queryClient.getQueryData(['threads', movieId]);
-    //     } else if (castId) {
-    //         cachedThreads = queryClient.getQueryData(['threads', castId]);
-    //     }
-    
-    //     if (cachedThreads) {
-    //         existingThread = cachedThreads.find(item => item.id === Number(threadsId));
-    //     }
-    
-    //     if (existingThread) {
-    //         console.log("Using cached thread:", existingThread);
-    //         setThread({ ...existingThread });  // ⬅️ Force new object reference
-    //     } else {
-    //         console.log("Fetching thread from API...");
-    //         const thread = await fetchSingleThread(threadsId);
-    //         console.log("Thread fetched:", thread);
-    //         setThread({ ...thread });  // ⬅️ Force new object reference
-    //     }
-    // };
-    
-
-    // useEffect(()=>{
-       
-    //     getThread();
-    // }, [])
     
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
     const translateY = useSharedValue(0); // Tracks modal position
@@ -193,10 +162,10 @@ const ThreadsIdPage = () => {
           <View className='gap-3'>
 
           <ThreadCard thread={thread} refetch={refetch} />
+          <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
                 { thread.comments.length > 0 && (
                     <>
-                    <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
                     <FlatList
                     data={thread.comments}
                     keyExtractor={(item, index) => index.toString()}

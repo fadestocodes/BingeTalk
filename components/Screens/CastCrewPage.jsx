@@ -10,7 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import DiscussionThread from '../DiscussionThread'
 import CastCrewHorizontal from '../CastCrewHorizontal'
 import { capitalize } from '../../lib/capitalize'
-import DialogueCard from './DialoguePage'
+import DialogueCard from '../DialogueCard'
 import { useFetchCastMentions } from '../../api/castCrew'
 import { fetchPersonFromDB } from '../../api/castCrew'
 import { useQueryClient } from '@tanstack/react-query';
@@ -300,8 +300,8 @@ const CastIdPage = () => {
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={{ gap:15, marginTop:10 }}
                     renderItem = {({item}) => (
-                        <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
-                            <DialogueCard dialogue={item.dialogue} refetch={fetchData}></DialogueCard>
+                        <TouchableOpacity onPress={()=>handleMentionPress(item)}  style={{ width:300 }}>
+                            <DialogueCard dialogue={item.dialogue} refetch={fetchData} isBackground={true}></DialogueCard>
                         </TouchableOpacity>
                     )}
                 />

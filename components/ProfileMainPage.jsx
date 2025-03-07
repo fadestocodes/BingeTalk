@@ -12,7 +12,7 @@ import { LinkIcon } from '../assets/icons/icons'
 import { useUserDB } from '../lib/UserDBContext'
 import { fetchUser, useFetchOwnerUser } from '../api/user'
 import { formatDate } from '../lib/formatDate'
-import DialogueCard from './Screens/DialoguePage'
+import DialogueCard from './DialogueCard'
 import { useFetchDialogues } from '../api/dialogue'
 import { useFetchUser } from '../api/user'
 import { followUser, unfollowUser } from '../api/user'
@@ -252,7 +252,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
             renderItem={({item}) => (
             
                 <TouchableOpacity key={item.id} onPress={()=>handleDialoguePress(item)}  style={{ paddingHorizontal:15 }}>
-                    <DialogueCard  dialogue={item} refetch={refetch} />
+                    <DialogueCard  dialogue={item} refetch={refetch} isBackground={true} />
                 </TouchableOpacity>
             ) }
             >

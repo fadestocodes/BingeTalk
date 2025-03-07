@@ -13,7 +13,7 @@ import CastCrewHorizontal from '../CastCrewHorizontal'
 import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
 import { getMovieMentions, useFetchMovieMentions, markMovieWatch, markMovieWatchlist } from '../../api/movie'
-import DialogueCard from './DialoguePage'
+import DialogueCard from '../DialogueCard'
 import { fetchMovieFromDB } from '../../api/movie'
 import { useQueryClient } from '@tanstack/react-query';
 import ThreadCard from '../ThreadCard'
@@ -459,8 +459,8 @@ const MoviePage = () => {
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={{ gap:15 }}
                     renderItem = {({item}) => (
-                        <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
-                            <DialogueCard dialogue={item.dialogue} refetch={refetchMentionsThreads} ></DialogueCard>
+                        <TouchableOpacity onPress={()=>handleMentionPress(item)}  style={{ width:300 }}>
+                            <DialogueCard dialogue={item.dialogue} refetch={refetchMentionsThreads} isBackground={true} ></DialogueCard>
                         </TouchableOpacity>
                     )}
                 />
