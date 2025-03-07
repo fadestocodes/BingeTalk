@@ -3,19 +3,20 @@ import { View, StyleSheet, Text } from "react-native";
 import SwipeCard from "./SwipeCard";
 import { getTrending } from "../../api/tmdb";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import ToastMessage from "../ui/ToastMessage";
 
-const TinderSwipeCard = () => {
+const TinderSwipeCard = (  ) => {
   const [movies, setMovies] = useState([]);
   const [currentItem, setCurrentItem] = useState(null)
   const router = useRouter();
 
-
+  const [ message, setMessage ] = useState(null)
 
   
 
   useEffect(() => {
+    setMessage('Swipe left to skip, swipe right to add to Interested')
     const fetchTrending = async () => {
       const res = await getTrending();
       if (res) {
@@ -31,6 +32,7 @@ const TinderSwipeCard = () => {
   const handleSwipeUp = (item) => {
     setSavedItem(item); // Save the swiped item
     // setMovies((prevStack) => prevStack.slice(1)); // Remove it from stack
+    console.log("Current path:", router.pathname);
     if (item.media_type === "movie") {
       router.push(`/movie/${item.id}`);
     } else if (item.media_type === "tv") {
@@ -66,6 +68,8 @@ const TinderSwipeCard = () => {
 
   return (
     <View style={styles.container}>
+      <ToastMessage message={message} onComplete={() => setMessage('')}  /> 
+
       {movies.length > 0 ? (
         <View>
         <View className="z-1">

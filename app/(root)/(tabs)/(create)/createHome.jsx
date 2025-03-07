@@ -12,6 +12,7 @@ import { getYear } from '../../../../lib/formatDate'
 import { DraggableGrid } from 'react-native-draggable-grid';
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
+import { useRouter } from 'expo-router'
 
 
 const CreateHome = () => {

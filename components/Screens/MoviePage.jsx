@@ -61,8 +61,8 @@ const MoviePage = () => {
     const alreadyWatched = ownerUser.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
     const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
     const [ movieRatings, setMovieRatings ] = useState([])
-    const alreadyRated = movieRatings.some( item => item.movieId === Number(DBmovieId) )
-    const movieRating = movieRatings.find( item => item.userId === ownerUser.id && item.movieId === Number(DBmovieId) )
+    const alreadyRated = movieRatings?.some( item => item.movieId === Number(DBmovieId) )
+    const movieRating = movieRatings?.find( item => item.userId === ownerUser.id && item.movieId === Number(DBmovieId) )
 
 
 

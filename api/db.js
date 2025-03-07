@@ -1,6 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 
-export const findOrCreateEntity = async (type, movieData, personData) => {
+export const findOrCreateEntity = async (type, movieData, castData) => {
     let entity;
 
     if (type === 'movie') {
@@ -41,7 +41,7 @@ export const findOrCreateEntity = async (type, movieData, personData) => {
                 headers : {
                     'Content-type' : 'application/json'
                 },
-                body:JSON.stringify({personData})
+                body:JSON.stringify({castData})
             })
             const response = await entity.json();
             console.log('response', response);

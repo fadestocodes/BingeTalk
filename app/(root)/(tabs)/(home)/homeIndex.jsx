@@ -14,9 +14,9 @@ const HomePage = () => {
 
   const handlePress = (item) => {
     if (item.movieId) {
-      router.push(`/movie/${item.movieId}`)
+      router.push(`/(home)/movie/${item.movieId}`)
     } else if (item.tvId){
-      router.push(`/tv/${item.tvId}`)
+      router.push(`/(home)/tv/${item.tvId}`)
     }
   }
 

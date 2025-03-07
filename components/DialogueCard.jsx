@@ -14,7 +14,7 @@ import { useFetchOwnerUser } from '../api/user'
 
 
 
-const DialogueCard = (  {dialogue, refetch , isBackground} ) => {
+const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal} ) => {
 
 
     // const [ dialogue, setDialogue ] = useState(null)
@@ -153,9 +153,9 @@ const DialogueCard = (  {dialogue, refetch , isBackground} ) => {
                             <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvoted ? Colors.secondary : Colors.mainGray }}>{ dialogue.downvotes }</Text>
                         </View>
                         </TouchableOpacity>
-                        <TouchableOpacity  >
+                        <TouchableOpacity onPress={()=>handleComment(dialogue)} disabled={disableCommentsModal} >
                         <View className='flex-row gap-1  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <MessageIcon  onPress={()=>handleComment(dialogue)} className='' size='18'  color={   Colors.mainGray}/>
+                            <MessageIcon   className='' size='18'  color={   Colors.mainGray}/>
                             <Text className='text-xs font-pbold text-gray-400  '> {dialogue.comments.length}</Text>
                         </View>
                         </TouchableOpacity>

@@ -1,4 +1,4 @@
-import {  Text, View, FlatList, Image, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard } from 'react-native'
+import {  Text, View, FlatList, Image, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard , Linking} from 'react-native'
 import { ImageBackground,  } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import React, {useEffect, useState} from 'react'
@@ -106,6 +106,16 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
             setIsFollowing(prev => !prev)
             await refetchUser();
         }
+    
+        const handleLinkPress = async (url) => {
+            console.log('trying to open link', url)
+            const supported = await Linking.canOpenURL(url);
+            if (supported) {
+                await Linking.openURL(url); // Opens in default browser
+            } else {
+                Alert.alert("Can't open this URL", url);
+            }
+        };
 
         if (isFetchingUser){
             return (
@@ -114,6 +124,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
             </View>
             )
         }
+
 
   return (
    
@@ -160,7 +171,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
                             <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{user.bio}</Text>
                         </View>
                         { user.bioLink && (
-                        <TouchableOpacity className='flex-row gap-2 opacity-60'  style={{backgroundColor:'black', paddingVertical:5, paddingHorizontal:20, borderRadius:10}}>
+                        <TouchableOpacity onPress={()=>handleLinkPress(user.bioLink)} className='flex-row gap-2 opacity-60'  style={{backgroundColor:'black', paddingVertical:5, paddingHorizontal:20, borderRadius:10}}>
                             <LinkIcon size={16} color={Colors.mainGray} />
                             <Text className='text-mainGray text-sm  font-psemibold' >{user.bioLink}</Text>
                         </TouchableOpacity>

@@ -1,5 +1,5 @@
-import React, { useRef , useCallback} from "react";
-import { View, Image, Animated, PanResponder, Text, StyleSheet, Dimensions } from "react-native";
+import React, { useRef , useCallback, useState} from "react";
+import { View, Image, Animated, PanResponder, Text, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { useRouter } from "expo-router";
 
@@ -9,9 +9,10 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
   const titlSign = useRef(new Animated.Value(1)).current;
   const { height } = Dimensions.get('screen');
   const router = useRouter()
+  const [ loading, setLoading ] = useState(true)
 
 
-  const posterURL = "https://image.tmdb.org/t/p/original";
+  const posterURL = "https://image.tmdb.org/t/p/w780";
 
   const panResponder = useRef(
     PanResponder.create({
@@ -173,9 +174,11 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
         </View>
 
         {/* Poster Image */}
+        {/* { loading && <ActivityIndicator color={Colors.secondary} /> } */}
         <Image
             source={{ uri: `${posterURL}${item.poster_path}` }}
             style={styles.poster}
+            onLoad={()=>setLoading(false)}
         />
 
         {/* <Text style={styles.text}>

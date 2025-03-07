@@ -202,7 +202,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     posterPath : mention.posterPath,
                     backdropPath : mention.backdropPath,
                 };
-                const personData = {
+                const castData = {
                     tmdbId : mention.tmdbId,
                     name : mention.name,
                     dob : mention.dob,
@@ -210,7 +210,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                 }
                 try {
                     console.log('trying to get entity with', movieData)
-                    const entity = await findOrCreateEntity(type, movieData, personData);
+                    const entity = await findOrCreateEntity(type, movieData, castData);
                     console.log('entity is ', entity)
                     console.log('mention type', mention.mentionType)
                     return {

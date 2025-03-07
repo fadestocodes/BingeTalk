@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import {  Text, Image, View, Pressable } from 'react-native';
-import { HomeIcon, SearchIcon, MedalIcon, UserIcon, RoomIcon, PlusIcon } from '../../../assets/icons/icons'
+import { HomeIcon, SearchIcon, MedalIcon, UserIcon, RoomIcon, PlusIcon, LayersIcon } from '../../../assets/icons/icons'
 import {Colors} from '@/constants/Colors'
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -92,7 +92,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="create"
+        name="(create)"
         options={{
           title: 'Create',
           headerShown : false,
@@ -110,15 +110,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="badges"
+        name="(browse)"
         options={{
-          title: 'Rooms',
+          title: 'Browse',
           headerShown : false,
           tabBarIcon : ({color, focused}) => (
             <TabIcon
-              icon={RoomIcon}
+              icon={LayersIcon}
               color = {color}
-              name = 'Rooms'
+              name = 'Browse'
               focused={ focused}
             />
           )
@@ -139,17 +139,6 @@ export default function TabLayout() {
           )
         }}
       />
-      <Tabs.Screen
-        name="(castOrCrew)"
-        options={{
-          title : 'CastDetails',
-          href : null,
-          headerShown : false,
-      
-        }}
-      />
-     
-       
     </Tabs>
      </>
   );

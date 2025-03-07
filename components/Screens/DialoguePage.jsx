@@ -162,7 +162,7 @@ const DialogueScreen = () => {
         <View style={{gap:10, marginVertical:10, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
           <View className='gap-3' >
 
-          <DialogueCard dialogue={dialogue} refetch={refetch}  />
+          <DialogueCard dialogue={dialogue} refetch={refetch} disableCommentsModal={true} />
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
                 { dialogue.comments.length > 0 && (
