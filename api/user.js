@@ -244,52 +244,6 @@ export const useFetchRecentlyWatched = (userId) => {
     });
 };
 
-// export const fetchRecentlyWatched = async (userId) => {
-//     try {
-//         const request = await fetch(`${nodeServer.currentIP}/user/recently-watched?userId=${userId}`)
-//         const response = await request.json()
-//         return response
-//     } catch (Err){
-//         console.log(Err)
-//     }
-// }
-
-// export const useFetchRecentlyWatched = (userId) => {
-//     return useQuery({
-//         queryKey : ['recentlyWatched', userId],
-//         queryFn: async () => {
-//             const recentlyWatched = await fetchRecentlyWatched(userId)
-//             return recentlyWatched
-//         },
-//         staleTime: 1000 * 60 * 10, // Cache for 5 minutes
-//         enabled: true, // Ensures query runs when component mounts
-//         refetchOnWindowFocus: true, // Auto refet
-//     })
-// }
-
-// export const fetchWatchlist = async (userId) => {
-//     try {
-//         const request = await fetch(`${nodeServer.currentIP}/user/watchlist?userId=${userId}`)
-//         const response = await request.json()
-//         console.log('response getting watchlist', response)
-//         return response
-//     } catch (Err){
-//         console.log(Err)
-//     }
-// }
-
-// export const useFetchWatchlist = (userId) => {
-//     return useQuery({
-//         queryKey : ['watchlist', userId],
-//         queryFn: async () => {
-//             const recentlyWatched = await fetchWatchlist(userId)
-//             return recentlyWatched
-//         },
-//         staleTime: 1000 * 60 * 10, // Cache for 5 minutes
-//         enabled: true, // Ensures query runs when component mounts
-//         refetchOnWindowFocus: true, // Auto refet
-//     })
-// }
 
 
 export const useGetWatchlistItems = (userId, limit=5) => {
@@ -388,9 +342,7 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
         console.log('HAS MORE?', hasMore)
 
         setLoading(true)
-        // if (cursor){
-        //     set
-        // }
+     
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();

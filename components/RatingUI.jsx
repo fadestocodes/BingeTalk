@@ -12,10 +12,11 @@ import { Colors } from '@/constants/Colors';
 import {Pointer} from 'lucide-react-native'
 
 
+
 const SLIDER_WIDTH = 300;
 const INITIAL_BOX_SIZE = 50;
 
-const RatingUI = ({ setRating, rating }) => {
+const RatingUI = ({ setRating, rating , handlePost, prevRating}) => {
     // const [rating, setRating] = useState(5.0); // Starting at 5.0 rating
     const [ started, setStarted ] = useState(false)
     const offset = useSharedValue(0);
@@ -44,6 +45,7 @@ const RatingUI = ({ setRating, rating }) => {
       // Correct the calculation for rating scale (5 to 10)
       const newRating = 4 + (offset.value / MAX_VALUE) * 6; // Scale to 5-10
       const roundedRating = parseFloat(newRating.toFixed(1)); // Round to 1 decimal place
+      console.log('rounded rating',roundedRating)
   
       // Only update the state if the rating has changed
       if (roundedRating !== rating) {
@@ -86,8 +88,20 @@ const RatingUI = ({ setRating, rating }) => {
         {/* Animated number with scaling and vertical bounce */}
      
         <Animated.View style={[styles.ratingTextContainer, numberStyle]}>
-            { !started ? (
-                <Text className='text-white text-lg font-pbold'>Slide to rate</Text>
+            {
+              !started ? (
+                <>
+                    { prevRating ? (
+                         <View>
+                         <Text className='text-white text-lg font-pbold '>Prev rating</Text>
+                       <Text style={styles.ratingText}>{prevRating}</Text>
+                       </View>    
+                    ) : (
+                        <Text className='text-white text-lg font-pbold'>Slide to rate</Text>
+                    ) }
+                
+                </>
+
             ) : (
                 <View>
                 <Text className='text-white text-lg font-pbold '>Your rating</Text>
@@ -105,7 +119,7 @@ const RatingUI = ({ setRating, rating }) => {
           </GestureDetector>
         </View>
 
-        <TouchableOpacity onPress={()=>{console.log(rating.toFixed(1))}} style={{ backgroundColor:Colors.secondary, paddingHorizontal:30, paddingVertical:15, borderRadius:20, marginTop:50 }}>
+        <TouchableOpacity onPress={()=>handlePost()} style={{ backgroundColor:Colors.secondary, paddingHorizontal:30, paddingVertical:15, borderRadius:20, marginTop:50 }}>
             <Text className='text-primary font-pbold'>Post rating</Text>
         </TouchableOpacity>
       </GestureHandlerRootView>

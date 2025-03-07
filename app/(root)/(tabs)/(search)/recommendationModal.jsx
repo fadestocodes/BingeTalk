@@ -79,7 +79,7 @@ const recommendationModal = () => {
                 <Text className='text-secondary text-2xl font-pbold'>Select a user to send a recommendation to</Text>
                 <Text className='text-mainGray text-center'>(must be mutual followers)</Text>
             </View>
-            <ToastMessage message={message} onComplete={() => setMessage('')} />
+            <ToastMessage message={message} onComplete={() => setMessage('')} icon={ <Handshake  color={Colors.secondary} size={30} />}/>
 
             <FlatList
                 scrollEnabled={false}

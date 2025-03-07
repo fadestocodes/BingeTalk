@@ -21,6 +21,7 @@ import { useFetchOwnerUser } from '../../api/user'
 import { useUser } from '@clerk/clerk-expo'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
 import { newRecommendation } from '../../api/recommendation'
+import ToastMessage from '../ui/ToastMessage'
 
 
 
@@ -51,12 +52,18 @@ const MoviePage = () => {
     const [dropdownMenu, setDropdownMenu] = useState(false);
     // const [ mentions, setMentions ] = useState([])
     const [ threads, setThreads ] = useState([])
+    const [ buttonPressed , setButtonPressed ] = useState('')
+    const [ message ,setMessage ] = useState(null)
 
     const {user: clerkUser} = useUser();
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
     const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
     const alreadyWatched = ownerUser.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
     const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
+    const [ movieRatings, setMovieRatings ] = useState([])
+    const alreadyRated = movieRatings.some( item => item.movieId === Number(DBmovieId) )
+    const movieRating = movieRatings.find( item => item.userId === ownerUser.id && item.movieId === Number(DBmovieId) )
+
 
 
     const fetchData = async () => {
@@ -97,11 +104,13 @@ const MoviePage = () => {
             if (cachedMovieFromDB){
                 setThreads(cachedMovieFromDB.threads)
                 setDBmovieId(cachedMovieFromDB.id)
+                setMovieRatings(cachedMovieFromDB.ratings)
             } else {
                 const movieFromDB = await fetchMovieFromDB({movieData})
                 queryClient.setQueryData(['movie', movieId]);
     
                 console.log('tvfromdb', movieFromDB)
+                setMovieRatings(movieFromDB.ratings)
                 setThreads( movieFromDB.threads );
                 setDBmovieId( movieFromDB.id )
                 queryClient.setQueryData(['threads', movieId], movieFromDB.threads);
@@ -185,9 +194,21 @@ const MoviePage = () => {
 
 
     const handleMarkWatched = async (  ) => {
-        console.log('owneruserid', ownerUser.id)
-        await markMovieWatch({ movieId : DBmovieId, userId : ownerUser.id })
+        if ( alreadyWatched ){
+            setButtonPressed('unwatched')
+        } else {
+            setButtonPressed('watched')
+        }
+        const marked = await markMovieWatch({ movieId : DBmovieId, userId : ownerUser.id })
+        if(marked){
+            if ( alreadyWatched ){
+                setMessage('Removed from Watched')
+            } else {
+                setMessage('Marked as Watched')
+            }
+        }
         refetchOwnerUser();
+        setButtonPressed('')
     }
 
 
@@ -200,9 +221,21 @@ const MoviePage = () => {
     }
 
     const handleWatchlist = async (  ) => {
-        console.log('owneruserid', ownerUser.id)
-        await markMovieWatchlist({ movieId : DBmovieId, userId : ownerUser.id })
+        if (alreadyInWatchlist){
+            setButtonPressed('removeFromWatchlist')
+        } else {
+            setButtonPressed('addToWatchlist')
+        }
+        const addedToWatchlist = await markMovieWatchlist({ movieId : DBmovieId, userId : ownerUser.id })
+        if (addedToWatchlist){
+            if (alreadyInWatchlist){
+                setMessage('Removed from Watchlist')
+            } else {
+                setMessage('Added to Watchlist')
+            }
+        }
         refetchOwnerUser();
+        setButtonPressed('')
     }
 
 
@@ -216,13 +249,28 @@ const MoviePage = () => {
     const handleRate = () => {
         router.push({
             pathname : '/ratingModal',
-            params: { DBmovieId : DBmovieId }
+            params: { DBmovieId : DBmovieId, prevRating : movieRating?.rating }
         })
+    }
+
+    const DynamicIcon = () => {
+        if (buttonPressed === 'unwatched'){
+            return(
+            <EyeOff size={30} color={Colors.secondary}/> )
+        } else if ( buttonPressed === 'watched'){
+            return (
+            <Eye size={30} color={Colors.secondary}/> )
+        } else {
+            return (
+            <ListChecks size={30} color={Colors.secondary} />)
+        }
     }
 
 
   return (
     <View className='bg-primary h-full flex  pt-0 gap-10 relative  ' style={{}}>
+        <ToastMessage message={message} onComplete={() => setMessage('')} icon={<DynamicIcon/>}  />
+
     <ScrollView 
             refreshControl={
                 <RefreshControl
@@ -233,7 +281,6 @@ const MoviePage = () => {
                  }
         
     >
-        
         
         <View className="flex ">
             <ImageBackground
@@ -252,7 +299,7 @@ const MoviePage = () => {
             </ImageBackground>
         </View>
         <View className='beside-poster w-full  items-center flex-row justify-center gap-6 mb-8 ' style={{paddingTop:150}}>
-            
+
             <Image 
                 source={{uri : `${posterURL}${movie.poster_path}`}}
                 style={{ width:100, height: 180, overflow:'hidden', borderRadius:10}}
@@ -277,8 +324,9 @@ const MoviePage = () => {
             </View>
             
         </View>
-        
+
         <View className="buttons flex gap-4 w-full items-center mb-6">
+
                     <TouchableOpacity onPress={handleMarkWatched} >
                         <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyWatched ? 'none' : Colors.secondary }} >
                                 { alreadyWatched ? <EyeOff size={20}  color={Colors.secondary} /> : <Eye size={20} color={Colors.primary} /> }
@@ -298,9 +346,9 @@ const MoviePage = () => {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleRate}>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
-                            <Star color={Colors.primary} size={20} />
-                            <Text className='text-primary font-pbold text-sm'>Rate</Text>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyRated ? 'none' : Colors.secondary }}>
+                        { alreadyRated ? <Star color={Colors.secondary} size={20} /> : <Star color={Colors.primary} size={20} /> }
+                            <Text className='text-primary font-pbold text-sm' style={{ color : alreadyRated ? Colors.secondary : Colors.primary }}>{ alreadyRated ? 'Update Rating' : 'Rate' }</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleMore} >
@@ -332,7 +380,7 @@ const MoviePage = () => {
             <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
                 <View className='gap-0 items-center'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
-                    <Text className='text-mainGray text-2xl font-pbold'>N/A</Text>
+                    <Text className='text-mainGray text-2xl font-pbold'>{ alreadyRated ? `${movieRating.rating}` : 'N/A' }</Text>
                 </View>
                 <View className='gap-0'>
                     <Text className='text-mainGray text-sm font-psemibold'>From your network</Text>

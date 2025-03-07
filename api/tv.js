@@ -1,5 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 
 export const fetchTVMentions = async (tvId) => {
     try {
@@ -201,4 +202,31 @@ export const markTVWatchlist =  async ( data ) => {
     } catch (err) {
         console.log(err)
     }
+}
+
+
+export const useGetTVFromDB = ( DBtvId ) => {
+
+    const [ tv, setTv ] = useState(null)
+    const [ loading, setLoading ] = useState(false)
+
+    const getTVFromDB = async () => {
+        setLoading(true)
+        try {
+            const request = await fetch(`${nodeServer.currentIP}/tv?DBtvId=${DBtvId}`)
+            const response = await request.json()
+            setTv(response)
+        } catch (err){
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getTVFromDB()
+    },[DBtvId])
+
+    return { tv, loading }
+
 }

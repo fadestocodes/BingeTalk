@@ -25,6 +25,7 @@ import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { markTVWatch } from '../../api/tv'
+import ToastMessage from '../ui/ToastMessage'
 
 
 
@@ -52,6 +53,10 @@ const TVPage = () => {
     const [dropdownMenu, setDropdownMenu] = useState(false);
     const [threads, setThreads] = useState(null)
     const [ DBtvId, setDBtvId ] = useState(null)
+    const [ buttonPressed , setButtonPressed ] = useState('')
+    const [ message ,setMessage ] = useState(null)
+    const [ tvRatings, setTVRatings ] = useState([])
+   
 
     console.log('MOVIE',movie)
     const { user:clerkUser } = useUser();
@@ -60,7 +65,11 @@ const TVPage = () => {
 
     const alreadyWatched = ownerUser.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
     const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.tvId === Number(DBtvId) )
-    
+    // const alreadyRated = ownerUser.ratings.some( item => item.tvId === Number(DBtvId) )
+    // const tvRating = ownerUser.ratings.find( item => item.tvId === Number(DBtvId));
+    const alreadyRated = tvRatings.some( item => item.tvId === Number(DBtvId) )
+    const tvRating = tvRatings.find( item => item.userId === ownerUser.id && item.tvId === Number(DBtvId) )
+    console.log('TV RATINGS', tvRatings)    
     const threadData = {
         tvObj:movie
     }
@@ -98,6 +107,7 @@ const TVPage = () => {
             const tvFromDB = await fetchTVFromDB({tvData})
             setThreads(tvFromDB.threads)
             setDBtvId(tvFromDB.id)
+            setTVRatings(tvFromDB.ratings)
 
             // const cachedTVShowFromDB = queryClient.getQueryData(['tv', tvId]);
             // if (cachedTVShowFromDB){
@@ -179,9 +189,22 @@ const TVPage = () => {
   
 
     const handleMarkWatched = async (  ) => {
+        if ( alreadyWatched ){
+            setButtonPressed('unwatched')
+        } else {
+            setButtonPressed('watched')
+        }
         console.log('owneruserid', ownerUser.id)
-        await markTVWatch({ tvId : DBtvId, userId : ownerUser.id })
+        const marked = await markTVWatch({ tvId : DBtvId, userId : ownerUser.id })
+        if (marked){
+            if ( alreadyWatched ){
+                setMessage('Removed from Watched')
+            } else {
+                setMessage('Marked as Watched')
+            }
+        }
         refetchOwnerUser();
+        setButtonPressed('')
     }
 
     const handleMore = () => {
@@ -192,9 +215,23 @@ const TVPage = () => {
     }
 
     const handleWatchlist = async (  ) => {
+        if (alreadyInWatchlist){
+            setButtonPressed('removeFromWatchlist')
+        } else {
+            setButtonPressed('addToWatchlist')
+        }
         console.log('owneruserid', ownerUser.id)
-        await markTVWatchlist({ tvId : DBtvId, userId : ownerUser.id })
+        const addedToWatchlist = await markTVWatchlist({ tvId : DBtvId, userId : ownerUser.id })
+        if (addedToWatchlist){
+            if (alreadyInWatchlist){
+                setMessage('Removed from Watchlist')
+            } else {
+                setMessage('Added to Watchlist')
+            }
+        }
         refetchOwnerUser();
+        setButtonPressed('')
+
     }
 
 
@@ -206,10 +243,34 @@ const TVPage = () => {
     }
 
 
+    const handleRate = () => {
+        router.push({
+            pathname : '/ratingModal',
+            params: { DBtvId : DBtvId, prevRating : tvRating?.rating }
+        })
+    }
+
+
+    const DynamicIcon = () => {
+        if (buttonPressed === 'unwatched'){
+            return(
+            <EyeOff size={30} color={Colors.secondary}/> )
+        } else if ( buttonPressed === 'watched'){
+            return (
+            <Eye size={30} color={Colors.secondary}/> )
+        } else {
+            return (
+            <ListChecks size={30} color={Colors.secondary} />)
+        }
+    }
+
+
 
 
   return (
     <View className='bg-primary h-full flex  pt-0 gap-10 relative ' style={{}}>
+                <ToastMessage message={message} onComplete={() => setMessage('')} icon={<DynamicIcon/>}  />
+
     <ScrollView 
     refreshControl={
         <RefreshControl
@@ -284,10 +345,10 @@ const TVPage = () => {
                             <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
-                            <Star color={Colors.primary} size={20} />
-                            <Text className='text-primary font-pbold text-sm'>Rate</Text>
+                    <TouchableOpacity onPress={handleRate}>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyRated ? 'none' : Colors.secondary }}>
+                        { alreadyRated ? <Star color={Colors.secondary} size={20} /> : <Star color={Colors.primary} size={20} /> }
+                            <Text className='text-primary font-pbold text-sm' style={{ color : alreadyRated ? Colors.secondary : Colors.primary }}>{ alreadyRated ? 'Update Rating' : 'Rate' }</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleMore} >
@@ -317,7 +378,7 @@ const TVPage = () => {
             <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
                 <View className='gap-0 items-center'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
-                    <Text className='text-mainGray text-2xl font-pbold'>N/A</Text>
+                    <Text className='text-mainGray text-2xl font-pbold'>{ alreadyRated ? `${tvRating.rating}` : 'N/A' }</Text>
                 </View>
                 <View className='gap-0'>
                     <Text className='text-mainGray text-sm font-psemibold'>From your network</Text>

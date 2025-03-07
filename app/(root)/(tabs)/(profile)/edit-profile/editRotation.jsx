@@ -22,7 +22,7 @@ const editRotation = () => {
   const posterURL = 'https://image.tmdb.org/t/p/original';
   const router = useRouter();
 
-  const { data : userDB, refetch } = useFetchOwnerUser( user.emailAddresses[0].emailAddress );
+  const { data : userDB, refetch } = useFetchOwnerUser( {email : user.emailAddresses[0].emailAddress} );
   const userId = userDB.id
   const oldRotation = userDB?.currentRotation
   

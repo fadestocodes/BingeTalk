@@ -5,7 +5,7 @@ import { Handshake } from 'lucide-react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 
 
-const ToastMessage = ({ message, onComplete }) => {
+const ToastMessage = ({ message, onComplete, icon }) => {
     const { width, height } = Dimensions.get('window'); // Get screen dimensions
 
     const opacity = useSharedValue(0);
@@ -60,7 +60,7 @@ const ToastMessage = ({ message, onComplete }) => {
             },
           ]}
         >
-                <Handshake  color={Colors.secondary} size={30} />
+                {icon}
                 <Text className='font-psemibold' style={{ color: 'white' }}>{message}</Text>
         </Animated.View>
       );

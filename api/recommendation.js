@@ -15,3 +15,12 @@ export const newRecommendation = async (data) => {
         console.log(err)
     }
 }
+
+export const mySentRecommendations = async (userId) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/`)
+    } catch (err){
+        console.log(err)
+        
+    }
+}
