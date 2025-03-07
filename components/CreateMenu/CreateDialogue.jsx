@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Image, Keyboard, SectionList, Pressable } from 'react-native'
+import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Keyboard, SectionList, Pressable } from 'react-native'
+import { Image } from 'expo-image'
 import React, { useState, useEffect, useRef } from 'react'
 import { Colors } from '../../constants/Colors'
 import { SlateIcon, PeopleIcon, ThreadsIcon,UploadPictureIcon, CloseIcon } from '../../assets/icons/icons'
@@ -55,7 +56,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
 
 
     const userId = userDB.id
-    const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURL = 'https://image.tmdb.org/t/p/w500';
 
     // if (!userDB || isFetchingUser) {
             
@@ -152,7 +153,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     >
                     <Image
                         source = {{ uri: `${posterURL}${item.poster_path || item.profile_path}` }}
-                        resizeMethod='cover'
+                        contentFit='cover'
                         style= {{ width:30, height: 50, borderRadius:10, overflow:'hidden' }}
                     />
                     <View className='gap-1' >
@@ -350,7 +351,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                         <Image
                             source={{ uri: image }}
                             style={{ width:300, height:200 , zIndex:30, borderRadius:15, overflow:'hidden'}}
-                            resizeMode='cover'
+                            contentFit='cover'
                         />
                         <TouchableOpacity onPress={()=> setImage(null)} className='rounded-full bg-primary border-[1px] border-mainGray' style={{  position:'absolute', zIndex:30, top:6, right:10 }}>
                             <CloseIcon color={Colors.mainGray} size={22} className='' style={{  }} />

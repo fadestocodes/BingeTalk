@@ -24,6 +24,7 @@ const SearchPage = () => {
   const [refreshing, setRefreshing] = useState(false)
   const [explore, setExplore] = useState(false);
   const posterURL = 'https://image.tmdb.org/t/p/original';
+  const posterURLlow = 'https://image.tmdb.org/t/p/w500';
   const router = useRouter();
   const [ flatListCategories, setFlatListCategories ] = useState({
     trending : [],
@@ -204,6 +205,8 @@ const SearchPage = () => {
             <TouchableOpacity onPress={()=>handlePress(item)} className='w-full gap-5 flex-row my-3 justify-start items-center'>
               <Image 
                 source={  searchingFor === 'users' ? { uri:item.profilePic } : item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
+                placeholder={  searchingFor === 'users' ? { uri:item.profilePic } : item.media_type === 'person' ? {uri:`${posterURLlow}${item.profile_path}`}  : {uri:`${posterURLlow}${item.poster_path}`}}
+                placeholderContentFit='cover'
                 contentFit='cover'
                 style={{ width:50, height:75, borderRadius:10, overflow:'hidden' }}
               />

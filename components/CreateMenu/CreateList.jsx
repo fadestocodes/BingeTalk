@@ -62,8 +62,8 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
                     multiline
                     autoCorrect={false}
                     onChangeText={(text)=> { setSearchQuery(text);  handleSearch(text)  }}
-                    className='w-full text-white rounded-3xl text-lg font-pbold'
-                    style={{ minHeight:50, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop:10, textAlignVertical:'center' }}
+                    className='w-full text-white rounded-3xl '
+                    style={{ minHeight:50, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop:15, textAlignVertical:'center' }}
                     value={searchQuery}
                     onFocus={()=>setResultsOpen(true)}
                 />

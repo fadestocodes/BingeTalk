@@ -1,4 +1,5 @@
-    import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, FlatList, Image, ActivityIndicator } from 'react-native'
+    import { StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, FlatList, ActivityIndicator } from 'react-native'
+    import { Image } from 'expo-image'
     import React, {useState, useEffect} from 'react'
     import { Colors } from '../../constants/Colors'
     import { SlateIcon, PeopleIcon, ThreadsIcon, CloseIcon, FilmIcon, PersonIcon, TVIcon , UploadPictureIcon} from '../../assets/icons/icons'
@@ -146,7 +147,7 @@
                                 <Image
                                     source={{ uri: image }}
                                     style={{ width:300, height:200 , zIndex:30, borderRadius:15, overflow:'hidden'}}
-                                    resizeMode='cover'
+                                    contentFit='cover'
                                 />
                                 <TouchableOpacity onPress={()=> setImage(null)} className='rounded-full bg-primary border-[1px] border-mainGray' style={{  position:'absolute', zIndex:30, top:6, right:10 }}>
                                     <CloseIcon color={Colors.mainGray} size={22} className='' style={{  }} />

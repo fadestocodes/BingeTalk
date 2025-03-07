@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity,Dimensions,  Keyboard, FlatList, Image, TouchableWithoutFeedback,  KeyboardAvoidingView, Platform } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity,Dimensions,  Keyboard, FlatList, TouchableWithoutFeedback,  KeyboardAvoidingView, Platform } from 'react-native'
+import { Image } from 'expo-image'
 import React, {useState, useEffect, useRef} from 'react'
 import { PeopleIcon, SlateIcon, ThreadsIcon, DownIcon, FilmIcon, TVIcon, PersonIcon, CloseIcon, BackIcon } from '../../../../assets/icons/icons'
 import { Colors } from '../../../../constants/Colors'
@@ -27,7 +28,7 @@ const CreateHome = () => {
     const [ flatlistVisible, setFlatlistVisible ] = useState(false);
     const [ threadObject, setThreadObject ] = useState(null)
 
-    const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURL = 'https://image.tmdb.org/t/p/w500';
 
     const {user:clerkUser} = useUser();
     const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
@@ -117,7 +118,7 @@ const CreateHome = () => {
           >
            <Image 
             source={ item.media_type === 'person' ? {uri:`${posterURL}${item.item.profile_path}`}  : {uri:`${posterURL}${item.item.poster_path}`}}
-            resizeMode='cover'
+            contentFit='cover'
             style={{ width:70, height:100, borderRadius:10, overflow:'hidden' }}
             />
             <Text  numberOfLines={2} style={{width:70}} className='text-mainGray text-xs'>{item.item.name || item.item.title}</Text>
@@ -152,12 +153,14 @@ const CreateHome = () => {
                         placeholder='Search for a movie, show, or person'
                         placeholderTextColor={Colors.mainGray}
                         onChangeText={(text)=> {setSearchQuery(text);  handleSearch(text)  }}
-                        className='w-full bg-white rounded-3xl text-lg font-pbold'
-                        style={{ height:50, paddingHorizontal:25, paddingBottom:0 }}
+                        className='w-full text-white rounded-3xl '
+                        // style={{ height:50, paddingHorizontal:25, paddingBottom:0 }}
+                        style={{ minHeight:50, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop:0, textAlignVertical:'center' }}
+
                         value={searchQuery}
                     />
                 </View>
-                <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:5, top:15 }}>
+                <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:15, top:15 }}>
                     <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
 
@@ -178,7 +181,7 @@ const CreateHome = () => {
                                     >
                                     <Image 
                                     source={ item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
-                                    resizeMode='cover'
+                                    contentFit='cover'
                                     style={{ width:50, height:75, borderRadius:10, overflow:'hidden' }}
                                     />
                                     <View className='flex flex-1 w-full justify-center pr-0'>

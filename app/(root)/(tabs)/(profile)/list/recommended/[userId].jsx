@@ -209,7 +209,7 @@ const RecommendedFromProfile = () => {
                         renderItem={({item})=>{
                             console.log('RECOMMENDED ITEM',item)
                             return (
-                                <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150 }}>
+                                <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
                                     <Image
                                     style={{
                                     width: '100%',

@@ -22,7 +22,7 @@ const ToastMessage = ({ message, onComplete, icon, durationMultiple }) => {
         setTimeout(() => {
           opacity.value = withTiming(0, { duration: 500 });
           translateY.value = withSpring(50, { damping: 6, stiffness: 100 }); // Move offscreen
-        }, 3000); // Wait for 2 seconds before fading out
+        }, 3000 * ( durationMultiple || 1 )); // Wait for 2 seconds before fading out
   
         // Call the onComplete callback when the animation finishes
         setTimeout(() => {
@@ -53,7 +53,7 @@ const ToastMessage = ({ message, onComplete, icon, durationMultiple }) => {
               borderRadius: 15,
               justifyContent:'center',
               alignItems:'center',
-              height:100,
+              minHeight:100,
               width:200,
               zIndex:40,
               gap:10

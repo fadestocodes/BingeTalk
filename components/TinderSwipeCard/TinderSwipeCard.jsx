@@ -11,6 +11,7 @@ import { swipeMovieInterested } from "../../api/movie";
 import { swipeTVInterested } from "../../api/tv";
 import { useUser } from "@clerk/clerk-expo";
 import { useFetchOwnerUser } from "../../api/user";
+import { SwipeIcon } from "../../assets/icons/icons";
 
 
 const TinderSwipeCard = (  ) => {
@@ -28,7 +29,7 @@ const TinderSwipeCard = (  ) => {
 
 
   useEffect(() => {
-    setMessage('Swipe left to skip, swipe right to add to Interested')
+    setMessage('Swipe left to skip.\n\nSwipe right to add to Interested.\n\nSwipe up to see details.')
     const fetchTrending = async () => {
       const res = await getTrending();
       if (res) {
@@ -141,7 +142,7 @@ const TinderSwipeCard = (  ) => {
 
   return (
     <View style={styles.container}>
-      <ToastMessage message={message} onComplete={() => setMessage('')}  />
+      <ToastMessage durationMultiple={Number(1.3)} message={message} onComplete={() => setMessage('')} icon={<SwipeIcon color={Colors.secondary} size={30} />}  />
 
 
       {movies.length > 0 ? (
