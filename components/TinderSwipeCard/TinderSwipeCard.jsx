@@ -5,6 +5,13 @@ import { getTrending } from "../../api/tmdb";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import ToastMessage from "../ui/ToastMessage";
+import { ListChecks, FastForward } from "lucide-react-native";
+import { Colors } from "../../constants/Colors";
+import { swipeMovieInterested } from "../../api/movie";
+import { swipeTVInterested } from "../../api/tv";
+import { useUser } from "@clerk/clerk-expo";
+import { useFetchOwnerUser } from "../../api/user";
+
 
 const TinderSwipeCard = (  ) => {
   const [movies, setMovies] = useState([]);
@@ -13,7 +20,12 @@ const TinderSwipeCard = (  ) => {
 
   const [ message, setMessage ] = useState(null)
 
-  
+  const [ swipeMessage, setSwipeMessage  ] = useState(null)
+  const [toastIcon, setToastIcon] = useState(null);
+  const { user : clerkUser } = useUser()
+  const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
+
+
 
   useEffect(() => {
     setMessage('Swipe left to skip, swipe right to add to Interested')
@@ -52,11 +64,72 @@ const TinderSwipeCard = (  ) => {
   }, [router]); // Runs only once, can be adjusted for specific cases
 
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    
+    console.log('swiped right', movies[0].title)
+    const item = movies[0]
+    if (item.media_type === 'movie'){
+      console.log('hello from item.media_type = movie')
+      data = {
+        tmdbObj : {
+          id : item.id,
+          title  : item.title,
+          release_date : item.release_date,
+          poster_path : item.poster_path,
+          backdrop_path : item.backdrop_path
+        },
+        userId : ownerUser.id,
+        fromTMDBList : true
+      } 
+      console.log('data', data)
+      await swipeMovieInterested(data)
+
+    } else if ( item.movieId){
+      console.log('hello from item.movieId')
+      data = {
+        userId : ownerUser.id,
+        movieId : item.movieId
+      }
+      console.log('data', data)
+
+      await swipeMovieInterested(data)
+
+    } else if (item.media_type === 'tv'){
+      console.log('hello from item.media_type = tv')
+      console.log('tv obj ', item)
+      data = {
+        tmdbObj : {
+          id : item.id,
+          title  : item.name,
+          release_date : item.first_air_date,
+          poster_path : item.poster_path,
+          backdrop_path : item.backdrop_path
+        },
+        userId : ownerUser.id,
+        fromTMDBList : true
+      } 
+      console.log('data', data)
+
+      await swipeTVInterested(data)
+    } else if (item.tvId){
+      console.log('hello from item.tvId')
+      data = {
+        userId : ownerUser.id,
+        tvId : item.tvId
+      }
+      console.log('data', data)
+
+      await swipeTVInterested(data)
+
+    }
+    setSwipeMessage("Added to Watchlist");
+    setToastIcon(<ListChecks size={30} color={Colors.secondary} />); 
     console.log("Liked:", movies[0].title);
   };
 
   const handleReject = () => {
+    setSwipeMessage("Next");
+    setToastIcon(<FastForward size={30} color={Colors.secondary} />); 
     console.log("Rejected:", movies[0].title);
   };
 
@@ -68,11 +141,12 @@ const TinderSwipeCard = (  ) => {
 
   return (
     <View style={styles.container}>
-      <ToastMessage message={message} onComplete={() => setMessage('')}  /> 
+      <ToastMessage message={message} onComplete={() => setMessage('')}  />
+
 
       {movies.length > 0 ? (
-        <View>
-        <View className="z-1">
+        <View className="w-full">
+        <View className="z-1 w-full">
             <SwipeCard
               key={movies[0].id}  // Ensure the correct movie transition
               item={ currentItem || movies[0]}
@@ -108,6 +182,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 0,
+    width:'100%'
   },
 });
 

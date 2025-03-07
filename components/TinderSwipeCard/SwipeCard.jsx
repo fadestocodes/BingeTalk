@@ -1,7 +1,15 @@
 import React, { useRef , useCallback, useState} from "react";
-import { View, Image, Animated, PanResponder, Text, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
+import { View, Animated, PanResponder, Text, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { useRouter } from "expo-router";
+import { Image } from "expo-image";
+import ToastMessage from "../ui/ToastMessage";
+import { ListChecks, FastForward , BadgeHelp} from "lucide-react-native";
+import { markMovieInterested, swipeMovieInterested } from "../../api/movie";
+import { markTVInterested, swipeTVInterested } from "../../api/tv";
+import { useFetchOwnerUser } from "../../api/user";
+import { useUser } from "@clerk/clerk-expo";
+
 
 const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd, nextItem }) => {
   const swipe = useRef(new Animated.ValueXY()).current;
@@ -10,9 +18,13 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
   const { height } = Dimensions.get('screen');
   const router = useRouter()
   const [ loading, setLoading ] = useState(true)
+  const [ message, setMessage  ] = useState(null)
+  const [toastIcon, setToastIcon] = useState(null);
+  
 
 
-  const posterURL = "https://image.tmdb.org/t/p/w780";
+  const posterURLlow = "https://image.tmdb.org/t/p/w500";
+  const posterURL = "https://image.tmdb.org/t/p/original";
 
   const panResponder = useRef(
     PanResponder.create({
@@ -27,8 +39,14 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
         ],
         { useNativeDriver: false }
       ),
-      onPanResponderRelease: (_, { dx, dy }) => {
+      onPanResponderRelease:  (_, { dx, dy }) => {
         if (dx > 120) {
+          
+          
+         
+          setMessage("Marked as Interested");
+          setToastIcon(<BadgeHelp size={30} color={Colors.secondary} />); // Example icon
+
           // Swiped Right
           Animated.timing(swipe, {
             toValue: { x: 500, y: 0 },
@@ -41,6 +59,8 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
             onAnimationEnd(); // Notify TinderSwipeCard to set the new movie after animation is complete
           });
         } else if (dx < -120) {
+          setMessage("Next");
+          setToastIcon(<FastForward size={30} color={Colors.secondary} />); 
           // Swiped Left
           Animated.timing(swipe, {
             toValue: { x: -500, y: 0 },
@@ -53,7 +73,7 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
             onAnimationEnd(); // Notify TinderSwipeCard to set the new movie after animation is complete
           });
         } else if (dy < -120) {
-
+         // Example icon
             Animated.timing(swipe, {
                 toValue: { x: 0, y: -1100 },
                 duration: 600,
@@ -84,50 +104,6 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
     })
   ).current;
 
-// const panResponder = useRef(
-//     PanResponder.create({
-//       onMoveShouldSetPanResponder: () => true,
-//       onPanResponderMove: (_, {dx, dy, y0}) => {
-//         swipe.setValue({x: dx, y: dy});
-//         titlSign.setValue(y0 > (height * 0.9) / 2 ? 1 : -1);
-//       },
-//       onPanResponderRelease: (_, {dx, dy}) => {
-//         const direction = Math.sign(dx);
-//         const isSwipedOffScreen = Math.abs(dx) > 100;
-
-//         if (isSwipedOffScreen) {
-//           Animated.timing(swipe, {
-//             duration: 500,
-//             toValue: {
-//               x: direction * 500,
-//               y: dy,
-//             },
-//             useNativeDriver: true,
-//           }).start(removeTopCard);
-//           return;
-//         }
-
-//         Animated.spring(swipe, {
-//           toValue: {
-//             x: 0,
-//             y: 0,
-//           },
-//           useNativeDriver: true,
-//           friction: 5,
-//         }).start();
-//       },
-//     }),
-//   ).current;
-
-//   const removeTopCard = useCallback(() => {
-//     setItem(prevState => {
-//     //   onSwipeUser(swipe, prevState);
-//       return prevState.slice(1);
-//     });
-//     swipe.setValue({x: 0, y: 0});
-//   }, [swipe]);
-    
-
   // Opacity on swipe direction
   const likeOpacity = swipe.x.interpolate({
     inputRange: [0, 50],
@@ -152,7 +128,10 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
 
 
   return (
+  <>
+      <ToastMessage message={message} icon={toastIcon}  onComplete={()=>setMessage(null)} durationMultiple={0.5} />
     <View className='h-full w-full'>
+
         <Animated.View
         style={[
             styles.card,
@@ -164,21 +143,26 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
         {...panResponder.panHandlers}
         >
         <View style={styles.choiceContainer}>
-            {/* Swipe Feedback */}
+
+            {/* Swipe Feedback
             <Animated.Text style={[styles.interested, animatedCardStyle, { opacity: likeOpacity }]}>
             ADD TO WATCHLIST
             </Animated.Text>
             <Animated.Text style={[styles.notInterested, animatedCardStyle, { opacity: rejectOpacity }]}>
             NOT INTERESTED
-            </Animated.Text>
+            </Animated.Text> */}
         </View>
 
         {/* Poster Image */}
         {/* { loading && <ActivityIndicator color={Colors.secondary} /> } */}
         <Image
             source={{ uri: `${posterURL}${item.poster_path}` }}
+            placeholder={{ uri: `${posterURLlow}${item.poster_path}`  }}
+            placeholderContentFit="cover"
             style={styles.poster}
-            onLoad={()=>setLoading(false)}
+            contentFit='cover'
+            cachePolicy='none'
+            // onLoad={()=>setLoading(false)}
         />
 
         {/* <Text style={styles.text}>
@@ -188,6 +172,7 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
         </Animated.View>
 
     </View>
+    </>
   );
 };
 
@@ -255,7 +240,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 400,
     height: 800,
-    resizeMode: "cover",
+    // resizeMode: "cover",
     marginBottom: 0,
     position:'absolute',
     top: 420,

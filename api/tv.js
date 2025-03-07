@@ -230,3 +230,26 @@ export const useGetTVFromDB = ( DBtvId ) => {
     return { tv, loading }
 
 }
+
+
+export const swipeTVInterested = async (data) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/tv/interested/swipe`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json()
+
+        console.log('swiped tv response', response)
+        if (response.status === 201){
+            return 
+        }
+        return response
+    } catch (Err){
+        console.log(Err)
+    }
+
+}

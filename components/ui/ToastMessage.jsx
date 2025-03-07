@@ -5,7 +5,7 @@ import { Handshake } from 'lucide-react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 
 
-const ToastMessage = ({ message, onComplete, icon }) => {
+const ToastMessage = ({ message, onComplete, icon, durationMultiple }) => {
     const { width, height } = Dimensions.get('window'); // Get screen dimensions
 
     const opacity = useSharedValue(0);
@@ -27,7 +27,7 @@ const ToastMessage = ({ message, onComplete, icon }) => {
         // Call the onComplete callback when the animation finishes
         setTimeout(() => {
           onComplete(); // Clear message
-        }, 3500);
+        }, 3500 * ( durationMultiple || 1 ) );
       }
     }, [message]);
 
