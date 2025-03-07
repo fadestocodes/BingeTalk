@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
+import { Image } from 'expo-image'
 import React from 'react'
 // import { threads } from '../lib/fakeData'
 import { Colors } from '../constants/Colors'

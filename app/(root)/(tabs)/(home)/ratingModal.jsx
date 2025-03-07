@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View , ImageBackground, ScrollView, Image, ActivityIndicator} from 'react-native'
+import { StyleSheet, Text, View , ImageBackground, ScrollView, ActivityIndicator} from 'react-native'
+import { Image } from 'expo-image'
 import React, {useState, useEffect} from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import RatingUI from '../../../../components/RatingUI'
@@ -22,6 +23,7 @@ const ratingModal = () => {
     const [ message, setMessage ] = useState(null)
     const [imageLoading, setImageLoading] = useState(true); // Track loading state
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
 
 
@@ -77,11 +79,13 @@ const ratingModal = () => {
             
             <View style={{ paddingTop:120, gap:10, justifyContent:'center', alignItems:'center' }}>
                 <Text className='text-mainGray font-pbold' >{movie?.title || tv?.title || ''} ({getYear(movie?.releaseDate || tv?.releaseDate)})</Text>
-                { imageLoading && <ActivityIndicator color={Colors.secondary}/> }
                         <Image
                             source={{ uri:`${posterURL}${movie?.posterPath || tv?.posterPath}` }}
+                            placeholder={{ uri:`${posterURLlow}${movie?.posterPath || tv?.posterPath}` }}
+                            placeholderContentFit='cover'
+                            contentFit='cover'
+                            transition={300}
                             style={{ width:90, height:130, borderRadius:15 }}
-                            onLoad={handleImageLoad}
                         />
             </View>
         </View>

@@ -1,10 +1,12 @@
-import { FlatList, StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
+import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { Image } from 'expo-image';
 import React from 'react'
 import { Colors } from '../constants/Colors';
 
 const DiscoverHorizontal = ({ data, handlePress }) => {
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
 
 
   return (
@@ -19,6 +21,10 @@ const DiscoverHorizontal = ({ data, handlePress }) => {
             <TouchableOpacity onPress={()=>handlePress(item)}>
                 <Image
                     source={{uri : item.profile_path ?  `${posterURL}${item.profile_path}` : `${posterURL}${item.poster_path} `}}
+                    placeholder={{uri : item.profile_path ?  `${posterURLlow}${item.profile_path}` : `${posterURLlow}${item.poster_path} `}}
+                    placeholderContentFit='cover'
+                    contentFit='cover'
+                    transition={300}
                     style={{ width:  75, height:  120, borderRadius : 10, overflow:'hidden', marginBottom:5 }}
                 />
                 <View className='flex gap-0 items-start justify-start'>

@@ -1,4 +1,5 @@
-import {  ScrollView, Text, TouchableOpacity, View, Image, RefreshControl, FlatList, ActivityIndicator } from 'react-native'
+import {  ScrollView, Text, TouchableOpacity, View, RefreshControl, FlatList, ActivityIndicator } from 'react-native'
+import { Image } from 'expo-image'
 import React, {useState, useEffect} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -24,6 +25,7 @@ const CastIdPage = () => {
     console.log(castId)
     const router = useRouter();
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const [dropdownMenu, setDropdownMenu] = useState(false);
     const [creditOptions, setCreditOptions] = useState([])
     const [whichCredits, setWhichCredits] = useState('')
@@ -187,8 +189,10 @@ const CastIdPage = () => {
           <View className="px-8 flex-row items-center w-full justify-center">
             <Image className=''
               source={{uri:`${posterURL}${personData.profile_path}`}}
+              placeholder={{uri:`${posterURLlow}${personData.profile_path}`}}
+              placeholderContentFit='cover'
                style={{ width:100, height: 180, overflow:'hidden', borderRadius:10}}
-                resizeMode='cover'
+                contentFit='cover'
               />
             <View className='name-bio items-start gap-0  text-wrap flex-wrap px-8 max-w-64  '>
               <Text className=' text-3xl text-secondary font-pbold'>{personData.name}</Text>

@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity,FlatList,Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity,FlatList, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import React, { useState , useRef} from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
@@ -142,7 +143,7 @@ const CommentsModalPage = () => {
                             <View className="flex-row items-center gap-2">
                                 <Image
                                     source={{ uri: item.user.profilePic }}
-                                    resizeMode='cover'
+                                    contentFit='cover'
                                     style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                 />
                                 <Text className='text-mainGrayDark' >@{item.user.username}</Text>
@@ -194,7 +195,7 @@ const CommentsModalPage = () => {
                             <View className="flex-row items-center gap-2 pl-10">
                                 <Image
                                     source={{ uri: reply.user.profilePic }}
-                                    resizeMode='cover'
+                                    contentFit='cover'
                                     style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                 />
                                 <Text className='text-mainGrayDark   ' >@{reply.user.username}</Text>

@@ -1,4 +1,5 @@
-import {  Text, View, Image, ScrollView, Dimensions, RefreshControl, FlatList, ActivityIndicator, LoadingComponent} from 'react-native'
+import {  Text, View, ScrollView, Dimensions, RefreshControl, FlatList, ActivityIndicator, LoadingComponent} from 'react-native'
+import { Image } from 'expo-image'
 import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'expo-router/build/hooks'
 import { useLocalSearchParams } from 'expo-router/build/hooks'
@@ -36,6 +37,7 @@ const TVPage = () => {
     const params = useLocalSearchParams();
     const tvId = params.tvId
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter();
     const queryClient = useQueryClient();
 
@@ -282,26 +284,37 @@ const TVPage = () => {
     >
 
         <View className="flex ">
-            <ImageBackground
-                style={{width : '100%', height: 300, marginBottom:40, position:'absolute' }}
-                source={{uri : `${posterURL}${movie?.backdrop_path}`}}
-                resizeMethod='cover'
-            
-                >
-                <LinearGradient
-                    colors={[ 'transparent',Colors.primary]}
-                    style={{height : '100%', width : '100%'}}>
-                </LinearGradient>
-                <TouchableOpacity className='border-white rounded-md w-16 flex items-center px-3 py-1 absolute top-20 left-4'   onPress={backPress}>
-                        <BackIcon className='' color={Colors.third}  size='22'/>
-                </TouchableOpacity>
-            </ImageBackground>
+        <Image
+            style={{
+            width: '100%',
+            top:0,
+            height: 300,
+            position: 'absolute',
+            }}
+            source={{uri : `${posterURL}${movie?.backdrop_path}`}}
+            placeholder={{uri : `${posterURLlow}${movie?.backdrop_path}`}}
+            placeholderContentFit='cover'
+            contentFit="cover" // Same as resizeMode='cover'
+            transition={300} // Optional: Adds a fade-in effect
+        />
+        <LinearGradient
+            colors={['transparent', Colors.primary]}
+            style={{
+            height: 300,
+            width: '100%',
+            position: 'absolute',
+            top:0,
+            }}
+        />
         </View>
         <View className='beside-poster w-full  items-center flex-row justify-center gap-6 mb-8 ' style={{paddingTop:150}}>
             <Image 
                 source={{uri : `${posterURL}${movie.poster_path}`}}
+                placeholder={{uri : `${posterURLlow}${movie.poster_path}`}}
+                placeholderContentFit='cover'
                 style={{ width:100, height: 180, overflow:'hidden', borderRadius:10}}
-                resizeMode='cover'
+                contentFit='cover'
+                transition={300}
             />
             <View className='  flex items-start w-52 gap-3' style={{marginBottom:0}}>
                 <View className=' flex gap-2'>

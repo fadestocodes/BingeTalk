@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, Image, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl } from 'react-native'
+import { Image } from 'expo-image'
 import React, {useEffect, useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { feed } from '../../../../lib/fakeData'
@@ -203,7 +204,7 @@ const SearchPage = () => {
             <TouchableOpacity onPress={()=>handlePress(item)} className='w-full gap-5 flex-row my-3 justify-start items-center'>
               <Image 
                 source={  searchingFor === 'users' ? { uri:item.profilePic } : item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
-                resizeMode='cover'
+                contentFit='cover'
                 style={{ width:50, height:75, borderRadius:10, overflow:'hidden' }}
               />
               <View className='flex flex-1 w-full justify-center pr-0'>

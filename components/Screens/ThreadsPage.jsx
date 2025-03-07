@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform , ActivityIndicator} from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform , ActivityIndicator} from 'react-native'
+import { Image } from 'expo-image'
 import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Colors } from '../../constants/Colors'
@@ -187,7 +188,7 @@ const ThreadsIdPage = () => {
                                     <View className="flex-row items-center gap-2">
                                         <Image
                                             source={{ uri: item.user.profilePic }}
-                                            resizeMode='cover'
+                                            contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
                                         <Text className='text-mainGrayDark' >@{item.user.username}</Text>
@@ -228,7 +229,7 @@ const ThreadsIdPage = () => {
                                     <View className="flex-row items-center gap-2 pl-10">
                                         <Image
                                             source={{ uri: reply.user.profilePic }}
-                                            resizeMode='cover'
+                                            contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
                                         <Text className='text-mainGrayDark   ' >@{reply.user.username}</Text>

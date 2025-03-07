@@ -1,8 +1,10 @@
-import { StyleSheet, Text, View, FlatList , TouchableOpacity, Image} from 'react-native'
+import { StyleSheet, Text, View, FlatList , TouchableOpacity} from 'react-native'
+import { Image } from 'expo-image';
 import React from 'react'
 
 const CastCrewHorizontal = ({param, handlePress}) => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
   return (
     <FlatList
         data = {param}
@@ -14,6 +16,10 @@ const CastCrewHorizontal = ({param, handlePress}) => {
                 <TouchableOpacity onPress={()=>handlePress(item)}>
                     <Image
                         source={{uri : item.profile_path ?  `${posterURL}${item.profile_path}` : `${posterURL}${item.poster_path} `}}
+                        placeholder={{uri : item.profile_path ?  `${posterURLlow}${item.profile_path}` : `${posterURLlow}${item.poster_path} `}}
+                        placeholderContentFit='cover'
+                        contentFit='cover'
+                        transition={300}
                         style={{ width:  75, height: item.poster_path ? 120 : 75, borderRadius : item.poster_path ? 10 :  50, overflow:'hidden', marginBottom:5 }}
                     />
                     <View className='flex gap-0 items-start justify-start  '>

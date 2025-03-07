@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View , TouchableOpacity, Image,} from 'react-native'
+import { StyleSheet, Text, View , TouchableOpacity,} from 'react-native'
+import { Image } from 'expo-image';
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons';
 import { Colors } from '../constants/Colors';
@@ -44,7 +45,7 @@ const ThreadCard = ({thread, refetch}) => {
                         <View className="flex-row items-center gap-2 ">
                             <Image
                                 source={{ uri: thread.user.profilePic }}
-                                resizeMode='cover'
+                                contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                             />
                             <Text className='text-mainGrayDark   ' >@{thread.user.username}</Text>

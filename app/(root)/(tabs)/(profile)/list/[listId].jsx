@@ -1,4 +1,5 @@
-import { SafeAreaView, StyleSheet, Text, View, FlatList, Image, RefreshControl, TouchableOpacity } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, FlatList, RefreshControl, TouchableOpacity } from 'react-native'
+import { Image } from 'expo-image'
 import React from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useFetchSpecificList } from '../../../../../api/list'
@@ -11,6 +12,7 @@ const ListId = () => {
     const { data:list, refetch, isFetching } = useFetchSpecificList(listId);
     console.log('LIST FOR LISTID PAGE',list)
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
 
     if (isFetching){
@@ -44,8 +46,11 @@ const ListId = () => {
                 <TouchableOpacity onPress={()=>handlePress(item)}  >
                     <Image 
                         source = {{ uri : item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : item.castCrew &&  `${posterURL}${item.castCrew.posterPath}` }}
+                        placeholder = {{ uri : item.movie ? `${posterURLlow}${item.movie.posterPath}` : item.tv ? `${posterURLlow}${item.tv.posterPath}` : item.castCrew &&  `${posterURLlow}${item.castCrew.posterPath}` }}
+                        placeholderContentFit='cover'
                         style= {{ width: 70, height :100, borderRadius:10  }}
-                        resizeMode='cover'
+                        contentFit='cover'
+                        transition={300}
                     />
                     <Text className='text-mainGray text-sm font-pbold' style={{width:70 }} numberOfLines={2}>{ item.castCrew ? `${item.castCrew.name}` : item.movie ? `${item.movie.title}` : item.tv && `${item.tv.title}` }</Text>
                     <Text className='text-mainGray text-xs'>{ item.castCrew ? `(${getYear(item.castCrew.dob)})` : item.movie ? `(${getYear(item.movie.releaseDate)})` : item.tv && `(${ getYear(item.tv.releaseDate) })` }</Text>

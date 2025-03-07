@@ -1,5 +1,6 @@
-import {  Text, View, FlatList, Image, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard , Linking} from 'react-native'
+import {  Text, View, FlatList, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard , Linking} from 'react-native'
 import { ImageBackground,  } from 'react-native'
+import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import React, {useEffect, useState} from 'react'
 import {feed} from '../lib/fakeData'
@@ -143,26 +144,28 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
             ListHeaderComponent={(
                
                 <View className='justify-center items-center flex gap-3 ' style={{  marginTop:0}}>
-                    <ImageBackground
-                        className='top-0'
-                        style={{width : '100%', height: 400, position:'absolute', top:0}}
-                        source={{ uri:user.profilePic }}
-                        resizeMethod='cover'
-                        
-                        >
-    
-                        <LinearGradient 
-                            colors={[ 'transparent',Colors.primary]} 
-                            style={{height : '100%', width : '100%'}}>
-                        </LinearGradient>
-                    </ImageBackground>
+                    <Image
+                        style={{
+                        width: '100%',
+                        top:0,
+                        height: 400,
+                        position: 'absolute',
+                        }}
+                        source={{ uri: user.profilePic }}
+                        contentFit="cover" // Same as resizeMode='cover'
+                        transition={300} // Optional: Adds a fade-in effect
+                    />
+                    <LinearGradient
+                        colors={['transparent', Colors.primary]}
+                        style={{
+                        height: 400,
+                        width: '100%',
+                        position: 'absolute',
+                        top:0,
+                        }}
+                    />
                     <View className='px-4 items-center ' style={{marginTop:275, gap:15}}>
-                        {/* <Image
-                            source={require('../assets/images/drewcamera.jpg')}
-                            style={{ width:100, height:100, borderRadius:50, marginBottom:18 }}
-                            resizeMethod='cover'
-                            className='w-full mt-20'
-                            /> */}
+                        
                         <View className='items-center' style={{gap:10}}>
                             <View className='gap-1 justify-center items-center mb-5'>
                                 <Text className='text-secondary font-pblack text-2xl'>{user.firstName} {user.lastName}</Text>

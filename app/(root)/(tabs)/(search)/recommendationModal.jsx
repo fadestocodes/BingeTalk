@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, View, Image, FlatList, ActivityIndicator, TouchableOpacity, Dimensions} from 'react-native'
+import { ScrollView, StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Dimensions} from 'react-native'
+import { Image } from 'expo-image'
 import React, {useEffect, useState} from 'react'
 import { newRecommendation } from '../../../../api/recommendation'
 import { Colors } from '../../../../constants/Colors'
@@ -12,7 +13,8 @@ import ToastMessage from '../../../../components/ui/ToastMessage'
 const recommendationModal = () => {
 
     const { user : clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    console.log('ownerusersender', ownerUser.recommendationSender)
     const [ mutuals, setMutuals ] = useState([])
     const [ loadingMutuals, setLoadingMutuals ] = useState(false)
     const [ message , setMessage ] = useState(null)
@@ -39,7 +41,8 @@ const recommendationModal = () => {
 
    
 
-    const handleRecommendation = async (item) => {
+    const handleRecommendation = async (params) => {
+        console.log('PARAMS', params)
         let type
         if (DBmovieId){
             type = 'MOVIE'
@@ -52,7 +55,7 @@ const recommendationModal = () => {
         const data = {
             recommenderId : ownerUser.id,
             type,
-            recipientId : item.followingId,
+            recipientId : params.item.followingId,
             movieId : Number(DBmovieId) || null,
             castId : Number(DBcastId) || null,
             tvId : Number(DBtvId) || null
@@ -60,9 +63,14 @@ const recommendationModal = () => {
         console.log('DATA', data)
         
         const newRec = await newRecommendation( data );
-        if (newRec.message){
-            setMessage(newRec.message)
+        if (newRec){
+            if (params.alreadySent){
+                setMessage('Deleted previous recommendation')
+            } else {
+                setMessage(newRec.message)
+            }
         }
+        refetch();
     }
 
     if (loadingMutuals){
@@ -79,7 +87,7 @@ const recommendationModal = () => {
                 <Text className='text-secondary text-2xl font-pbold'>Select a user to send a recommendation to</Text>
                 <Text className='text-mainGray text-center'>(must be mutual followers)</Text>
             </View>
-            <ToastMessage message={message} onComplete={() => setMessage('')} icon={ <Handshake  color={Colors.secondary} size={30} />}/>
+            <ToastMessage message={message} onComplete={() => setMessage('')} icon={ <Handshake  color={Colors.secondary} size={30} />} />
 
             <FlatList
                 scrollEnabled={false}
@@ -88,12 +96,14 @@ const recommendationModal = () => {
                 contentContainerStyle={{ gap:20, paddingVertical:30 }}
                 renderItem = { ({item, index}) => {
                     console.log('item and index',item, index)
+                    const alreadySent = ownerUser.recommendationSender.some( element => element.recipientId === item.following.id )
                     return (
                         <View className='flex-row w-full justify-between items-center gap-3'>
                             <View className='flex-row gap-3 justify-center items-center'>
                                 <Image
                                     source = {{ uri : item.following.profilePic }}
-                                    resizeMode='cover'
+                                    contentFit='cover'
+                                    transition={300}
                                     style = {{ width:45, height : 45, borderRadius:'50%' }}
                                 />
                                 <View className=''>
@@ -101,8 +111,8 @@ const recommendationModal = () => {
                                     <Text className='text-mainGray text-sm'>@{item.following.username}</Text>
                                 </View>
                             </View>
-                            <TouchableOpacity onPress={()=>handleRecommendation(item)}  style={{ backgroundColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
-                                <Handshake color={Colors.primary} size={22} />
+                            <TouchableOpacity onPress={()=>handleRecommendation({item, alreadySent })}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
+                                <Handshake color={ alreadySent ? Colors.secondary  : Colors.primary} size={22} />
                                 {/* <Text className='text-primary text-sm font-pbold'>send rec.</Text> */}
                             </TouchableOpacity>
 

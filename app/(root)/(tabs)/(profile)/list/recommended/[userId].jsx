@@ -1,6 +1,7 @@
 
-import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator, Image, ImageBackground } from 'react-native'
+import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator, ImageBackground } from 'react-native'
 import React, {useRef, useState} from 'react'
+import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useFetchrecommendations, userecommendations, useGetRecommendationsSent, useGetRecommendationsReceived } from '../../../../../../api/user'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -32,6 +33,8 @@ const RecommendedFromProfile = () => {
     const [ tab, setTab ] = useState('received')
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w342';
+
 
   console.log('data', recommendationsSent)
   // const flattenData = data?.pages.flatMap((page) => page.items) || [];
@@ -125,17 +128,27 @@ const RecommendedFromProfile = () => {
                         renderItem={({item})=>{
                             console.log('RECOMMENDED ITEM',item)
                             return (
-                                <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150 }}>
-                                    <ImageBackground
-                                        style={{width : '100%', height: '100%', position:'absolute', borderRadius:15, overflow:'hidden' }}
-                                        source={{uri : `${posterURL}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }`}}
-                                        resizeMethod='cover'
-                                        >
-                                        <LinearGradient
-                                            colors={[ 'transparent','black']}
-                                            style={{height : '100%', width : '100%'}}>
-                                        </LinearGradient>
-                                    </ImageBackground>
+                                <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150 ,overflow:'hidden'}}>
+                                    <Image
+                                    style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    position: 'absolute',
+                                    }}
+                                    source={{ uri: `${posterURL}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }` }}
+                                    placeholder={{ uri: `${posterURLlow}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }`  }}
+                                    placeholderContentFit="cover"
+                                    contentFit="cover" // Same as resizeMode='cover'
+                                    transition={300} // Optional: Adds a fade-in effect
+                                />
+                                <LinearGradient
+                                    colors={['transparent', 'black']}
+                                    style={{
+                                    height: '100%',
+                                    width: '100%',
+                                    position: 'absolute',
+                                    }}
+                                />
                                     <View className='flex-row justify-center item-end w-full h-full' style={{paddingHorizontal:30, paddingVertical:15}}>
 
                                     <View  className='justify-end items-start w-full h-full' > 
@@ -197,16 +210,26 @@ const RecommendedFromProfile = () => {
                             console.log('RECOMMENDED ITEM',item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150 }}>
-                                    <ImageBackground
-                                        style={{width : '100%', height: '100%', position:'absolute', borderRadius:15, overflow:'hidden' }}
-                                        source={{uri : `${posterURL}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }`}}
-                                        resizeMethod='cover'
-                                        >
-                                        <LinearGradient
-                                            colors={[ 'transparent','black']}
-                                            style={{height : '100%', width : '100%'}}>
-                                        </LinearGradient>
-                                    </ImageBackground>
+                                    <Image
+                                    style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    position: 'absolute',
+                                    }}
+                                    source={{ uri: `${posterURL}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }` }}
+                                    placeholder={{ uri: `${posterURLlow}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }`  }}
+                                    placeholderContentFit="cover"
+                                    contentFit="cover" // Same as resizeMode='cover'
+                                    transition={300} // Optional: Adds a fade-in effect
+                                />
+                                <LinearGradient
+                                    colors={['transparent', 'black']}
+                                    style={{
+                                    height: '100%',
+                                    width: '100%',
+                                    position: 'absolute',
+                                    }}
+                                />
                                     <View className='flex-row justify-center item-end w-full h-full' style={{paddingHorizontal:30, paddingVertical:15}}>
 
                                     <View  className='justify-end items-start w-full h-full' > 

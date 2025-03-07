@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, View, Image, FlatList, ActivityIndicator, TouchableOpacity, Dimensions} from 'react-native'
+import { ScrollView, StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity, Dimensions} from 'react-native'
+import { Image } from 'expo-image'
 import React, {useEffect, useState} from 'react'
 import { newRecommendation } from '../../../../api/recommendation'
 import { Colors } from '../../../../constants/Colors'
@@ -101,7 +102,8 @@ const recommendationModal = () => {
                             <View className='flex-row gap-3 justify-center items-center'>
                                 <Image
                                     source = {{ uri : item.following.profilePic }}
-                                    resizeMode='cover'
+                                    contentFit='cover'
+                                    transition={300}
                                     style = {{ width:45, height : 45, borderRadius:'50%' }}
                                 />
                                 <View className=''>
