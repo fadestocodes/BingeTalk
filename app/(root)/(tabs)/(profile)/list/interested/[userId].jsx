@@ -9,6 +9,7 @@ import { Colors } from '../../../../../../constants/Colors'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical} from 'lucide-react-native';
 import { formatDate, getYear } from '../../../../../../lib/formatDate'
 import { FilmIcon, TVIcon } from '../../../../../../assets/icons/icons'
+import { deleteInterested } from '../../../../../../api/user'
 // import InfiniteScroll from '../../../components/InfiniteScroll'
 
 
@@ -27,7 +28,7 @@ const interestedFromProfile = () => {
     // console.log('DATAAA', data)
 
     // const interestedItems = data?.pages.flatMap(page => page.items) || [];
-    const { data : interestedItems, loading, refetch, hasMore,  } = useGetInterestedItems(userId)
+    const { data : interestedItems, loading, refetch, hasMore,removeItem  } = useGetInterestedItems(userId)
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
@@ -64,6 +65,17 @@ const interestedFromProfile = () => {
 
         const handleOptions = () => {
             
+        }
+
+        const handleRemove = async (item) => {
+            const data = {
+                userId : Number(userId),
+                movieId : item.movieId || null,
+                tvId : item.tvId
+            }
+            console.log('DATA to remove interested', data)
+            const deletedItem = await deleteInterested(data)
+            removeItem(item)
         }
 
 
@@ -160,7 +172,7 @@ const interestedFromProfile = () => {
                                                 </View>
                                 </View>
                                 <View className='flex-row gap-3 items-center justify-center ' >
-                                            <TouchableOpacity onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                            <TouchableOpacity onPress={()=>handleRemove(item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
                                                 <Text className='text-primary font-pbold text-sm'>Remove</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity style={{}}>

@@ -9,14 +9,15 @@ import { Colors } from '../../../../../../constants/Colors'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical} from 'lucide-react-native';
 import { formatDate, getYear } from '../../../../../../lib/formatDate'
 import { FilmIcon, TVIcon } from '../../../../../../assets/icons/icons'
+import { deleteWatchedItem, deleteCurrentlyWatching } from '../../../../../../api/user'
 // import InfiniteScroll from '../../../components/InfiniteScroll'
 
 
 const RecentlyWatchedProfile = () => {
     const {userId} = useLocalSearchParams();
    
-    const { data : recentlyWatched, loading, refetch, hasMore,  } = useRecentlyWatched(userId)
-    const { data : currentlyWatchingItems, loading:loadingCurrentlyWatching, refetch : refetchingCurrentlyWatching, hasMore:hasMoreCurrentlyWatching } = useGetCurrentlyWatchingItems(userId)
+    const { data : recentlyWatched, loading, refetch, hasMore, removeItem  } = useRecentlyWatched(userId)
+    const { data : currentlyWatchingItems, loading:loadingCurrentlyWatching, refetch : refetchingCurrentlyWatching, hasMore:hasMoreCurrentlyWatching, removeItem : removeCurrentlyWatchingItem } = useGetCurrentlyWatchingItems(userId)
         console.log('CURRENTLYWATCHING', currentlyWatchingItems)
     const [ tab, setTab ] = useState('watched')
 
@@ -41,6 +42,24 @@ const RecentlyWatchedProfile = () => {
 
         const handleOptions = () => {
             
+        }
+
+        const handleRemove = async (type,item) => {
+            const data = {
+                userId : Number(userId),
+                movieId : item.movieId || null,
+                tvId : item.tvId || null
+            }
+            console.log('data', data)
+            if (type === 'recentlyWatched'){
+                const deleted = await deleteWatchedItem(data)
+                console.log('deleted'), deleted
+                removeItem(item);
+            } else if (type === 'currentlyWatching'){
+                const deleted = await deleteCurrentlyWatching(data)
+                console.log('deleted'), deleted
+                removeCurrentlyWatchingItem(item);
+            }
         }
 
 
@@ -146,7 +165,7 @@ const RecentlyWatchedProfile = () => {
                                                     </View>
                                     </View>
                                     <View className='flex-row gap-3 items-center justify-center ' >
-                                            <TouchableOpacity onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                            <TouchableOpacity onPress={()=>handleRemove('recentlyWatched',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
                                                 <Text className='text-primary font-pbold text-sm'>Remove</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity style={{}}>
@@ -231,7 +250,7 @@ const RecentlyWatchedProfile = () => {
                                                     </View>
                                     </View>
                                     <View className='flex-row gap-3 items-center justify-center ' >
-                                            <TouchableOpacity onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                            <TouchableOpacity onPress={()=>handleRemove('currentlyWatching',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
                                                 <Text className='text-primary font-pbold text-sm'>Remove</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity style={{}}>

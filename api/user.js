@@ -222,7 +222,12 @@ export const useRecentlyWatched = (userId, limit=5) => {
     useEffect(() => {
         getRecentlyWatched(true);
     }, [ userId]);
-    return { data, hasMore, loading, refetch : getRecentlyWatched }
+
+    const removeItem = (item) => {
+        setData( prev => prev.filter( element => element.id !== item.id ) )
+    }
+
+    return { data, hasMore, loading, refetch : getRecentlyWatched , removeItem }
 
 }
 
@@ -471,7 +476,12 @@ export const useGetInterestedItems = (userId, limit=5) => {
     useEffect(() => {
         getInterestedItems(true);
     }, [ userId]);
-    return { data, hasMore, loading, refetch : getInterestedItems }
+
+    const removeItem = (item) => {
+        setData(prev => prev.filter( element => element.id !== item.id ))
+    }
+
+    return { data, hasMore, loading, refetch : getInterestedItems, removeItem }
 
 }
 
@@ -509,7 +519,11 @@ export const useGetCurrentlyWatchingItems = (userId, limit=5) => {
     useEffect(() => {
         getCurrentlyWatchingItems(true);
     }, [ userId]);
-    return { data, hasMore, loading, refetch : getCurrentlyWatchingItems }
+
+    const removeItem = (item) => {
+        setData(prev => prev.filter( element => element.id !== item.id ))
+    }
+    return { data, hasMore, loading, refetch : getCurrentlyWatchingItems, removeItem }
 
 }
 
@@ -536,6 +550,57 @@ export const getAllMutuals = async (userId) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/user/all-mutuals?userId=${userId}`)
         const response = await request.json();
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const deleteWatchedItem = async (data) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/recently-watched/delete`, {
+            method:'POST',
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json()
+        console.log('response',response)
+        return response
+    } catch (err){
+        console.log(err)
+    }
+}   
+
+export const deleteCurrentlyWatching = async (data) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/currently-watching/delete`, {
+            method:'POST',
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json()
+        console.log('response',response)
+        return response
+    } catch (err){
+        console.log(err)
+    }
+}   
+
+export const deleteInterested = async (data ) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/interested/delete`, {
+            method:'POST',
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json()
+        console.log(response)
         return response
     } catch (err) {
         console.log(err)
