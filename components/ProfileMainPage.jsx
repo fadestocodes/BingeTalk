@@ -143,13 +143,14 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
             keyExtractor={ (item) => item.id }
             ListHeaderComponent={(
                
-                <View className='justify-center items-center flex gap-3 ' style={{  marginTop:0}}>
+                <View className='justify-center items-center flex gap-3 ' style={{  marginTop:0, overflow:'hidden'}}>
                     <Image
                         style={{
                         width: '100%',
                         top:0,
                         height: 400,
                         position: 'absolute',
+                        borderRadius:30
                         }}
                         source={{ uri: user.profilePic }}
                         contentFit="cover" // Same as resizeMode='cover'

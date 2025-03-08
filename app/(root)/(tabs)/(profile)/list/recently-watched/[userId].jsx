@@ -130,9 +130,9 @@ const RecentlyWatchedProfile = () => {
                                     position: 'absolute',
                                     }}
                                 />
-                                    <View className='flex-row justify-center item-end w-full h-full' style={{paddingHorizontal:30, paddingVertical:15}}>
+                                    <View className='flex-row justify-between items-end w-full h-full' style={{paddingHorizontal:15, paddingVertical:15}}>
     
-                                    <View  className='justify-end items-start w-full h-full' > 
+                                    <View  className='justify-end items-start  h-full' style={{maxWidth:220}} > 
                                         <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
                                         
                                             <View className='flex-row gap-1 justify-center items-center'>
@@ -145,9 +145,14 @@ const RecentlyWatchedProfile = () => {
                                                         <Text className='text-mainGray text-sm '>Watched on {formatDate(item.createdAt)}</Text>
                                                     </View>
                                     </View>
-                                                <TouchableOpacity onPress={handleOptions} style={{justifyContent:'flex-end', alignItems:'flex-end'}}>
-                                                    <EllipsisVertical size={20} color={Colors.mainGray} />
-                                                </TouchableOpacity>
+                                    <View className='flex-row gap-3 items-center justify-center ' >
+                                            <TouchableOpacity onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                                <Text className='text-primary font-pbold text-sm'>Remove</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={{}}>
+                                                <EllipsisVertical size={20} color={Colors.mainGray} />
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 {/* <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/> */}
                                 </TouchableOpacity>
@@ -210,9 +215,9 @@ const RecentlyWatchedProfile = () => {
                                     position: 'absolute',
                                     }}
                                 />
-                                    <View className='flex-row justify-center item-end w-full h-full' style={{paddingHorizontal:30, paddingVertical:15}}>
+                                    <View className='flex-row justify-between items-end w-full h-full' style={{paddingHorizontal:15, paddingVertical:15}}>
     
-                                    <View  className='justify-end items-start w-full h-full' > 
+                                    <View  className='justify-end items-start h-full' style={{maxWidth:220}} > 
                                         <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
                                         
                                             <View className='flex-row gap-1 justify-center items-center'>
@@ -225,9 +230,14 @@ const RecentlyWatchedProfile = () => {
                                                         <Text className='text-mainGray text-sm '>Watched on {formatDate(item.createdAt)}</Text>
                                                     </View>
                                     </View>
-                                                <TouchableOpacity onPress={handleOptions} style={{justifyContent:'flex-end', alignItems:'flex-end'}}>
-                                                    <EllipsisVertical size={20} color={Colors.mainGray} />
-                                                </TouchableOpacity>
+                                    <View className='flex-row gap-3 items-center justify-center ' >
+                                            <TouchableOpacity onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                                <Text className='text-primary font-pbold text-sm'>Remove</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={{}}>
+                                                <EllipsisVertical size={20} color={Colors.mainGray} />
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 {/* <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/> */}
                                 </TouchableOpacity>

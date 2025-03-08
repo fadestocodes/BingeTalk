@@ -9,6 +9,7 @@ import { Colors } from '../../../../../../constants/Colors'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical} from 'lucide-react-native';
 import { formatDate, getYear } from '../../../../../../lib/formatDate'
 import { FilmIcon, TVIcon } from '../../../../../../assets/icons/icons'
+import { deleteRecommendation } from '../../../../../../api/recommendation'
 // import InfiniteScroll from '../../../components/InfiniteScroll'
 
 
@@ -27,8 +28,8 @@ const RecommendedFromProfile = () => {
     // console.log('DATAAA', data)
 
     // const recommendationsSent = data?.pages.flatMap(page => page.items) || [];
-    const { data : recommendationsSent, loading, refetch, hasMore,  } = useGetRecommendationsSent(userId)
-    const { data : recommendationsReceived, loading:loadingReceived, refetch:refetchReceived, hasMore:hasMoreReceived,  } = useGetRecommendationsReceived(userId)
+    const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(userId)
+    const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(userId)
 
     const [ tab, setTab ] = useState('received')
 
@@ -69,6 +70,51 @@ const RecommendedFromProfile = () => {
         const handleOptions = () => {
             
         }
+
+    const handleRemove = async  (type, item) => {
+        if (type === 'sent'){
+            console.log('item to remove', item)
+            const data = {
+                recipientId : item.recipientId,
+                recommenderId : item.recommenderId,
+                movieId : item?.movie?.id || null,
+                tvId : item?.tv?.id || null
+            }
+            console.log('data', data)
+            const deletedRec = await deleteRecommendation(data)
+            removeSentItems(item)
+
+        } else if (type === 'received'){
+            console.log('item to remove', item)
+            const data = {
+                recipientId : item.recipientId,
+                recommenderId : item.recommenderId,
+                movieId : item?.movie?.id || null,
+                tvId : item?.tv?.id || null
+            }
+            console.log('data', data)
+            const deletedRec = await deleteRecommendation(data)
+            removeReceivedItems(item)
+        }
+        // if (item.movie){
+        //     const data = {
+        //         movieId : item.movie.id,
+        //         userId : Number(userId)
+        //     }
+        //     const removedMovie = await markMovieWatchlist(data)
+        //     console.log('removed movie',removedMovie)
+        //     removeItem(item)
+
+        // } else if(item.tv){
+        //     const data = {
+        //         tvId : item.tv.id,
+        //         userId : Number(userId)
+        //     }
+        //     const removedMovie = await markTVWatchlist(data)
+        //     console.log('removed movie',removedMovie)
+        //     removeItem(item)
+        // }
+    }
 
 
   // if (loading  ){
@@ -119,7 +165,7 @@ const RecommendedFromProfile = () => {
                         contentContainerStyle={{ width:'100%', gap:10, paddingBottom:100 }}
                         onEndReached={() => {
                         if ( hasMore  ){
-                            refetch()
+                            refetchReceived()
                         }
                     }}
                         
@@ -149,32 +195,37 @@ const RecommendedFromProfile = () => {
                                     position: 'absolute',
                                     }}
                                 />
-                                    <View className='flex-row justify-center item-end w-full h-full' style={{paddingHorizontal:30, paddingVertical:15}}>
+                                    <View className='flex-row justify-between items-end w-full h-full ' style={{paddingHorizontal:15, paddingVertical:15}}>
 
-                                    <View  className='justify-end items-start w-full h-full' > 
-                                        <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
-                                        
-                                            <View className='flex-row gap-1 justify-center items-center'>
-                                                { item.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
-                                                <Text className='text-white text font-pbold'>{ item.movieId ? `${item.movie.title} (${getYear(item.movie.releaseDate)})` : `${item.tv.title} (${getYear(item.tv.releaseDate)})` }</Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                                    <View className="">
-                                                        <Text className='text-mainGray font-pregular text-sm '>Recommended by</Text>
-                                                        <View className='flex-row justify-center items-center gap-2'>
-                                                        <Image
-                                                            source={{ uri: item.recommender.profilePic }}
-                                                            resizeMethod = 'cover'
-                                                            style={{ width:25, height : 25, borderRadius : '50%' }}
-                                                        />
-                                                        <Text className='text-mainGray font-pbold text-sm'>@{item.recommender.username}</Text>
-                                                        <Text className='text-mainGray text-sm '>-  {formatDate(item.createdAt)}</Text>
-                                                                                                    </View>
-                                                    </View>
-                                    </View>
-                                                <TouchableOpacity onPress={handleOptions} style={{justifyContent:'flex-end', alignItems:'flex-end'}}>
-                                                    <EllipsisVertical size={20} color={Colors.mainGray} />
-                                                </TouchableOpacity>
+                                        <View  className='justify-end items-start' style={{maxWidth:220}} > 
+                                            <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
+                                            
+                                                <View className='flex-row gap-1 justify-center items-center'>
+                                                    { item.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
+                                                    <Text className='text-white text font-pbold'>{ item.movieId ? `${item.movie.title} (${getYear(item.movie.releaseDate)})` : `${item.tv.title} (${getYear(item.tv.releaseDate)})` }</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                                        <View className="">
+                                                            <Text className='text-mainGray font-pregular text-sm '>Recommended by</Text>
+                                                            <View className='flex-row justify-center items-center gap-2'>
+                                                            <Image
+                                                                source={{ uri: item.recommender.profilePic }}
+                                                                resizeMethod = 'cover'
+                                                                style={{ width:25, height : 25, borderRadius : '50%' }}
+                                                            />
+                                                            <Text className='text-mainGray font-pbold text-sm'>@{item.recommender.username}</Text>
+                                                            <Text className='text-mainGray text-sm '>-  {formatDate(item.createdAt)}</Text>
+                                                                                                        </View>
+                                                        </View>
+                                        </View>
+                                        <View className='flex-row gap-3 items-center justify-center ' >
+                                            <TouchableOpacity onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                                <Text className='text-primary font-pbold text-sm'>Remove</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={{}}>
+                                                <EllipsisVertical size={20} color={Colors.mainGray} />
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 {/* <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/> */}
                                 </TouchableOpacity>
@@ -194,13 +245,21 @@ const RecommendedFromProfile = () => {
                 ) : (
 
                     <FlatList
+                        // refreshControl={
+                        //     <RefreshControl
+                        //         tintColor={Colors.secondary}
+                        //         refreshing={loading}
+                        //         onRefresh={refetch}
+                        //     />
+                        // }
+
                         scrollEnabled={true}
                         data={recommendationsSent}
                         keyExtractor={item => item.id}
                         contentContainerStyle={{ width:'100%', gap:10, paddingBottom:100 }}
                         onEndReached={() => {
-                        if ( hasMoreReceived  ){
-                            refetchReceived()
+                        if ( hasMore  ){
+                            fetchMore()
                         }
                     }}
                         
@@ -209,7 +268,7 @@ const RecommendedFromProfile = () => {
                         renderItem={({item})=>{
                             console.log('RECOMMENDED ITEM',item)
                             return (
-                                <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
+                                <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden', width:'100%' }}>
                                     <Image
                                     style={{
                                     width: '100%',
@@ -230,32 +289,37 @@ const RecommendedFromProfile = () => {
                                     position: 'absolute',
                                     }}
                                 />
-                                    <View className='flex-row justify-center item-end w-full h-full' style={{paddingHorizontal:30, paddingVertical:15}}>
+                                    <View className='flex-row justify-between items-end w-full h-full ' style={{paddingHorizontal:15, paddingVertical:15, width:'100%'}}>
 
-                                    <View  className='justify-end items-start w-full h-full' > 
-                                        <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
-                                        
-                                            <View className='flex-row gap-1 justify-center items-center'>
-                                                { item.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
-                                                <Text className='text-white text font-pbold'>{ item.movieId ? `${item.movie.title} (${getYear(item.movie.releaseDate)})` : `${item.tv.title} (${getYear(item.tv.releaseDate)})` }</Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                                    <View className="">
-                                                        <Text className='text-mainGray font-pregular text-sm '>Recommended to</Text>
-                                                        <View className='flex-row justify-center items-center gap-2'>
-                                                        <Image
-                                                            source={{ uri: item.recommender.profilePic }}
-                                                            resizeMethod = 'cover'
-                                                            style={{ width:25, height : 25, borderRadius : '50%' }}
-                                                        />
-                                                        <Text className='text-mainGray font-pbold text-sm'>@{item.recommender.username}</Text>
-                                                        <Text className='text-mainGray text-sm '>-  {formatDate(item.createdAt)}</Text>
-                                                                                                    </View>
-                                                    </View>
-                                    </View>
-                                                <TouchableOpacity onPress={handleOptions} style={{justifyContent:'flex-end', alignItems:'flex-end'}}>
-                                                    <EllipsisVertical size={20} color={Colors.mainGray} />
-                                                </TouchableOpacity>
+                                        <View  className='justify-end items-start  ' > 
+                                            <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
+                                            
+                                                <View className='flex-row gap-1 justify-center items-center' style={{maxWidth:220}}>
+                                                    { item.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
+                                                    <Text className='text-white text font-pbold' style={{maxWidth:220}} >{ item.movieId ? `${item.movie.title} (${getYear(item.movie.releaseDate)})` : `${item.tv.title} (${getYear(item.tv.releaseDate)})` }</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                                        <View className="">
+                                                            <Text className='text-mainGray font-pregular text-sm '>Recommended to</Text>
+                                                            <View className='flex-row justify-center items-center gap-2'>
+                                                            <Image
+                                                                source={{ uri: item.recipient.profilePic }}
+                                                                resizeMethod = 'cover'
+                                                                style={{ width:25, height : 25, borderRadius : '50%' }}
+                                                            />
+                                                            <Text className='text-mainGray font-pbold text-sm'>@{item.recipient.username}</Text>
+                                                            <Text className='text-mainGray text-sm '>-  {formatDate(item.createdAt)}</Text>
+                                                                                                        </View>
+                                                        </View>
+                                        </View>
+                                        <View className='flex-row gap-3 items-center justify-center ' >
+                                            <TouchableOpacity onPress={()=>handleRemove('sent',item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                                <Text className='text-primary font-pbold text-sm'>Remove</Text>
+                                            </TouchableOpacity>
+                                                    <TouchableOpacity style={{}}>
+                                                        <EllipsisVertical size={20} color={Colors.mainGray} />
+                                                    </TouchableOpacity>
+                                        </View>
                                     </View>
                                 {/* <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/> */}
                                 </TouchableOpacity>

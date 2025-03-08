@@ -246,42 +246,55 @@ export const useFetchRecentlyWatched = (userId) => {
 
 
 
-export const useGetWatchlistItems = (userId, limit=5) => {
-    const [ data, setData  ]= useState([])
-    const [ cursor, setCursor ] = useState(null)
-    // const cursorRef = useRef(null); 
-    const [ loading, setLoading ] = useState(false)
-    const [ hasMore, setHasMore ] = useState(true)
-    const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
+    export const useGetWatchlistItems = (userId, limit=5) => {
+        const [ data, setData  ]= useState([])
+        const [ cursor, setCursor ] = useState(null)
+        // const cursorRef = useRef(null); 
+        const [ loading, setLoading ] = useState(false)
+        const [ hasMore, setHasMore ] = useState(true)
+        const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
-    const getWatchlistItems =  async () => {
-        if ( !hasMore  ) return
-        console.log('HAS MORE?', hasMore)
+        const getWatchlistItems =  async ( reset = false ) => {
+            // if ( !hasMore  ) return
+            if (!hasMore && !reset) return;
 
-        setLoading(true)
-        // if (cursor){
-        //     set
-        // }
-        try {
-            const response = await fetch (`${nodeServer.currentIP}/user/watchlist?userId=${userId}&cursor=${cursor}&limit=${limit}`)
-            const result = await response.json();
-            console.log('next CURSOR', result.nextCursor)
-            setData(prev => [...prev, ...result.items]);
-            setCursor(result.nextCursor)
-            // cursorRef.current = result.nextCursor;
-            setHasMore( !!result.nextCursor )
-        } catch (err) {
-            console.log(err)
+            console.log('HAS MORE?', hasMore)
+
+            setLoading(true)
+            // if (cursor){
+            //     set
+            // }
+            try {
+                const response = await fetch (`${nodeServer.currentIP}/user/watchlist?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+                const result = await response.json();
+                console.log('next CURSOR', result.nextCursor)
+                setData(reset ?  result.items  : prev => [...prev, ...result.items]);
+                setCursor(result.nextCursor)
+                // cursorRef.current = result.nextCursor;
+                setHasMore( !!result.nextCursor )
+            } catch (err) {
+                console.log(err)
+            }
+            setLoading(false)
         }
-        setLoading(false)
-    }
-    
-    useEffect(() => {
-        getWatchlistItems(true);
-    }, [ userId]);
-    return { data, hasMore, loading, refetch : getWatchlistItems }
+        
+        useEffect(() => {
+            getWatchlistItems();
+        }, [ ]);
+        
+        const refetch =  async () => {
+            // console.log('triggered refetch()', new Error().stack);
+            setCursor(null)
+            setHasMore(true)
+            await getWatchlistItems(true)
+        }
 
-}
+        const removeItem = (item) => {
+            setData( prev => prev.filter( element => element.id !== item.id ) )
+        }
+        return { data, hasMore, loading, refetch, fetchMore : getWatchlistItems, removeItem   }
+
+    }
 
 export const fetchInterested = async (userId) => {
     try {
@@ -337,8 +350,8 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
-    const getRecommendationsSent =  async () => {
-        if ( !hasMore  ) return
+    const getRecommendationsSent =  async ( reset = false ) => {
+        if ( !hasMore && !reset ) return
         console.log('HAS MORE?', hasMore)
 
         setLoading(true)
@@ -347,7 +360,7 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
             const response = await fetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
             console.log('next CURSOR', result.nextCursor)
-            setData(prev => [...prev, ...result.items]);
+            setData(reset ? result.items : prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
             setHasMore( !!result.nextCursor )
@@ -360,7 +373,19 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
     useEffect(() => {
         getRecommendationsSent();
     }, [ userId]);
-    return { data, hasMore, loading, refetch : getRecommendationsSent }
+
+    const refetch =  async () => {
+        // console.log('triggered refetch()', new Error().stack);
+        setCursor(null)
+        setHasMore(true)
+        await getRecommendationsSent(true)
+    }
+
+    const removeSentItems = (item) => {
+        setData( prev => prev.filter( element => element.id !== item.id ) )
+    }
+
+    return { data, hasMore, loading, refetch , fetchMore : getRecommendationsSent, removeSentItems }
 
 }
 
@@ -372,8 +397,8 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
-    const getRecommendationsReceived =  async () => {
-        if ( !hasMore  ) return
+    const getRecommendationsReceived =  async (reset = false) => {
+        if ( !hasMore && !reset  ) return
         console.log('HAS MORE?', hasMore)
 
         setLoading(true)
@@ -384,7 +409,7 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
             const response = await fetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
             console.log('next CURSOR', result.nextCursor)
-            setData(prev => [...prev, ...result.items]);
+            setData(reset ? result.items : prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
             setHasMore( !!result.nextCursor )
@@ -397,7 +422,19 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
     useEffect(() => {
         getRecommendationsReceived();
     }, [ userId]);
-    return { data, hasMore, loading, refetch : getRecommendationsReceived }
+
+
+    const refetchReceived =  async () => {
+        // console.log('triggered refetchReceived()', new Error().stack);
+        setCursor(null)
+        setHasMore(true)
+        await getRecommendationsSent(true)
+    }
+
+    const removeReceivedItems = (item) => {
+        setData( prev => prev.filter( element => element.id !== item.id ) )
+    }
+    return { data, hasMore, loading, refetchReceived  , fetchMoreReceived: getRecommendationsReceived, removeReceivedItems    }
 
 }
 

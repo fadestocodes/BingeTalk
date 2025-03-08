@@ -96,7 +96,13 @@ const recommendationModal = () => {
                 contentContainerStyle={{ gap:20, paddingVertical:30 }}
                 renderItem = { ({item, index}) => {
                     console.log('item and index',item, index)
-                    const alreadySent = ownerUser.recommendationSender.some( element => element.recipientId === item.following.id )
+                    const alreadySent = ownerUser.recommendationSender.some(element => {
+                        if (element.recipientId !== item.following.id) return false;
+                        if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
+                        if (element.type === 'TV') return element.tvId === Number(DBtvId);
+                        if (element.type === 'CAST') return element.castId === Number(DBcastId)
+                        return false;
+                    });
                     return (
                         <View className='flex-row w-full justify-between items-center gap-3'>
                             <View className='flex-row gap-3 justify-center items-center'>

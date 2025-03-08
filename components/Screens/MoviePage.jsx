@@ -305,6 +305,7 @@ const MoviePage = () => {
                 top:0,
                 height: 300,
                 position: 'absolute',
+                borderRadius:30,
                 }}
                 source={{uri : `${posterURL}${movie?.backdrop_path}`}}
                 placeholder={{uri : `${posterURLlow}${movie?.backdrop_path}`}}
@@ -407,7 +408,7 @@ const MoviePage = () => {
             <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
                 <View className='gap-0 items-center'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
-                    <Text className='text-mainGray text-2xl font-pbold'>{ alreadyRated ? `${movieRating.rating}` : 'N/A' }</Text>
+                    <Text className='text-mainGray text-2xl font-pbold'>{ alreadyRated ? `${movieRating?.rating}` : 'N/A' }</Text>
                 </View>
                 <View className='gap-0'>
                     <Text className='text-mainGray text-sm font-psemibold'>From your network</Text>

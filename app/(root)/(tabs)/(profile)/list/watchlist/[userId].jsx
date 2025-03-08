@@ -1,6 +1,6 @@
 
 import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator, ImageBackground } from 'react-native'
-import React, {useRef} from 'react'
+import React, {useRef, useState, useEffect} from 'react'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useFetchrecommendations, userecommendations, useGetRecommendations, useGetWatchlistItems } from '../../../../../../api/user'
@@ -9,40 +9,17 @@ import { Colors } from '../../../../../../constants/Colors'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical} from 'lucide-react-native';
 import { formatDate, getYear } from '../../../../../../lib/formatDate'
 import { FilmIcon, TVIcon } from '../../../../../../assets/icons/icons'
+import { markMovieWatchlist } from '../../../../../../api/movie'
+import { markTVWatchlist } from '../../../../../../api/tv'
 // import InfiniteScroll from '../../../components/InfiniteScroll'
 
 
 const watchlistItemsProfile = () => {
     const {userId} = useLocalSearchParams();
-    // const { data:watchlistItems, refetch, isFetching  } = useFetchrecommendations(userId);
-    // const {
-    //     data,
-    //     fetchNextPage,
-    //     hasNextPage,
-    //     isFetching,
-    //     isFetchingNextPage,
-    //     isLoading,
-    //     refetch
-    // } = useFetchrecommendations(userId);
-    // console.log('DATAAA', data)
-
-    // const watchlistItems = data?.pages.flatMap(page => page.items) || [];
-    const { data : watchlistItems, loading, refetch, hasMore,  } = useGetWatchlistItems(userId)
-
+    const { data : watchlistItems, loading, refetch, hasMore, fetchMore, removeItem } = useGetWatchlistItems(userId)
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
-
-  console.log('data', watchlistItems)
-  // const flattenData = data?.pages.flatMap((page) => page.items) || [];
-  // console.log(flattenData)
-
-
-
-
-    // console.log('recently watched ARRAY', watchlistItems)
     const router = useRouter()
-
-
     
     const handlePress = (item) => {
         console.log('tmbdbId', item.tmdbId)
@@ -55,37 +32,36 @@ const watchlistItemsProfile = () => {
     }
     
 
-        // const reachedEnd = () => {
-        //     if ( hasMore  && !loading  ) {
-        //         refetch();
-        //     }
-        // }
-        const ITEM_HEIGHT = 50
+    const handleRemove = async  (item) => {
+        console.log('item to remove', item)
+        if (item.movie){
+            const data = {
+                movieId : item.movie.id,
+                userId : Number(userId)
+            }
+            const removedMovie = await markMovieWatchlist(data)
+            console.log('removed movie',removedMovie)
+            removeItem(item)
 
-        const handleOptions = () => {
-            
+        } else if(item.tv){
+            const data = {
+                tvId : item.tv.id,
+                userId : Number(userId)
+            }
+            const removedMovie = await markTVWatchlist(data)
+            console.log('removed movie',removedMovie)
+            removeItem(item)
         }
+    }
 
 
-  // if (loading  ){
-  //   return(
-  //       <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>   
-  //    <RefreshControl tintColor={Colors.secondary}   />
-  //    </View>
-  //   )
-  // }
 
   return (
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
        <View 
-            refreshControl={
-                <RefreshControl
-                    tintColor={Colors.secondary}
-                    refreshing={loading}
-                    onRefresh={refetch}
-                />
-            }
+           
             style={{ paddingTop:30, gap:10, width:'100%', paddingHorizontal:15, paddingBottom:100 }}>
+                { loading && <ActivityIndicator color={Colors.secondary}/> }
             <View className='justify-center items-center'>
             <View className="flex-row justify-center items-center gap-2">
                 <ListChecks color='white'  />
@@ -100,8 +76,16 @@ const watchlistItemsProfile = () => {
                 </View>
             ) : (
 
-                // <InfiniteScroll data={flattenData} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} isFetching={isFetching}  />
+
+
                 <FlatList
+                // refreshControl={
+                //     <RefreshControl
+                //         tintColor={Colors.secondary}
+                //         refreshing={loading}
+                //         onRefresh={refetch}
+                //     />
+                // }
                     scrollEnabled={true}
                     data={watchlistItems}
                     keyExtractor={item => item.id}
@@ -113,7 +97,7 @@ const watchlistItemsProfile = () => {
                       //     // refetch()
                       // }
                       if ( hasMore  ){
-                        refetch()
+                        fetchMore()
                       }
                   }}
                    
@@ -123,7 +107,7 @@ const watchlistItemsProfile = () => {
                     renderItem={({item})=>{
                         console.log('RECOMMENDED ITEM',item)
                         return (
-                            <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
+                            <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden', width:'100%' }}>
                                 <Image
                                     style={{
                                     width: '100%',
@@ -144,10 +128,10 @@ const watchlistItemsProfile = () => {
                                     position: 'absolute',
                                     }}
                                 />
-                                <View className='flex-row justify-center item-end w-full h-full' style={{paddingHorizontal:30, paddingVertical:15}}>
+                                <View className='flex-row justify-between items-end w-full h-full ' style={{paddingHorizontal:15, paddingVertical:15, width:'100%'}}>
 
-                                <View  className='justify-end items-start w-full h-full' > 
-                                    <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
+                                <View  className='justify-end items-start ' > 
+                                    <TouchableOpacity onPress={()=>handlePress(item)  } style={{maxWidth:220}} className = 'flex-row gap-5 justify-start items-center ' >
                                     
                                         <View className='flex-row gap-1 justify-center items-center'>
                                             { item.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
@@ -159,15 +143,21 @@ const watchlistItemsProfile = () => {
                                                     <Text className='text-mainGray text-sm '>Added on {formatDate(item.createdAt)}</Text>
                                                 </View>
                                 </View>
-                                            <TouchableOpacity onPress={handleOptions} style={{justifyContent:'flex-end', alignItems:'flex-end'}}>
+                                <View className='flex-row gap-3 items-center justify-center ' >
+                                    <TouchableOpacity onPress={()=>handleRemove(item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                        <Text className='text-primary font-pbold text-sm'>Remove</Text>
+                                    </TouchableOpacity>
+                                            <TouchableOpacity style={{}}>
                                                 <EllipsisVertical size={20} color={Colors.mainGray} />
                                             </TouchableOpacity>
+                                </View>
                                 </View>
                             {/* <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/> */}
                             </TouchableOpacity>
                     )}}
                 />
-            )  }
+                ) }
+            {/* )  } */}
                 </View>
         </View>
     </SafeAreaView>

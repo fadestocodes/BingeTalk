@@ -110,7 +110,7 @@ const UserListsPage = ( { userId } ) => {
 
                             <View style={{ flexDirection:'row', gap:10}} >
                         { item.listItem.slice(0,5).map( (element, index) => {
-                        console.log('EACH ELEMENT', element)
+                        // console.log('EACH ELEMENT', element)
                         return (
 
                             <View key={index} className='flex-row gap-2' > 
