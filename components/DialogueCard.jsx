@@ -41,9 +41,9 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal}
     const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
 
     
-    const alreadyUpvoted = dialogue.dialogueInteractions.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
-    const alreadyDownvoted = dialogue.dialogueInteractions.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
-    const alreadyReposted = dialogue.dialogueInteractions.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
+    const alreadyUpvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
+    const alreadyDownvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
+    const alreadyReposted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
   
 
     const handleMentionPress = (mention) => {
@@ -156,7 +156,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal}
                         <TouchableOpacity onPress={()=>handleComment(dialogue)} disabled={disableCommentsModal} >
                         <View className='flex-row gap-1  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
                             <MessageIcon   className='' size='18'  color={   Colors.mainGray}/>
-                            <Text className='text-xs font-pbold text-gray-400  '> {dialogue.comments.length}</Text>
+                            <Text className='text-xs font-pbold text-gray-400  '> {dialogue?.comments?.length}</Text>
                         </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=> handleInteraction('reposts',dialogue) } >

@@ -12,6 +12,9 @@ import { getYear } from '../../../../lib/formatDate'
 import DiscoverHorizontal from '../../../../components/DiscoverHorizontal'
 import { searchUsers } from '../../../../api/user'
 import { useQueryClient } from '@tanstack/react-query';
+import { ChevronRight } from 'lucide-react-native'
+import { getTrendingDialogues } from '../../../../api/dialogue'
+import DialogueCard from '../../../../components/DialogueCard'
 
 
 
@@ -35,6 +38,7 @@ const SearchPage = () => {
     discoverTV : []
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
+  const [ trendingDialogues, setTrendingDialogues ] = useState(null)
 
   // const queryClient = useQueryClient();
   // useEffect(()=>{
@@ -113,6 +117,9 @@ const SearchPage = () => {
           trendingPeople : trendingPeopleData.results,
           discoverTV : discoverTVData.results
         }) 
+        const trendingDialoguesResponse = await getTrendingDialogues(5);
+        setTrendingDialogues(trendingDialoguesResponse);
+
       } catch (err) {
         console.log('Error fetching all categories',err)
       }
@@ -152,7 +159,7 @@ const SearchPage = () => {
 
 
   return (
-    <SafeAreaView className='flex flex-1 justify-start items-center w-full h-full bg-primary pb-24 pt-10 px-5' >
+    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary pb-24 pt-10 px-5' >
       <TouchableOpacity onPress={exploreRoute} className='explore-mode  absolute w-10 h-10  top-16 right-2'><LayersIcon  color={Colors.mainGray} size={24}/></TouchableOpacity> 
       <View className='justify-center items-center'>
       <View className=' flex-row gap-4  w-full px-8 justify-center items-center relative'>
@@ -240,21 +247,49 @@ const SearchPage = () => {
           }
   
           scrollEnabled={ !discoverPage ? false : true }
+          style={{ height:'100%'}}
         >
-          <View className='flex gap-6'>
+          <View className='flex gap-6 w-full h-full'>
             
-            <View className='gap-3 flex' style={{height:200}} >
-              <Text className='text-mainGray font-pbold text-lg'>Trending Movies</Text>
+            <View className='gap-3 flex items-start w-full' style={{height:200}} >
+              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+                <FilmIcon  size={20} color={Colors.mainGray}/>
+                <Text className='text-mainGray font-pbold text-lg '>Trending Movies</Text>
+                <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
+              </TouchableOpacity>
                 <DiscoverHorizontal data={flatListCategories.upcomingMovies} handlePress={handlePressMovie} />
             </View>
-            <View className='gap-3 flex' style={{height:200}} >
-              <Text className='text-mainGray font-pbold text-lg'>Trending TV</Text>
+            <View className='gap-3 flex items-start w-full' style={{height:200}} >
+              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+                  <TVIcon   size={20} color={Colors.mainGray}/>
+                  <Text className='text-mainGray font-pbold text-lg '>Trending TV</Text>
+                  <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
+              </TouchableOpacity>
                 <DiscoverHorizontal data={flatListCategories.discoverTV} handlePress={handlePressTV} />
             </View>
-            {/* <View className='gap-3 flex' style={{height:200}} >
-              <Text className='text-mainGray font-pbold text-lg'>Trending People</Text>
-                <DiscoverHorizontal data={flatListCategories.trendingPeople} handlePress={handlePressCast} />
-            </View> */}
+            <View className='gap-3 flex items-start w-full'  >
+              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+                  <TVIcon   size={20} color={Colors.mainGray}/>
+                  <Text className='text-mainGray font-pbold text-lg '>Top Dialogue Posts</Text>
+                  <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
+              </TouchableOpacity>
+                <FlatList
+                  data={trendingDialogues}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={item => item.id}
+                  contentContainerStyle={{gap:15}}
+                  renderItem={({item}) => {
+                      console.log('trending dialogue', item)
+                    return (
+                      <View style={{width:300}}>
+                        <DialogueCard  dialogue={item} isBackground={true} />
+                      </View>
+                  )}}
+                
+                />
+            </View>
+           
           </View>
         </ScrollView>
         ) }

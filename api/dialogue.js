@@ -165,3 +165,14 @@ export const dialogueInteraction = async ( data ) => {
         console.log(err)
     }
 } 
+
+export const getTrendingDialogues = async (limit) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/dialogue/trending?limit=${limit}`)
+        const response = await request.json();
+        console.log('resposne from getting trending ', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
