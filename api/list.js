@@ -1,5 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect } from 'react'
 
 export const createList = async (postData) => {
     
@@ -99,4 +100,41 @@ export const useFetchSpecificList = ( listId ) => {
         refetchOnMount: true, 
 
     })
+}
+
+export const getTrendingLists = async (limit) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/list/trending?limit=${limit}`)
+        const response = await request.json();
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const useGetTrendingLists = (limit) => {
+    const [ trendingList, setTrendingList ] = useState(null)
+    const [ loading, setLoading ] = useState(false)
+    const getTrendingLists = async (limit) => {
+        setLoading(true)
+        try {
+            const request = await fetch(`${nodeServer.currentIP}/list/trending?limit=${limit}`)
+            const response = await request.json();
+            setTrendingList(response)
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getTrendingLists(limit)
+    },[])
+
+    const refetch = () => {
+        getTrendingLists(5);
+    }
+    
+    return { trendingList, loading, refetch  }
 }

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , TouchableOpacity,} from 'react-native'
+import { StyleSheet, Text, View , TouchableOpacity, ActivityIndicator,} from 'react-native'
 import { Image } from 'expo-image';
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons';
@@ -12,7 +12,7 @@ import { threadInteraction } from '../api/thread';
 import React from 'react'
 
 
-const ThreadCard = ({thread, refetch}) => {
+const ThreadCard = ({thread, refetch, isBackground, isShortened}) => {
     const userDB = thread.user
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const router = useRouter();
@@ -22,9 +22,9 @@ const ThreadCard = ({thread, refetch}) => {
 
     console.log("THREAD", thread)
 
-    const alreadyUpvoted = thread.threadInteractions.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
-    const alreadyDownvoted = thread.threadInteractions.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
-    const alreadyReposted = thread.threadInteractions.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
+    const alreadyUpvoted = thread.threadInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
+    const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
+    const alreadyReposted = thread.threadInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
 
   const handleInteraction =  async (type, thread) => {
     console.log('type', type)
@@ -38,13 +38,18 @@ const ThreadCard = ({thread, refetch}) => {
     refetch();
 }
 
+if (!thread){
+    return <ActivityIndicator/>
+}
+
+
   return (
-    <View className='gap-3'>
+    <View className='gap-3'  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, marginBottom:15, gap:15 }} >
 
           <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2 ">
                             <Image
-                                source={{ uri: thread.user.profilePic }}
+                                source={{ uri: thread?.user?.profilePic }}
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                             />
@@ -64,7 +69,7 @@ const ThreadCard = ({thread, refetch}) => {
             { thread.caption && (
               <View className='gap-3 my-5'>
                 <Text className='text-secondary text-lg leading-5 font-pcourier uppercase text-center'>{thread.user.firstName}</Text>
-                <Text className="text-white  text-custom font-pcourier" numberOfLines={10} >{thread.caption}</Text>
+                <Text className="text-white  text-custom font-pcourier" numberOfLines={isShortened ? 3 : 10} >{thread.caption}</Text>
               </View>
             ) }
             

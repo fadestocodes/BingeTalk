@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform,TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, KeyboardAvoidingView, Keyboard, Platform,TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
+import { Image } from 'expo-image'
 import { UpIcon, DownIcon, MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import React, {useState, useEffect} from 'react'
 import { formatDate } from '../lib/formatDate'
@@ -94,7 +95,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal}
                         <View className="flex-row items-center gap-2">
                             <Image
                                 source={{ uri: userDB.profilePic }}
-                                resizeMode='cover'
+                                contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                             />
                             <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
@@ -132,7 +133,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal}
                     <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
                         <Image
                             source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
-                            resizeMode='cover'
+                            contentFit='cover'
                             style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
                         />
                     </TouchableOpacity>

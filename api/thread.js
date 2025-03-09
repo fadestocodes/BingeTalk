@@ -62,3 +62,14 @@ export const threadInteraction = async ( data ) => {
         console.log(err)
     }
 } 
+
+export const getTrendingThreads = async (limit) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/thread/trending?limit=${limit}`)
+        const response = await request.json();
+        console.log('trending threads response', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}

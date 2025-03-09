@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image, RefreshControl, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native'
+import { Image } from 'expo-image';
 import React from 'react'
 import { useFetchUsersLists, listInteraction } from '../../api/list'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
-import {  MessageIcon, RepostIcon, ThreeDotsIcon} from '../../assets/icons/icons'
+import {  LayersIcon, MessageIcon, RepostIcon, ThreeDotsIcon} from '../../assets/icons/icons'
 import { useFetchOwnerUser } from '../../api/user';
 import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
@@ -14,7 +15,7 @@ const UserListsPage = ( { userId } ) => {
   
     const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
     console.log('lists are', lists)
-    const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURL = 'https://image.tmdb.org/t/p/w500';
     const { user : clerkUser } = useUser()
     const router = useRouter();
 
@@ -72,7 +73,7 @@ const UserListsPage = ( { userId } ) => {
                 <BadgeHelp color={Colors.mainGray} strokeWidth={2}/>
             </TouchableOpacity>
             <TouchableOpacity  onPress={()=>handleRecommendedPress(userId)}  className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:80, height:80, padding:8, borderRadius:15}}>
-                <Text className='text-mainGray text-xs font-pbold '>Recommended</Text>
+                <Text className='text-mainGray text-xs font-pbold '>Recommendations</Text>
                 <Handshake color={Colors.mainGray} strokeWidth={2}/>
             </TouchableOpacity>
         </View>
@@ -117,7 +118,7 @@ const UserListsPage = ( { userId } ) => {
 
                                 <Image
                                     source={{ uri : element.movie ? `${posterURL}${element.movie.posterPath}` : element.tv ? `${posterURL}${element.tv.posterPath}` : element.castCrew &&  `${posterURL}${element?.castCrew.posterPath}` }}
-                                    resizeMode='cover'
+                                    contentFit='cover'
                                     style= {{ borderRadius : 10, width:40, height:60 }}
                                 />
                             </View>
@@ -156,10 +157,14 @@ const UserListsPage = ( { userId } ) => {
                                 <TouchableOpacity onPress={()=> handleInteraction('reposts',item) } >
                                 <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
                                     <RepostIcon className='' size='14'  color={ alreadyReposted ? Colors.secondary :  Colors.mainGray}/>
-                                    <Text className='text-xs font-pbold text-gray-400  'style={{ color: alreadyReposted ? Colors.secondary : Colors.mainGray }}> {item.reposts}</Text>
+                                    <Text className='text-xs font-pbold text-mainGray  'style={{ color: alreadyReposted ? Colors.secondary : Colors.mainGray }}> {item.reposts}</Text>
                                 </View>
 
                                 </TouchableOpacity>
+                                <View className='flex-row gap-1 justify-center items-center'>
+                                    <LayersIcon size={18} color = { Colors.mainGray }/>
+                                    <Text className='text-xs font-pbold text-mainGray'>{ item.browses }</Text>
+                                </View>
                             </View>
                             <View className='relative' >
                                 <TouchableOpacity   >

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable } from 'react-native'
 import { Image } from 'expo-image'
 import React, {useEffect, useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -12,9 +12,11 @@ import { getYear } from '../../../../lib/formatDate'
 import DiscoverHorizontal from '../../../../components/DiscoverHorizontal'
 import { searchUsers } from '../../../../api/user'
 import { useQueryClient } from '@tanstack/react-query';
-import { ChevronRight } from 'lucide-react-native'
+import { ChevronRight, MessagesSquare, MessageSquare } from 'lucide-react-native'
 import { getTrendingDialogues } from '../../../../api/dialogue'
 import DialogueCard from '../../../../components/DialogueCard'
+import ThreadCard from '../../../../components/ThreadCard'
+import { getTrendingThreads } from '../../../../api/thread'
 
 
 
@@ -39,6 +41,7 @@ const SearchPage = () => {
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
   const [ trendingDialogues, setTrendingDialogues ] = useState(null)
+  const [ trendingThreads, setTrendingThreads ] = useState(null)
 
   // const queryClient = useQueryClient();
   // useEffect(()=>{
@@ -119,6 +122,9 @@ const SearchPage = () => {
         }) 
         const trendingDialoguesResponse = await getTrendingDialogues(5);
         setTrendingDialogues(trendingDialoguesResponse);
+        const trendingThreadsResponse = await getTrendingThreads(5)
+        setTrendingThreads(trendingThreadsResponse)
+        
 
       } catch (err) {
         console.log('Error fetching all categories',err)
@@ -154,6 +160,14 @@ const SearchPage = () => {
 
   const exploreRoute = () => {
     router.push(`/explore/explorePage`)
+  }
+
+  const handleDialoguePress = (item) => {
+    router.push(`/dialogue/${item.id}`)
+  }
+
+  const handleThreadPress = (item) => {
+    router.push(`/threads/${item.id}`)
   }
 
 
@@ -254,7 +268,7 @@ const SearchPage = () => {
             <View className='gap-3 flex items-start w-full' style={{height:200}} >
               <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                 <FilmIcon  size={20} color={Colors.mainGray}/>
-                <Text className='text-mainGray font-pbold text-lg '>Trending Movies</Text>
+                <Text className='text-mainGray font-pbold text-xl '>Trending Movies</Text>
                 <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
               </TouchableOpacity>
                 <DiscoverHorizontal data={flatListCategories.upcomingMovies} handlePress={handlePressMovie} />
@@ -262,15 +276,15 @@ const SearchPage = () => {
             <View className='gap-3 flex items-start w-full' style={{height:200}} >
               <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <TVIcon   size={20} color={Colors.mainGray}/>
-                  <Text className='text-mainGray font-pbold text-lg '>Trending TV</Text>
+                  <Text className='text-mainGray font-pbold text-xl '>Trending TV</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
               </TouchableOpacity>
                 <DiscoverHorizontal data={flatListCategories.discoverTV} handlePress={handlePressTV} />
             </View>
             <View className='gap-3 flex items-start w-full'  >
-              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
-                  <TVIcon   size={20} color={Colors.mainGray}/>
-                  <Text className='text-mainGray font-pbold text-lg '>Top Dialogue Posts</Text>
+              <TouchableOpacity   style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+                  <MessageSquare   size={20} color={Colors.mainGray}/>
+                  <Text className='text-mainGray font-pbold text-xl '>Top Dialogues</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
               </TouchableOpacity>
                 <FlatList
@@ -282,9 +296,31 @@ const SearchPage = () => {
                   renderItem={({item}) => {
                       console.log('trending dialogue', item)
                     return (
-                      <View style={{width:300}}>
+                      <TouchableOpacity onPress={()=>handleDialoguePress(item)} style={{width:300}}>
                         <DialogueCard  dialogue={item} isBackground={true} />
-                      </View>
+                      </TouchableOpacity>
+                  )}}
+                
+                />
+            </View>
+            <View className='gap-3 flex items-start w-full'  >
+              <TouchableOpacity  style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+                  <MessagesSquare   size={20} color={Colors.mainGray}/>
+                  <Text className='text-mainGray font-pbold text-xl '>Top Threads</Text>
+                  <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
+              </TouchableOpacity>
+                <FlatList
+                  data={trendingThreads}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  keyExtractor={item => item.id}
+                  contentContainerStyle={{gap:15}}
+                  renderItem={({item}) => {
+                      console.log('trending thread', item)
+                    return (
+                      <TouchableOpacity onPress={()=> handleThreadPress(item)} style={{width:300}} >
+                        <ThreadCard  thread={item} isBackground={true} isShortened={true} />
+                      </TouchableOpacity>
                   )}}
                 
                 />
