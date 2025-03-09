@@ -4,12 +4,13 @@ import { Image } from 'expo-image'
 import TinderSwipeCard from '../../../../components/TinderSwipeCard/TinderSwipeCard'
 import { useRouter } from 'expo-router'
 import { Colors } from '../../../../constants/Colors'
-import { useGetTrendingLists, listInteraction } from '../../../../api/list'
+import { useGetTrendingLists, listInteraction, useGetRecentLists } from '../../../../api/list'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
 import { LayersIcon , MessageIcon, RepostIcon, ThreeDotsIcon} from '../../../../assets/icons/icons'
 import { formatDate } from '../../../../lib/formatDate'
+import { browseCataegories } from '../../../../lib/BrowseCategories'
 
 
 
@@ -17,6 +18,7 @@ const browseHome = () => {
     const router = useRouter()
     const { user: clerkUser } = useUser()
     const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const [ selected, setSelected ] = useState('Trending')
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
 
@@ -25,7 +27,8 @@ const browseHome = () => {
     // useEffect(()=>{
 
     // }, [])
-    const { trendingList, loading, refetch } = useGetTrendingLists(5)
+    const { trendingList, loading, refetch, hasMore : hasMoreTrending } = useGetTrendingLists(3)
+    const { recentLists, loading: loadingRecents, refetch:refetchRecents, hasMore:hasMoreRecents } = useGetRecentLists(3)
 
 
     const handleInteraction =  async (type, item) => {
@@ -54,8 +57,24 @@ const browseHome = () => {
         </View>
         <Text className='text-mainGray font-pmedium'>Add Lists to your queue and go through them. Browsed stats update only when you complete a list.</Text>
       </View>
+      <View className='w-full'>
+        <FlatList
+          horizontal
+          data={browseCataegories}
+          keyExtractor={(item,index) => index}
+          contentContainerStyle={{ gap:15 }}
+          renderItem={({item}) => (
+            <TouchableOpacity onPress={()=>setSelected(item)} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+              <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+
         {/* <TinderSwipeCard /> */}
-        <View className='w-full ' style={{ paddingBottom:200 }} >
+        <View className='w-full ' style={{ paddingBottom:250 }} >
+
+
         <FlatList 
           refreshControl={
             <RefreshControl
@@ -64,7 +83,15 @@ const browseHome = () => {
               refreshing={loading}
             />
           }
-          data={trendingList}
+            onEndReached={() => {
+                if ( hasMoreTrending ){
+                    refetch()
+                } else if (hasMoreRecents){
+                  refetchRecents()
+                }
+            }}
+            onEndReachedThreshold={0.1}
+          data={ selected === 'Trending' ?  trendingList : selected === 'Most Recent' && recentLists}
           keyExtractor = {item => item.id }
           contentContainerStyle={{ gap:15 , width:'100%'}}
           renderItem = {({item}) => {
@@ -74,15 +101,6 @@ const browseHome = () => {
             const alreadyReposted = item.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
             console.log(alreadyUpvoted, alreadyDownvoted, alreadyReposted)
             return (
-            // <View className='' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, padding:15 }}>
-            //   <View className='gap-3'>
-            //     <View className=' gap-0 justify-center items-start w-full' >
-            //                 <Text className='text-white font-pbold text-xl ' >{ item.title }</Text>
-            //                 <Text className='text-white text-sm '>{`(${item.listItem.length} ${item.listItem.length > 1 ? `items` : 'item'})`}</Text>
-            //             </View>
-            //     <Text className='text-mainGray  font-pregular' numberOfLines={2}>{ item.caption }</Text>
-            //   </View>
-            // </View>
             <View className='w-full' >
                     <TouchableOpacity onPress={()=>handlePress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:10, paddingHorizontal:15, gap:15 }} >
                         <View className='gap-3'>

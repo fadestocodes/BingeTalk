@@ -113,14 +113,19 @@ export const getTrendingLists = async (limit) => {
 }
 
 export const useGetTrendingLists = (limit) => {
-    const [ trendingList, setTrendingList ] = useState(null)
+    const [ trendingList, setTrendingList ] = useState([])
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore, setHasMore ] = useState(true)
     const [ loading, setLoading ] = useState(false)
     const getTrendingLists = async (limit) => {
+        if (!hasMore) return 
         setLoading(true)
         try {
-            const request = await fetch(`${nodeServer.currentIP}/list/trending?limit=${limit}`)
+            const request = await fetch(`${nodeServer.currentIP}/list/trending?cursor=${cursor}&limit=${limit}`)
             const response = await request.json();
-            setTrendingList(response)
+            setTrendingList(prev => [...prev, ...response.items]);
+            setCursor(response.nextCursor)
+            setHasMore( !!response.nextCursor )
         } catch (err) {
             console.log(err)
         } finally {
@@ -136,5 +141,39 @@ export const useGetTrendingLists = (limit) => {
         getTrendingLists(5);
     }
     
-    return { trendingList, loading, refetch  }
+    return { trendingList, loading, refetch , hasMore }
+}
+
+export const useGetRecentLists = (limit) => {
+    const [ recentLists, setRecentLists ] = useState([])
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore, setHasMore ] = useState(true)
+    const [ loading, setLoading ] = useState(false)
+
+    const getRecentLists = async (limit) => {
+        if (!hasMore) return
+        setLoading(true)
+        try {
+            const request = await fetch(`${nodeServer.currentIP}/list/most-recent?cursor=${cursor}&limit=${limit}`)
+            const response = await request.json();
+            console.log('respone from recent lists', response)
+            setRecentLists(prev => [...prev, ...response.items]);
+            setCursor(response.nextCursor)
+            setHasMore( !!response.nextCursor )
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getRecentLists(limit)
+    },[])
+
+    const refetch = () => {
+        getRecentLists(5);
+    }
+    
+    return { recentLists, loading, refetch, hasMore  }
 }
