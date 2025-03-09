@@ -27,6 +27,10 @@ const browseHome = () => {
     // }, [])
     const { trendingList } = useGetTrendingLists(5)
 
+    const handlePress = (item) => {
+      router.push(`/list/${item.id}`)
+    }
+
   return (
     <SafeAreaView className='bg-primary '>
     <View className='w-full h-full bg-primary justify-start items-center pt-10 px-6 gap-10 '>
@@ -60,7 +64,7 @@ const browseHome = () => {
             //   </View>
             // </View>
             <View className='w-full' >
-                    <TouchableOpacity onPress={()=>handleListPress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:10, paddingHorizontal:15, gap:15 }} >
+                    <TouchableOpacity onPress={()=>handlePress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:10, paddingHorizontal:15, gap:15 }} >
                         <View className='gap-3'>
                             <View className=' gap-0 justify-center items-start' >
                                           <View className='flex-row w-full gap-2 justify-between items-center mb-3'>

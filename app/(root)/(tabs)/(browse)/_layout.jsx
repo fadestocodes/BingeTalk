@@ -8,6 +8,7 @@ const BrowseLayout = () => {
     <Stack  >
         <Stack.Screen name='browseHome' options={{headerShown : false}} />
         <Stack.Screen name='movie' options={{headerShown : false}} />
+        <Stack.Screen name='list' options={{headerShown : false}} />
         <Stack.Screen name='tv' options={{headerShown : false}} />
         <Stack.Screen name='cast' options={{headerShown : false}} />
         <Stack.Screen name='optionsModal'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:200  , borderRadius:30, backgroundColor:Colors.primary }}} />

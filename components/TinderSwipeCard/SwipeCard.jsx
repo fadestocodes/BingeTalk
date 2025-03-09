@@ -91,7 +91,25 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
                 // }
                 // onAnimationEnd(); // Notify TinderSwipeCard to set the new movie after animation is complete
               });
-           
+        } else if (dy > 120 ){
+            Animated.timing(swipe, {
+              toValue: { x: 0, y: 1100 },
+              duration: 600,
+              useNativeDriver: false,
+            }).start(() => {
+
+              // onSwipeUp(item)
+              router.back()
+              // setItem(item);
+              swipe.setValue({ x: 0, y: 0 });
+              // opacity.setValue(0); // Fade out current card
+              // if (item.media_type === 'movie') {
+              //     router.push(`/movie/${item.id}`)
+              // } else if (item.media_type === 'tv') {
+              //     router.push(`/tv/${item.id}`)
+              // }
+              // onAnimationEnd(); // Notify TinderSwipeCard to set the new movie after animation is complete
+            });
         } else {
             // Reset Position
             Animated.spring(swipe, {
@@ -156,8 +174,8 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
         {/* Poster Image */}
         {/* { loading && <ActivityIndicator color={Colors.secondary} /> } */}
         <Image
-            source={{ uri: `${posterURL}${item.poster_path}` }}
-            placeholder={{ uri: `${posterURLlow}${item.poster_path}`  }}
+            source={{ uri: `${posterURL}${item.movie ? item.movie.posterPath : item.tv ? item.tv.posterPath : item.poster_path}` }}
+            placeholder={{ uri: `${posterURLlow}${item.movie ? item.movie.posterPath : item.tv ? item.tv.posterPath : item.poster_path}` }}
             placeholderContentFit="cover"
             style={styles.poster}
             contentFit='cover'
