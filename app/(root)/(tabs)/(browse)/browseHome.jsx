@@ -10,7 +10,7 @@ import { useFetchOwnerUser } from '../../../../api/user'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
 import { LayersIcon , MessageIcon, RepostIcon, ThreeDotsIcon} from '../../../../assets/icons/icons'
 import { formatDate } from '../../../../lib/formatDate'
-import { browseCataegories } from '../../../../lib/BrowseCategories'
+import { browseCataegories } from '../../../../lib/CategoryOptions'
 
 
 
@@ -49,20 +49,20 @@ const browseHome = () => {
 
   return (
     <SafeAreaView className='bg-primary '>
-    <View className='w-full h-full bg-primary justify-start items-center pt-10 px-6 gap-10 '>
+    <View className='w-full h-full bg-primary justify-start items-center pt-10 px-6 gap-5 '>
       <View className='w-full'>
         <View className='flex-row gap-2'>
           <LayersIcon size={30} color='white' />
           <Text className='text-white font-pbold text-3xl'>Browse</Text>
         </View>
-        <Text className='text-mainGray font-pmedium'>Add Lists to your queue and go through them. Browsed stats update only when you complete a list.</Text>
+        <Text className='text-mainGray font-pmedium'>Go through user created Lists and browse titles</Text>
       </View>
-      <View className='w-full'>
+      <View className='w-full mt-3'>
         <FlatList
           horizontal
           data={browseCataegories}
           keyExtractor={(item,index) => index}
-          contentContainerStyle={{ gap:15 }}
+          contentContainerStyle={{ gap:10 }}
           renderItem={({item}) => (
             <TouchableOpacity onPress={()=>setSelected(item)} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
               <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>

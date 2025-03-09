@@ -54,8 +54,8 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
             useNativeDriver: false,
           }).start(() => {
             onLike(item);  // Call after animation completes
-            swipe.setValue({ x: 0, y: 0 });
             opacity.setValue(0); // Fade out current card
+            swipe.setValue({ x: 0, y: 0 });
             onAnimationEnd(); // Notify TinderSwipeCard to set the new movie after animation is complete
           });
         } else if (dx < -120) {
@@ -80,10 +80,10 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
                 useNativeDriver: false,
               }).start(() => {
 
+                opacity.setValue(0); // Fade out current card
                 onSwipeUp(item)
                 // setItem(item);
                 swipe.setValue({ x: 0, y: 0 });
-                // opacity.setValue(0); // Fade out current card
                 // if (item.media_type === 'movie') {
                 //     router.push(`/movie/${item.id}`)
                 // } else if (item.media_type === 'tv') {
@@ -102,7 +102,7 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
               router.back()
               // setItem(item);
               swipe.setValue({ x: 0, y: 0 });
-              // opacity.setValue(0); // Fade out current card
+              opacity.setValue(0); // Fade out current card
               // if (item.media_type === 'movie') {
               //     router.push(`/movie/${item.id}`)
               // } else if (item.media_type === 'tv') {
@@ -146,7 +146,7 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
 
 
   return (
-  <>
+  <View className="w-full h-full">
       <ToastMessage message={message} icon={toastIcon}  onComplete={()=>setMessage(null)} durationMultiple={0.7} />
     <View className='h-full w-full'>
 
@@ -179,7 +179,6 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
             placeholderContentFit="cover"
             style={styles.poster}
             contentFit='cover'
-            cachePolicy='none'
             // onLoad={()=>setLoading(false)}
         />
 
@@ -190,7 +189,7 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
         </Animated.View>
 
     </View>
-    </>
+    </View>
   );
 };
 

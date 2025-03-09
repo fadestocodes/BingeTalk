@@ -14,7 +14,7 @@ import { DraggableGrid } from 'react-native-draggable-grid';
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 import { useRouter } from 'expo-router'
-
+import { createCategories } from '../../../../lib/CategoryOptions'
 
 const CreateHome = () => {
 
@@ -27,6 +27,7 @@ const CreateHome = () => {
     const [ listItems, setListItems ]  = useState([])
     const [ flatlistVisible, setFlatlistVisible ] = useState(false);
     const [ threadObject, setThreadObject ] = useState(null)
+    const [ selected, setSelected ] = useState('Dialogue')
 
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
@@ -139,7 +140,30 @@ const CreateHome = () => {
     >
     <SafeAreaView className='bg-primary h-full w-full  '  style={{ paddingBottom:0 }} >
     
-      
+    <View className='w-full  pt-10 px-6 gap-5'>
+        <View className="">
+            <View className='flex-row gap-2'>
+              {/* <LayersIcon size={30} color='white' /> */}
+              <Text className='text-white font-pbold text-3xl'>Create</Text>
+            </View>
+            <Text className='text-mainGray font-pmedium'>Speak your mind or create a List for the world to see!</Text>
+        </View>
+
+        <View className='w-full my-3'>
+        <FlatList
+          horizontal
+          data={createCategories}
+          keyExtractor={(item,index) => index}
+          contentContainerStyle={{ gap:10 }}
+          renderItem={({item}) => (
+            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setListItems([]) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+              <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+
+      </View>
       { resultsOpen ? (
         <View className='w-full h-full justify-center items-center' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary}} >
             <View className='thread-topic w-full h-full relative  gap-3' style={{paddingBottom:100}}>
@@ -226,32 +250,8 @@ const CreateHome = () => {
             <>
             
             <ScrollView scrollEnabled={ createType === 'Showcase' ? false : true }  nestedScrollEnabled={true} onPress={Keyboard.dismiss}  className="relative w-full pt-6 gap-3" contentContainerStyle={{alignItems:'center' , justifyContent : 'center', gap:10, paddingBottom:200}}>
-        <TouchableOpacity onPress={()=>setMenuOpen(prev => !prev)}>
-            <View className='flex-row justify-center items-center gap-1'>
-                <Text className='text-mainGray text-xl '>{createType}</Text>
-                <DownIcon color={Colors.mainGray} size={20}></DownIcon>
-            </View>
-        </TouchableOpacity>
-        { menuOpen && (
-            <View className='w-44 h-50 bg-slate-100 rounded-3xl absolute z-50  top-8 justify-center items-start gap-3  py-3'>
-                <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Dialogue');setMenuOpen(false); setContent('')}}>
-                    <Text className='mb-2 px-4 py-1'>Dialogue</Text>
-                    <View className='border-t-[2px] border-mainGrayLight w-full'></View>
-                </TouchableOpacity>
-                <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Thread'); setMenuOpen(false); setSearchQuery(''); setListItems([])}}>
-                    <Text className='mb-2 px-4 py-1 '>Thread</Text>
-                    <View className='border-t-[2px] border-mainGrayLight  w-full '></View>
-                </TouchableOpacity>
-                {/* <TouchableOpacity className='w-full' onPress={()=> {setCreateType('Showcase'); setMenuOpen(false); setContent('')}}>
-                    <Text className='mb-2 px-4 py-1'>Showcase</Text>
-                    <View className='border-t-[2px] border-mainGrayLight  w-full '></View>
-                </TouchableOpacity> */}
-                <TouchableOpacity className='w-full' onPress={()=> {setCreateType('List'); setMenuOpen(false); setSearchQuery('')}}> 
-                    <Text className='mb-2 px-4 py-1'>List</Text>
-                </TouchableOpacity>
-
-            </View>
-        ) }
+       
+       
 
         { createType === 'Dialogue' ? (
             <CreateDialogue flatlistVisible={flatlistVisible} setFlatlistVisible={setFlatlistVisible} />
