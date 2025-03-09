@@ -13,7 +13,7 @@ const ListPage = () => {
     console.log('listItems array', list.listItem)
     console.log('user', list.user)
   return (
-   <TinderSwipeCard listItems={list.listItem} creator={list.user}/>
+   <TinderSwipeCard listItems={list.listItem} creator={list.user} listId={listId}/>
   )
 }
 

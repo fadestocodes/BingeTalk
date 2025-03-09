@@ -1,10 +1,10 @@
-import { SafeAreaView, StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, FlatList, TouchableOpacity, RefreshControl } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Image } from 'expo-image'
 import TinderSwipeCard from '../../../../components/TinderSwipeCard/TinderSwipeCard'
 import { useRouter } from 'expo-router'
 import { Colors } from '../../../../constants/Colors'
-import { useGetTrendingLists } from '../../../../api/list'
+import { useGetTrendingLists, listInteraction } from '../../../../api/list'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
@@ -25,7 +25,20 @@ const browseHome = () => {
     // useEffect(()=>{
 
     // }, [])
-    const { trendingList } = useGetTrendingLists(5)
+    const { trendingList, loading, refetch } = useGetTrendingLists(5)
+
+
+    const handleInteraction =  async (type, item) => {
+      console.log('type', type)
+      const data = {
+          type,
+          listId : item.id,
+          userId : ownerUser.id
+      }
+      const updatedDialogue = await listInteraction(data)
+      refetch();
+  }
+
 
     const handlePress = (item) => {
       router.push(`/list/${item.id}`)
@@ -44,6 +57,13 @@ const browseHome = () => {
         {/* <TinderSwipeCard /> */}
         <View className='w-full ' style={{ paddingBottom:200 }} >
         <FlatList 
+          refreshControl={
+            <RefreshControl
+              tintColor={Colors.secondary}
+              onRefresh={refetch}
+              refreshing={loading}
+            />
+          }
           data={trendingList}
           keyExtractor = {item => item.id }
           contentContainerStyle={{ gap:15 , width:'100%'}}
@@ -138,10 +158,6 @@ const browseHome = () => {
                                 </View>
 
                                 </TouchableOpacity>
-                                <View className='flex-row gap-1 justify-center items-center'>
-                                    <LayersIcon size={18} color = { Colors.mainGray }/>
-                                    <Text className='text-xs font-pbold text-mainGray'>{ item.browses }</Text>
-                                </View>
                             </View>
                             <View className='relative' >
                                 <TouchableOpacity   >

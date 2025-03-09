@@ -12,7 +12,6 @@ import { useRouter } from 'expo-router';
 
 
 const UserListsPage = ( { userId } ) => {
-  
     const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
     console.log('lists are', lists)
     const posterURL = 'https://image.tmdb.org/t/p/w500';
@@ -161,10 +160,6 @@ const UserListsPage = ( { userId } ) => {
                                 </View>
 
                                 </TouchableOpacity>
-                                <View className='flex-row gap-1 justify-center items-center'>
-                                    <LayersIcon size={18} color = { Colors.mainGray }/>
-                                    <Text className='text-xs font-pbold text-mainGray'>{ item.browses }</Text>
-                                </View>
                             </View>
                             <View className='relative' >
                                 <TouchableOpacity   >

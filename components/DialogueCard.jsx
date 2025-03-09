@@ -35,7 +35,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal}
 
     // const { data: userDB, refetch } = useFetchUser( {email : clerkUser.emailAddresses[0].emailAddress} )
     const userDB = dialogue.user
-    const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
     const tag = dialogue.tag;
     const { user: clerkUser } = useUser()

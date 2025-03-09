@@ -12,14 +12,15 @@ import { swipeMovieInterested } from "../../api/movie";
 import { swipeTVInterested } from "../../api/tv";
 import { useUser } from "@clerk/clerk-expo";
 import { useFetchOwnerUser } from "../../api/user";
-import { SwipeIcon } from "../../assets/icons/icons";
+import { MessageIcon, SwipeIcon } from "../../assets/icons/icons";
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from "react-native-reanimated";
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import { BackIcon } from "../../assets/icons/icons";
+import { createComment } from "../../api/comments";
 
 
 
-const TinderSwipeCard = ( { listItems, creator} ) => {
+const TinderSwipeCard = ( { listItems, creator, listId} ) => {
   const [list, setList] = useState([]);
 
   const [currentItem, setCurrentItem] = useState(null)
@@ -29,7 +30,7 @@ const TinderSwipeCard = ( { listItems, creator} ) => {
   const [ comment, setComment ] = useState('')
 
   const [ swipeMessage, setSwipeMessage  ] = useState(null)
-  const [toastIcon, setToastIcon] = useState(null);
+  const [toastIcon, setToastIcon] = useState(<SwipeIcon color={Colors.secondary} size={30}/>);
   const { user : clerkUser } = useUser()
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
 
@@ -159,10 +160,33 @@ const TinderSwipeCard = ( { listItems, creator} ) => {
     setComment(text)
   }
 
+  const handleUserPress = (item) => {
+    router.push(`/user/${item.id}`)
+  }
+
+  const handlePostComment = async () => {
+    const data = {
+      userId : ownerUser.id,
+      listId : Number(listId) ,
+      content : comment
+    }
+    console.log('data for comment', data)
+    const newComment = await createComment(data)
+    console.log('new comment', newComment);
+    setToastIcon(<MessageIcon size={30} color={Colors.secondary} />)
+    setMessage('Posted new comment')
+    setComment('')
+    setTimeout(() => {
+      router.back()
+    }, 1700)
+
+
+  }
+
 
   return (
     <View style={styles.container}>
-      <ToastMessage durationMultiple={Number(1.4)} message={message} onComplete={() => setMessage('')} icon={<SwipeIcon color={Colors.secondary} size={30} />}  />
+      <ToastMessage durationMultiple={Number(1.4)} message={message} onComplete={() => {setMessage(''); setToastIcon(null)}} icon={toastIcon }  />
 
 
       {list.length > 0 ? (
@@ -210,7 +234,7 @@ const TinderSwipeCard = ( { listItems, creator} ) => {
 
               </View>
             </View>
-          <View className="justify-center items-center gap-3 mb-5">
+          <TouchableOpacity onPress={()=>handleUserPress(creator)} className="justify-center items-center gap-3 mb-5">
             <Image
               source={{ uri : creator.profilePic }}
               contentFit = 'cover'
@@ -218,7 +242,7 @@ const TinderSwipeCard = ( { listItems, creator} ) => {
             />
             <Text className="text-mainGray">@{creator.username}</Text>
             <Text className="text-white  font-pbold">List curated by {creator.firstName}</Text>
-          </View>
+          </TouchableOpacity>
 
           <View className="gap-0">
             <TextInput
@@ -231,7 +255,7 @@ const TinderSwipeCard = ( { listItems, creator} ) => {
 
             />
           </View>
-            <TouchableOpacity style={{ backgroundColor:Colors.secondary, borderRadius:10, padding:10 }}>
+            <TouchableOpacity onPress={handlePostComment} style={{ backgroundColor:Colors.secondary, borderRadius:10, padding:10 }}>
               <Text className="text-primary font-pbold">Post comment</Text>
             </TouchableOpacity>
         

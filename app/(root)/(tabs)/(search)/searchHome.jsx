@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { feed } from '../../../../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PersonIcon, FilmIcon, TVIcon, ArrowLeftIcon, CloseIcon, BackIcon, LayersIcon } from '../../../../assets/icons/icons'
 import { Colors } from '../../../../constants/Colors'
-import { searchAll, getTrending, getUpcoming, getTrendingPeople, getDiscoverTV } from '../../../../api/tmdb'
+import { searchAll, getTrending, getUpcoming, getTrendingPeople, getDiscoverTV, getTrendingTV, getTrendingMovie } from '../../../../api/tmdb'
 import debounce from 'lodash.debounce';
 import { useRouter } from 'expo-router'
 import { getYear } from '../../../../lib/formatDate'
@@ -37,7 +37,8 @@ const SearchPage = () => {
     upcomingMovies : [],
     trendingPeople : [],
     nowPlaying : [],
-    discoverTV : []
+    trendingTV :[],
+    trendingMovie : []
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
   const [ trendingDialogues, setTrendingDialogues ] = useState(null)
@@ -83,20 +84,24 @@ const SearchPage = () => {
   //   }
   // },[query])
 
-  refreshData = async () => {
+  const refreshData = async () => {
     setRefreshing(true)
     try {
-      const [trendingData, upcomingData, trendingPeopleData, discoverTVData] = await Promise.all([
+      const [trendingData, upcomingData, trendingPeopleData, trendingTVData, trendingMovieData] = await Promise.all([
         getTrending(),
         getUpcoming(),
         getTrendingPeople(),
-        getDiscoverTV()
+        getTrendingTV(),
+        getTrendingMovie()
       ]);
+      console.log('TRENDING TV DATA', trendingTVData)
       setFlatListCategories({
         trending : trendingData.results,
         upcomingMovies : upcomingData.results,
         trendingPeople : trendingPeopleData.results,
-        discoverTV : discoverTVData.results
+        trendingTV : trendingTVData.results,
+        trendingMovie : trendingMovieData.results
+
       }) 
     } catch (err) {
       console.log('Error fetching all categories',err)
@@ -108,17 +113,20 @@ const SearchPage = () => {
   useEffect(()=>{
     const fetchCategories = async () => {
       try {
-        const [trendingData, upcomingData, trendingPeopleData, discoverTVData] = await Promise.all([
+        const [trendingData, upcomingData, trendingPeopleData, trendingTVData, trendingMovieData] = await Promise.all([
           getTrending(),
           getUpcoming(),
           getTrendingPeople(),
-          getDiscoverTV()
+          getTrendingTV(),
+          getTrendingMovie()
         ]);
         setFlatListCategories({
           trending : trendingData.results,
           upcomingMovies : upcomingData.results,
           trendingPeople : trendingPeopleData.results,
-          discoverTV : discoverTVData.results
+          trendingTV: trendingTVData.results,
+          trendingMovie : trendingMovieData.results
+
         }) 
         const trendingDialoguesResponse = await getTrendingDialogues(5);
         setTrendingDialogues(trendingDialoguesResponse);
@@ -271,7 +279,7 @@ const SearchPage = () => {
                 <Text className='text-mainGray font-pbold text-xl '>Trending Movies</Text>
                 <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
               </TouchableOpacity>
-                <DiscoverHorizontal data={flatListCategories.upcomingMovies} handlePress={handlePressMovie} />
+                <DiscoverHorizontal data={flatListCategories.trendingMovie} handlePress={handlePressMovie} />
             </View>
             <View className='gap-3 flex items-start w-full' style={{height:200}} >
               <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
@@ -279,7 +287,7 @@ const SearchPage = () => {
                   <Text className='text-mainGray font-pbold text-xl '>Trending TV</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
               </TouchableOpacity>
-                <DiscoverHorizontal data={flatListCategories.discoverTV} handlePress={handlePressTV} />
+                <DiscoverHorizontal data={flatListCategories.trendingTV} handlePress={handlePressTV} />
             </View>
             <View className='gap-3 flex items-start w-full'  >
               <TouchableOpacity   style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
@@ -319,7 +327,7 @@ const SearchPage = () => {
                       console.log('trending thread', item)
                     return (
                       <TouchableOpacity onPress={()=> handleThreadPress(item)} style={{width:300}} >
-                        <ThreadCard  thread={item} isBackground={true} isShortened={true} />
+                        <ThreadCard  thread={item} isBackground={true} isShortened={true} showThreadTopic={true} />
                       </TouchableOpacity>
                   )}}
                 

@@ -147,7 +147,7 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
 
   return (
   <>
-      <ToastMessage message={message} icon={toastIcon}  onComplete={()=>setMessage(null)} durationMultiple={0.5} />
+      <ToastMessage message={message} icon={toastIcon}  onComplete={()=>setMessage(null)} durationMultiple={0.7} />
     <View className='h-full w-full'>
 
         <Animated.View

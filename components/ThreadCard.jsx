@@ -10,11 +10,12 @@ import { useRouter } from 'expo-router';
 import { threadInteraction } from '../api/thread';
 
 import React from 'react'
+import { toPascalCase } from '../lib/ToPascalCase';
 
 
-const ThreadCard = ({thread, refetch, isBackground, isShortened}) => {
+const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic}) => {
     const userDB = thread.user
-    const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
     const tag = thread.tag;
     const { user: clerkUser } = useUser()
@@ -26,21 +27,31 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened}) => {
     const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
     const alreadyReposted = thread.threadInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
 
-  const handleInteraction =  async (type, thread) => {
-    console.log('type', type)
-    const data = {
-        type,
-        threadId : Number(thread.id),
-        userId : ownerUser.id
+    const handleInteraction =  async (type, thread) => {
+        console.log('type', type)
+        const data = {
+            type,
+            threadId : Number(thread.id),
+            userId : ownerUser.id
+        }
+        const updatedDialogue = await threadInteraction(data)
+
+        refetch();
     }
-    const updatedDialogue = await threadInteraction(data)
 
-    refetch();
-}
+    const handlePress = (item) => {
+        if (item.movie ){
+            router.push(`/movie/${item.movie.tmdbId}`)
+        } else if (item.tv){
+            router.push(`/tv/${item.tv.tmdbId}`)
+        } else if (item.castCrew){
+            router.push(`/cast/${item.castCrew.tmdbId}`)
+        }
+    }
 
-if (!thread){
-    return <ActivityIndicator/>
-}
+    if (!thread){
+        return <ActivityIndicator/>
+    }
 
 
   return (
@@ -59,6 +70,13 @@ if (!thread){
                     
                 </View>
 
+            { showThreadTopic && (
+                <TouchableOpacity onPress={()=>handlePress(thread)} >
+                    <Text className='textlg text-white ' >{ thread.movie ? `/${toPascalCase(thread.movie.title)}` : thread.tv ? `/${toPascalCase(thread.tv.title)}` : thread.castCrew && `/${toPascalCase(thread.castCrew.name)}` }</Text>
+                </TouchableOpacity>
+
+            ) }
+
             <View className='flex-row gap-3' >
             { thread.tag && (
                   <Text className= 'mt-3 font-pbold text-primary text-xs ' style={{ backgroundColor: thread.tag.color , padding:5, borderRadius:10}}>{thread.tag.tagName}</Text>
@@ -74,8 +92,18 @@ if (!thread){
             ) }
             
             <View className='flex-row  justify-between w-full my-3 items-center'>
-                        <View className='flex-row gap-5 justify-center items-center'>
-                            <TouchableOpacity onPress={()=>handleInteraction('upvotes',thread)} >
+                        {/* <View className='flex-row gap-5 justify-center items-center'>
+                            
+                        </View> */}
+                        <TouchableOpacity onPress={()=> handlePress(thread)} >
+                            <Image
+                                source = {{ uri : thread.movie ? `${posterURL}${thread.movie.posterPath}` : thread.tv ? `${posterURL}${thread.tv.posterPath}` : thread.castCrew && `${posterURL}${thread.castCrew.posterPath}` }}
+                                contentFit='cover'
+                                style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
+                            />
+                        </TouchableOpacity>
+                        <View className='relative flex-row gap-5 justify-center items-center' >
+                        <TouchableOpacity onPress={()=>handleInteraction('upvotes',thread)} >
                                 <View className='flex-row gap-2 justify-center items-center'>
                                     <ThumbsUp size={16} color={ alreadyUpvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
                                     <Text className='text-xs font-pbold text-mainGray' style={{ color: alreadyUpvoted ? Colors.secondary : Colors.mainGray }}>{ thread.upvotes }</Text>
@@ -97,8 +125,6 @@ if (!thread){
                                 <Text className='text-xs font-pbold text-gray-400  ' style={{ color: alreadyReposted ? Colors.secondary : Colors.mainGray }}> {thread.reposts}</Text>
                             </View>
                             </TouchableOpacity>
-                        </View>
-                        <View className='relative' >
                             <TouchableOpacity   >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
                                 <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />

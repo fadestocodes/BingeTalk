@@ -160,6 +160,28 @@ export const GetNowPlaying = async () => {
       console.log('Error fetching trending people', err)
     }
   }
+  
+  export const getTrendingTV = async () => {
+    try {
+      const response = await fetch(`${nodeServer.currentIP}/tmdb/trending/tv`);
+      const data = await response.json();
+      return data
+
+    } catch (err) {
+      console.log('Error fetching trending people', err)
+    }
+  }
+  
+  export const getTrendingMovie = async () => {
+    try {
+      const response = await fetch(`${nodeServer.currentIP}/tmdb/trending/movie`);
+      const data = await response.json();
+      return data
+
+    } catch (err) {
+      console.log('Error fetching trending people', err)
+    }
+  }
 
 
 export const useTMDBHook = ( fetchFunction, keyName ) => {

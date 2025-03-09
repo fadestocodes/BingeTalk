@@ -162,7 +162,7 @@ const ThreadsIdPage = () => {
         <View style={{gap:10, marginVertical:10, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
           <View className='gap-3'>
 
-          <ThreadCard thread={thread} refetch={refetch} />
+          <ThreadCard thread={thread} refetch={refetch} showThreadTopic={true} />
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
                 { thread.comments.length > 0 && (
