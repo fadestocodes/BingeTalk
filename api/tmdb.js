@@ -1,7 +1,7 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { SignOutButton, useAuth } from '@clerk/clerk-react'
-
+import { useState, useEffect } from 'react';
 
 
 export const GetNowPlaying = async () => {
@@ -202,4 +202,81 @@ export const useTMDBHook = ( fetchFunction, keyName ) => {
         enabled: !!fetchFunction, // Ensures query runs when component mounts
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
+}
+
+
+export const useGetTrendingMoviesInfinite = () => {
+  const [ data, setData ] = useState([])
+  const [ loading, setLoading ] = useState(false)
+  const [ cursor, setCursor ] = useState(null)  
+
+  const getTrendingMoviesInfinite = async () => {
+    if (cursor > 2) return
+    setLoading(true)
+    try {
+
+      console.log('CURSOR', cursor)
+      const response = await fetch(`${nodeServer.currentIP}/tmdb/trending/movie/infinite?cursor=${cursor}`)
+      const data = await response.json()
+      // setData(prev => [...prev, data.items.results])
+      console.log(data)
+      setData(prev => [...prev, ...data.items]);
+
+      setCursor(data.nextCursor)
+    } catch (err){
+      console.log(err)
+    }
+    setLoading(false)
+  }
+  
+
+  useEffect(() => {
+    getTrendingMoviesInfinite()
+  }, [])
+
+
+  return { data, loading, refetch: getTrendingMoviesInfinite }
+}
+
+
+export const useGetTrendingMoviesTest = () => {
+  const [ trendingMovies, setTrendingMovies ] = useState([])
+
+  const getTrendingMoviesTest = async () => {
+    try {
+      const request = await fetch(`${nodeServer.currentIP}/tmdb/trending/movie-test`)
+      const response = await request.json()
+      setTrendingMovies(response)
+    } catch (Err){
+      console.log(Err)
+    }
+  }
+
+  useEffect(() => {
+    getTrendingMoviesTest()
+  }, [])
+
+  return { trendingMovies, refetch : getTrendingMoviesTest }
+}
+
+
+export const useGetUpcomingMovies = () => {
+  const [ upcomingMovies, setUpcomingMovies ] = useState([])
+
+  const getUpcomingMovies = async () => {
+    try {
+      const request = await fetch(`${nodeServer.currentIP}/tmdb/upcoming/movie`)
+      const response = await request.json()
+      console.log('RESPONSE ', response)
+      setUpcomingMovies(response)
+    } catch (Err){
+      console.log(Err)
+    }
+  }
+
+  useEffect(() => {
+    getUpcomingMovies()
+  }, [])
+
+  return { upcomingMovies, refetch : getUpcomingMovies }
 }

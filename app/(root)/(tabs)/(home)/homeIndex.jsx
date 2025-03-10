@@ -35,7 +35,7 @@ const HomePage = () => {
                         style = {{ width:30, height: 30, borderRadius:50 }}
                         resizeMethod='cover'
                       />
-                      <Text className='text-third   font-pregular text-wrap flex-wrap flex-1'>{ item.notification } </Text>
+                      <Text className='text-mainGray   font-pregular text-wrap flex-wrap flex-1'>{ item.notification } </Text>
 
                     </View>
                     { item.parentComment && (
@@ -48,9 +48,9 @@ const HomePage = () => {
                     ) }
                     { item.dialogue && (
                       <View className='my-2 justify-center items-center w-full'>
-                        <Text className='text-secondary font-pcourier uppercase text-lg ' >{item.user}</Text>
+                        <Text className='text-secondary font-pbold  text-lg ' >{item.user}</Text>
 
-                          <Text className='text-third font-pcourier text-lg leading-5 px-6'> { item.dialogue } </Text>
+                          <Text className='text-third font-pregular text-lg leading-6 '> { item.dialogue } </Text>
                         </View>
                     )  }
 

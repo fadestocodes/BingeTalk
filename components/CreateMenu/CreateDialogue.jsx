@@ -263,7 +263,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     }
 
     const handleTagOptions = () => {
-        router.push('/create/tagOptionsModal')
+        router.push('/tagOptionsModal')
     }
     
 

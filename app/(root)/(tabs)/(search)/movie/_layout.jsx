@@ -6,6 +6,7 @@ const ProfileLayout = () => {
   return (
     <Stack  >
         <Stack.Screen name='[movieId]' options={{headerShown : false}} />
+        <Stack.Screen name='discover' options={{headerShown : false}} />
     </Stack>
   )
 }

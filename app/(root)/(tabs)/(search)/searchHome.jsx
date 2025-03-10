@@ -180,9 +180,10 @@ const SearchPage = () => {
 
 
 
+
   return (
-    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary pb-24 pt-10 px-5' >
-      <TouchableOpacity onPress={exploreRoute} className='explore-mode  absolute w-10 h-10  top-16 right-2'><LayersIcon  color={Colors.mainGray} size={24}/></TouchableOpacity> 
+    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary pb-24 pt-3 px-5 relative' >
+      
       <View className='justify-center items-center'>
       <View className=' flex-row gap-4  w-full px-8 justify-center items-center relative'>
         { inFocus && ( 
@@ -274,7 +275,7 @@ const SearchPage = () => {
           <View className='flex gap-6 w-full h-full'>
             
             <View className='gap-3 flex items-start w-full' style={{height:200}} >
-              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+              <TouchableOpacity onPress={()=> { router.push('/movie/discover') }} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                 <FilmIcon  size={20} color={Colors.mainGray}/>
                 <Text className='text-mainGray font-pbold text-xl '>Trending Movies</Text>
                 <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
@@ -282,7 +283,7 @@ const SearchPage = () => {
                 <DiscoverHorizontal data={flatListCategories.trendingMovie} handlePress={handlePressMovie} />
             </View>
             <View className='gap-3 flex items-start w-full' style={{height:200}} >
-              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+              <TouchableOpacity onPress={()=>{router.push('/tv/discover')}} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <TVIcon   size={20} color={Colors.mainGray}/>
                   <Text className='text-mainGray font-pbold text-xl '>Trending TV</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
