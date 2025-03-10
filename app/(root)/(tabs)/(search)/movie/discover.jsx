@@ -14,7 +14,6 @@ import { cache } from 'react'
 
 const MovieIndex = () => {
   const [ selected, setSelected ] = useState('Trending')
-  // const { data : trendingMovies, refetch : refetchTrending, loading:loadingTrending } = useGetTrendingMoviesInfinite()
   const { trendingMovies, refetch } = useGetTrendingMoviesTest()
   const { upcomingMovies, refetch: refetchUpcoming } = useGetUpcomingMovies()
   console.log('upcomingmovies', upcomingMovies)

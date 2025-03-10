@@ -259,6 +259,46 @@ export const useGetTrendingMoviesTest = () => {
   return { trendingMovies, refetch : getTrendingMoviesTest }
 }
 
+export const useGetTrendingTVFull = () => {
+  const [ trendingShows, setTrendingShows ] = useState([])
+
+  const getTrendingShows = async () => {
+    try {
+      const request = await fetch(`${nodeServer.currentIP}/tmdb/trending/tv-full`)
+      const response = await request.json()
+      setTrendingShows(response)
+    } catch (Err){
+      console.log(Err)
+    }
+  }
+
+  useEffect(() => {
+    getTrendingShows()
+  }, [])
+
+  return { trendingShows, refetch : getTrendingShows }
+}
+
+export const useGetUpcomingTV = () => {
+  const [ upcomingShows, setUpcomingShows ] = useState([])
+
+  const getUpcomingShows = async () => {
+    try {
+      const request = await fetch(`${nodeServer.currentIP}/tmdb/upcoming/tv`)
+      const response = await request.json()
+      setUpcomingShows(response)
+    } catch (Err){
+      console.log(Err)
+    }
+  }
+
+  useEffect(() => {
+    getUpcomingShows()
+  }, [])
+
+  return { upcomingShows, refetch : getUpcomingShows }
+}
+
 
 export const useGetUpcomingMovies = () => {
   const [ upcomingMovies, setUpcomingMovies ] = useState([])

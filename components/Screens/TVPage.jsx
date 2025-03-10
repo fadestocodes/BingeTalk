@@ -81,10 +81,17 @@ const TVPage = () => {
         try {
             const res = await GetTVById(tvId);  // Pass movieId here
             setMovie(res);
-            if (res.videos.results.length){
-                const trailer = res.videos.results.find(item => item.type === 'Trailer' && item.site === 'YouTube').key ;
-                setVideoId(trailer)
+            console.log("TV SET")
+            console.log('RES',res)
+            if (res.videos.results){
+                try {
+                    const trailer = res.videos.results.find(item => (item.type === 'Trailer' || item.type === 'Teaser') && item.site === 'YouTube').key ;
+                    setVideoId(trailer)
+                } catch (err){
+                    console.log(err)
+                }
             }
+            console.log("TRAILER SET")
             console.log('tv id ', tvId)
             const credits = res.credits;
             if (credits) {
@@ -106,6 +113,8 @@ const TVPage = () => {
                 posterPath  : res.poster_path,
                 backdropPath : res.backdrop_path
             }
+            console.log('TVDATA',tvData)
+            
             const tvFromDB = await fetchTVFromDB({tvData})
             setThreads(tvFromDB.threads)
             setDBtvId(tvFromDB.id)
@@ -210,6 +219,7 @@ const TVPage = () => {
     }
 
     const handleMore = () => {
+        console.log('SYNCED TV ID', DBtvId)
         router.push({
             pathname: "/moreInteractions",
             params: { DBtvId: String(DBtvId), tmdbId : tvId }, // Convert to string

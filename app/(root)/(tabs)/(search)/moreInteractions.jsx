@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View , TouchableOpacity} from 'react-native'
-import React from 'react'
+import React, {useState} from 'react'
 import { Colors } from '../../../../constants/Colors'
 import { ProgressCheckIcon } from '../../../../assets/icons/icons'
 import { BadgeHelp, List, BadgeMinus } from 'lucide-react-native'
@@ -8,10 +8,13 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 import { markTVInterested, markTVCurrentlyWatching, markTVWatchlist } from '../../../../api/tv'
 import { markMovieInterested, markMovieCurrentlyWatching, markMovieWatchlist } from '../../../../api/movie'
+import ToastMessage from '../../../../components/ui/ToastMessage'
 
 const moreInteractions = () => {
     const router = useRouter()
     const { DBtvId, DBMovieId, tmdbId } = useLocalSearchParams();
+    const [ message, setMessage ] = useState(null)
+    const [ dynamicIcon, setDynamicIcon ] = useState(null)
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress });
     console.log(ownerUser.interestedItems)
@@ -21,20 +24,41 @@ const moreInteractions = () => {
 
     const handleInterested = async (  ) => {
         console.log('owneruserid', ownerUser.id)
+        if (alreadyInterested){
+            setMessage('Removed from Interested')
+        } else {
+            setMessage('Marked as Interested')
+        }
         if (DBtvId){
             await markTVInterested({ tvId : DBtvId, userId : ownerUser.id })
         } else if (DBMovieId){
             await markMovieInterested({ movieId : DBMovieId, userId : ownerUser.id })
         }
+        setDynamicIcon(<BadgeHelp size={30} color={Colors.secondary} />)
+
+        if (alreadyInterested){
+            setMessage('Removed from Interested')
+        } else {
+            setMessage('Marked as Interested')
+        }
+
         refetch();
     }
 
     const handleCurrentlyWatching = async () => {
+      
         if (DBtvId){
             await markTVCurrentlyWatching({ tvId : DBtvId, userId : ownerUser.id })
         } else if (DBMovieId){
             await markMovieCurrentlyWatching({ movieId : DBMovieId, userId : ownerUser.id })
         }
+        setDynamicIcon(<ProgressCheckIcon size={30} color={Colors.secondary} />)
+        if (alreadyWatching){
+            setMessage('Removed from Currently Watching')
+        } else {
+            setMessage('Added to Currently Watching')
+        }
+
         refetch()
     }
 
@@ -49,6 +73,7 @@ const moreInteractions = () => {
 
   return (
     <View className='w-full h-full bg-primary justify-center items-center relative' style={{borderRadius:30}} >
+        <ToastMessage message={message} onComplete={()=>setMessage(null)}  icon={dynamicIcon} />
 
         <View style={{ width:55, height:7, borderRadius:10, backgroundColor:Colors.mainGray, position:'absolute', top:20 }} />
         <View className="buttons flex gap-4 w-full items-center mb-6 " style={{paddingHorizontal:50}}>
