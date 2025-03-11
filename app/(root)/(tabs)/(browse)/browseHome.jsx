@@ -72,7 +72,7 @@ const browseHome = () => {
       </View>
 
         {/* <TinderSwipeCard /> */}
-        <View className='w-full ' style={{ paddingBottom:250 }} >
+        <View className='w-full ' style={{ paddingBottom:200 }} >
 
 
         <FlatList 

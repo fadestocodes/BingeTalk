@@ -79,11 +79,11 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
                         maxLength={100}
                         placeholder='List title'
                         placeholderTextColor={Colors.mainGray}
-                        style={{paddingTop:20, paddingHorizontal:25,backgroundColor:Colors.mainGrayDark, paddingBottom:50, minHeight:50}}
-                        className='w-full relative min-h-50 bg-white rounded-3xl  items-start justify-start font-pbold text-lg text-white'
+                        style={{paddingTop:20, paddingHorizontal:25,backgroundColor:Colors.mainGrayDark, paddingBottom:50, minHeight:50, borderRadius:15}}
+                        className='w-full relative min-h-50 bg-white   items-start justify-start font-pbold text-lg text-white'
                 />
                
-                <View className=' items-center z-10 gap-3 w-full bg-white  '  style={{ backgroundColor:Colors.mainGrayDark,position:'absolute', bottom:0, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , height : 40 ,  paddingHorizontal:25, paddingBottom:20, justifyContent:'start'}}>
+                <View className=' items-center z-10 gap-3 w-full bg-white  '  style={{ backgroundColor:Colors.mainGrayDark,position:'absolute', bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , height : 40 ,  paddingHorizontal:25, paddingBottom:20, justifyContent:'start'}}>
                  
                     <View className='border-t-[1px] border-mainGrayLight w-full' style={{ borderTopWidth:1, borderColor:Colors.mainGray }}
                     />
@@ -98,7 +98,7 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
             </View>
 
             
-            <View className='relative w-full'  style={{marginBottom:30}}>
+            <View className='relative w-full'  style={{marginBottom:0}}>
                 <TextInput
                         onChangeText={(text) => handleInput('description', text)}
                         value={inputs.description}
@@ -106,12 +106,12 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
                         maxLength={250}
                         placeholder='Description of your list'
                         placeholderTextColor={Colors.mainGray}
-                        style={{paddingTop:20, paddingHorizontal:25, backgroundColor:Colors.mainGrayDark,paddingBottom:70, minHeight:150}}
-                        className='w-full relative min-h-50 bg-white rounded-3xl  items-start justify-start font-pregular text-white'
+                        style={{paddingTop:20, paddingHorizontal:25, backgroundColor:Colors.mainGrayDark,paddingBottom:70, minHeight:150, borderRadius:15}}
+                        className='w-full relative min-h-50 bg-white  items-start justify-start font-pregular text-white'
                 />
-                <View className='justify-center items-center z-10 gap-3 w-full text-white  '  style={{ backgroundColor:Colors.mainGrayDark, position:'absolute', bottom:0, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , height : 70 }}>
+                <View className='justify-center items-center z-10 gap-3 w-full text-white  '  style={{ backgroundColor:Colors.mainGrayDark, position:'absolute', bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , height : 70 }}>
                  
-                     <View className='w-full justify-center items-center gap-3 text-white' style={{ backgroundColor:Colors.mainGrayDark, width:'100%', position:'absolute',bottom:0, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , paddingHorizontal:25, paddingBottom:10}}>
+                     <View className='w-full justify-center items-center gap-3 text-white' style={{ backgroundColor:Colors.mainGrayDark, width:'100%', position:'absolute',bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , paddingHorizontal:25, paddingBottom:10}}>
                     
                         <View className='border-t-[1px] border-slate-300 w-full' style={{ borderTopWidth:1, borderColor:Colors.mainGray }}
                         />

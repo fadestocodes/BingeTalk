@@ -11,6 +11,7 @@
     import { useFetchOwnerUser } from '../../api/user';
     import { useUser } from '@clerk/clerk-expo';
     import { createThread } from '../../api/thread';
+    import { formatDate } from '../../lib/formatDate'
   
 
 
@@ -99,7 +100,7 @@
                     onFocus={()=>setResultsOpen(true)}
                 />
                 <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); setResultsOpen(false)}}  style={{ position:'absolute', right:20, top:15 }}>
-                    <CloseIcon color={Colors.mainGray} size={24} className=' ' />
+                    <CloseIcon color={Colors.mainGray} size={15} className=' ' />
                 </TouchableOpacity>
             </View>
 
@@ -107,7 +108,7 @@
 
             <View className='thread-title w-full relative flex-1 '>
 
-            <View className='flex-row justify-start items-center ' style={{ position:'absolute', top:10 , zIndex:40, width:'100%', gap:5 , paddingLeft:20}} >
+            <View className='flex-row justify-start items-center ' style={{ position:'absolute', top:50 , zIndex:40, width:'100%', gap:5 , paddingLeft:20}} >
                 
                 { Object.keys(tags).length > 0 && (
                     <View   className='flex-row gap-1 justify-between items-center' style={{ backgroundColor: tags.color , padding:5, borderRadius:10}}>
@@ -124,6 +125,19 @@
             </View>
 
                 <View className='w-full relative items-center justify-between ' style={{marginBottom:20}}>
+                <View className='flex-row w-full justify-between items-center' style={{ position:'absolute', top:0 , zIndex:20, top:10, paddingHorizontal:10}} >
+                        <View className="flex-row items-center gap-2">
+                            <Image
+                                source={{ uri: ownerUser.profilePic }}
+                                contentFit='cover'
+                                style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
+                            />
+                            <Text className='text-mainGrayDark   ' >@{ownerUser.username}</Text>
+                        </View>
+                    <Text className='text-mainGrayDark '>{formatDate(new Date())}</Text>
+                    
+            </View>
+                
                     <TextInput
                         placeholder='Thread title'
                         placeholderTextColor={Colors.mainGray}
@@ -132,11 +146,11 @@
                         maxLength={150}
                         multiline
                         value={inputs.title}
-                        style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 45 : 30, paddingBottom:40 , borderTopLeftRadius: 24, borderTopRightRadius:24}}
+                        style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 90 : 50, paddingBottom:40 , borderTopLeftRadius: 15, borderTopRightRadius:15}}
                         
                     />
                 {   loadingImage ? (
-                    <View className=' w-full justify-center items-center' style={{ width:'100%', height:100 , backgroundColor:Colors.mainGrayDark}}>
+                    <View className=' w-full justify-center items-center' style={{ width:'100%', height:100 , backgroundColor:Colors.mainGrayDark}}> 
                         <ActivityIndicator></ActivityIndicator>
                     </View>
                 ) 
@@ -156,14 +170,14 @@
                     </View> 
                     ) }
                     </View>
-                <View className='w-full justify-center items-center gap-3 bg-white' style={{width:'100%',backgroundColor:Colors.mainGrayDark, position:'absolute',bottom:0, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , paddingHorizontal:25, paddingBottom:15}}>
+                <View className='w-full justify-center items-center gap-3 bg-white' style={{width:'100%',backgroundColor:Colors.mainGrayDark, position:'absolute',bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , paddingHorizontal:25, paddingBottom:15}}>
                     
                     <View className='border-t-[1px] border-slate-300 w-full' style={{ borderTopWidth:1, borderColor:Colors.mainGray }}
                     />
                     <View className='flex-row justify-end items-center  gap-3' style={{width:'100%',  justifyContent:'space-between'}}>
                         <View className='flex-row justify-center items-center gap-3'>
                             <TouchableOpacity>
-                                <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={24} />
+                                <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={15} />
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleTagOptions} style={{ paddingHorizontal:5, paddingVertical:3, borderRadius:5, borderWidth:1.5 , borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
                                     <Text className='text-xs text-mainGray'>TAGS 🏷️</Text>
@@ -175,6 +189,7 @@
             </View>
 
             <View className='thread-caption w-full relative'>
+          
                 <TextInput
                     onChangeText={(text)=> setInputs(prev => ({ ...prev, caption : text }))}
                     value={inputs.caption}
@@ -182,7 +197,7 @@
                     maxLength={800}
                     placeholder='Caption for your thread (optional)'
                     placeholderTextColor={Colors.mainGray}
-                    style={{paddingTop: inputs.caption ? 60 :  20, paddingHorizontal:25,backgroundColor:Colors.mainGrayDark, color:'white', paddingBottom:120, minHeight:200, textAlignVertical:'top'}}
+                    style={{paddingTop: inputs.caption ? 60 :  20, paddingHorizontal:25,backgroundColor:Colors.mainGrayDark, color:'white', paddingBottom:120, minHeight:150, textAlignVertical:'top'}}
                     className='w-full relative min-h-50 bg-white rounded-3xl  items-start justify-start font-pcourier text-lg'
                 />
                 { inputs.caption && (
@@ -190,10 +205,10 @@
                         <Text className='font-pcourier uppercase text-lg text-secondary' >{ownerUser.firstName}</Text>
                     </View>
                 ) }
-                <View className='justify-center items-center z-10 gap-3 w-full bg-white  '  style={{ position:'absolute',backgroundColor:Colors.mainGrayDark, bottom:0, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , height : 70 }}>
+                <View className='justify-center items-center z-10 gap-3 w-full bg-white  '  style={{ position:'absolute',backgroundColor:Colors.mainGrayDark, bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , height : 70 }}>
                     <View className='border-t-[1.5px] border-slate-200 w-full' 
                     />
-                     <View className='w-full justify-center items-center gap-3 bg-white' style={{width:'100%', backgroundColor:Colors.mainGrayDark,position:'absolute',bottom:0, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , paddingHorizontal:25, paddingBottom:10}}>
+                     <View className='w-full justify-center items-center gap-3 bg-white' style={{width:'100%', backgroundColor:Colors.mainGrayDark,position:'absolute',bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , paddingHorizontal:25, paddingBottom:10}}>
                     
                     <View className='border-t-[1px]  w-full' style={{borderColor:Colors.mainGray, borderTopWidth:1}}
                     />

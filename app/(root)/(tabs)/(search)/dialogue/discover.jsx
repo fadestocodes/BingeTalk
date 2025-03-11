@@ -6,9 +6,11 @@ import { Image } from 'expo-image'
 import { Colors } from '../../../../../constants/Colors'
 import DialogueCard from '../../../../../components/DialogueCard'
 import { useGetTrendingDialoguesInfinite } from '../../../../../api/dialogue'
+import { useRouter } from 'expo-router'
 
 const DiscoverDialogues = () => {
     const [ selected, setSelected ] = useState('Trending')
+    const router = useRouter()
     const { data : trendingDialogues, refetch, hasMore } = useGetTrendingDialoguesInfinite(5, true);
     const { data : controversialDialogues, refetch:refetchControversial, hasMore: hasMoreControversial } = useGetTrendingDialoguesInfinite(5, false);
 
@@ -42,11 +44,11 @@ const DiscoverDialogues = () => {
             <FlatList
                 data={selected === 'Trending' ? trendingDialogues : controversialDialogues}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{gap:15}}
+                contentContainerStyle={{gap:0}}
                 renderItem={({item}) => {
                     console.log('flatlist item', item.id)
                 return (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>router.push(`/dialogue/${item.id}`)} >
                         <DialogueCard isBackground={true} dialogue={item}  />
                     </TouchableOpacity>
                 )}}
@@ -55,7 +57,7 @@ const DiscoverDialogues = () => {
                     
                     if (selected === 'Trending' && hasMore){
                         refetch()
-                    } else if (selected === 'Most Controversial' && hasMoreControversial){
+                    } else if (selected === 'Hot Takes' && hasMoreControversial){
                         refetchControversial()
                     }
                 } }

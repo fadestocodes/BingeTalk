@@ -74,7 +74,7 @@ const MoviePage = () => {
             const res = await GetMovieById(movieId);  // Pass movieId here
             setMovie(res);
             try {
-                const trailer = res?.videos?.results.find(item => item.type === 'Trailer' && item.site === 'YouTube').key ;
+                const trailer = res?.videos?.results.find(item => (item.type === 'Trailer' || item.type === 'Teaser') && item.site === 'YouTube').key ;
                 if (trailer) {
                     setVideoId(trailer)
                 }

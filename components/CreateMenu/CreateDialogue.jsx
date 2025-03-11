@@ -284,18 +284,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
        
 
         <View className='w-full relative items-center justify-between ' style={{marginBottom:20, position:'relative'}}>
-            <View className='flex-row w-full justify-between items-center absolute top-5'>
-                        <View className="flex-row items-center gap-2">
-                            <Image
-                                source={{ uri: userDB.profilePic }}
-                                contentFit='cover'
-                                style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
-                            />
-                            <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
-                        </View>
-                    <Text className='text-mainGrayDark '>{formatDate(new Date())}</Text>
-                    
-            </View>
+            
            
 
             <View className='flex justify-start items-start w-full' style={{ position:'absolute', top:10, left:0 , zIndex:40, width:'100%', gap:15 , paddingHorizontal:15}} >
@@ -345,7 +334,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     isInsertSpaceAfterMention:true
                 }
             ] }
-            containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18,minHeight:250,paddingTop: Object.keys(tags).length > 0 ? 110 :  Object.keys(tags) <1 && 60, paddingHorizontal:20, paddingBottom:50, minHeight:200, borderTopLeftRadius:24, borderTopRightRadius:24} }
+            containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18,minHeight:250,paddingTop: Object.keys(tags).length > 0 ? 110 :  Object.keys(tags) <1 && 60, paddingHorizontal:20, paddingBottom:50, minHeight:200, borderTopLeftRadius:15, borderTopRightRadius:15} }
            
            />
 
@@ -386,14 +375,14 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
 
         
      
-            <View className='w-full justify-center items-center gap-3 ' style={{width:'100%', position:'absolute',bottom:0, backgroundColor:Colors.mainGrayDark, borderBottomRightRadius: 24, borderBottomLeftRadius:24 , paddingHorizontal:25, paddingBottom:20}}>
+            <View className='w-full justify-center items-center gap-3 ' style={{width:'100%', position:'absolute',bottom:0, backgroundColor:Colors.mainGrayDark, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , paddingHorizontal:25, paddingBottom:20}}>
                     
                     <View className='border-t-[1px] w-full' style={{borderColor:Colors.mainGray, borderTopWidth:1}}
                     />
                     <View className='flex-row items-center  gap-3' style={{width:'100%',  justifyContent:'space-between'}}>
                         <View className="flex-row gap-3">
                             <TouchableOpacity>
-                                <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={24} />
+                                <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={15} />
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleTagOptions} style={{ paddingHorizontal:5, paddingVertical:0, borderRadius:5, borderWidth:1.5 , borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
                                 <Text className='text-xs text-mainGray'>TAGS 🏷️</Text>

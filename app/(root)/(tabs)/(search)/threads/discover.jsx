@@ -7,9 +7,11 @@ import { Colors } from '../../../../../constants/Colors'
 import DialogueCard from '../../../../../components/DialogueCard'
 import { useGetTrendingThreadsInfinite } from '../../../../../api/thread'
 import ThreadCard from '../../../../../components/ThreadCard'
+import { useRouter } from 'expo-router'
 
 const DiscoverDialogues = () => {
     const [ selected, setSelected ] = useState('Trending')
+    const router = useRouter()
     const { data : trendingThreads, refetch, hasMore } = useGetTrendingThreadsInfinite(5, true);
     const { data : controversialThreads, refetch:refetchControversial, hasMore: hasMoreControversial } = useGetTrendingThreadsInfinite(5, false);
 
@@ -27,7 +29,7 @@ const DiscoverDialogues = () => {
             <Text className='text-mainGray font-pmedium'>Discover conversations about your fav titles, cast, or crew!</Text>
         </View>
 
-        <View className='w-full my-5 gap-3' style={{paddingBottom:100}}>
+        <View className='w-full my-5 gap-3' style={{paddingBottom:120}}>
             <FlatList
             horizontal
             data={threadCategories}
@@ -43,12 +45,12 @@ const DiscoverDialogues = () => {
             <FlatList
                 data={selected === 'Trending' ? trendingThreads : controversialThreads}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{gap:15}}
+                contentContainerStyle={{gap:0}}
                 renderItem={({item}) => {
                     console.log('flatlist item', item.id)
                 return (
-                    <TouchableOpacity>
-                        <ThreadCard isBackground={true} thread={item}  />
+                    <TouchableOpacity onPress={()=>router.push(`/threads/${item.id}`)} >  
+                        <ThreadCard isBackground={true} thread={item} showThreadTopic={true} />
                     </TouchableOpacity>
                 )}}
                 onEndReached={ ()=>{
@@ -56,7 +58,7 @@ const DiscoverDialogues = () => {
                     
                     if (selected === 'Trending' && hasMore){
                         refetch()
-                    } else if (selected === 'Most Controversial' && hasMoreControversial){
+                    } else if (selected === 'Hot Takes' && hasMoreControversial){
                         refetchControversial()
                     }
                 } }
