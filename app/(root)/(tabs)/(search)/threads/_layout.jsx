@@ -6,6 +6,7 @@ const ThreadsLayout = () => {
   return (
     <Stack>
       <Stack.Screen name='[threadsId]' options={{headerShown : false}} />
+      <Stack.Screen name='discover' options={{headerShown : false}} />
     </Stack>
   )
 }

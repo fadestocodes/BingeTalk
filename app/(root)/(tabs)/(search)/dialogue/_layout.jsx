@@ -6,6 +6,7 @@ const DialogueLayout = () => {
   return (
     <Stack  >
         <Stack.Screen name='[dialogueId]' options={{headerShown : false}} />
+        <Stack.Screen name='discover' options={{headerShown : false}} />
     </Stack>
   )
 }

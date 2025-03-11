@@ -1,5 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect } from 'react'
 
 export const createThread = async ( threadData ) => {
     console.log('threadData', threadData)
@@ -72,4 +73,39 @@ export const getTrendingThreads = async (limit) => {
     } catch (err) {
         console.log(err)
     }
+}
+
+
+export const useGetTrendingThreadsInfinite = (limit, popular) => {
+    const [ data, setData ] = useState([])
+    const [ loading, setLoading ] = useState(false)
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore, setHasMore ] = useState(true)
+
+    const getTrendingThreadsInfinite = async () => {
+        if (!hasMore) return
+        try {
+
+            setLoading(true)
+            console.log('hello')
+            const request = await fetch(`${nodeServer.currentIP}/thread/trending/infinite?limit=${limit}&cursor=${cursor}&popular=${popular}`)
+            const response = await request.json()
+            console.log('response from infinitethreads', response)
+            setData(prev => [...prev, ...response.items])
+            console.log('full data', data)
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+    useEffect(() => {
+        getTrendingThreadsInfinite()
+    }, [])
+
+
+    return { data, refetch : getTrendingThreadsInfinite, loading, hasMore }
 }

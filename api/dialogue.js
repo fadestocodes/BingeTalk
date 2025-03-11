@@ -176,3 +176,37 @@ export const getTrendingDialogues = async (limit) => {
         console.log(err)
     }
 }
+
+export const useGetTrendingDialoguesInfinite = (limit, popular) => {
+    const [ data, setData ] = useState([])
+    const [ loading, setLoading ] = useState(false)
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore, setHasMore ] = useState(true)
+
+    const getTrendingDialoguesInfinite = async () => {
+        if (!hasMore) return
+        try {
+
+            setLoading(true)
+            console.log('hello')
+            const request = await fetch(`${nodeServer.currentIP}/dialogue/trending/infinite?limit=${limit}&cursor=${cursor}&popular=${popular}`)
+            const response = await request.json()
+            console.log('response from infinitedialogues', response)
+            setData(prev => [...prev, ...response.items])
+            console.log('full data', data)
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+    useEffect(() => {
+        getTrendingDialoguesInfinite()
+    }, [])
+
+
+    return { data, refetch : getTrendingDialoguesInfinite, loading, hasMore }
+}

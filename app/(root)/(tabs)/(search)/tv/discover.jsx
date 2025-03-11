@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Image } from 'expo-image'
 import { getYear } from '../../../../../lib/formatDate'
 import { LinearGradient } from 'expo-linear-gradient'
-import { FilmIcon, TVIcon } from '../../../../../assets/icons/icons'
+import { TVIcon } from '../../../../../assets/icons/icons'
 import { movieCategories } from '../../../../../lib/CategoryOptions'
 import { Colors } from '../../../../../constants/Colors'
 import { tvCategories } from '../../../../../lib/CategoryOptions'
@@ -88,7 +88,7 @@ const MovieIndex = () => {
                 <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
                 
                     <View className='flex-row gap-1 justify-center items-center'>
-                        <FilmIcon color={Colors.secondary}/> 
+                        <TVIcon color={Colors.secondary}/> 
                         <Text className='text-white text font-pbold'>{ item.tvId ? `${item.tv.title} (${getYear(item.tv.releaseDate)})` : `${item.title} (${getYear(item.first_air_date)})` }</Text>
                     </View>
                 </TouchableOpacity>

@@ -35,7 +35,7 @@
 
        
     const handleTagOptions = () => {
-        router.push('/create/tagOptionsModal')
+        router.push('/tagOptionsModal')
     }
 
       
@@ -111,8 +111,8 @@
                 
                 { Object.keys(tags).length > 0 && (
                     <View   className='flex-row gap-1 justify-between items-center' style={{ backgroundColor: tags.color , padding:5, borderRadius:10}}>
-                        <Text className= 'font-pbold text-primary  uppercase text-xs'  >{tags.name}</Text>
-                    <TouchableOpacity onPress={()=>setTags({})} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={18} color={Colors.mainGray} /></TouchableOpacity>
+                        <Text className= 'font-pbold text-primary  text-xs'  >{tags.name}</Text>
+                    <TouchableOpacity onPress={()=>setTags({})} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={16} color={Colors.mainGray} /></TouchableOpacity>
                     </View>
                 ) }
                     {/* { tags.map( (tag, index) => (
@@ -136,13 +136,13 @@
                         
                     />
                 {   loadingImage ? (
-                    <View className='bg-primary justify-center items-center' style={{ width:'100%', height : 200 }}>
+                    <View className=' w-full justify-center items-center' style={{ width:'100%', height:100 , backgroundColor:Colors.mainGrayDark}}>
                         <ActivityIndicator></ActivityIndicator>
                     </View>
                 ) 
                 
                 : image && (
-                    <View className=' justify-center items-center ' style={{  width:'100%', paddingBottom:50, backgroundColor:Colors.mainGrayDark}}>
+                    <View className=' justify-center items-center w-full' style={{  width:'100%', paddingBottom:50, backgroundColor:Colors.mainGrayDark}}>
                             <View className="relative" style={{backgroundColor:Colors.mainGrayDark}}>
                                 <Image
                                     source={{ uri: image }}

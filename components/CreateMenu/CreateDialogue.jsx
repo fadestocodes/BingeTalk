@@ -17,6 +17,7 @@ import { useFetchOwnerUser, useFetchUser } from '../../api/user'
 import { useUser } from '@clerk/clerk-expo'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTagsContext } from '../../lib/TagsContext'
+import { formatDate } from '../../lib/formatDate'
 
 const toPascalCase = (str) => {
         return str
@@ -283,15 +284,39 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
        
 
         <View className='w-full relative items-center justify-between ' style={{marginBottom:20, position:'relative'}}>
-
+            <View className='flex-row w-full justify-between items-center absolute top-5'>
+                        <View className="flex-row items-center gap-2">
+                            <Image
+                                source={{ uri: userDB.profilePic }}
+                                contentFit='cover'
+                                style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
+                            />
+                            <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
+                        </View>
+                    <Text className='text-mainGrayDark '>{formatDate(new Date())}</Text>
+                    
+            </View>
            
 
-            <View className='flex-row justify-start items-center ' style={{ position:'absolute', top:10 , zIndex:40, width:'100%', gap:5 , paddingLeft:20}} >
+            <View className='flex justify-start items-start w-full' style={{ position:'absolute', top:10, left:0 , zIndex:40, width:'100%', gap:15 , paddingHorizontal:15}} >
+            <View className='flex-row w-full justify-between items-center'>
+                        <View className="flex-row items-center gap-2">
+                            <Image
+                                source={{ uri: userDB.profilePic }}
+                                contentFit='cover'
+                                style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
+                            />
+                            <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
+                        </View>
+                    <Text className='text-mainGrayDark '>{formatDate(new Date())}</Text>
+                    
+            </View>
+           
                 
                 { Object.keys(tags).length > 0 && (
-                    <View   className='flex-row gap-1 justify-between items-center' style={{ backgroundColor: tags.color , padding:5, borderRadius:10}}>
-                        <Text className= 'font-pbold text-primary  uppercase text-xs'  >{tags.name}</Text>
-                    <TouchableOpacity onPress={()=>setTags({})} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={18} color={Colors.mainGray} /></TouchableOpacity>
+                    <View   className='flex-row  justify-between items-center' style={{ backgroundColor: tags.color , padding:5, borderRadius:10}}>
+                        <Text className= 'font-pbold text-primary  text-xs'  >{tags.name}</Text>
+                    <TouchableOpacity onPress={()=>setTags({})} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={16} color={Colors.mainGray} /></TouchableOpacity>
                     </View>
                 ) }
                     {/* { tags.map( (tag, index) => (
@@ -306,7 +331,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             value = {input}
             multiline={true}
             onChange={handleInput}
-            style={{ fontFamily:'Courier', fontSize:15, lineHeight:24, color:'white' }}
+            style={{ fontFamily:'Courier', fontSize:15, lineHeight:18, color:'white' }}
             maxLength={800}
             placeholder="Use '/' to mention a movie, show, cast, or crew. "
             placeholderTextColor={Colors.mainGray}
@@ -320,28 +345,26 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     isInsertSpaceAfterMention:true
                 }
             ] }
-            containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18,minHeight:200,paddingTop: input ? 60 : 40, paddingHorizontal:20, paddingBottom:50, minHeight:200, borderTopLeftRadius:24, borderTopRightRadius:24} }
+            containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18,minHeight:250,paddingTop: Object.keys(tags).length > 0 ? 110 :  Object.keys(tags) <1 && 60, paddingHorizontal:20, paddingBottom:50, minHeight:200, borderTopLeftRadius:24, borderTopRightRadius:24} }
            
            />
 
        
 
-        { input && (
-            <View style={{position:"absolute", top:40, alignItems:'center', justifyContent:'center', width:'100%'}}>
-                <Text className='font-pcourier uppercase text-lg text-white ' >Drew</Text>
+            <View style={{position:"absolute", top: Object.keys(tags).length > 0 ? 90 : 40, alignItems:'center', justifyContent:'center', width:'100%'}}>
+                <Text className='font-pcourier uppercase text-lg text-secondary ' >{userDB.firstName}</Text>
             </View>
 
-        ) }
 
 
         {   loadingImage ? (
-            <View className='bg-mainGrayDark justify-center items-center' style={{ width:'100%', height : 200 }}>
+            <View className='bg-transparent justify-center items-center' style={{ width:'100%', height : 200 }}>
                 <ActivityIndicator></ActivityIndicator>
             </View>
         ) 
         
         : image && (
-            <View className='bg-mainGrayDark justify-center items-center ' style={{  width:'100%', paddingBottom:50}}>
+            <View className='bg-mainGrayDark w-full  justify-center items-center  mb-5' style={{ paddingBottom:50, backgroundColor:Colors.mainGrayDark}}>
                     <View className="relative">
 
                         

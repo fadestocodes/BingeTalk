@@ -21,7 +21,6 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     const { user: clerkUser } = useUser()
     const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
 
-    console.log("THREAD", thread)
 
     const alreadyUpvoted = thread.threadInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
     const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )

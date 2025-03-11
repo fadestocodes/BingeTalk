@@ -291,7 +291,7 @@ const SearchPage = () => {
                 <DiscoverHorizontal data={flatListCategories.trendingTV} handlePress={handlePressTV} />
             </View>
             <View className='gap-3 flex items-start w-full'  >
-              <TouchableOpacity   style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+              <TouchableOpacity  onPress={()=>{router.push('/dialogue/discover')}}  style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <MessageSquare   size={20} color={Colors.mainGray}/>
                   <Text className='text-mainGray font-pbold text-xl '>Top Dialogues</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
@@ -313,7 +313,7 @@ const SearchPage = () => {
                 />
             </View>
             <View className='gap-3 flex items-start w-full'  >
-              <TouchableOpacity  style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+              <TouchableOpacity onPress={()=>router.push('/threads/discover')} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <MessagesSquare   size={20} color={Colors.mainGray}/>
                   <Text className='text-mainGray font-pbold text-xl '>Top Threads</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
