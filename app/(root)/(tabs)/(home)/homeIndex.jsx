@@ -11,6 +11,7 @@ import { useUserDB } from '../../../../lib/UserDBContext';
 import * as nodeServer from '../../../../lib/ipaddresses'
 import DialogueCard from '../../../../components/DialogueCard';
 import { formatDate } from '../../../../lib/formatDate';
+import ThreadCard from '../../../../components/ThreadCard';
 
 
 const homeIndex = () => {
@@ -114,11 +115,16 @@ const homeIndex = () => {
           return (
           // <View style={{ height:'auto', width:'100%', borderRadius:15, padding:10, gap:0 }} > 
           <>
-            { item.dialogue ? (
-              <View style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
+            { item.dialogue  ? (
+              <TouchableOpacity onPress={()=>{router.push(`/dialogue/${item.dialogue.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
+                <DialogueCard dialogue ={item.dialogue} isBackground={false} fromHome={true} />
+              </TouchableOpacity>
+            ) : item.threads ? (
+              <TouchableOpacity  onPress={()=>{router.push(`/threads/${item.threads.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
               {/* <Text className='text-mainGray text font-pregular text-center ' >{item.description}</Text> */}
-              <DialogueCard dialogue ={item.dialogue} isBackground={false} />
-              </View>
+              <ThreadCard thread ={item.threads} isBackground={false} showThreadTopic={true} isShortened={true} fromHome={true}/>
+              </TouchableOpacity>
+
             ) : item.activityType === 'WATCHED' || item.activityType === 'CURRENTLY_WATCHING' || item.activityType === 'WATCHLIST' ? (
               <View style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:100, justifyContent:'center', alignItems:'center', gap:15 }}>
                 <View className='w-full justify-between items-center flex-row'>

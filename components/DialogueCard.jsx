@@ -15,7 +15,7 @@ import { useFetchOwnerUser } from '../api/user'
 
 
 
-const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal} ) => {
+const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,fromHome} ) => {
 
 
     // const [ dialogue, setDialogue ] = useState(null)
@@ -49,11 +49,23 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal}
 
     const handleMentionPress = (mention) => {
         if (mention.movie) {
-            router.push(`/movie/${mention.tmdbId}`)
+            if (fromHome){
+                router.push(`(home)/movie/${mention.tmdbId}`)
+            } else {
+                router.push(`/movie/${mention.tmdbId}`)
+            }
         } else if (mention.tv) {
-            router.push(`/tv/${mention.tmdbId}`)
+            if (fromHome){
+                router.push(`(home)/movie/${mention.tmdbId}`)
+            } else {
+                router.push(`/tv/${mention.tmdbId}`)
+            }
         } else {
-            router.push(`/cast/${mention.tmdbId}`)
+            if (fromHome){
+                router.push(`(home)/cast/${mention.tmdbId}`)
+            } else {
+                router.push(`/cast/${mention.tmdbId}`)
+            }
         }
     }
 

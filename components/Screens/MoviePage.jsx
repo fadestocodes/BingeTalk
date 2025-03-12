@@ -196,12 +196,15 @@ const MoviePage = () => {
 
 
     const handleMarkWatched = async (  ) => {
+        console.log('alreadywatched?', alreadyWatched)
         if ( alreadyWatched ){
+
             setButtonPressed('unwatched')
         } else {
             setButtonPressed('watched')
         }
         const marked = await markMovieWatch({ movieId : DBmovieId, userId : ownerUser.id })
+        console.log('marked?', marked)
         if(marked){
             if ( alreadyWatched ){
                 setMessage('Removed from Watched')

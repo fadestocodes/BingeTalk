@@ -14,32 +14,10 @@ import { useFetchUser } from "../api/user";
 
 
 const Welcome = () => {
-//   const { loading, isLogged } = useGlobalContext();
-
-//   if (!loading && isLogged) return <Redirect href="/home" />;
   const {user} = useUser();
-  // const { userDB, updateUserDB } = useUserDB()
   const router = useRouter();  // Access navigation object
- 
-        // const userDBFetch = await fetchUser(user.emailAddresses[0].emailAddress);
-        // updateUserDB(userDBFetch);  // Update the context
-        // console.log('this is working',userDBFetch);
-
-        
-        
-        
-        
-        // If user is logged in, redirect immediately in the render
-        if (user) {
-  //   const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchOwnerUser( {email:user.emailAddresses[0].emailAddress} )
-  // console.log('fetchedUser', fetchedUser)
-
-   
+  if (user) {
     return <Redirect href="(home)/homeIndex" />
-    // return <Redirect to={{ pathname: '/(home)/homeIndex', search: `?userId=${fetchedUser.id}` }} />
-
-    router.push('(home)/homeIndex'); // Perform the redirection to the Home screen
-    // return null; // This prevents rendering anything else while the navigation happens
   }
 
   const handleSignUp = () => {
