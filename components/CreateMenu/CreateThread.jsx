@@ -100,7 +100,7 @@
                     onFocus={()=>setResultsOpen(true)}
                 />
                 <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); setResultsOpen(false)}}  style={{ position:'absolute', right:20, top:15 }}>
-                    <CloseIcon color={Colors.mainGray} size={15} className=' ' />
+                    <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
             </View>
 
@@ -147,7 +147,6 @@
                         multiline
                         value={inputs.title}
                         style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 90 : 50, paddingBottom:40 , borderTopLeftRadius: 15, borderTopRightRadius:15}}
-                        
                     />
                 {   loadingImage ? (
                     <View className=' w-full justify-center items-center' style={{ width:'100%', height:100 , backgroundColor:Colors.mainGrayDark}}> 
@@ -197,14 +196,12 @@
                     maxLength={800}
                     placeholder='Caption for your thread (optional)'
                     placeholderTextColor={Colors.mainGray}
-                    style={{paddingTop: inputs.caption ? 60 :  20, paddingHorizontal:25,backgroundColor:Colors.mainGrayDark, color:'white', paddingBottom:120, minHeight:150, textAlignVertical:'top'}}
-                    className='w-full relative min-h-50 bg-white rounded-3xl  items-start justify-start font-pcourier text-lg'
+                    style={{paddingTop:60, paddingHorizontal:25,backgroundColor:Colors.mainGrayDark, color:'white', paddingBottom:70, minHeight:100, textAlignVertical:'top'}}
+                    className='w-full relative min-h-50 bg-white rounded-3xl  items-start justify-start font-pcourier text-custom'
                 />
-                { inputs.caption && (
-                    <View style={{position:"absolute", top:30, alignItems:'center', justifyContent:'center', width:'100%'}}>
+                    <View style={{position:"absolute", top:30, alignItems:'center', justifyContent:'center', width:'100%', zIndex:20}}>
                         <Text className='font-pcourier uppercase text-lg text-secondary' >{ownerUser.firstName}</Text>
                     </View>
-                ) }
                 <View className='justify-center items-center z-10 gap-3 w-full bg-white  '  style={{ position:'absolute',backgroundColor:Colors.mainGrayDark, bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , height : 70 }}>
                     <View className='border-t-[1.5px] border-slate-200 w-full' 
                     />

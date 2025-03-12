@@ -31,11 +31,13 @@ const Welcome = () => {
         
         // If user is logged in, redirect immediately in the render
         if (user) {
-    const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchOwnerUser( {email:user.emailAddresses[0].emailAddress} )
-  // console.log('useremail', user.emailAddress)
+  //   const { data : fetchedUser, refetch, isLoading, isError,   } = useFetchOwnerUser( {email:user.emailAddresses[0].emailAddress} )
+  // console.log('fetchedUser', fetchedUser)
 
    
     return <Redirect href="(home)/homeIndex" />
+    // return <Redirect to={{ pathname: '/(home)/homeIndex', search: `?userId=${fetchedUser.id}` }} />
+
     router.push('(home)/homeIndex'); // Perform the redirection to the Home screen
     // return null; // This prevents rendering anything else while the navigation happens
   }

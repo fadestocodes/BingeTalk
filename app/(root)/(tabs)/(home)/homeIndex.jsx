@@ -1,114 +1,114 @@
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { feed } from '../../../../lib/fakeData'
-import { RepostIcon, UpIcon, DownIcon } from '../../../../assets/icons/icons'
-import { Colors } from '../../../../constants/Colors'
-import { useRouter } from 'expo-router'
+import { StyleSheet, Text, View, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator,  } from 'react-native'
+import React, {useState, useEffect} from 'react'
+import { homeCategories } from '../../../../lib/CategoryOptions'
+import { Colors } from '../../../../constants/Colors';
+import { useGetFeed } from '../../../../api/feed';
+import { Image } from 'expo-image';
+import { useUser } from '@clerk/clerk-expo';
+import { useFetchOwnerUser } from '../../../../api/user';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useUserDB } from '../../../../lib/UserDBContext';
+import * as nodeServer from '../../../../lib/ipaddresses'
 
 
+const homeIndex = () => {
+    const [selected, setSelected] = useState('All');
+    const { user: clerkUser } = useUser();
+    const { data: ownerUser, isLoading: isLoadingOwnerUser } = useFetchOwnerUser({
+      email: clerkUser.emailAddresses[0].emailAddress,
+    });
+    const router = useRouter()
+    const [ data, setData ] = useState([]);
+    const [ loading, setLoading ] = useState(false);
+    const [ hasMore, setHasMore ] = useState(true);
+    const [ cursor, setCursor ] = useState(null);
 
-const HomePage = () => {
+    const getFeed = async () => {
+        if (!hasMore ) return
+        try {
+            setLoading(true);
+            console.log('fetching feed')
+            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=5&cursor=${cursor}`);
+            const response = await request.json();
+            console.log('Feed response', response);
+            setData( prev => [ ...prev, ...response.items ] );
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
 
-  const router = useRouter();
-
-  const handlePress = (item) => {
-    if (item.movieId) {
-      router.push(`/(home)/movie/${item.movieId}`)
-    } else if (item.tvId){
-      router.push(`/(home)/tv/${item.tvId}`)
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false);
     }
-  }
+
+    useEffect(() => {
+        if (ownerUser){
+          getFeed()
+        }
+    }, [ownerUser])
+
+  
+    if (isLoadingOwnerUser  || !ownerUser) {
+      return <ActivityIndicator />;
+    }
 
   return (
-    <SafeAreaView className='flex flex-1 justify-center items-center w-full h-full bg-primary pt-16 pb-24' >
+    <SafeAreaView className='w-full h-full bg-primary'>
+     
+    <View className='w-full  pt-3 px-6 gap-5' style={{paddingBottom:200}}>
+      <View className="gap-3">
+          <View className='flex-row gap-2 justify-start items-center'>
 
-            <FlatList
-              data={feed}
-              keyExtractor={ (item) => item.id }
-              renderItem={({item}) => (
-                <View className='px-6'>
-                  <View className='flex justify-center items-start gap-2 mt-4 mb-1 w-full '>
-                    <View className='flex-row justify-center items-center gap-4'>
-                      <Image
-                        source = {require( "../../../../assets/images/drewcamera.jpg")}
-                        style = {{ width:30, height: 30, borderRadius:50 }}
-                        resizeMethod='cover'
-                      />
-                      <Text className='text-mainGray   font-pregular text-wrap flex-wrap flex-1'>{ item.notification } </Text>
+            {/* <TVIcon size={30} color='white' /> */}
+            <Text className='text-white font-pbold text-3xl'>Home</Text>
+          </View>
+          <Text className='text-mainGray font-pmedium'>Check out the most bingeable shows right now.</Text>
+      </View>
+      <TouchableOpacity onPress={()=>router.push('/notification')} style={{ position:'absolute', top:0, right:30 }}>
+        <Image
+          source={{ uri: ownerUser.profilePic }}
+          contentFit='cover'
+          style={{ width:30, height:30, borderRadius:50 }}
+        />
+      </TouchableOpacity>
 
-                    </View>
-                    { item.parentComment && (
+      <View className='w-full my-2 gap-3' style={{paddingBottom:100}}>
+      <FlatList
+        horizontal
+        data={homeCategories}
+        keyExtractor={(item,index) => index}
+        contentContainerStyle={{ gap:10 }}
+        renderItem={({item}) => (
+          <TouchableOpacity onPress={()=>{setSelected(item)}} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+            <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
+          </TouchableOpacity>
+        )}
+      />
+      <FlatList
+        data = {data}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{gap:15}}
+        onEndReached={()=>{
+            getFeed()
+        }}
+        onEndReachedThreshold={0}
+        renderItem={({item}) => {
+          console.log('flatlist item', item)
+        
+          
+          return (
+          <View style={{ height:250, width:'100%', borderRadius:15, backgroundColor:Colors.mainGrayDark, padding:10 }} >  
+            <Text className='text-white text-lg font-pbold'>{item.description}</Text>
+          </View>
+        )}}
+      />
 
-                      <View className='my-2 justify-center items-center w-full'>
-                        <Text className='text-secondary font-pcourier uppercase text-lg ' >{item.parentAuthor}</Text>
-
-                          <Text className='text-third font-pcourier text-lg leading-5 px-6' numberOfLines={3}> { item.parentComment } </Text>
-                        </View>
-                    ) }
-                    { item.dialogue && (
-                      <View className='my-2 justify-center items-center w-full'>
-                        <Text className='text-secondary font-pbold  text-lg ' >{item.user}</Text>
-
-                          <Text className='text-third font-pregular text-lg leading-6 '> { item.dialogue } </Text>
-                        </View>
-                    )  }
-
-                      { item.poster ? (
-                      <View className='w-full items-center'>
-                        <TouchableOpacity onPress={()=>handlePress(item)}>
-                          <Image
-                            
-                            source={{uri:item.poster}}
-                            style={{ width:300, height:200, borderRadius:10 }}
-                            resizeMethod='contain'
-                            />
-                        </TouchableOpacity>
-                      </View>
-                      ) : (
-                        <View></View>
-                      )}
-                    <View className=' flex-row items-end justify-between  w-full my-2'>
-                      <View className='flex-row gap-8 items-center justify-center'>
-                          <TouchableOpacity >
-                            <View className='flex-row gap-2 justify-center items-center'>
-                              <UpIcon className=' ' size='20' color={Colors.lightBlack} />
-                              { item.upVotes && item.upVotes > 0 && (
-                                <Text className='text-base font-pbold text-lightBlack  '>{item.upVotes}</Text>
-                              )  }
-                            </View>
-                          </TouchableOpacity>
-                          <TouchableOpacity >
-                            <View className='flex-row gap-2 justify-center items-center'>
-                              <DownIcon className='' size='20' color={Colors.lightBlack} />
-                              { item.downVotes && item.downVotes > 0 && (
-                                <Text className='text-base font-pbold text-lightBlack  '>{item.downVotes}</Text>
-                              )  }
-                            </View>
-                          </TouchableOpacity>
-                          <TouchableOpacity >
-                            <View className='flex-row gap-2 justify-center items-center'>
-                              <RepostIcon className='' size='20' color={Colors.lightBlack} />
-                              { item.reposts && item.reposts > 0 && (
-                                <Text className='text-base font-pbold text-lightBlack  '>{item.reposts}</Text>
-                              )  }
-                            </View>
-                          </TouchableOpacity>
-                      </View>
-                    </View>
-                  </View>
-                  <View className='w-full border-t-[.5px] border-lightBlack items-center self-center shadow-md shadow-black-200'/>
-              </View>
-              ) }
-              >
-
-
-
-            </FlatList>
-
-
-  </SafeAreaView>
+      </View>
+      </View>
+      </SafeAreaView>
   )
 }
 
-export default HomePage
+export default homeIndex
+
+const styles = StyleSheet.create({})

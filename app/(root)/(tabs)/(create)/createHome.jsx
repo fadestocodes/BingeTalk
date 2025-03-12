@@ -140,7 +140,7 @@ const CreateHome = () => {
     >
     <SafeAreaView className='bg-primary h-full w-full  '  style={{ paddingBottom:0 }} >
     
-    <View className='w-full  pt-10 px-6 gap-5'>
+    <View className='w-full  pt-3 px-6 gap-5'>
         <View className="">
             <View className='flex-row gap-2'>
               {/* <LayersIcon size={30} color='white' /> */}

@@ -71,7 +71,7 @@ const MovieIndex = () => {
           // windowSize={10}
           // removeClippedSubviews={true}
           renderItem={({item}) => {
-            // console.log('item is', item)
+            console.log('item is', item.id, item.title)
             
             return (
             <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>

@@ -49,7 +49,7 @@ const browseHome = () => {
 
   return (
     <SafeAreaView className='bg-primary '>
-    <View className='w-full h-full bg-primary justify-start items-center pt-10 px-6 gap-5 '>
+    <View className='w-full h-full bg-primary justify-start items-center pt-3 px-6 gap-5 '>
       <View className='w-full'>
         <View className='flex-row gap-2'>
           <LayersIcon size={30} color='white' />

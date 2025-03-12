@@ -106,7 +106,7 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
                         maxLength={250}
                         placeholder='Description of your list'
                         placeholderTextColor={Colors.mainGray}
-                        style={{paddingTop:20, paddingHorizontal:25, backgroundColor:Colors.mainGrayDark,paddingBottom:70, minHeight:150, borderRadius:15}}
+                        style={{paddingTop:20, paddingHorizontal:25, backgroundColor:Colors.mainGrayDark,paddingBottom:70, minHeight:130, borderRadius:15}}
                         className='w-full relative min-h-50 bg-white  items-start justify-start font-pregular text-white'
                 />
                 <View className='justify-center items-center z-10 gap-3 w-full text-white  '  style={{ backgroundColor:Colors.mainGrayDark, position:'absolute', bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , height : 70 }}>

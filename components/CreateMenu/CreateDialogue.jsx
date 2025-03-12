@@ -250,7 +250,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     description : `@${userDB.username} posted a new dialogue`,
                     dialogueId : newPost.id
                 }
-                const newActivity = await addActivity(activityData);
             } catch (err) {
                 console.log(err)
             }
