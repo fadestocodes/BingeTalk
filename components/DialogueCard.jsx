@@ -96,7 +96,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal}
                             <Image
                                 source={{ uri: userDB.profilePic }}
                                 contentFit='cover'
-                                style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
+                                style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                             />
                             <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
                         </View>

@@ -53,7 +53,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
 
         useEffect(()=>{
             // const checkFollow = ownerUser.following.some( item => item.followingId === user.id );
-            const checkFollow = user.followers.some( item => item.followerId === ownerUser.id );
+            const checkFollow = user.followers.some( item => item.followingId === ownerUser.id );
             console.log('check follow', checkFollow)
         if (checkFollow){
             setIsFollowing(true);
@@ -238,7 +238,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
 
                     </View>
                     ) :(
-                        <View className='flex-row gap-2 '>
+                        <View className='flex-row gap-2 mb-10'>
                             <TouchableOpacity onPress={handleFollow} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, backgroundColor:isFollowing ? Colors.secondary : null , borderColor:Colors.secondary, borderRadius:10,  flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
 
                                  { isFollowing ? (
@@ -253,9 +253,9 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
                                     </View>
                                 ) } 
                             </TouchableOpacity>
-                            <TouchableOpacity style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.secondary, borderRadius:10, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
+                            {/* <TouchableOpacity style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.secondary, borderRadius:10, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
                                 <Send color={Colors.secondary} size={18} ></Send><Text style={{ fontWeight:'bold', fontFamily:'Geist-Medium', color:Colors.secondary  }}>Message</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                         </View>
                     )}
     

@@ -61,7 +61,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                             <Image
                                 source={{ uri: thread?.user?.profilePic }}
                                 contentFit='cover'
-                                style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
+                                style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                             />
                             <Text className='text-mainGrayDark   ' >@{thread.user.username}</Text>
                         </View>

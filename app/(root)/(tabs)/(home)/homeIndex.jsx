@@ -9,6 +9,8 @@ import { useFetchOwnerUser } from '../../../../api/user';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useUserDB } from '../../../../lib/UserDBContext';
 import * as nodeServer from '../../../../lib/ipaddresses'
+import DialogueCard from '../../../../components/DialogueCard';
+import { formatDate } from '../../../../lib/formatDate';
 
 
 const homeIndex = () => {
@@ -19,6 +21,7 @@ const homeIndex = () => {
     });
     const router = useRouter()
     const [ data, setData ] = useState([]);
+    const posterURL = 'https://image.tmdb.org/t/p/original';
     const [ loading, setLoading ] = useState(false);
     const [ hasMore, setHasMore ] = useState(true);
     const [ cursor, setCursor ] = useState(null);
@@ -47,6 +50,18 @@ const homeIndex = () => {
         }
     }, [ownerUser])
 
+    const handleUserPress = (item) => {
+      router.push(`/(home)/user/${item.id}`)
+    }
+    
+    const handlePosterPress = (item) => {
+      if (item.movie){
+        router.push(`/(home)/movie/${item.movie.tmdbId}`)
+      } else if (item.tv){
+        router.push(`/(home)/tv/${item.tv.tmdbId}`)
+      }
+    }
+
   
     if (isLoadingOwnerUser  || !ownerUser) {
       return <ActivityIndicator />;
@@ -55,7 +70,7 @@ const homeIndex = () => {
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
      
-    <View className='w-full  pt-3 px-6 gap-5' style={{paddingBottom:200}}>
+    <View className='w-full  pt-3 px-4 gap-5' style={{paddingBottom:200}}>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
 
@@ -97,9 +112,44 @@ const homeIndex = () => {
         
           
           return (
-          <View style={{ height:250, width:'100%', borderRadius:15, backgroundColor:Colors.mainGrayDark, padding:10 }} >  
-            <Text className='text-white text-lg font-pbold'>{item.description}</Text>
-          </View>
+          // <View style={{ height:'auto', width:'100%', borderRadius:15, padding:10, gap:0 }} > 
+          <>
+            { item.dialogue ? (
+              <View style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
+              {/* <Text className='text-mainGray text font-pregular text-center ' >{item.description}</Text> */}
+              <DialogueCard dialogue ={item.dialogue} isBackground={false} />
+              </View>
+            ) : item.activityType === 'WATCHED' || item.activityType === 'CURRENTLY_WATCHING' || item.activityType === 'WATCHLIST' ? (
+              <View style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:100, justifyContent:'center', alignItems:'center', gap:15 }}>
+                <View className='w-full justify-between items-center flex-row'>
+                  <TouchableOpacity onPress={()=>handleUserPress(item.user)} className='flex-row gap-2 items-center justify-center'>
+                    <Image
+                      source={{ uri : item.user.profilePic }}
+                      contentFit='cover'
+                      style={{ width:30, height:30, borderRadius:50 }}
+                    />
+                    <Text className='text-mainGrayDark '>@{item.user.username}</Text>
+                  </TouchableOpacity>
+                  <Text className='  text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
+                </View>
+                <Text className='text-mainGray font-pregular text-left w-full ' >{`${item.user.firstName} ${item.description}`}</Text>
+                <TouchableOpacity onPress={()=>handlePosterPress(item)} style={{width:'100%'}} >
+                  <Image
+                    contentFit='cover'
+                    source={{ uri: `${posterURL}${item?.movie?.backdropPath || item?.tv?.backdropPath}` }}
+                    style ={{ width:'100%', height:150, borderRadius:15 }}
+                  />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View >
+                  <Text className='w-full flex-end'>{formatDate(item.createdAt)}</Text>
+                  <Text className='text-mainGray  font-pregular' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:100 }}>{item.description}</Text>
+              </View>
+            )}
+            {/* <View className='border-t-[1px] border-primaryLight w-full'/> */}
+            </> 
+            // </View>
         )}}
       />
 

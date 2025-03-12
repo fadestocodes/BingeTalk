@@ -63,13 +63,13 @@ const RecentlyWatchedProfile = () => {
         }
 
 
-  // if (loading  ){
-  //   return(
-  //       <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>   
-  //    <RefreshControl tintColor={Colors.secondary}   />
-  //    </View>
-  //   )
-  // }
+  if (loading || loadingCurrentlyWatching || !recentlyWatched || !currentlyWatchingItems  ){
+    return(
+        <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>   
+     <RefreshControl tintColor={Colors.secondary}   />
+     </View>
+    )
+  }
 
   return (
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
