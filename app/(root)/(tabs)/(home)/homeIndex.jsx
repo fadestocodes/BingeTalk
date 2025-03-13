@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator,  } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl,  } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { homeCategories } from '../../../../lib/CategoryOptions'
 import { Colors } from '../../../../constants/Colors';
@@ -15,6 +15,7 @@ import ThreadCard from '../../../../components/ThreadCard';
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis , List, MessagesSquare} from 'lucide-react-native'
 import { ProgressCheckIcon, ThumbsUp, ThumbsDown, MessageIcon, RepostIcon } from '../../../../assets/icons/icons';
 import ListCard from '../../../../components/ListCard';
+import { toPascalCase } from '../../../../lib/ToPascalCase';
 
 
 
@@ -26,24 +27,33 @@ const homeIndex = () => {
       email: clerkUser.emailAddresses[0].emailAddress,
     });
     const router = useRouter()
-    const [ data, setData ] = useState([]);
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
+    const [ data, setData ] = useState([]);
     const [ loading, setLoading ] = useState(false);
-    const [ hasMore, setHasMore ] = useState(true);
-    const [ cursor, setCursor ] = useState(null);
+    // const [ hasMore, setHasMore ] = useState(true);
+    const [ hasMoreFeed, setHasMoreFeed ] = useState(true)
+    const [ hasMoreThreads, setHasMoreThreads ] = useState(true)
+    // const [ cursor, setCursor ] = useState(null);
+    const [ feedCursor, setFeedCursor ] = useState(null);
+    const [ threadCursor, setThreadCursor ] = useState(null);
 
     const getFeed = async () => {
-        if (!hasMore ) return
+        // if (!hasMoreFeed ) return
+        if (!hasMoreFeed && !hasMoreThreads)return 
         try {
             setLoading(true);
             console.log('fetching feed')
-            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=5&cursor=${cursor}`);
+            console.log('hasMoreFEED' , hasMoreFeed,'hasMoreTHREADS', hasMoreThreads)
+            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=5&feedCursor=${feedCursor}&threadCursor=${threadCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}`);
             const response = await request.json();
-            console.log('Feed response', response);
+            // console.log('Feed response', response);
             setData( prev => [ ...prev, ...response.items ] );
-            setCursor(response.nextCursor)
-            setHasMore(!!response.nextCursor)
+            setFeedCursor(response.nextFeedCursorServer)
+            setThreadCursor(response.nextThreadCursorServer)
+            // setHasMore(!!response.hasMore)
+            setHasMoreFeed(response.hasMoreFeedServer)
+            setHasMoreThreads(response.hasMoreThreadsServer)
 
         } catch (err) {
             console.log(err)
@@ -108,21 +118,21 @@ const homeIndex = () => {
       />
       <FlatList
         data = {data}
-        keyExtractor={(item) => item.id}
+        refreshControl={
+          <RefreshControl
+            tintColor={Colors.secondary}
+            refreshing={loading}
+            onRefresh={getFeed}
+          />
+        }
+        keyExtractor={(item,index) => index}
         contentContainerStyle={{gap:15}}
         onEndReached={()=>{
             getFeed()
         }}
         onEndReachedThreshold={0}
         renderItem={({item}) => {
-          console.log('flatlist item', item)
-          let alreadyUpvotedList, alreadyDownvotedList, alreadyRepostedList
-          if (item.list){
-             alreadyUpvotedList = item.list.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
-             alreadyDownvotedList = item.list.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser.id )
-             alreadyRepostedList = item.list.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
-          }
-          
+          // console.log('flatlist item', item)
           return (
           // <View style={{ height:'auto', width:'100%', borderRadius:15, padding:10, gap:0 }} > 
           <>
@@ -189,6 +199,39 @@ const homeIndex = () => {
                   />
                 </TouchableOpacity>
               </View>
+            ) : item.type === 'thread' ? (
+              <TouchableOpacity  onPress={()=>{router.push(`/threads/${item.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15, minHeight:150}}>
+                  <TouchableOpacity onPress={()=>{handleUserPress(item.user)}} className='flex-row gap-2   items-center justify-between'>
+                    <View className='flex-row gap-2 justify-center items-center'>
+                      <Image
+                        source={{ uri : item.user.profilePic }}
+                        contentFit='cover'
+                        style={{ width:30, height:30, borderRadius:50 }}
+                      />
+                      <Text className='text-mainGrayDark '>@{item.user.username}</Text>
+                    </View>
+                  <Text className='  text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
+                  </TouchableOpacity>
+                  <View className='flex-row gap-3 justify-start items-center  '>
+                  <TouchableOpacity onPress={()=>handlePosterPress(item)} >
+                    <Text className='text-white'>/{ toPascalCase( item?.movie?.title || item?.tv?.title || item?.castCrew?.name)}</Text>
+                  </TouchableOpacity>
+                  { item.tag && (
+                  <Text className= ' font-pbold text-primary text-xs ' style={{ backgroundColor: item.tag.color , padding:5, borderRadius:10, alignSelf:'flex-start'}}>{item.tag.tagName}</Text>
+                ) }
+
+                  </View>
+                  <Text className='text-white text-lg font-pbold leading-6'>{item.title}</Text>
+                  <TouchableOpacity onPress={()=>handlePosterPress(item)}>
+                    <Image
+                      source ={{ uri : `${posterURL}${item?.movie?.backdropPath || item?.tv?.backdropPath}` }}
+                      placeholder ={{ uri : `${posterURLlow}${item?.movie?.backdropPath || item?.tv?.backdropPath}` }}
+                      placeholderContentFit='cover'
+                      contentFit='cover'
+                      style ={{ width:'100%', height:150, borderRadius:15 }}
+                    />
+                  </TouchableOpacity>
+                </TouchableOpacity>
             ) : (
               <View >
                   <Text className='w-full flex-end'>{formatDate(item.createdAt)}</Text>

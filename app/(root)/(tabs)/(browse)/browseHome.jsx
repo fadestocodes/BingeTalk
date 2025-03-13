@@ -85,9 +85,9 @@ const browseHome = () => {
             />
           }
             onEndReached={() => {
-                if ( hasMoreTrending ){
+                if ( hasMoreTrending && selected === 'Trending' ){
                     refetch()
-                } else if (hasMoreRecents){
+                } else if (hasMoreRecents && selected==='Most Recent'){
                   refetchRecents()
                 }
             }}

@@ -86,18 +86,18 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                                     <Text className='text-mainGray '>{thread.user.firstName} { activity }</Text>
                                 </View>
                 ) } */}
+            <View className='flex-row justify-start items-center gap-3 mt-3'>
 
-            { showThreadTopic && (
-                <TouchableOpacity onPress={()=>handlePress(thread)} >
-                    <Text className='textlg text-white ' >{ thread.movie ? `/${toPascalCase(thread.movie.title)}` : thread.tv ? `/${toPascalCase(thread.tv.title)}` : thread.castCrew && `/${toPascalCase(thread.castCrew.name)}` }</Text>
+                <TouchableOpacity onPress={()=>handlePress(thread)}  style={{justifyContent:'center', alignItems:'center'}}>
+                    <Text className='textlg text-white '  style={{  }}>{ thread.movie ? `/${toPascalCase(thread.movie.title)}` : thread.tv ? `/${toPascalCase(thread.tv.title)}` : thread.castCrew && `/${toPascalCase(thread.castCrew.name)}` }</Text>
                 </TouchableOpacity>
 
-            ) }
 
             <View className='flex-row gap-3' >
             { thread.tag && (
-                  <Text className= 'mt-3 font-pbold text-primary text-xs ' style={{ backgroundColor: thread.tag.color , padding:5, borderRadius:10}}>{thread.tag.tagName}</Text>
+                  <Text className= 'font-pbold text-primary text-xs' style={{ backgroundColor: thread.tag.color , padding:5, borderRadius:10, alignSelf:'center'}}>{thread.tag.tagName}</Text>
             ) }
+            </View>
             </View>
 
             <Text className="text-white  font-pbold text-xl leading-6  ">{thread.title}</Text>
