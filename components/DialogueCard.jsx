@@ -9,13 +9,13 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchUser } from '../api/user'
 import { useRouter } from 'expo-router'
 import { fetchSingleDialogue } from '../api/dialogue'
-import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import { MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import { dialogueInteraction } from '../api/dialogue'
 import { useFetchOwnerUser } from '../api/user'
 
 
 
-const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,fromHome} ) => {
+const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity} ) => {
 
 
     // const [ dialogue, setDialogue ] = useState(null)
@@ -56,7 +56,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
             }
         } else if (mention.tv) {
             if (fromHome){
-                router.push(`(home)/movie/${mention.tmdbId}`)
+                router.push(`(home)/tv/${mention.tmdbId}`)
             } else {
                 router.push(`/tv/${mention.tmdbId}`)
             }
@@ -100,8 +100,8 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
   return (
 
    
-    <View  className=''  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, marginBottom:15, gap:15 }}  >
-            <View className='flex justify-center items-start gap-3  mb-1 w-full '>
+    <View  className=''  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
+            <View className='flex justify-center items-start  mb-1 w-full ' style={{gap:15}}>
            
                 <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
@@ -115,6 +115,12 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                     <Text className='text-mainGrayDark '>{formatDate(dialogue.createdAt)}</Text>
                     
                 </View>
+                {/* { activity && (
+                                <View className='flex-row gap-2'>
+                                    <MessageSquare size={18} color={Colors.secondary} />
+                                    <Text className='text-mainGray '>{dialogue.user.firstName} { activity }</Text>
+                                </View>
+                ) } */}
                 { tag && (
                         <View className=' '>
                             <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:10}} >{tag.tagName}</Text>

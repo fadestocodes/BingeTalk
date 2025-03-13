@@ -41,6 +41,19 @@ const TinderSwipeCard = ( { listItems, creator, listId} ) => {
     };
   });
 
+  const [savedItem, setSavedItem] = useState(null);
+
+  useEffect(() => {
+    setList(listItems); // Persist the list when the component mounts
+  }, [listItems]); // Only update when listItems changes
+
+
+  const restoreSavedItem = () => {
+    if (savedItem) {
+      setList((prevStack) => [savedItem, ...prevStack]);
+      setSavedItem(null);
+    }
+  };
 
 
   useEffect(() => {
@@ -54,31 +67,42 @@ const TinderSwipeCard = ( { listItems, creator, listId} ) => {
     // };
     // fetchTrending();
   }, []);
-  
 
-  const [savedItem, setSavedItem] = useState(null);
+  // useEffect(() => {
+  //   restoreSavedItem(); // Automatically restore when component re-mounts
+  // }, [router]); // Runs only once, can be adjusted for specific cases
 
-  const handleSwipeUp = (item) => {
-    setSavedItem(item); // Save the swiped item
-    // setList((prevStack) => prevStack.slice(1)); // Remove it from stack
-    console.log("Current path:", router.pathname);
-    if (item.media_type === "movie") {
-      router.push(`/movie/${item.id}`);
-    } else if (item.media_type === "tv") {
-      router.push(`/tv/${item.id}`);
-    }
-  };
-
-  const restoreSavedItem = () => {
+  useEffect(() => {
     if (savedItem) {
       setList((prevStack) => [savedItem, ...prevStack]);
       setSavedItem(null);
     }
-  };
+  }, [router]); // 
 
-  useEffect(() => {
-    restoreSavedItem(); // Automatically restore when component re-mounts
-  }, [router]); // Runs only once, can be adjusted for specific cases
+  
+useEffect(() => {
+  if (list.length === 0) {
+    console.log("List is empty after returning. Check state restoration logic.");
+  }
+  restoreSavedItem(); // Make sure the saved item is restored when component remounts
+}, [list]);
+
+
+  const handleSwipeUp = (item) => {
+    console.log('item ', item)
+    setSavedItem(item); // Save the swiped item
+   
+    setList((prevStack) => prevStack.slice(1)); // Remove it from stack
+    if (item.media_type === "movie") {
+      router.push(`/movie/${item.id}`);
+    } else if (item.movieId) {
+      router.push(`/movie/${item.movie.tmdbId}`);
+    } else if (item.media_type === "tv") {
+      router.push(`/tv/${item.id}`);
+    } else if (item.tvId){
+      router.push(`/movie/${item.tv.tmdbId}`)
+    }
+  };
 
 
   const handleLike = async () => {
@@ -189,7 +213,7 @@ const TinderSwipeCard = ( { listItems, creator, listId} ) => {
       <ToastMessage durationMultiple={Number(1.4)} message={message} onComplete={() => {setMessage(''); setToastIcon(null)}} icon={toastIcon }  />
 
 
-      {list.length > 0 ? (
+      {list.length >  0   ? (
         <View className="w-full">
         <View className="z-1 w-full">
             <SwipeCard
@@ -200,6 +224,7 @@ const TinderSwipeCard = ( { listItems, creator, listId} ) => {
               onReject={handleReject}
               onSwipeUp = {handleSwipeUp}
               onAnimationEnd={handleAnimationEnd}
+              setSavedItem={setSavedItem}
             />
         </View>
         

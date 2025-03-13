@@ -11,7 +11,7 @@ import { useFetchOwnerUser } from "../../api/user";
 import { useUser } from "@clerk/clerk-expo";
 
 
-const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd, nextItem }) => {
+const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd, nextItem, setSavedItem }) => {
   const swipe = useRef(new Animated.ValueXY()).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const titlSign = useRef(new Animated.Value(1)).current;

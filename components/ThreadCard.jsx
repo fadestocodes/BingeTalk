@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View , TouchableOpacity, ActivityIndicator,} from 'react-native'
 import { Image } from 'expo-image';
-import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import { MessagesSquare, ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons';
 import { Colors } from '../constants/Colors';
 import { formatDate } from '../lib/formatDate';
@@ -13,7 +13,7 @@ import React from 'react'
 import { toPascalCase } from '../lib/ToPascalCase';
 
 
-const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic}) => {
+const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic, fromHome, activity}) => {
     const userDB = thread.user
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
@@ -40,11 +40,23 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
 
     const handlePress = (item) => {
         if (item.movie ){
-            router.push(`/movie/${item.movie.tmdbId}`)
+            if (fromHome) {
+                router.push(`(home)/movie/${item.movie.tmdbId}`)
+            } else {
+                router.push(`/movie/${item.movie.tmdbId}`)
+            }
         } else if (item.tv){
-            router.push(`/tv/${item.tv.tmdbId}`)
+            if (fromHome){
+                router.push(`(home)/tv/${item.tv.tmdbId}`)
+            } else {
+                router.push(`/tv/${item.tv.tmdbId}`)
+            }
         } else if (item.castCrew){
-            router.push(`/cast/${item.castCrew.tmdbId}`)
+            if (fromHome){
+                router.push(`(home)/cast/${item.castCrew.tmdbId}`)
+            }else {
+                router.push(`/cast/${item.castCrew.tmdbId}`)
+            }
         }
     }
 
@@ -54,7 +66,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
 
 
   return (
-    <View className='gap-3'  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, marginBottom:15, gap:15 }} >
+    <View className='gap-3'  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground ? 12 : 0, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }} >
 
           <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2 ">
@@ -68,6 +80,12 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                     <Text className='text-mainGrayDark '>{formatDate(thread.createdAt)}</Text>
                     
                 </View>
+                {/* { activity && (
+                                <View className='flex-row gap-2'>
+                                    <MessagesSquare size={18} color={Colors.secondary} />
+                                    <Text className='text-mainGray '>{thread.user.firstName} { activity }</Text>
+                                </View>
+                ) } */}
 
             { showThreadTopic && (
                 <TouchableOpacity onPress={()=>handlePress(thread)} >
@@ -90,7 +108,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
               </View>
             ) }
             
-            <View className='flex-row  justify-between w-full my-3 items-center'>
+            <View className='flex-row  justify-between w-full items-end'>
                         {/* <View className='flex-row gap-5 justify-center items-center'>
                             
                         </View> */}

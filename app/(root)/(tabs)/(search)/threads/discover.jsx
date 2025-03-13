@@ -19,7 +19,7 @@ const DiscoverDialogues = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
-      <View className='w-full  pt-10 px-6 gap-5' style={{paddingBottom:200}}>
+      <View className='w-full  pt-10 px-4 gap-5' style={{paddingBottom:200}}>
         <View className="gap-3">
             <View className='flex-row gap-2 justify-start items-center'>
 
@@ -45,7 +45,7 @@ const DiscoverDialogues = () => {
             <FlatList
                 data={selected === 'Trending' ? trendingThreads : controversialThreads}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{gap:0}}
+                contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
                     console.log('flatlist item', item.id)
                 return (

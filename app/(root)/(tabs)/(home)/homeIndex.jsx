@@ -12,6 +12,11 @@ import * as nodeServer from '../../../../lib/ipaddresses'
 import DialogueCard from '../../../../components/DialogueCard';
 import { formatDate } from '../../../../lib/formatDate';
 import ThreadCard from '../../../../components/ThreadCard';
+import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis , List, MessagesSquare} from 'lucide-react-native'
+import { ProgressCheckIcon, ThumbsUp, ThumbsDown, MessageIcon, RepostIcon } from '../../../../assets/icons/icons';
+import ListCard from '../../../../components/ListCard';
+
+
 
 
 const homeIndex = () => {
@@ -23,6 +28,7 @@ const homeIndex = () => {
     const router = useRouter()
     const [ data, setData ] = useState([]);
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const [ loading, setLoading ] = useState(false);
     const [ hasMore, setHasMore ] = useState(true);
     const [ cursor, setCursor ] = useState(null);
@@ -56,10 +62,10 @@ const homeIndex = () => {
     }
     
     const handlePosterPress = (item) => {
-      if (item.movie){
-        router.push(`/(home)/movie/${item.movie.tmdbId}`)
-      } else if (item.tv){
-        router.push(`/(home)/tv/${item.tv.tmdbId}`)
+      if (item?.movie || item?.rating?.movie){
+        router.push(`/(home)/movie/${item?.movie?.tmdbId || item?.rating?.movie?.tmdbId}`)
+      } else if (item?.tv || item?.rating?.tv ){
+        router.push(`/(home)/tv/${item?.tv?.tmdbId || item?.rating?.tv?.tmdbId }`)
       }
     }
 
@@ -110,22 +116,52 @@ const homeIndex = () => {
         onEndReachedThreshold={0}
         renderItem={({item}) => {
           console.log('flatlist item', item)
-        
+          let alreadyUpvotedList, alreadyDownvotedList, alreadyRepostedList
+          if (item.list){
+             alreadyUpvotedList = item.list.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
+             alreadyDownvotedList = item.list.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser.id )
+             alreadyRepostedList = item.list.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
+          }
           
           return (
           // <View style={{ height:'auto', width:'100%', borderRadius:15, padding:10, gap:0 }} > 
           <>
             { item.dialogue  ? (
               <TouchableOpacity onPress={()=>{router.push(`/dialogue/${item.dialogue.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
-                <DialogueCard dialogue ={item.dialogue} isBackground={false} fromHome={true} />
+                <DialogueCard dialogue ={item.dialogue} isBackground={false} fromHome={true} activity={item.description} />
               </TouchableOpacity>
             ) : item.threads ? (
               <TouchableOpacity  onPress={()=>{router.push(`/threads/${item.threads.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
               {/* <Text className='text-mainGray text font-pregular text-center ' >{item.description}</Text> */}
-              <ThreadCard thread ={item.threads} isBackground={false} showThreadTopic={true} isShortened={true} fromHome={true}/>
-              </TouchableOpacity>
+              {/* <ThreadCard thread ={item.threads} isBackground={false} showThreadTopic={true} isShortened={true} fromHome={true} activity={item.description}/> */}
+              <View className='w-full justify-between items-center flex-row'>
+                  <TouchableOpacity onPress={()=>handleUserPress(item.user)} className='flex-row gap-2 items-center justify-center'>
+                    <Image
+                      source={{ uri : item.user.profilePic }}
+                      contentFit='cover'
+                      style={{ width:30, height:30, borderRadius:50 }}
+                    />
+                    <Text className='text-mainGrayDark '>@{item.user.username}</Text>
+                  </TouchableOpacity>
+                  <Text className='  text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
+              </View>
+              
+              <View className='flex-row gap-2 justify-center items-center'>
+                <MessagesSquare size={18} color={Colors.secondary} />
+                <Text className='text-mainGray'>{item.user.firstName} {item.description}</Text>
+              </View>
+              <Image
+                source={{ uri: `${posterURL}${item?.threads.movie?.backdropPath || item?.threads.tv?.backdropPath}` }}
+                placeholder={{ uri: `${posterURLlow}${item?.threads.movie?.backdropPath || item?.threads.tv?.backdropPath}` }}
+                placeholderContentFit='cover'
+                contentFit='cover'
+                style ={{ width:'100%', height:150, borderRadius:15 }}
+              />
 
-            ) : item.activityType === 'WATCHED' || item.activityType === 'CURRENTLY_WATCHING' || item.activityType === 'WATCHLIST' ? (
+              </TouchableOpacity>
+            ) : item.list ? (
+              <ListCard list={item.list}  activity={item.description} fromHome={true} />
+            ) : item.activityType === 'WATCHED' || item.activityType === 'CURRENTLY_WATCHING' || item.activityType === 'WATCHLIST' || item.activityType === 'RATING' ?  (
               <View style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:100, justifyContent:'center', alignItems:'center', gap:15 }}>
                 <View className='w-full justify-between items-center flex-row'>
                   <TouchableOpacity onPress={()=>handleUserPress(item.user)} className='flex-row gap-2 items-center justify-center'>
@@ -138,11 +174,17 @@ const homeIndex = () => {
                   </TouchableOpacity>
                   <Text className='  text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
                 </View>
-                <Text className='text-mainGray font-pregular text-left w-full ' >{`${item.user.firstName} ${item.description}`}</Text>
+                <View className='flex-row gap-3 items-center justify-center w-full px-4 '>
+                  { item.rating ? <Star size={18} color={Colors.secondary} /> : item.activityType === 'WATCHED' ? <Eye size={18} color={Colors.secondary} /> :
+                  item.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : item.activityType==='WATCHLIST' && <ListChecks size={18} color={Colors.secondary} />  }
+                  <Text className='text-mainGray font-pregular  ' >{`${item.user.firstName} ${item.description}`}</Text>
+                </View>
                 <TouchableOpacity onPress={()=>handlePosterPress(item)} style={{width:'100%'}} >
                   <Image
                     contentFit='cover'
-                    source={{ uri: `${posterURL}${item?.movie?.backdropPath || item?.tv?.backdropPath}` }}
+                    source={{ uri: `${posterURL}${item?.movie?.backdropPath || item?.tv?.backdropPath || item?.rating?.movie?.backdropPath || item?.rating?.tv?.backdropPath }` }}
+                    placeholder={{ uri: `${posterURLlow}${item?.movie?.backdropPath || item?.tv?.backdropPath || item?.rating?.movie?.backdropPath || item?.rating?.tv?.backdropPath }` }}
+                    placeholderContentFit='cover'
                     style ={{ width:'100%', height:150, borderRadius:15 }}
                   />
                 </TouchableOpacity>

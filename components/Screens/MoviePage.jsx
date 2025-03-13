@@ -111,7 +111,7 @@ const MoviePage = () => {
                 const movieFromDB = await fetchMovieFromDB({movieData})
                 queryClient.setQueryData(['movie', movieId]);
     
-                console.log('tvfromdb', movieFromDB)
+                // console.log('tvfromdb', movieFromDB)
                 setMovieRatings(movieFromDB.ratings)
                 setThreads( movieFromDB.threads );
                 setDBmovieId( movieFromDB.id )

@@ -210,7 +210,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
                                     <TouchableOpacity onPress={() => handleRotationPress(item)} style={{ marginRight:10 }}>
                                         <Image
                                             source={{uri: item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : null }}
-                                            resizeMode='cover'
+                                            contentFit='cover'
                                             style={{ width:50, height:80, borderRadius:10, overflow:'hidden' }}
                                         />
                                     </TouchableOpacity>
@@ -263,7 +263,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
     
                 </View>
             )}
-    
+            contentContainerStyle={{gap:15}}
             renderItem={({item}) => (
             
                 <TouchableOpacity key={item.id} onPress={()=>handleDialoguePress(item)}  style={{ paddingHorizontal:15 }}>

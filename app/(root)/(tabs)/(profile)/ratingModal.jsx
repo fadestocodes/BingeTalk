@@ -62,6 +62,9 @@ const ratingModal = () => {
             setMessage('Successfully posted rating')
         }
         console.log('postedRating', postedRating)
+        setTimeout(() => {
+            router.back()
+        }, 1700)
 
 
     }
