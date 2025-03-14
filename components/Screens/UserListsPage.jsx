@@ -90,7 +90,7 @@ const UserListsPage = ( { userId } ) => {
             keyExtractor={item => item.id}
             contentContainerStyle={{ gap:15 }}
             renderItem={ ({item}) => {
-                console.log('each list', item)
+                // console.log('each list', item)
                 return (
                 <ListCard list={item} />
             )} }

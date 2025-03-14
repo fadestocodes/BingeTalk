@@ -16,8 +16,7 @@ import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis , List, MessagesSqua
 import { ProgressCheckIcon, ThumbsUp, ThumbsDown, MessageIcon, RepostIcon } from '../../../../assets/icons/icons';
 import ListCard from '../../../../components/ListCard';
 import { toPascalCase } from '../../../../lib/ToPascalCase';
-
-
+import { getAllNotifs, useGetAllNotifs } from '../../../../api/notification';
 
 
 const homeIndex = () => {
@@ -37,17 +36,25 @@ const homeIndex = () => {
     // const [ cursor, setCursor ] = useState(null);
     const [ feedCursor, setFeedCursor ] = useState(null);
     const [ threadCursor, setThreadCursor ] = useState(null);
-
+    const [ unreadNotifs, setUnreadNotifs ]  = useState([])
     const getFeed = async () => {
         // if (!hasMoreFeed ) return
+        try {
+          console.log('hellofromhere')
+          const notifsData = await getAllNotifs( ownerUser.id, null , true )
+          // setNotifications(notifsData)
+          const unread = notifsData.filter( item => item.isRead === false)
+          console.log('UNREAD', unread)
+        } catch {
+          console.log('error fetchign notifs')
+        }
         if (!hasMoreFeed && !hasMoreThreads)return 
         try {
             setLoading(true);
             console.log('fetching feed')
-            console.log('hasMoreFEED' , hasMoreFeed,'hasMoreTHREADS', hasMoreThreads)
             const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=5&feedCursor=${feedCursor}&threadCursor=${threadCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}`);
             const response = await request.json();
-            // console.log('Feed response', response);
+            console.log('Feed response', response);
             setData( prev => [ ...prev, ...response.items ] );
             setFeedCursor(response.nextFeedCursorServer)
             setThreadCursor(response.nextThreadCursorServer)
@@ -65,6 +72,7 @@ const homeIndex = () => {
         if (ownerUser){
           getFeed()
         }
+        
     }, [ownerUser])
 
     const handleUserPress = (item) => {
@@ -97,11 +105,16 @@ const homeIndex = () => {
           <Text className='text-mainGray font-pmedium'>Check out the most bingeable shows right now.</Text>
       </View>
       <TouchableOpacity onPress={()=>router.push('/notification')} style={{ position:'absolute', top:0, right:30 }}>
-        <Image
-          source={{ uri: ownerUser.profilePic }}
-          contentFit='cover'
-          style={{ width:30, height:30, borderRadius:50 }}
-        />
+        <View className='relative' >
+          <Image
+            source={{ uri: ownerUser.profilePic }}
+            contentFit='cover'
+            style={{ width:30, height:30, borderRadius:50 }}
+          />
+          { unreadNotifs.length > 0 && (
+            <Text className='text-primary font-psemibold text-sm text-center leading-6' style={{ textAlignVertical:'center' ,borderRadius:50, height:23, width:23, backgroundColor:Colors.secondary, position:'absolute' ,bottom:20, left:20 }} >{unreadNotifs.length}</Text>
+          ) }
+        </View>
       </TouchableOpacity>
 
       <View className='w-full my-2 gap-3' style={{paddingBottom:100}}>
@@ -122,7 +135,7 @@ const homeIndex = () => {
           <RefreshControl
             tintColor={Colors.secondary}
             refreshing={loading}
-            onRefresh={getFeed}
+            onRefresh={()=>getFeed()}
           />
         }
         keyExtractor={(item,index) => index}
@@ -138,7 +151,7 @@ const homeIndex = () => {
           <>
             { item.dialogue  ? (
               <TouchableOpacity onPress={()=>{router.push(`/dialogue/${item.dialogue.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
-                <DialogueCard dialogue ={item.dialogue} isBackground={false} fromHome={true} activity={item.description} />
+                <DialogueCard dialogue ={item.dialogue} isBackground={false} fromHome={true} activity={item.description} refetch={getFeed}/>
               </TouchableOpacity>
             ) : item.threads ? (
               <TouchableOpacity  onPress={()=>{router.push(`/threads/${item.threads.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>

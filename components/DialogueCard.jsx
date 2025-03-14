@@ -40,12 +40,17 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
     const tag = dialogue.tag;
     const { user: clerkUser } = useUser()
     const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
-
+    
     
     const alreadyUpvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
     const alreadyDownvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
     const alreadyReposted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
-  
+    
+    const [ already, setAlready ] = useState({
+        upvotes : alreadyUpvoted,
+        downvotes : alreadyDownvoted,
+        reposts : alreadyReposted
+    })
 
     const handleMentionPress = (mention) => {
         if (mention.movie) {
@@ -81,11 +86,14 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
     const handleInteraction =  async (type, dialogue) => {
         console.log('type', type)
+        setAlready( prev => ({...prev, [type] : !prev[type] }) )
         const data = {
             type,
             dialogueId : dialogue.id,
-            userId : ownerUser.id
+            userId : ownerUser.id,
+            recipientId : dialogue.user.id
         }
+
         const updatedDialogue = await dialogueInteraction(data)
         refetch();
     }
@@ -162,14 +170,14 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                     <View className='flex-row gap-5 justify-center items-center'>
                         <TouchableOpacity onPress={()=> handleInteraction('upvotes',dialogue) } >
                             <View className='flex-row gap-1 justify-center items-center'>
-                                <ThumbsUp size={16} color={ alreadyUpvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
-                                <Text className='text-xs font-pbold ' style={{ color: alreadyUpvoted ? Colors.secondary : Colors.mainGray }}>{ dialogue.upvotes }</Text>
+                                <ThumbsUp size={16} color={ already.upvotes ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                <Text className='text-xs font-pbold ' style={{ color: already.upvotes ? Colors.secondary : Colors.mainGray }}>{ dialogue.upvotes }</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity  onPress={()=> handleInteraction('downvotes',dialogue) } >
                         <View className='flex-row gap-1 justify-center items-center'>
-                            <ThumbsDown size={18}  color={ alreadyDownvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
-                            <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvoted ? Colors.secondary : Colors.mainGray }}>{ dialogue.downvotes }</Text>
+                            <ThumbsDown size={18}  color={ already.downvotes ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                            <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvotes ? Colors.secondary : Colors.mainGray }}>{ dialogue.downvotes }</Text>
                         </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>handleComment(dialogue)} disabled={disableCommentsModal} >
@@ -180,8 +188,8 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=> handleInteraction('reposts',dialogue) } >
                         <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <RepostIcon className='' size='14'  color={ alreadyReposted ? Colors.secondary :  Colors.mainGray}/>
-                            <Text className='text-xs font-pbold text-gray-400  'style={{ color: alreadyReposted ? Colors.secondary : Colors.mainGray }}> {dialogue.reposts}</Text>
+                            <RepostIcon className='' size='14'  color={ already.reposts ? Colors.secondary :  Colors.mainGray}/>
+                            <Text className='text-xs font-pbold text-gray-400  'style={{ color: already.reposts ? Colors.secondary : Colors.mainGray }}> {dialogue.reposts}</Text>
                         </View>
 
                         </TouchableOpacity>
