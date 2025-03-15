@@ -46,10 +46,19 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
     const alreadyDownvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
     const alreadyReposted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
     
-    const [ already, setAlready ] = useState({
-        upvotes : alreadyUpvoted,
-        downvotes : alreadyDownvoted,
-        reposts : alreadyReposted
+    const [ interactions, setInteractions ] = useState({
+        upvotes : {
+            alreadyPressed : alreadyUpvoted,
+            count : dialogue.upvotes
+        } ,
+        downvotes :{
+            alreadyPressed : alreadyDownvoted,
+            count : dialogue.downvotes
+        } ,
+        reposts : {
+            alreadyPressed : alreadyReposted,
+            count : dialogue.reposts
+        } 
     })
 
     const handleMentionPress = (mention) => {
@@ -86,7 +95,15 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
     const handleInteraction =  async (type, dialogue) => {
         console.log('type', type)
-        setAlready( prev => ({...prev, [type] : !prev[type] }) )
+        setInteractions(prev => ({
+            ...prev,
+            [type]: {
+              ...prev[type],
+              alreadyPressed: !prev[type].alreadyPressed,
+              count : prev[type].alreadyPressed ? prev[type].count -1 : prev[type].count +1
+            }
+          }))
+          
         const data = {
             type,
             dialogueId : dialogue.id,
@@ -154,30 +171,19 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
                 
 
-                <View className='flex-row gap-3  item-center justify-center' >
-                { dialogue.mentions && dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (
-                    <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
-                        <Image
-                            source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
-                            contentFit='cover'
-                            style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
-                        />
-                    </TouchableOpacity>
-                ) ) 
-                }
-                </View>
+              
 
                     <View className='flex-row gap-5 justify-center items-center'>
                         <TouchableOpacity onPress={()=> handleInteraction('upvotes',dialogue) } >
                             <View className='flex-row gap-1 justify-center items-center'>
-                                <ThumbsUp size={16} color={ already.upvotes ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
-                                <Text className='text-xs font-pbold ' style={{ color: already.upvotes ? Colors.secondary : Colors.mainGray }}>{ dialogue.upvotes }</Text>
+                                <ThumbsUp size={16} color={ interactions.upvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                <Text className='text-xs font-pbold ' style={{ color: interactions.upvotes.alreadyPressed ? Colors.secondary : Colors.mainGray }}>{ interactions.upvotes.count }</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity  onPress={()=> handleInteraction('downvotes',dialogue) } >
                         <View className='flex-row gap-1 justify-center items-center'>
-                            <ThumbsDown size={18}  color={ already.downvotes ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
-                            <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvotes ? Colors.secondary : Colors.mainGray }}>{ dialogue.downvotes }</Text>
+                            <ThumbsDown size={18}  color={ interactions.downvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                            <Text  className='text-xs font-pbold text-mainGray' style={{ color: interactions.downvotes.alreadyPressed ? Colors.secondary : Colors.mainGray }}>{ interactions.downvotes.count }</Text>
                         </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>handleComment(dialogue)} disabled={disableCommentsModal} >
@@ -188,8 +194,8 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=> handleInteraction('reposts',dialogue) } >
                         <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <RepostIcon className='' size='14'  color={ already.reposts ? Colors.secondary :  Colors.mainGray}/>
-                            <Text className='text-xs font-pbold text-gray-400  'style={{ color: already.reposts ? Colors.secondary : Colors.mainGray }}> {dialogue.reposts}</Text>
+                            <RepostIcon className='' size='14'  color={ interactions.reposts.alreadyPressed ? Colors.secondary :  Colors.mainGray}/>
+                            <Text className='text-xs font-pbold text-gray-400  'style={{ color: interactions.reposts.alreadyPressed ? Colors.secondary : Colors.mainGray }}> {interactions.reposts.count}</Text>
                         </View>
 
                         </TouchableOpacity>
@@ -202,6 +208,18 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         </View>
                             
                     </View>
+                    <View className='flex-row gap-3  item-center justify-center' >
+                { dialogue.mentions && dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (
+                    <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
+                        <Image
+                            source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
+                            contentFit='cover'
+                            style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
+                        />
+                    </TouchableOpacity>
+                ) ) 
+                }
+                </View>
                 </View>
                 
             </View>

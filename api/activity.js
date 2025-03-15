@@ -15,3 +15,21 @@ export const addActivity = async ( activityData ) => {
         console.log(err)
     }
 }
+
+export const likeActivity = async (data) => {
+    try {
+        const request = await fetch (`${nodeServer.currentIP}/activity/interact`, {
+            method : 'POST',
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        const response = await request.json();
+        console.log('response', response)
+        return response
+    } catch (err){
+        console.log(err)
+        
+    }
+}

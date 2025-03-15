@@ -68,7 +68,7 @@ const Notification = () => {
             console.log('flatlist item', item)
             
             return (
-            <TouchableOpacity className='w-full' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:80, gap:15, opacity: item.isRead ? 0.5 : 1  }}>
+            <TouchableOpacity className='w-full' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: item.isRead ? 0.5 : 1  }}>
               <View className='flex-row gap-2 justify-between items-center'>
                 <View className='flex-row gap-2 justify-center items-center'>
                   <Image 

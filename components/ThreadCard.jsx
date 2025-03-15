@@ -112,13 +112,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         {/* <View className='flex-row gap-5 justify-center items-center'>
                             
                         </View> */}
-                        <TouchableOpacity onPress={()=> handlePress(thread)} >
-                            <Image
-                                source = {{ uri : thread.movie ? `${posterURL}${thread.movie.posterPath}` : thread.tv ? `${posterURL}${thread.tv.posterPath}` : thread.castCrew && `${posterURL}${thread.castCrew.posterPath}` }}
-                                contentFit='cover'
-                                style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
-                            />
-                        </TouchableOpacity>
+                       
                         <View className='relative flex-row gap-5 justify-center items-center' >
                         <TouchableOpacity onPress={()=>handleInteraction('upvotes',thread)} >
                                 <View className='flex-row gap-2 justify-center items-center'>
@@ -148,6 +142,13 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                             </View>
                             </TouchableOpacity>
                         </View>
+                        <TouchableOpacity onPress={()=> handlePress(thread)} >
+                            <Image
+                                source = {{ uri : thread.movie ? `${posterURL}${thread.movie.posterPath}` : thread.tv ? `${posterURL}${thread.tv.posterPath}` : thread.castCrew && `${posterURL}${thread.castCrew.posterPath}` }}
+                                contentFit='cover'
+                                style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
+                            />
+                        </TouchableOpacity>
                             
                     </View>
           </View>

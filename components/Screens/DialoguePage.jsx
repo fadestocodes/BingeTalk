@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform , ActivityIndicator} from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform , ActivityIndicator, RefreshControl} from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { Image } from 'expo-image'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -158,7 +158,16 @@ const DialogueScreen = () => {
     <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
      
         <>
-        <ScrollView className='bg-primary pt-12  relative ' >
+        <ScrollView className='bg-primary pt-12  relative ' 
+            refreshControl={
+                <RefreshControl
+                    tintColor={Colors.secondary}
+                    refreshing={isFetching}
+                    onRefresh={refetch}
+                />
+
+            }
+        >
 
         <View style={{gap:10, marginVertical:10, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
           <View className='gap-3' >
