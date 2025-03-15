@@ -16,6 +16,7 @@ const ListCard = ({ list:item , activity, fromHome}) => {
     const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
+    console.log('LIST', item)
 
 
     const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
@@ -89,7 +90,7 @@ const ListCard = ({ list:item , activity, fromHome}) => {
 
                             <View style={{ flexDirection:'row', gap:10}} >
                         { item.listItem.slice(0,5).map( (element, index) => {
-                        // console.log('EACH ELEMENT', element)
+                        console.log('EACH ELEMENT', element)
                         return (
 
                             <View key={index} className='flex-row gap-2' > 

@@ -40,7 +40,6 @@ const homeIndex = () => {
     const [ feedCursor, setFeedCursor ] = useState(null);
     const [ threadCursor, setThreadCursor ] = useState(null);
     const [ unreadNotifs, setUnreadNotifs ]  = useState([])
-    const [ trigger, setTrigger ] = useState(true)
     const getFeed = async () => {
         // if (!hasMoreFeed ) return
         try {
@@ -276,10 +275,10 @@ const homeIndex = () => {
         // )}}
 
         renderItem={({item}) => {
-          console.log('item ', item)
+          // console.log('item ', item)
 
           return (
-          <ActivityCard activity={item}  />
+          <ActivityCard activity={item} refetch={refetchFeed} />
         )}}
       />
 

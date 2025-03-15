@@ -2,8 +2,8 @@ import { StyleSheet, Text, View , TouchableOpacity} from 'react-native'
 import React from 'react'
 import { Image } from 'expo-image'
 import { Colors } from '../constants/Colors'
-import { MessageIcon, ThreeDotsIcon, RepostIcon } from '../assets/icons/icons'
-import { ThumbsUp, ThumbsDown, Heart, MessagesSquare, MessageSquare } from 'lucide-react-native'
+import { MessageIcon, ThreeDotsIcon, RepostIcon, ProgressCheckIcon } from '../assets/icons/icons'
+import { ThumbsUp, ThumbsDown, Heart, MessagesSquare, MessageSquare, ListChecks , Star, Eye} from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { formatDate } from '../lib/formatDate'
 import { toPascalCase } from '../lib/ToPascalCase'
@@ -11,13 +11,15 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
 import { threadInteraction } from '../api/thread'
 import ListCard from './ListCard'
+import { likeActivity } from '../api/activity'
+import { dialogueInteraction } from '../api/dialogue'
 
 const ActivityCard = ( { activity, refetch } ) => {
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const { user : clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
 
 
     const alreadyUpvotedThread = activity?.threads?.threadInteractions?.some( thread => thread.interactionType === 'UPVOTE' && thread.userId === ownerUser.id )
@@ -39,16 +41,97 @@ const ActivityCard = ( { activity, refetch } ) => {
         router.push(`/(home)/user/${item.id}`)
       }
 
-      const handleInteraction =  async (type, thread) => {
-        console.log('type', type)
-        const data = {
-            type,
-            threadId : Number(thread.id),
-            userId : ownerUser.id
+      const handleInteraction =  async (type, item) => {
+        console.log('typeinteraction', type, item)
+        if (item.threads){
+            console.log('hello 1')
+            let description;
+            const truncatedTitle = item.threads.title.length > 30 ? item.threads.title.slice(0, 30) + '...' : item.threads.title
+            if ( type === 'upvotes' ){
+                description = `upvoted your thread "${truncatedTitle}"`
+            } else if (type === 'downvotes'){
+                description = `downvoted your thread "${truncatedTitle}"`
+            }else  if ( type === 'reposts' ){
+                description = `reposted your thread "${truncatedTitle}"`
+            }
+            const data = {
+                type,
+                threadId : Number(item.id),
+                userId : ownerUser.id,
+                recipientId : item.user.id,
+                description 
+            }
+            console.log('data', data)
+            const updatedThread = await threadInteraction(data)
+            console.log('response from thread interaction', updatedThread)
+            refetch();
+        } else if (item.type === 'thread' || item.threadInteractions){
+            console.log('hello 2')
+            const truncatedTitle = item.title.length > 30 ? item.title.slice(0, 30) + '...' : item.title
+            let description
+            if ( type === 'upvotes' ){
+                description = `upvoted your thread "${truncatedTitle}"`
+            } else if (type === 'downvotes'){
+                description = `downvoted your thread "${truncatedTitle}"`
+            }else if ( type === 'reposts' ){
+                description = `reposted your thread "${truncatedTitle}"`
+            }
+            const data = {
+                type,
+                threadId : Number(item.id),
+                userId : ownerUser.id,
+                recipientId : item.user.id,
+                description 
+            }
+            console.log('data', data)
+            const updatedThread = await threadInteraction(data)
+            console.log('response from thread interaction', updatedThread)
+            refetch();
+        }else if (item.dialogue) {
+            console.log('hello 3')
+            const truncatedCaption =  item.dialogue.content.length > 30 ? item.dialogue.content.slice(0, 30) + '...' : item.dialogue.content
+            let description
+            if ( type === 'upvotes' ){
+                description = `upvoted your thread "${truncatedCaption}"`
+            } else if (type === 'downvotes'){
+                description = `downvoted your thread "${truncatedCaption}"`
+            }else  if ( type === 'reposts' ){
+                description = `reposted your thread "${truncatedCaption}"`
+            }
+            const data = {
+                type,
+                dialogueId : Number(item.id),
+                userId : ownerUser.id,
+                recipientId : item.user.id,
+                description 
+            }
+            console.log('data', data)
+            const updatedDialogue = await dialogueInteraction(data)
+            console.log('response from dialouge interaction', updatedDialogue)
+            refetch();
+        } else if (item.type === 'dialogue' || item.dialogueInteractions){
+            console.log('hello 4')
+            const truncatedCaption = item.content.length > 50 ? item.content.slice(0, 50) + '...' : item.content
+            let description
+            if ( type === 'upvotes' ){
+                description = `upvoted your thread "${truncatedCaption}"`
+            } else if (type === 'downvotes'){
+                description = `downvoted your thread "${truncatedCaption}"`
+            }else  if ( type === 'reposts' ){
+                description = `reposted your thread "${truncatedCaption}"`
+            }
+            const data = {
+                type,
+                dialogueId : Number(item.id),
+                userId : ownerUser.id,
+                recipientId : item.user.id,
+                description 
+            }
+            console.log('data', data)
+            const updatedDialogue = await dialogueInteraction(data)
+            console.log('response from dialoge interaction', updatedDialogue)
+            refetch();
         }
-        const updatedDialogue = await threadInteraction(data)
-
-        refetch();
     }
 
 
@@ -73,14 +156,32 @@ const ActivityCard = ( { activity, refetch } ) => {
             }
         }
     }
+    const handleLike = async (item) => {
+        const likeData = {
+          userId : ownerUser.id,
+          activityId : item.id,
+          recipientId : item.user.id,
+          description : `liked your activity "${item.description || ''}"`
+        }
+        console.log('data to handle like', likeData)
+        const likedActivity = await likeActivity(likeData)
+        console.log('liekdactivty', likedActivity)
+        // setData()
+        // setTrigger(prev => !prev)
+        // setData(  )
+        refetchOwner()
+        await refetch()
+      } 
 
     const imagePaths =  activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.rating?.movie?.backdropPath || activity?.rating?.tv?.backdropPath 
 
   return (
 <>
 
-    { activity.type === 'list' ? (
-        <ListCard list={activity.list} activity={activity.description} fromHome={true} />
+    { activity.activityType === 'LIST' ? (
+        <View>
+            <ListCard list={activity.list} activity={activity.description} fromHome={true} />
+        </View>
     ): activity.type === 'thread' ?(
         <TouchableOpacity onPress={()=>console.log('THREAD FROM WATCHED ITEM', activity)}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:15}}>
              <View className="flex-row justify-between gap-2">
@@ -112,13 +213,13 @@ const ActivityCard = ( { activity, refetch } ) => {
       />
       <View className='flex-row  justify-between w-full items-end '>
           <View className='relative flex-row gap-5 justify-center items-center' >
-          <TouchableOpacity onPress={()=>handleInteraction('upvotes',activity?.threads || activity?.dialogue)} >
+          <TouchableOpacity onPress={()=>{console.log("FROM HERE");handleInteraction('upvotes',activity )}} >
                   <View className='flex-row gap-2 justify-center items-center'>
                       <ThumbsUp size={16} color={ alreadyUpvotedThread ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
                       <Text className='text-xs font-pbold text-mainGray' style={{ color: alreadyUpvotedThread ? Colors.secondary : Colors.mainGray }}>{ activity.upvotes || ''}</Text>
                   </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={()=>handleInteraction('downvotes',activity?.threads || activity?.dialogue)} >
+              <TouchableOpacity onPress={()=>handleInteraction('downvotes',activity)} >
               <View className='flex-row gap-2 justify-center items-center'>
                   <ThumbsDown size={18} color={ alreadyDownvotedThread ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
                   <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvotedThread ? Colors.secondary : Colors.mainGray }}>{ activity.downvotes || '' }</Text>
@@ -128,7 +229,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                   <MessageIcon   className='' size='18' color={Colors.mainGray} />
                   <Text className='text-xs font-pbold text-gray-400  '> {activity.comments.length || ''}</Text>
               </View>
-              <TouchableOpacity onPress={()=>handleInteraction('reposts',activity?.threads || activity?.dialogue)} >
+              <TouchableOpacity onPress={()=>handleInteraction('reposts',activity)} >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
                   <RepostIcon className='' size='14' color={ alreadyRepostedThread ? Colors.secondary :  Colors.mainGray}/>
                   <Text className='text-xs font-pbold text-gray-400  ' style={{ color: alreadyRepostedThread ? Colors.secondary : Colors.mainGray }}> {activity.reposts || ''}</Text>
@@ -234,7 +335,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                    <Text className='  text-mainGrayDark'>{formatDate(activity.createdAt)}</Text>
                </View>
               
-               <View className='flex-row gap-2 justify-center items-center '>
+               <View className='flex-row gap-2 justify-center items-center px-4 '>
                  <MessagesSquare size={18} color={Colors.secondary} />
                  <Text className='text-mainGray'>{activity.user.firstName} {activity.description}</Text>
                </View>
@@ -254,11 +355,17 @@ const ActivityCard = ( { activity, refetch } ) => {
         </View>
 
         ) }
+        
         </>
     ) : (
         <>
-        <View className='flex-row gap-2 justify-center items-center  '>
-            <MessagesSquare size={18} color={Colors.secondary} />
+        <View className='flex-row gap-2 justify-center items-center px-4 '>
+
+            {/* { activity.activtyType === 'WATCHLIST' ? <ListChecks size={18} color={Colors.secondary} /> : activity.activityType === 'CURRENTLY_WATCHING' ?  } */}
+            { activity.activityType === 'RATING' ? <Star size={18} color={Colors.secondary} /> : activity.activityType === 'DIALOGUE' ? <MessageSquare size={18} color={Colors.secondary} /> :
+                  activity.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : activity.activityType==='WATCHLIST' ? <ListChecks size={18} color={Colors.secondary} /> :
+                  activity.activityType === 'LIKE' ? <Heart size={18} color={Colors.secondary} /> : activity.activityType === 'UPVOTE' ? <ThumbsUp size={18} color={Colors.secondary} /> : 
+                  activity.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary}  /> : activity.activityType === 'WATCHED' && <Eye size={18} color={Colors.secondary} /> }
             <Text className='text-mainGray'>{activity.user.firstName} {activity.description}</Text>
         </View>
         {imagePaths && (
@@ -326,7 +433,7 @@ const ActivityCard = ( { activity, refetch } ) => {
 
     ) : (
         <View className='w-full flex-start items-start flex-row gap-2'>
-                  <TouchableOpacity onPress={()=>handleLike(item)} style={{ flexDirection:'row', gap:5, alignItems:'center', justifyContent:'center' }}>
+                  <TouchableOpacity onPress={()=>handleLike(activity)} style={{ flexDirection:'row', gap:5, alignItems:'center', justifyContent:'center' }}>
                     <Heart size={20} strokeWidth={2.5} color={ alreadyLikedActivity ? Colors.secondary : Colors.mainGray}></Heart>
                   <Text className='text-mainGray text-xs font-pbold'>{activity.likes}</Text>
                   </TouchableOpacity>

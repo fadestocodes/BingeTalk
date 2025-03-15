@@ -6,7 +6,7 @@ import { useFetchOwnerUser } from '../../../../api/user'
 import { useGetAllNotifs, markNotifRead } from '../../../../api/notification'
 import { Colors } from '../../../../constants/Colors'
 import { formatDate } from '../../../../lib/formatDate'
-import { Star, ListChecks, MessagesSquare, MessageSquare } from 'lucide-react-native'
+import { Star, ListChecks, MessagesSquare, MessageSquare, Heart, ThumbsUp, ThumbsDown } from 'lucide-react-native'
 import { ProgressCheckIcon } from '../../../../assets/icons/icons'
 
 
@@ -80,9 +80,11 @@ const Notification = () => {
                 </View>
                 <Text className='text-mainGrayDark'>{ formatDate(item.createdAt)}</Text>
               </View>
-              <View className='flex-row gap-2 justify-center items-center'>
-              { item.rating ? <Star size={18} color={Colors.secondary} /> : item.dialogueId ? <MessageSquare size={18} color={Colors.secondary} /> :
-                  item.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : item.activityType==='WATCHLIST' && <ListChecks size={18} color={Colors.secondary} />  }
+              <View className='flex-row gap-3 justify-center items-center px-4'>
+              { item.activityType === 'RATING' ? <Star size={18} color={Colors.secondary} /> : item.activityType === 'DIALOGUE' ? <MessageSquare size={18} color={Colors.secondary} /> :
+                  item.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : item.activityType==='WATCHLIST' ? <ListChecks size={18} color={Colors.secondary} /> :
+                  item.activityType === 'LIKE' ? <Heart size={18} color={Colors.secondary} /> : item.activityType === 'UPVOTE' ? <ThumbsUp size={18} color={Colors.secondary} /> : 
+                  item.activityType === 'DOWNVOTE' && <ThumbsDown size={18} color={Colors.secondary} /> }
                 <Text className='text-mainGray'>{item.user.firstName} {item.description}</Text>
               </View>
             </TouchableOpacity>

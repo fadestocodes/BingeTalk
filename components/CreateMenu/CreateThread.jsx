@@ -145,6 +145,7 @@
                         onChangeText={(text)=> setInputs(prev => ({ ...prev, title : text }))}
                         maxLength={150}
                         multiline
+                        autoCapitalize='sentences'
                         value={inputs.title}
                         style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 90 : 50, paddingBottom:40 , borderTopLeftRadius: 15, borderTopRightRadius:15}}
                     />
