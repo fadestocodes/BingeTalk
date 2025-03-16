@@ -18,6 +18,9 @@ import { useFetchDialogues } from '../api/dialogue'
 import { useFetchUser } from '../api/user'
 import { followUser, unfollowUser } from '../api/user'
 import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'; // Example icons
+import { useGetProfileFeed } from '../api/feed'
+import ThreadCard from './ThreadCard'
+import ListCard from './ListCard'
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
 
@@ -50,6 +53,8 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
         const { data:ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
         const isOwnersProfilePage = user.id === ownerUser.id
         const [ isFollowing, setIsFollowing ] = useState(null)
+        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading } = useGetProfileFeed(user.id, 10)
+        console.log('THE FIRST ITEM',profileDialogues[0])
 
         useEffect(()=>{
             // const checkFollow = ownerUser.following.some( item => item.followingId === user.id );
@@ -131,7 +136,7 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
    
     <View className='w-full h-full bg-primary'>
         <FlatList
-            data={dialogues}
+            data={profileDialogues}
             refreshControl={
                 <RefreshControl
                 tintColor={Colors.secondary}
@@ -139,8 +144,14 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
                 onRefresh={()=>{refetch(); refetchUser()}} 
                 />
                 }
+            onEndReached={()=> {
+                if (hasMore.dialogue || hasMore.thread || hasMore.list){
+                    refetchProfileFeed()
+                }
+            }}
+            onEndReachedThreshold={0.3}
             keyboardShouldPersistTaps="handled" 
-            keyExtractor={ (item) => item.id }
+            keyExtractor={ (item,index) => index }
             ListHeaderComponent={(
                
                 <View className='justify-center items-center flex gap-3 ' style={{  marginTop:0, overflow:'hidden'}}>
@@ -264,12 +275,29 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
                 </View>
             )}
             contentContainerStyle={{gap:15}}
-            renderItem={({item}) => (
-            
-                <TouchableOpacity key={item.id} onPress={()=>handleDialoguePress(item)}  style={{ paddingHorizontal:15 }}>
-                    <DialogueCard  dialogue={item} refetch={refetch} isBackground={true} />
-                </TouchableOpacity>
-            ) }
+            renderItem={({item}) => {
+                console.log("FLATLISTITEM", item)
+            return (
+                <>
+                { item?.threadInteractions ? (
+                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleDialoguePress(item)}}  style={{ paddingHorizontal:15 }}>
+                        <ThreadCard  thread={item} refetch={refetch} isBackground={true} />
+                    </TouchableOpacity>
+
+                ) : item?.dialogueInteractions ? (
+
+                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleDialoguePress(item)}}  style={{ paddingHorizontal:15 }}>
+                        <DialogueCard  dialogue={item} refetch={refetch} isBackground={true} />
+                    </TouchableOpacity>
+
+                ) : item?.listInteractions &&  (
+                
+                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleDialoguePress(item)}}  style={{ paddingHorizontal:15 }}>
+                        <ListCard  list={item} refetch={refetch}  />
+                    </TouchableOpacity>
+                )} 
+                </>
+            ) }}
             >
     
     
