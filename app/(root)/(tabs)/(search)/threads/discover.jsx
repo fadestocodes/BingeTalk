@@ -47,7 +47,7 @@ const DiscoverDialogues = () => {
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
-                    console.log('flatlist item', item.id)
+                    // console.log('flatlist item', item.id)
                 return (
                     <TouchableOpacity onPress={()=>router.push(`/threads/${item.id}`)} >  
                         <ThreadCard isBackground={true} thread={item} showThreadTopic={true} />

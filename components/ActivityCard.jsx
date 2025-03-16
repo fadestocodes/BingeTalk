@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View , TouchableOpacity} from 'react-native'
-import React from 'react'
+import React, {act, useState} from 'react'
 import { Image } from 'expo-image'
 import { Colors } from '../constants/Colors'
 import { MessageIcon, ThreeDotsIcon, RepostIcon, ProgressCheckIcon } from '../assets/icons/icons'
@@ -21,6 +21,13 @@ const ActivityCard = ( { activity, refetch } ) => {
     const { user : clerkUser } = useUser()
     const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
 
+    const [ interactionCounts, setInteractionCounts ] = useState({
+        likes : activity.likes || null,
+        upvotes : activity?.upvotes || activity?.dialogue?.upvotes || activity?.threads?.upvotes || null,
+        downvotes : activity?.downvotes || activity?.dialogue?.downvotes || activity?.threads?.downvotes || null,
+        reposts : activity?.reposts || activity?.dialogue?.reposts || activity?.threads?.reposts || null,
+    })
+
 
     const alreadyUpvotedThread = activity?.threads?.threadInteractions?.some( thread => thread.interactionType === 'UPVOTE' && thread.userId === ownerUser.id )
     || activity?.threadInteractions?.some( thread => thread.interactionType === 'UPVOTE' && thread.userId === ownerUser.id )
@@ -35,6 +42,13 @@ const ActivityCard = ( { activity, refetch } ) => {
 
     const alreadyLikedActivity = ownerUser?.activityInteractions.some( interaction => interaction.activityId === activity.id  )
 
+    const [ already, setAlready ] = useState({
+        upvoted : alreadyUpvotedThread || alreadyUpvotedDialogue,
+        downvoted : alreadyDownvotedThread || alreadyDownvotedDialogue,
+        reposted : alreadyRepostedThread || alreadyRepostedDialogue,
+        liked : alreadyLikedActivity
+    })
+
 
 
     const handleUserPress = (item) => {
@@ -43,16 +57,42 @@ const ActivityCard = ( { activity, refetch } ) => {
 
       const handleInteraction =  async (type, item) => {
         console.log('typeinteraction', type, item)
+        if (type === 'upvotes'){
+            if (already.upvoted){
+                setInteractionCounts( prev => ({...prev, upvotes : prev.upvotes - 1}) )
+            } else {
+                setInteractionCounts( prev => ({...prev, upvotes : prev.upvotes + 1}) )
+            }
+            setAlready( prev => ({...prev, upvoted : !prev.upvoted}) )
+        } else if (type === 'downvotes'){
+            if (already.downvoted){
+                setInteractionCounts( prev => ({...prev, downvotes : prev.downvotes - 1}) )
+            } else {
+                setInteractionCounts( prev => ({...prev, downvotes : prev.downvotes + 1}) )
+            }
+            setAlready( prev => ({...prev, downvoted : !prev.downvoted}) )
+        } else if (type === 'reposts'){
+            if (already.reposted){
+                setInteractionCounts( prev => ({...prev, reposts : prev.reposts - 1}) )
+            } else {
+                setInteractionCounts( prev => ({...prev, reposts : prev.reposts + 1}) )
+            }
+            setAlready( prev => ({...prev, reposted : !prev.reposted}) )
+        }
+
         if (item.threads){
             console.log('hello 1')
             let description;
-            const truncatedTitle = item.threads.title.length > 30 ? item.threads.title.slice(0, 30) + '...' : item.threads.title
+            const truncatedTitle = item.threads.title.length > 50 ? item.threads.title.slice(0, 50) + '...' : item.threads.title
             if ( type === 'upvotes' ){
                 description = `upvoted your thread "${truncatedTitle}"`
+                
             } else if (type === 'downvotes'){
                 description = `downvoted your thread "${truncatedTitle}"`
+               
             }else  if ( type === 'reposts' ){
                 description = `reposted your thread "${truncatedTitle}"`
+               
             }
             const data = {
                 type,
@@ -64,17 +104,20 @@ const ActivityCard = ( { activity, refetch } ) => {
             console.log('data', data)
             const updatedThread = await threadInteraction(data)
             console.log('response from thread interaction', updatedThread)
-            refetch();
+            // refetch();
         } else if (item.type === 'thread' || item.threadInteractions){
             console.log('hello 2')
-            const truncatedTitle = item.title.length > 30 ? item.title.slice(0, 30) + '...' : item.title
+            const truncatedTitle = item.title.length > 50 ? item.title.slice(0, 50) + '...' : item.title
             let description
             if ( type === 'upvotes' ){
                 description = `upvoted your thread "${truncatedTitle}"`
+               
             } else if (type === 'downvotes'){
                 description = `downvoted your thread "${truncatedTitle}"`
+               
             }else if ( type === 'reposts' ){
                 description = `reposted your thread "${truncatedTitle}"`
+               
             }
             const data = {
                 type,
@@ -86,10 +129,10 @@ const ActivityCard = ( { activity, refetch } ) => {
             console.log('data', data)
             const updatedThread = await threadInteraction(data)
             console.log('response from thread interaction', updatedThread)
-            refetch();
+            // refetch();
         }else if (item.dialogue) {
             console.log('hello 3')
-            const truncatedCaption =  item.dialogue.content.length > 30 ? item.dialogue.content.slice(0, 30) + '...' : item.dialogue.content
+            const truncatedCaption =  item.dialogue.content.length > 50 ? item.dialogue.content.slice(0, 50) + '...' : item.dialogue.content
             let description
             if ( type === 'upvotes' ){
                 description = `upvoted your thread "${truncatedCaption}"`
@@ -108,7 +151,7 @@ const ActivityCard = ( { activity, refetch } ) => {
             console.log('data', data)
             const updatedDialogue = await dialogueInteraction(data)
             console.log('response from dialouge interaction', updatedDialogue)
-            refetch();
+            // refetch();
         } else if (item.type === 'dialogue' || item.dialogueInteractions){
             console.log('hello 4')
             const truncatedCaption = item.content.length > 50 ? item.content.slice(0, 50) + '...' : item.content
@@ -130,33 +173,30 @@ const ActivityCard = ( { activity, refetch } ) => {
             console.log('data', data)
             const updatedDialogue = await dialogueInteraction(data)
             console.log('response from dialoge interaction', updatedDialogue)
-            refetch();
+            // refetch();
         }
     }
 
 
     const handleMentionPress = (mention) => {
         if (mention.movie) {
-            if (fromHome){
                 router.push(`(home)/movie/${mention.tmdbId}`)
-            } else {
-                router.push(`/movie/${mention.tmdbId}`)
-            }
         } else if (mention.tv) {
-            if (fromHome){
                 router.push(`(home)/tv/${mention.tmdbId}`)
-            } else {
-                router.push(`/tv/${mention.tmdbId}`)
-            }
         } else {
-            if (fromHome){
                 router.push(`(home)/cast/${mention.tmdbId}`)
-            } else {
-                router.push(`/cast/${mention.tmdbId}`)
-            }
         }
     }
     const handleLike = async (item) => {
+
+        if (alreadyLikedActivity){
+            setInteractionCounts( prev => ({...prev, likes : prev.likes - 1}) )
+        } else {
+            setInteractionCounts( prev => ({...prev, likes : prev.likes + 1}) )
+        }
+        setAlready( prev => ({...prev, liked : !prev.liked}) )
+
+
         const likeData = {
           userId : ownerUser.id,
           activityId : item.id,
@@ -170,8 +210,37 @@ const ActivityCard = ( { activity, refetch } ) => {
         // setTrigger(prev => !prev)
         // setData(  )
         refetchOwner()
-        await refetch()
+        // await refetch()
       } 
+
+    const handleCardPress = (item) => {
+        if (item.threadInteractions ){
+            router.push(`(home)/threads/${item.id}`)
+        } else if (item.activityType === 'THREAD'){
+            router.push(`/(home)/threads/${item.threads.id}`)
+        } else if ( item.dialogueInteractions ){
+            router.push(`(home)/dialogue/${item.id}`)
+        } else if (item.activityType === 'DIALOGUE'){
+            router.push(`/(home)/dialogue/${item.dialogue.id}`)
+        } 
+    }
+    
+    const handlePosterPress = (item) => {
+        console.log('item pressed',item)
+        if (item?.movie){
+            router.push(`(home)/movie/${item.movie.tmdbId}`)
+        } else if (item?.threads?.movie){
+            router.push(`(home)/movie/${item.threads.movie.tmdbId}`)
+        } else if (item?.tv){
+            router.push(`(home)/tv/${item.tv.tmdbId}`)
+        }else if (item?.threads?.tv){
+            router.push(`(home)/tv/${item.threads.tv.tmdbId}`)
+        } else if (item?.rating?.movie){
+            router.push(`(home)/movie/${item.rating.movie.tmdbId}`)
+        } else if (item?.rating?.tv){
+            router.push(`(home)/tv/${item.rating.tv.tmdbId}`)
+        }
+    }
 
     const imagePaths =  activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.rating?.movie?.backdropPath || activity?.rating?.tv?.backdropPath 
 
@@ -183,16 +252,16 @@ const ActivityCard = ( { activity, refetch } ) => {
             <ListCard list={activity.list} activity={activity.description} fromHome={true} />
         </View>
     ): activity.type === 'thread' ?(
-        <TouchableOpacity onPress={()=>console.log('THREAD FROM WATCHED ITEM', activity)}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:15}}>
+        <TouchableOpacity onPress={()=>handleCardPress(activity)}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:15}}>
              <View className="flex-row justify-between gap-2">
-                 <View className='flex-row gap-2 justify-center items-center'>
+                 <TouchableOpacity onPress={()=>handleUserPress(activity.user)} className='flex-row gap-2 justify-center items-center'>
                          <Image
                            source={{ uri : activity.user.profilePic }}
                            contentFit='cover'
                            style={{ width:30, height:30, borderRadius:50 }}
                          />
                          <Text className='text-mainGrayDark '>@{activity.user.username}</Text>
-                       </View>
+                       </TouchableOpacity>
                      <Text className='  text-mainGrayDark'>{formatDate(activity.createdAt)}</Text>
              </View>
              <View className='flex-row gap-3 justify-start items-center  '>
@@ -204,25 +273,27 @@ const ActivityCard = ( { activity, refetch } ) => {
         ) }
         </View>
         <Text className='text-white text-lg font-pbold leading-6'>{activity.title}</Text>
-        <Image
-        source ={{ uri : `${posterURL}${activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.threads?.movie?.backdropPath || activity?.threads?.tv?.backdropPath}` }}
-        placeholder ={{ uri :  `${posterURL}${activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.threads?.movie?.backdropPath || activity?.threads?.tv?.backdropPath}` }}
-        placeholderContentFit='cover'
-        contentFit='cover'
-        style ={{ width:'100%', height:150, borderRadius:15 }}
-      />
+       
+            <Image
+            source ={{ uri : `${posterURL}${activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.threads?.movie?.backdropPath || activity?.threads?.tv?.backdropPath}` }}
+            placeholder ={{ uri :  `${posterURL}${activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.threads?.movie?.backdropPath || activity?.threads?.tv?.backdropPath}` }}
+            placeholderContentFit='cover'
+            contentFit='cover'
+            style ={{ width:'100%', height:150, borderRadius:15 }}
+        />
+
       <View className='flex-row  justify-between w-full items-end '>
           <View className='relative flex-row gap-5 justify-center items-center' >
           <TouchableOpacity onPress={()=>{console.log("FROM HERE");handleInteraction('upvotes',activity )}} >
                   <View className='flex-row gap-2 justify-center items-center'>
-                      <ThumbsUp size={16} color={ alreadyUpvotedThread ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
-                      <Text className='text-xs font-pbold text-mainGray' style={{ color: alreadyUpvotedThread ? Colors.secondary : Colors.mainGray }}>{ activity.upvotes || ''}</Text>
+                      <ThumbsUp size={16} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                      <Text className='text-xs font-pbold text-mainGray' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{interactionCounts.upvotes}</Text>
                   </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={()=>handleInteraction('downvotes',activity)} >
               <View className='flex-row gap-2 justify-center items-center'>
-                  <ThumbsDown size={18} color={ alreadyDownvotedThread ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
-                  <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvotedThread ? Colors.secondary : Colors.mainGray }}>{ activity.downvotes || '' }</Text>
+                  <ThumbsDown size={18} color={ already.downvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
+                  <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
               </View>
               </TouchableOpacity>
               <View className='flex-row  justify-center items-center   ' style={{height:'auto', borderColor:Colors.mainGray}}>
@@ -231,8 +302,8 @@ const ActivityCard = ( { activity, refetch } ) => {
               </View>
               <TouchableOpacity onPress={()=>handleInteraction('reposts',activity)} >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <RepostIcon className='' size='14' color={ alreadyRepostedThread ? Colors.secondary :  Colors.mainGray}/>
-                  <Text className='text-xs font-pbold text-gray-400  ' style={{ color: alreadyRepostedThread ? Colors.secondary : Colors.mainGray }}> {activity.reposts || ''}</Text>
+                  <RepostIcon className='' size='14' color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                  <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
               </View>
               </TouchableOpacity>
               <TouchableOpacity   >
@@ -260,21 +331,21 @@ const ActivityCard = ( { activity, refetch } ) => {
     </TouchableOpacity>
     ) : (
 
-    <TouchableOpacity  onPress={()=>{console.log('PRESSED', activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:15}}>
+    <TouchableOpacity disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }   onPress={()=>handleCardPress(activity)}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:15}}>
 
             
     {/* ---------------header */}
-    <TouchableOpacity onPress={()=>{handleUserPress(activity.user)}} className='flex-row gap-2   items-center justify-between '>
-      <View className='flex-row gap-2 justify-center items-center'>
+    <View   className='flex-row gap-2   items-center justify-between '>
+      <TouchableOpacity onPress={()=>{handleUserPress(activity.user)}} className='flex-row gap-2 justify-center items-center'>
         <Image
           source={{ uri : activity.user.profilePic }}
           contentFit='cover'
           style={{ width:30, height:30, borderRadius:50 }}
         />
         <Text className='text-mainGrayDark '>@{activity.user.username}</Text>
-      </View>
+      </TouchableOpacity>
     <Text className='  text-mainGrayDark'>{formatDate(activity.createdAt)}</Text>
-    </TouchableOpacity>
+    </View>
 
     {/* -----------------body */}
     { activity.activityType === 'DIALOGUE' ? (
@@ -339,6 +410,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                  <MessagesSquare size={18} color={Colors.secondary} />
                  <Text className='text-mainGray'>{activity.user.firstName} {activity.description}</Text>
                </View>
+               <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
                <Image
                  source={{ uri: `${posterURL}${activity?.threads.movie?.backdropPath || activity?.threads.tv?.backdropPath}` }}
                  placeholder={{ uri: `${posterURLlow}${activity?.threads.movie?.backdropPath || activity?.threads.tv?.backdropPath}` }}
@@ -346,10 +418,11 @@ const ActivityCard = ( { activity, refetch } ) => {
                  contentFit='cover'
                  style ={{ width:'100%', height:150, borderRadius:15 }}
                />
+               </TouchableOpacity>
                <View className='w-full flex-start items-start flex-row gap-2 '>
                    <TouchableOpacity onPress={()=>handleLike(activity)} style={{ flexDirection:'row', gap:5, alignItems:'center', justifyContent:'center' }}>
-                     <Heart size={20} strokeWidth={2.5} color={ alreadyLikedActivity ? Colors.secondary : Colors.mainGray}></Heart>
-                   <Text className='text-mainGray text-xs font-pbold'>{activity.likes}</Text>
+                     <Heart size={20} strokeWidth={2.5} color={ already.liked ? Colors.secondary : Colors.mainGray}></Heart>
+                   <Text className='text-mainGray text-xs font-pbold'>{interactionCounts.likes}</Text>
                    </TouchableOpacity>
                  </View>
         </View>
@@ -369,6 +442,7 @@ const ActivityCard = ( { activity, refetch } ) => {
             <Text className='text-mainGray'>{activity.user.firstName} {activity.description}</Text>
         </View>
         {imagePaths && (
+             <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
             <Image
                     source={{ uri: `${posterURL}${imagePaths }` }}
                     placeholder={{ uri: `${posterURLlow}${imagePaths}` }}
@@ -376,6 +450,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                     contentFit='cover'
                     style ={{ width:'100%', height:150, borderRadius:15}}
             />
+            </TouchableOpacity>
         ) }
         </>
     )  }
@@ -389,14 +464,14 @@ const ActivityCard = ( { activity, refetch } ) => {
           <View className='relative flex-row gap-5 justify-center items-center' >
           <TouchableOpacity onPress={()=>handleInteraction('upvotes',activity?.threads || activity?.dialogue)} >
                   <View className='flex-row gap-2 justify-center items-center'>
-                      <ThumbsUp size={16} color={ alreadyUpvotedThread || alreadyUpvotedDialogue ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
-                      <Text className='text-xs font-pbold text-mainGray' style={{ color: alreadyUpvotedThread || alreadyUpvotedDialogue ? Colors.secondary : Colors.mainGray }}>{ activity?.threads?.upvotes || activity?.dialogue?.upvotes || '' }</Text>
+                      <ThumbsUp size={16} color={already.upvoted? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                      <Text className='text-xs font-pbold text-mainGray' style={{ color:already.upvoted? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
                   </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={()=>handleInteraction('downvotes',activity?.threads || activity?.dialogue)} >
               <View className='flex-row gap-2 justify-center items-center'>
-                  <ThumbsDown size={18} color={ alreadyDownvotedThread || alreadyDownvotedDialogue ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
-                  <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvotedThread || alreadyDownvotedDialogue ? Colors.secondary : Colors.mainGray }}>{ activity?.threads?.downvotes || activity?.dialogue?.downvotes || ''}</Text>
+                  <ThumbsDown size={18} color={ already.downvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
+                  <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes}</Text>
               </View>
               </TouchableOpacity>
               <View className='flex-row  justify-center items-center   ' style={{height:'auto', borderColor:Colors.mainGray}}>
@@ -405,8 +480,8 @@ const ActivityCard = ( { activity, refetch } ) => {
               </View>
               <TouchableOpacity onPress={()=>handleInteraction('reposts',activity?.threads || activity?.dialogue)} >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <RepostIcon className='' size='14' color={ alreadyRepostedThread || alreadyRepostedDialogue ? Colors.secondary :  Colors.mainGray}/>
-                  <Text className='text-xs font-pbold text-gray-400  ' style={{ color: alreadyRepostedThread || alreadyRepostedDialogue ? Colors.secondary : Colors.mainGray }}> {activity?.threads?.reposts || activity?.dialogue?.reposts || ''}</Text>
+                  <RepostIcon className='' size='14' color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                  <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
               </View>
               </TouchableOpacity>
               <TouchableOpacity   >
@@ -434,8 +509,8 @@ const ActivityCard = ( { activity, refetch } ) => {
     ) : (
         <View className='w-full flex-start items-start flex-row gap-2'>
                   <TouchableOpacity onPress={()=>handleLike(activity)} style={{ flexDirection:'row', gap:5, alignItems:'center', justifyContent:'center' }}>
-                    <Heart size={20} strokeWidth={2.5} color={ alreadyLikedActivity ? Colors.secondary : Colors.mainGray}></Heart>
-                  <Text className='text-mainGray text-xs font-pbold'>{activity.likes}</Text>
+                    <Heart size={20} strokeWidth={2.5} color={ already.liked ? Colors.secondary : Colors.mainGray}></Heart>
+                  <Text className='text-mainGray text-xs font-pbold'>{interactionCounts.likes}</Text>
                   </TouchableOpacity>
                 </View>
     ) }

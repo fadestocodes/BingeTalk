@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl,  } from 'react-native'
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import { homeCategories } from '../../../../lib/CategoryOptions'
 import { Colors } from '../../../../constants/Colors';
 import { useGetFeed } from '../../../../api/feed';
@@ -40,6 +40,9 @@ const homeIndex = () => {
     const [ feedCursor, setFeedCursor ] = useState(null);
     const [ threadCursor, setThreadCursor ] = useState(null);
     const [ unreadNotifs, setUnreadNotifs ]  = useState([])
+    const flatListRef = useRef(null);
+    const [scrollPosition, setScrollPosition] = useState(0);
+
     const getFeed = async () => {
         // if (!hasMoreFeed ) return
         try {
@@ -53,7 +56,7 @@ const homeIndex = () => {
         if (!hasMoreFeed && !hasMoreThreads)return 
         try {
             setLoading(true);
-            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=5&feedCursor=${feedCursor}&threadCursor=${threadCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}`);
+            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}`);
             const response = await request.json();
             setData( prev => [ ...prev, ...response.items ] );
             setFeedCursor(response.nextFeedCursorServer)
@@ -71,7 +74,8 @@ const homeIndex = () => {
     const refetchFeed = async () => {
       try {
         setLoading(true);
-        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=5&feedCursor=null&threadCursor=null&hasMoreFeed=true&hasMoreThreads=true`);
+
+        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=null&threadCursor=null&hasMoreFeed=true&hasMoreThreads=true`);
         const response = await request.json();
         console.log("REFETCH RESPONSE", response)
         setData( response.items );
@@ -80,6 +84,7 @@ const homeIndex = () => {
         // setHasMore(!!response.hasMore)
         setHasMoreFeed(response.hasMoreFeedServer)
         setHasMoreThreads(response.hasMoreThreadsServer)
+
 
     } catch (err) {
         console.log(err)
@@ -181,9 +186,12 @@ const homeIndex = () => {
         keyExtractor={(item,index) => index}
         contentContainerStyle={{gap:10, }}
         onEndReached={()=>{
+          if (hasMoreFeed || hasMoreThreads){
             getFeed()
+          }
         }}
         onEndReachedThreshold={0}
+      
         // renderItem={({item}) => {
         //   // console.log('flatlist item', item)
         //   const alreadyLikedActivity = ownerUser.activityInteractions.some( interaction => interaction.activityId === item.id  )
@@ -275,8 +283,6 @@ const homeIndex = () => {
         // )}}
 
         renderItem={({item}) => {
-          // console.log('item ', item)
-
           return (
           <ActivityCard activity={item} refetch={refetchFeed} />
         )}}

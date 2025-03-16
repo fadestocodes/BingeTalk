@@ -7,7 +7,8 @@ import { useGetAllNotifs, markNotifRead } from '../../../../api/notification'
 import { Colors } from '../../../../constants/Colors'
 import { formatDate } from '../../../../lib/formatDate'
 import { Star, ListChecks, MessagesSquare, MessageSquare, Heart, ThumbsUp, ThumbsDown } from 'lucide-react-native'
-import { ProgressCheckIcon } from '../../../../assets/icons/icons'
+import { ProgressCheckIcon, RepostIcon } from '../../../../assets/icons/icons'
+import { useRouter } from 'expo-router'
 
 
 const Notification = () => {
@@ -15,6 +16,7 @@ const Notification = () => {
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
   const { data : notifications, loading , hasMore, refetch} = useGetAllNotifs(ownerUser.id, 10);
   console.log('notfications', notifications)
+  const router = useRouter()
   
   
   
@@ -31,6 +33,16 @@ const Notification = () => {
   // if (loading){
   //   return <ActivityIndicator />
   // }
+
+  const handlePress = (item) => {
+    console.log('notif', item)
+    if (item?.dialogueId){
+      router.push(`/dialogue/${item.dialogueId}`)
+    } else if (item.dialogue){
+      router.push
+    }
+
+  }
 
 
   return (
@@ -65,10 +77,10 @@ const Notification = () => {
           onEndReachedThreshold={0}
           contentContainerStyle={{width:'100%',  gap:15}}
           renderItem={({item}) => {
-            console.log('flatlist item', item)
+            // console.log('flatlist item', item)
             
             return (
-            <TouchableOpacity className='w-full' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: item.isRead ? 0.5 : 1  }}>
+            <TouchableOpacity disabled={item.activityType === 'LIKE' || item.activityType === 'FOLLOW'} onPress={()=>handlePress(item)} className='w-full' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: item.isRead ? 0.5 : 1  }}>
               <View className='flex-row gap-2 justify-between items-center'>
                 <View className='flex-row gap-2 justify-center items-center'>
                   <Image 
@@ -84,7 +96,7 @@ const Notification = () => {
               { item.activityType === 'RATING' ? <Star size={18} color={Colors.secondary} /> : item.activityType === 'DIALOGUE' ? <MessageSquare size={18} color={Colors.secondary} /> :
                   item.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : item.activityType==='WATCHLIST' ? <ListChecks size={18} color={Colors.secondary} /> :
                   item.activityType === 'LIKE' ? <Heart size={18} color={Colors.secondary} /> : item.activityType === 'UPVOTE' ? <ThumbsUp size={18} color={Colors.secondary} /> : 
-                  item.activityType === 'DOWNVOTE' && <ThumbsDown size={18} color={Colors.secondary} /> }
+                  item.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary} />  : item.activityType === 'REPOST' && <RepostIcon size={18} color={Colors.secondary} />}
                 <Text className='text-mainGray'>{item.user.firstName} {item.description}</Text>
               </View>
             </TouchableOpacity>
