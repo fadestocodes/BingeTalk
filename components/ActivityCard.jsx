@@ -135,11 +135,11 @@ const ActivityCard = ( { activity, refetch } ) => {
             const truncatedCaption =  item.dialogue.content.length > 50 ? item.dialogue.content.slice(0, 50) + '...' : item.dialogue.content
             let description
             if ( type === 'upvotes' ){
-                description = `upvoted your thread "${truncatedCaption}"`
+                description = `upvoted your dialogue "${truncatedCaption}"`
             } else if (type === 'downvotes'){
-                description = `downvoted your thread "${truncatedCaption}"`
+                description = `downvoted your dialogue "${truncatedCaption}"`
             }else  if ( type === 'reposts' ){
-                description = `reposted your thread "${truncatedCaption}"`
+                description = `reposted your dialogue "${truncatedCaption}"`
             }
             const data = {
                 type,
@@ -157,11 +157,11 @@ const ActivityCard = ( { activity, refetch } ) => {
             const truncatedCaption = item.content.length > 50 ? item.content.slice(0, 50) + '...' : item.content
             let description
             if ( type === 'upvotes' ){
-                description = `upvoted your thread "${truncatedCaption}"`
+                description = `upvoted your dialogue "${truncatedCaption}"`
             } else if (type === 'downvotes'){
-                description = `downvoted your thread "${truncatedCaption}"`
+                description = `downvoted your dialogue "${truncatedCaption}"`
             }else  if ( type === 'reposts' ){
-                description = `reposted your thread "${truncatedCaption}"`
+                description = `reposted your dialogue "${truncatedCaption}"`
             }
             const data = {
                 type,
@@ -249,7 +249,7 @@ const ActivityCard = ( { activity, refetch } ) => {
 
     { activity.activityType === 'LIST' ? (
         <View>
-            <ListCard list={activity.list} activity={activity.description} fromHome={true} />
+            <ListCard list={activity.list} activity={activity.description} fromHome={true}  refetch={refetch}/>
         </View>
     ): activity.type === 'thread' ?(
         <TouchableOpacity onPress={()=>handleCardPress(activity)}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:15}}>

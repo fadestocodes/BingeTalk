@@ -190,7 +190,7 @@ const homeIndex = () => {
             getFeed()
           }
         }}
-        onEndReachedThreshold={0}
+        onEndReachedThreshold={0.3}
       
         // renderItem={({item}) => {
         //   // console.log('flatlist item', item)

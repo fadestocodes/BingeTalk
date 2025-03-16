@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, {useState} from 'react'
 import { ThumbsUp, ThumbsDown, List } from 'lucide-react-native'
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
@@ -10,7 +10,7 @@ import { formatDate } from '../lib/formatDate'
 import { useRouter } from 'expo-router'
 import { listInteraction } from '../api/list'
 
-const ListCard = ({ list:item , activity, fromHome}) => {
+const ListCard = ({ list:item , activity, fromHome, refetch}) => {
 
     const { user:clerkUser } = useUser();
     const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
@@ -21,6 +21,19 @@ const ListCard = ({ list:item , activity, fromHome}) => {
     const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
     const alreadyDownvoted = item.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser.id )
     const alreadyReposted = item.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
+
+    const [ already, setAlready ] = useState({
+        upvoted : alreadyUpvoted,
+        downvoted : alreadyDownvoted,
+        reposted : alreadyReposted
+    })
+
+    const [ interactionCounts, setInteractionCounts ] = useState({
+        upvotes : item.upvotes ,
+        downvotes : item.downvotes ,
+        reposts : item.reposts
+    })
+ 
 
 
     const handleListPress = ( item ) => {
@@ -48,13 +61,48 @@ const ListCard = ({ list:item , activity, fromHome}) => {
 
     const handleInteraction =  async (type, item) => {
         console.log('type', type)
+        if (type === 'upvotes'){
+            setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
+            if (already.upvoted){
+                setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes + 1}))
+            }
+        } else if (type === 'downvotes'){
+            setAlready(prev => ({...prev, downvoted : !prev.downvoted}))
+            if (already.downvoted){
+                setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes + 1}))
+            }
+        } else if (type === 'reposts'){
+            setAlready(prev => ({...prev, reposted : !prev.reposted}))
+            if (already.reposted){
+                setInteractionCounts(prev => ({...prev, reposts : prev.reposts - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, reposts : prev.reposts + 1}))
+            }
+        }
+        let description
+        if ( type === 'upvotes' ){
+            description = `upvoted your list "${item.title}"`
+            
+        } else if (type === 'downvotes'){
+            description = `downvoted your list "${item.title}"`
+           
+        }else  if ( type === 'reposts' ){
+            description = `reposted your list "${item.title}"`
+           
+        }
         const data = {
             type,
             listId : item.id,
-            userId : ownerUser.id
+            userId : ownerUser.id,
+            description,
+            recipientId : item.user.id
         }
         const updatedDialogue = await listInteraction(data)
-        // refetch();
+        refetch();
     }
 
 
@@ -114,14 +162,14 @@ const ListCard = ({ list:item , activity, fromHome}) => {
                             <View className='flex-row gap-5 justify-center items-center'>
                                 <TouchableOpacity onPress={()=> handleInteraction('upvotes',item) } >
                                     <View className='flex-row gap-1 justify-center items-center'>
-                                        <ThumbsUp size={16} color={ alreadyUpvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
-                                        <Text className='text-xs font-pbold ' style={{ color: alreadyUpvoted ? Colors.secondary : Colors.mainGray }}>{ item.upvotes }</Text>
+                                        <ThumbsUp size={16} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                        <Text className='text-xs font-pbold ' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity  onPress={()=> handleInteraction('downvotes',item) } >
                                 <View className='flex-row gap-1 justify-center items-center'>
-                                    <ThumbsDown size={18}  color={ alreadyDownvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
-                                    <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvoted ? Colors.secondary : Colors.mainGray }}>{ item.downvotes }</Text>
+                                    <ThumbsDown size={18}  color={ already.downvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                                    <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                                 </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity>
@@ -134,8 +182,8 @@ const ListCard = ({ list:item , activity, fromHome}) => {
                                 
                                 <TouchableOpacity onPress={()=> handleInteraction('reposts',item) } >
                                 <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                    <RepostIcon className='' size='14'  color={ alreadyReposted ? Colors.secondary :  Colors.mainGray}/>
-                                    <Text className='text-xs font-pbold text-mainGray  'style={{ color: alreadyReposted ? Colors.secondary : Colors.mainGray }}> {item.reposts}</Text>
+                                    <RepostIcon className='' size='14'  color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                                    <Text className='text-xs font-pbold text-mainGray  'style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
                                 </View>
 
                                 </TouchableOpacity>

@@ -64,11 +64,16 @@ const CommentsModalPage = () => {
         console.log(input)
 
         console.log('will try to reate comment')
+        console.log('selcted dialogue', selectedDialogue)
         const commentData = {
             userId : Number(userId),
             dialogueId : Number(dialogueId),
             content : input,
-            parentId : replyingTo ? replyingTo.parentId : null
+            parentId : replyingTo ? replyingTo.parentId : null,
+            replyingToUserId : replyingTo?.user?.id || null,
+            description: `commented on your dialogue "${input}"`,
+            recipientId : selectedDialogue.user.id,
+            replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
         console.log('commentData', commentData)
     
@@ -91,7 +96,8 @@ const CommentsModalPage = () => {
             user : item.user,
             dialogueId : Number(dialogueId),
             content : item.content,
-            parentId
+            parentId,
+
         }
         setReplyingTo(replyingToData)
     }

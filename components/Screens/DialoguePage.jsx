@@ -7,7 +7,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon, RepostIcon, ThreeDotsIcon } from '../../assets/icons/icons'
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
-import { createComment } from '../../api/comments'
+import { createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
@@ -28,6 +28,8 @@ const DialogueScreen = () => {
 
     
 
+    const { replyCommentId } = useLocalSearchParams();
+    
    
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  // Create a ref for the input
@@ -36,22 +38,17 @@ const DialogueScreen = () => {
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     const { user : clerkUser } = useUser();
     const { data: ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const [ commentIdFromNotif, setCommentIdFromNotif ]  = useState(null)
     const userId = ownerUser.id
     const queryClient = useQueryClient();
 
 
-    // console.log('threads array', threads)
-    const [replyTracker, setReplyTracker] = useState({});
-
-
     const { dialogueId, tvId, movieId, castId }= useLocalSearchParams();
-    // const queryClient = useQueryClient();
-
-    // const [ dialogue, setThread ] = useState(null)
 
     const { data: dialogue , refetch, isFetching} = useFetchSingleDialogue(Number(dialogueId))
-    console.log('dialogue from hook', dialogue)
+    const { data: replyCommentFromNotif , loading} = useFetchSingleComment(replyCommentId)
 
+    
 
     
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
@@ -64,21 +61,28 @@ const DialogueScreen = () => {
     }));
 
 
-    if (!dialogue){
+    if (!dialogue || isFetching ){
         return <ActivityIndicator/>
     }
+
+
+
+    if (replyCommentFromNotif){
+        console.log('REPLY COMMENT FROM NOTIF', replyCommentFromNotif)
+        // setCommentIdFromNotif(replyCommentFromNotif.parentId)
+    }
+
+
+    const reorderedComments = [
+        ...dialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
+        ...dialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
+    ]
     
 
    
 
 
 
-    const loadMoreReplies = (commentId) => {
-        setReplyTracker((prevData) => ({
-            ...prevData,
-            [commentId] : ( commentId || 2 ) + 5
-        }));
-    }
 
 
 
@@ -118,9 +122,13 @@ const DialogueScreen = () => {
         console.log('will try to reate comment')
         const commentData = {
             userId : Number(userId),
-            dialogueId : Number(dialogue.id),
+            dialogueId : Number(dialogueId),
             content : input,
-            parentId : replyingTo ? replyingTo.parentId : null
+            parentId : replyingTo?.parentId || null,
+            replyingToUserId : replyingTo?.user?.id || null,
+            description: `commented on your dialogue "${input}"`,
+            recipientId : dialogue.user.id,
+            replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
         console.log('commentData', commentData)
     
@@ -153,7 +161,6 @@ const DialogueScreen = () => {
 
 
 
-
   return (
     <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
      
@@ -171,21 +178,19 @@ const DialogueScreen = () => {
 
         <View style={{gap:10, marginVertical:10, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
           <View className='gap-3' >
-
           <DialogueCard dialogue={dialogue} refetch={refetch} disableCommentsModal={true} />
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
                 { dialogue.comments.length > 0 && (
                     <>
                     <FlatList
-                    data={dialogue.comments}
+                    data={ reorderedComments ? reorderedComments :  dialogue.comments}
                     keyExtractor={(item, index) => index.toString()}
                     scrollEnabled={false}
                     contentContainerStyle={{ paddingBottom: 80 }}
                     renderItem={({ item }) =>{
     
                         const shownReplies = visibleReplies[item.id] || 0;
-                        console.log(item)
                         
                         return (
                         <View>
@@ -229,7 +234,7 @@ const DialogueScreen = () => {
                                 </View>
                             </View>
                         ) }
-    
+
     
                         { item.replies.length > 0 && (
                             <>

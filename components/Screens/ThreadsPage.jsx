@@ -26,7 +26,10 @@ const ThreadsIdPage = () => {
 
     
 
-   
+    const { replyCommentId } = useLocalSearchParams();
+    if (replyCommentId){
+        console.log('REPLYCOMMENTID', replyCommentId)
+    }
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  // Create a ref for the input
     const [ replyingTo, setReplyingTo ] = useState(null)

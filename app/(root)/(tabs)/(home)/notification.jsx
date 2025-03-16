@@ -7,7 +7,7 @@ import { useGetAllNotifs, markNotifRead } from '../../../../api/notification'
 import { Colors } from '../../../../constants/Colors'
 import { formatDate } from '../../../../lib/formatDate'
 import { Star, ListChecks, MessagesSquare, MessageSquare, Heart, ThumbsUp, ThumbsDown } from 'lucide-react-native'
-import { ProgressCheckIcon, RepostIcon } from '../../../../assets/icons/icons'
+import { ProgressCheckIcon, RepostIcon , MessageIcon} from '../../../../assets/icons/icons'
 import { useRouter } from 'expo-router'
 
 
@@ -15,7 +15,7 @@ const Notification = () => {
   const { user : clerkUser } = useUser();
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
   const { data : notifications, loading , hasMore, refetch} = useGetAllNotifs(ownerUser.id, 10);
-  console.log('notfications', notifications)
+  // console.log('notfications', notifications)
   const router = useRouter()
   
   
@@ -36,19 +36,28 @@ const Notification = () => {
 
   const handlePress = (item) => {
     console.log('notif', item)
-    if (item?.dialogueId){
-      router.push(`/dialogue/${item.dialogueId}`)
+    // if (item?.dialogueId){
+    //   router.push(`/dialogue/${item.dialogueId}`)
+    // } else if (item.dialogue){
+    //   router.push
+    // }
+    if (item.parentActivityId){
+      router.push(`/activity/${item.parentActivityId}`)
+    } else if (item.threads){
+      router.push(`/threads/${item.threads.id}?replyCommentId=${item.replyCommentId}`)
     } else if (item.dialogue){
-      router.push
-    }
-
+      router.push(`/dialogue/${item.dialogue.id}?replyCommentId=${item.replyCommentId}`)
+    } else if (item.listId) {
+      router.push(`/list/${item.listId}`)
+    } 
+   
   }
 
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' style={{}}>
      
-    <View className='w-full  pt-3 px-6 gap-5' style={{paddingBottom:200}}>
+    <View className='w-full  pt-3 px-4 gap-5' style={{paddingBottom:200}}>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
 
@@ -80,7 +89,7 @@ const Notification = () => {
             // console.log('flatlist item', item)
             
             return (
-            <TouchableOpacity disabled={item.activityType === 'LIKE' || item.activityType === 'FOLLOW'} onPress={()=>handlePress(item)} className='w-full' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: item.isRead ? 0.5 : 1  }}>
+            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: item.isRead ? 0.6 : 1  }}>
               <View className='flex-row gap-2 justify-between items-center'>
                 <View className='flex-row gap-2 justify-center items-center'>
                   <Image 
@@ -96,8 +105,9 @@ const Notification = () => {
               { item.activityType === 'RATING' ? <Star size={18} color={Colors.secondary} /> : item.activityType === 'DIALOGUE' ? <MessageSquare size={18} color={Colors.secondary} /> :
                   item.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : item.activityType==='WATCHLIST' ? <ListChecks size={18} color={Colors.secondary} /> :
                   item.activityType === 'LIKE' ? <Heart size={18} color={Colors.secondary} /> : item.activityType === 'UPVOTE' ? <ThumbsUp size={18} color={Colors.secondary} /> : 
-                  item.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary} />  : item.activityType === 'REPOST' && <RepostIcon size={18} color={Colors.secondary} />}
-                <Text className='text-mainGray'>{item.user.firstName} {item.description}</Text>
+                  item.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary} />  : item.activityType === 'REPOST' ? <RepostIcon size={18} color={Colors.secondary} /> : 
+                  item.activityType === 'COMMENT' && <MessageIcon size={18} color={Colors.secondary} />}
+                <Text className='text-mainGray' numberOfLines={2}>{item.user.firstName} {item.description}</Text>
               </View>
             </TouchableOpacity>
           )}}
