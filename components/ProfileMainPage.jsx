@@ -281,7 +281,6 @@ import ListCard from './ListCard'
             contentContainerStyle={{gap:15}}
             renderItem={({item}) => {
                 // console.log("FLATLISTITEM", item)
-                console.log('item repost date?', item.repostDate)
             return (
                 <>
                 { item?.feedType === 'thread' ? (

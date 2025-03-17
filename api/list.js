@@ -62,6 +62,35 @@ export const useFetchUsersLists = ( userId ) => {
     })
 }
 
+export const useFetchUsersListsInfinite = (userId, limit) => {
+    const [ data, setData ] = useState([]);
+    const [ cursor, setCursor ] = useState(null)
+    const [ loading, setLoading ] = useState(true)
+    const [ hasMore, setHasMore ] = useState(true)
+
+    const fetchUsersListsInfinite = async () => {
+        if(!hasMore) return
+        try {
+            const response = await fetch(`${nodeServer.currentIP}/list/infinite?userId=${userId}&limit=${limit}&cursor=${cursor}`)
+            const results = await response.json()
+            setData(prev => [...prev, ...results.items])
+            setCursor(results.nextCursor)
+            setHasMore(!!results.nextCursor)
+        } catch (err){
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchUsersListsInfinite()
+    }, [])
+
+    return { data, loading, hasMore, refetch: fetchUsersListsInfinite }
+ }
+
+
 export const listInteraction = async (data) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/list/interact`, {

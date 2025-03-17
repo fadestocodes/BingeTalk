@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native'
 import { Image } from 'expo-image';
 import React from 'react'
-import { useFetchUsersLists, listInteraction } from '../../api/list'
+import { useFetchUsersLists, listInteraction, useFetchUsersListsInfinite } from '../../api/list'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
@@ -13,8 +13,9 @@ import ListCard from '../ListCard';
 
 
 const UserListsPage = ( { userId } ) => {
-    const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
-    // console.log('lists are', lists)
+    // const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
+    const { data : lists, refetch, loading } = useFetchUsersListsInfinite(userId, 10);
+    console.log('lists are', lists)
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const { user : clerkUser } = useUser()
     const router = useRouter();
@@ -81,7 +82,7 @@ const UserListsPage = ( { userId } ) => {
         refreshControl={
             <RefreshControl
                 tintColor={Colors.secondary}
-                refreshing={isFetching}
+                refreshing={loading}
                 onRefresh={refetch}
             />
         }
@@ -90,7 +91,7 @@ const UserListsPage = ( { userId } ) => {
             keyExtractor={item => item.id}
             contentContainerStyle={{ gap:15 }}
             renderItem={ ({item}) => {
-                // console.log('each list', item)
+                console.log('each list', item)
                 return (
                 <ListCard list={item} />
             )} }
