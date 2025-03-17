@@ -18,6 +18,9 @@ import { useUser } from '@clerk/clerk-expo'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTagsContext } from '../../lib/TagsContext'
 import { formatDate } from '../../lib/formatDate'
+import { createDialogueSchema } from '../../lib/zodSchemas'
+import ToastMessage from '../ui/ToastMessage'
+import { MessageSquare } from 'lucide-react-native'
 
 const toPascalCase = (str) => {
         return str
@@ -43,6 +46,9 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const { tags, setTags } = useTagsContext();
     const [ autoCorrect, setAutoCorrect ] = useState(true)
     const [isMentioning, setIsMentioning] = useState(false);
+    const [errors, setErrors] = useState(null)
+    const [ message, setMessage ] = useState(null)
+
    
     useEffect(()=>{
         setTags({})
@@ -190,6 +196,18 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         console.log('MENTIONS', mentions)
         const formattedString = parseMentions(input, mentions)
 
+        const validationResults = createDialogueSchema.safeParse( {content:input} )
+        console.log('validationreults', validationResults)
+        if (!validationResults.success) {
+            const errorObj = validationResults.error.format();
+            console.log('errorobj from validation', errorObj)
+            setErrors(errorObj.content._errors[0] )
+            console.log(errorObj.content._errors[0] )
+            return 
+            } else {
+              setErrors(null)
+            }
+
         console.log('content is ', formattedString);
         setUploadingPost(true);
         const mentionsForPrisma = await Promise.all(
@@ -241,21 +259,9 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             tags
         }
         console.log('trying to create dialogue')
-        try {
-            const newPost = await createDialogue(postData); 
-            console.log('new post', newPost)
-            try {
-                const activityData = {
-                    userId,
-                    description : `@${userDB.username} posted a new dialogue`,
-                    dialogueId : newPost.id
-                }
-            } catch (err) {
-                console.log(err)
-            }
-        } catch (error) {
-            console.log('Error trying to create dialogue post', err)
-        }
+        const newPost = await createDialogue(postData); 
+
+        setMessage(newPost.message)
         setUploadingPost(false);
         setInput('')
         setTags([])
@@ -273,6 +279,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
 
 
   return (
+    <>
+    <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<MessageSquare size={30} color={Colors.secondary}/>}   />
     <View onPress={()=>{setResultsOpen(false); setFlatlistVisible(false)}} className='w-full px-6 relative items-center justify-center' style={{  }} >
         { uploadingPost && (
             <View style={{ position:'absolute', inset:0, justifyContent:'center', alignItems:'center', zIndex:30 }} >
@@ -281,7 +289,11 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         ) }
 
        
-
+                { errors && (
+                        <View className='w-full my-2 justify-center'>
+                    <Text className='text-red-400'>*{errors}</Text>
+                    </View>
+                ) }
         <View className='w-full relative items-center justify-between ' style={{marginBottom:20, position:'relative'}}>
             
            
@@ -389,7 +401,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                         </View>
                         <View className="flex-row justify-center items-center gap-3">
                             <Text className='text-mainGray text-right '>{input.length}/800</Text>
-                            <TouchableOpacity onPress={handlePost} disabled={!input} >
+                            <TouchableOpacity onPress={handlePost} >
                         <Text className='font-pbold bg-secondary rounded-xl ' style={{paddingVertical:8, paddingHorizontal:20}} >Post</Text>
                     </TouchableOpacity>
 
@@ -397,6 +409,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     </View>
                 </View>
     </View>
+    </>
   )
 }
 

@@ -12,6 +12,9 @@
     import { useUser } from '@clerk/clerk-expo';
     import { createThread } from '../../api/thread';
     import { formatDate } from '../../lib/formatDate'
+    import { createThreadSchema } from '../../lib/zodSchemas'
+import ToastMessage from '../ui/ToastMessage'
+import { MessagesSquare } from 'lucide-react-native'
   
 
 
@@ -29,6 +32,8 @@
         const { tags, setTags } = useTagsContext();
         const { user : clerkUser } = useUser();
         const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress}  );
+        const [errors, setErrors] = useState(null)
+        const [ message, setMessage ] = useState(null)
 
         useEffect(()=>{
             setTags({})
@@ -58,8 +63,21 @@
         // };
 
         const handlePost = async () => {
+            console.log('input', inputs.threadTitle, inputs.threadCaption)
 
+            const validationResults = createThreadSchema.safeParse( { ...inputs,  threadTitle: inputs.threadTitle } )
+            console.log('validationreults', validationResults)
+            if (!validationResults.success) {
+                const errorObj = validationResults.error.format();
+                console.log('errorobj from validation', errorObj)
+                setErrors(errorObj.threadTitle._errors[0] )
+                console.log(errorObj.threadTitle._errors[0] )
+                return 
+                } else {
+                  setErrors(null)
+                }
 
+                console.log('made it here')
             const threadData = {
                 userId : Number(ownerUser.id),
                 movieId : threadObject.media_type === 'movie' ? threadObject.id : null  ,
@@ -72,6 +90,8 @@
             }
 
             const newThread = await createThread( threadData )
+
+            setMessage(newThread.message)
 
 
             // setInputs({
@@ -88,7 +108,9 @@
         
 
     return (
-      
+        <>
+        <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<MessagesSquare size={30} color={Colors.secondary}/>}   />
+
         <View  className='w-full px-6  items-center justify-center gap-5' style={{paddingBottom:200}}>
 
             <View className='thread-topic w-full relative justify-center items-center '>
@@ -128,8 +150,14 @@
                     ) ) } */}
             </View>
 
+                { errors && (
+                        <View className='w-full my-2 justify-center'>
+                    <Text className='text-red-400'>*{errors}</Text>
+                    </View>
+                ) }
                 <View className='w-full relative items-center justify-between ' style={{marginBottom:20}}>
                 <View className='flex-row w-full justify-between items-center' style={{ position:'absolute', top:0 , zIndex:20, top:10, paddingHorizontal:10}} >
+                    
                         <View className="flex-row items-center gap-2">
                             <Image
                                 source={{ uri: ownerUser.profilePic }}
@@ -154,6 +182,7 @@
                         value={inputs.threadTitle}
                         style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 90 : 50, paddingBottom:40 , borderTopLeftRadius: 15, borderTopRightRadius:15}}
                     />
+                   
                 {   loadingImage ? (
                     <View className=' w-full justify-center items-center' style={{ width:'100%', height:100 , backgroundColor:Colors.mainGrayDark}}> 
                         <ActivityIndicator></ActivityIndicator>
@@ -175,6 +204,7 @@
                     </View> 
                     ) }
                     </View>
+                    
                 <View className='w-full justify-center items-center gap-3 bg-white' style={{width:'100%',backgroundColor:Colors.mainGrayDark, position:'absolute',bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , paddingHorizontal:25, paddingBottom:15}}>
                     
                     <View className='border-t-[1px] border-slate-300 w-full' style={{ borderTopWidth:1, borderColor:Colors.mainGray }}
@@ -205,6 +235,7 @@
                     style={{paddingTop:60, paddingHorizontal:25,backgroundColor:Colors.mainGrayDark, color:'white', paddingBottom:70, minHeight:100, textAlignVertical:'top'}}
                     className='w-full relative min-h-50 bg-white rounded-3xl  items-start justify-start font-pcourier text-custom'
                 />
+              
                     <View style={{position:"absolute", top:30, alignItems:'center', justifyContent:'center', width:'100%', zIndex:20}}>
                         <Text className='font-pcourier uppercase text-lg text-secondary' >{ownerUser.firstName}</Text>
                     </View>
@@ -226,6 +257,7 @@
                     <Text className='font-pbold text-center ' style={{}} >Post</Text>
                 </TouchableOpacity>
         </View>
+        </>
 
     )
     }

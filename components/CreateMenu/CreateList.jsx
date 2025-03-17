@@ -4,9 +4,11 @@ import DraggableFlatList from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DraggableGrid } from 'react-native-draggable-grid';
 import { createList } from '../../api/list';
-
+import { createListSchema } from '../../lib/zodSchemas';
 import { Colors } from '../../constants/Colors'
 import { SlateIcon, PeopleIcon, ThreadsIcon, CloseIcon } from '../../assets/icons/icons'
+import ToastMessage from '../ui/ToastMessage';
+import { List } from 'lucide-react-native';
 
 const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setResultsOpen, searchQuery, setSearchQuery,listItems, setListItems, renderItem, handleRemoveListItem } ) => {
 
@@ -22,6 +24,10 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
     //     description : ''
     // })
 
+    const [errors, setErrors] = useState(null)
+    const [message, setMessage] = useState(null)
+
+
     const handleInput = (name, value) => {
         setInputs( prev => ({
             ...prev,
@@ -30,6 +36,19 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
     }
 
     const handlePost = async () => {
+
+        const validationResults = createListSchema.safeParse( { ...inputs,  listTitle: inputs.listTitle } )
+        console.log('validationreults', validationResults)
+        if (!validationResults.success) {
+            const errorObj = validationResults.error.format();
+            console.log('errorobj from validation', errorObj)
+            setErrors(errorObj.listTitle._errors[0] )
+            console.log(errorObj.listTitle._errors[0] )
+            return 
+            } else {
+              setErrors(null)
+            }
+
         const postData = {
             title : inputs.listTitle ,
             caption : inputs.listDescription,
@@ -39,6 +58,8 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
         console.log('POST DATA', postData);
         const newList = await createList(postData)
         console.log('NEW CREATED LIST', newList)
+        setMessage(newList.message)
+
         setInputs(prev => ({
             ...prev,
             listTitle : '',
@@ -54,6 +75,9 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
 
 
   return (
+    <>
+    <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<List size={30} color={Colors.secondary}/>}   />
+
     <View className='w-full px-6 relative items-center justify-center gap-5'>
         <View className='thread-topic w-full relative '>
                 <TextInput
@@ -71,7 +95,13 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
                     <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
             </View>
+          
             <View className='relative w-full'>
+            { errors && (
+                        <View className='w-full mt-1 mb-3 justify-center'>
+                    <Text className='text-red-400'>*{errors}</Text>
+                    </View>
+                ) }
                 <TextInput
                         onChangeText={(text) => handleInput('listTitle', text)}
                         value={inputs.listTitle}
@@ -142,6 +172,7 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
             {/*  */}
              
     </View>
+    </>
   )
 }
 
