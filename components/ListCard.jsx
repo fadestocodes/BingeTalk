@@ -10,7 +10,7 @@ import { formatDate } from '../lib/formatDate'
 import { useRouter } from 'expo-router'
 import { listInteraction } from '../api/list'
 
-const ListCard = ({ list:item , activity, fromHome, refetch}) => {
+const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDisabled}) => {
 
     const { user:clerkUser } = useUser();
     const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
@@ -109,10 +109,14 @@ const ListCard = ({ list:item , activity, fromHome, refetch}) => {
 
   return (
     <View className='w-full' >
-                    <TouchableOpacity onPress={()=>handleListPress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:15, paddingHorizontal:15, gap:15 }} >
+                    <TouchableOpacity disabled={pressDisabled}  onPress={()=>handleListPress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:15, paddingHorizontal:15, gap:15 }} >
                         <View className='gap-3'>
+                      
                             <View className='flex-row w-full gap-2 justify-between items-center mb-0'>
                                 <View className='flex-row gap-2 justify-center items-center'>
+                                { isReposted && (
+                                     <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
+                                ) }
                                     <Image
                                     source ={{ uri :item.user.profilePic }}
                                     contentFit='cover'

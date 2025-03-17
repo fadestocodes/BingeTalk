@@ -8,7 +8,7 @@ import { createList } from '../../api/list';
 import { Colors } from '../../constants/Colors'
 import { SlateIcon, PeopleIcon, ThreadsIcon, CloseIcon } from '../../assets/icons/icons'
 
-const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen, searchQuery, setSearchQuery,listItems, setListItems, renderItem, handleRemoveListItem } ) => {
+const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setResultsOpen, searchQuery, setSearchQuery,listItems, setListItems, renderItem, handleRemoveListItem } ) => {
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
     // console.log('listItems from child component', listItems);
@@ -17,10 +17,10 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
     //   }, [listItems]);  //  
 
 
-    const [ inputs, setInputs ] = useState({
-        title : '',
-        description : ''
-    })
+    // const [ inputs, setInputs ] = useState({
+    //     title : '',
+    //     description : ''
+    // })
 
     const handleInput = (name, value) => {
         setInputs( prev => ({
@@ -30,20 +30,20 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
     }
 
     const handlePost = async () => {
-        console.log('listtitle', inputs.title)
         const postData = {
-            title : inputs.title ,
-            caption : inputs.description,
+            title : inputs.listTitle ,
+            caption : inputs.listDescription,
             userId,
             listItems
         }
         console.log('POST DATA', postData);
         const newList = await createList(postData)
         console.log('NEW CREATED LIST', newList)
-        setInputs({
-            title : '',
-            description : ''
-        })
+        setInputs(prev => ({
+            ...prev,
+            listTitle : '',
+            listDescription : ''
+        }))
         setSearchQuery('')
         setListItems([])
     }
@@ -73,8 +73,9 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
             </View>
             <View className='relative w-full'>
                 <TextInput
-                        onChangeText={(text) => handleInput('title', text)}
-                        value={inputs.title}
+                        onChangeText={(text) => handleInput('listTitle', text)}
+                        value={inputs.listTitle}
+                        autoCorrect={true}
                         multiline
                         maxLength={100}
                         placeholder='List title'
@@ -89,7 +90,7 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
                     />
                     <View className='flex-row justify-end items-center  gap-3' style={{width:'100%',  justifyContent:'flex-end'}}>
                        
-                        <Text className='text-mainGray text-right '>{inputs.title.length}/100</Text>
+                        <Text className='text-mainGray text-right '>{inputs.listTitle.length}/100</Text>
                     </View>
                 </View>
 
@@ -100,8 +101,8 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
             
             <View className='relative w-full'  style={{marginBottom:0}}>
                 <TextInput
-                        onChangeText={(text) => handleInput('description', text)}
-                        value={inputs.description}
+                        onChangeText={(text) => handleInput('listDescription', text)}
+                        value={inputs.listDescription}
                         multiline
                         maxLength={250}
                         placeholder='Description of your list'
@@ -117,7 +118,7 @@ const CreateList = ( {handleChange, content, userId, setResults, setResultsOpen,
                         />
                         <View className='flex-row justify-end items-center  gap-3' style={{width:'100%',  justifyContent:'flex-end'}}>
                         
-                            <Text className='text-mainGray text-right '>{inputs.title.length}/250</Text>
+                            <Text className='text-mainGray text-right '>{inputs.listDescription.length}/250</Text>
                         </View>
                     </View>
                     

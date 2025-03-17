@@ -24,18 +24,8 @@ import ListCard from './ListCard'
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
 
-        if (!user || isFetchingUser) {
-            
-            refetchUser();
-            return (
-                <View className='w-full h-full bg-primary'>
-            <ActivityIndicator></ActivityIndicator>  
-                </View>
+    
 
-            )
-        } 
-
-        console.log('user', user)
         // useEffect(()=> {
         //     refetchUser();
         // }, [ user ])
@@ -53,13 +43,12 @@ import ListCard from './ListCard'
         const { data:ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
         const isOwnersProfilePage = user.id === ownerUser.id
         const [ isFollowing, setIsFollowing ] = useState(null)
-        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading } = useGetProfileFeed(user.id, 10)
-        console.log('THE FIRST ITEM',profileDialogues[0])
+        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading } = useGetProfileFeed(user.id, 15)
 
         useEffect(()=>{
             // const checkFollow = ownerUser.following.some( item => item.followingId === user.id );
             const checkFollow = user.followers.some( item => item.followingId === ownerUser.id );
-            console.log('check follow', checkFollow)
+            // console.log('check follow', checkFollow)
         if (checkFollow){
             setIsFollowing(true);
 
@@ -90,8 +79,14 @@ import ListCard from './ListCard'
 
         
 
-        const handleDialoguePress = (dialogue) => {
-            router.push(`/dialogue/${dialogue.id}`)
+        const handleItemPress = (item) => {
+            if(item.dialogueInteractions){
+                router.push(`/dialogue/${item.id}`)
+            } else if (item.threadInteractions){
+                router.push(`/threads/${item.id}`)
+            } else if (item.listInteractions){
+                router.push(`/list/${item.id}`)
+            }
         }
 
         const handleEditProfile = () => {
@@ -123,13 +118,23 @@ import ListCard from './ListCard'
             }
         };
 
-        if (isFetchingUser){
+        if (isFetchingUser || loading){
             return (
             <View className="bg-primary w-full h-full">
                 <ActivityIndicator></ActivityIndicator>
             </View>
             )
         }
+        // if (!user || isFetchingUser) {
+            
+        //     refetchUser();
+        //     return (
+        //         <View className='w-full h-full bg-primary'>
+        //     <ActivityIndicator></ActivityIndicator>  
+        //         </View>
+
+        //     )
+        // } 
 
 
   return (
@@ -145,9 +150,8 @@ import ListCard from './ListCard'
                 />
                 }
             onEndReached={()=> {
-                if (hasMore.dialogue || hasMore.thread || hasMore.list){
+                console.log("HASMORE", hasMore)
                     refetchProfileFeed()
-                }
             }}
             onEndReachedThreshold={0.3}
             keyboardShouldPersistTaps="handled" 
@@ -276,24 +280,25 @@ import ListCard from './ListCard'
             )}
             contentContainerStyle={{gap:15}}
             renderItem={({item}) => {
-                console.log("FLATLISTITEM", item)
+                // console.log("FLATLISTITEM", item)
+                console.log('item repost date?', item.repostDate)
             return (
                 <>
-                { item?.threadInteractions ? (
-                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleDialoguePress(item)}}  style={{ paddingHorizontal:15 }}>
-                        <ThreadCard  thread={item} refetch={refetch} isBackground={true} />
+                { item?.feedType === 'thread' ? (
+                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
+                        <ThreadCard  thread={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate } />
                     </TouchableOpacity>
 
-                ) : item?.dialogueInteractions ? (
+                ) : item.feedType === 'dialogue' ? (
 
-                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleDialoguePress(item)}}  style={{ paddingHorizontal:15 }}>
-                        <DialogueCard  dialogue={item} refetch={refetch} isBackground={true} />
+                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
+                        <DialogueCard  dialogue={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate } />
                     </TouchableOpacity>
 
-                ) : item?.listInteractions &&  (
+                ) : item?.feedType === 'list' &&  (
                 
-                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleDialoguePress(item)}}  style={{ paddingHorizontal:15 }}>
-                        <ListCard  list={item} refetch={refetch}  />
+                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
+                        <ListCard  list={item} refetch={refetch} isReposted={item.repostDate} pressDisabled={true} />
                     </TouchableOpacity>
                 )} 
                 </>

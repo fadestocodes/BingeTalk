@@ -179,7 +179,7 @@ export const getTrendingDialogues = async (limit) => {
 
 export const useGetTrendingDialoguesInfinite = (limit, popular) => {
     const [ data, setData ] = useState([])
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore, setHasMore ] = useState(true)
 
@@ -187,13 +187,13 @@ export const useGetTrendingDialoguesInfinite = (limit, popular) => {
         if (!hasMore) return
         try {
 
-            setLoading(true)
             console.log('hello')
             const request = await fetch(`${nodeServer.currentIP}/dialogue/trending/infinite?limit=${limit}&cursor=${cursor}&popular=${popular}`)
             const response = await request.json()
-            console.log('response from infinitedialogues', response)
+            // console.log('response from infinitedialogues', response)
             setData(prev => [...prev, ...response.items])
-            console.log('full data', data)
+            // console.log('full data', data)
+            console.log(response.nextCursor )
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
         } catch (err){
@@ -209,4 +209,36 @@ export const useGetTrendingDialoguesInfinite = (limit, popular) => {
 
 
     return { data, refetch : getTrendingDialoguesInfinite, loading, hasMore }
+}
+
+export const useGetRecentDialoguesInfinite = (limit) => {
+    const [ data, setData ] = useState([])
+    const [ loading, setLoading ] = useState(true)
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore, setHasMore ] = useState(true)
+
+    const getRecentDialoguesInfinite = async () => {
+        if (!hasMore) return
+        try {
+
+            console.log('hello')
+            const request = await fetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=${cursor}`)
+            const response = await request.json()
+            setData(prev => [...prev, ...response.items])
+            console.log(response.nextCursor )
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+    useEffect(() => {
+        getRecentDialoguesInfinite()
+    }, [])
+
+
+    return { data, refetch : getRecentDialoguesInfinite, loading, hasMore }
 }

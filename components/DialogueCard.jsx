@@ -15,7 +15,7 @@ import { useFetchOwnerUser } from '../api/user'
 
 
 
-const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity} ) => {
+const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity, isReposted} ) => {
 
 
     // const [ dialogue, setDialogue ] = useState(null)
@@ -103,14 +103,27 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
               count : prev[type].alreadyPressed ? prev[type].count -1 : prev[type].count +1
             }
           }))
-          
+     
+        console.log("ITEM", dialogue)
+        let description
+        if ( type === 'upvotes' ){
+            description = `upvoted your dialogue "${dialogue.content}"`
+            
+        } else if (type === 'downvotes'){
+            description = `downvoted your dialogue "${dialogue.content}"`
+           
+        }else  if ( type === 'reposts' ){
+            description = `reposted your dialogue "${dialogue.content}"`
+           
+        }
+        console.log('made it this far')
         const data = {
             type,
             dialogueId : dialogue.id,
             userId : ownerUser.id,
+            description,
             recipientId : dialogue.user.id
         }
-
         const updatedDialogue = await dialogueInteraction(data)
         refetch();
     }
@@ -127,9 +140,12 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
    
     <View  className=''  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
             <View className='flex justify-center items-start  mb-1 w-full ' style={{gap:15}}>
-           
+              
                 <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
+                        { isReposted && (
+                    <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
+                ) }
                             <Image
                                 source={{ uri: userDB.profilePic }}
                                 contentFit='cover'

@@ -10,7 +10,7 @@ const ListId = () => {
 
     const { listId } = useLocalSearchParams();
     const { data:list, refetch, isFetching } = useFetchSpecificList(listId);
-    console.log('LIST FOR LISTID PAGE',list)
+    console.log('LIST FOR LISTID PAGE')
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
@@ -41,7 +41,7 @@ const ListId = () => {
             numColumns={4}
             contentContainerStyle={{ paddingVertical:50, marginLeft:20, rowGap:20, height:'100%'}}
             renderItem={({item}) => {
-                console.log('item from flatlist', item)
+                // console.log('item from flatlist', item)
                 return (
                 <TouchableOpacity onPress={()=>handlePress(item)}  >
                     <Image 

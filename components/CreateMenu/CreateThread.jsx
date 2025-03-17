@@ -16,12 +16,12 @@
 
 
 
-    const CreateThread = ( {threadObject, handleChange, content, setContent, handleSearch, results, setResults, resultsOpen, setResultsOpen, searchQuery, setSearchQuery} ) => {
+    const CreateThread = ( {threadObject, handleChange, inputs, setInputs, handleSearch, results, setResults, resultsOpen, setResultsOpen, searchQuery, setSearchQuery} ) => {
 
-        const [ inputs, setInputs ] = useState({
-            title : '',
-            caption : ''
-        })
+        // const [ inputs, setInputs ] = useState({
+        //     title : '',
+        //     caption : ''
+        // })
         const [ image, setImage ] = useState(null); 
         const [ loadingImage, setLoadingImage ]  = useState(false);
         const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -58,7 +58,6 @@
         // };
 
         const handlePost = async () => {
-            console.log('the data from thread post',searchQuery, content, inputs, tags, threadObject )
 
 
             const threadData = {
@@ -66,8 +65,8 @@
                 movieId : threadObject.media_type === 'movie' ? threadObject.id : null  ,
                 tvId : threadObject.media_type === 'tv' ? threadObject.id : null ,
                 castId :threadObject.media_type === 'person' ? threadObject.id : null ,
-                title : inputs.title,
-                caption : inputs.caption ,
+                title : inputs.threadTitle,
+                caption : inputs.threadCaption ,
                 tags : Object.keys(tags).length > 0 ? tags : null,
                 threadObject
             }
@@ -75,10 +74,15 @@
             const newThread = await createThread( threadData )
 
 
-            setInputs({
-                title : '',
-                caption : ''
-            })
+            // setInputs({
+            //     title : '',
+            //     caption : ''
+            // })
+            setInputs(prev => ({
+                ...prev,
+                threadTitle : '',
+                threadCaption : ''
+            }))
             setTags({})
         }
         
@@ -142,11 +146,12 @@
                         placeholder='Thread title'
                         placeholderTextColor={Colors.mainGray}
                         className='w-full bg-white  text-lg font-pbold text-white'
-                        onChangeText={(text)=> setInputs(prev => ({ ...prev, title : text }))}
+                        onChangeText={(text)=> setInputs(prev => ({ ...prev, threadTitle : text }))}
                         maxLength={150}
                         multiline
+                        autoCorrect={true}
                         autoCapitalize='sentences'
-                        value={inputs.title}
+                        value={inputs.threadTitle}
                         style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 90 : 50, paddingBottom:40 , borderTopLeftRadius: 15, borderTopRightRadius:15}}
                     />
                 {   loadingImage ? (
@@ -183,7 +188,7 @@
                                     <Text className='text-xs text-mainGray'>TAGS 🏷️</Text>
                                 </TouchableOpacity>
                         </View>
-                        <Text className='text-mainGray text-right '>{inputs.title.length}/150</Text>
+                        <Text className='text-mainGray text-right '>{inputs.threadTitle.length}/150</Text>
                     </View>
                 </View>
             </View>
@@ -191,8 +196,8 @@
             <View className='thread-caption w-full relative'>
           
                 <TextInput
-                    onChangeText={(text)=> setInputs(prev => ({ ...prev, caption : text }))}
-                    value={inputs.caption}
+                    onChangeText={(text)=> setInputs(prev => ({ ...prev, threadCaption : text }))}
+                    value={inputs.threadCaption}
                     multiline
                     maxLength={800}
                     placeholder='Caption for your thread (optional)'
@@ -212,7 +217,7 @@
                     />
                     <View className='flex-row justify-end items-center  gap-3' style={{width:'100%',  justifyContent:'flex-end'}}>
                        
-                        <Text className='text-mainGray text-right '>{inputs.title.length}/800</Text>
+                        <Text className='text-mainGray text-right '>{inputs.threadCaption.length}/800</Text>
                     </View>
                 </View>
                 </View>

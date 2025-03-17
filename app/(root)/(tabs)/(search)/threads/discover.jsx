@@ -5,15 +5,15 @@ import { threadCategories } from '../../../../../lib/CategoryOptions'
 import { Image } from 'expo-image'
 import { Colors } from '../../../../../constants/Colors'
 import DialogueCard from '../../../../../components/DialogueCard'
-import { useGetTrendingThreadsInfinite } from '../../../../../api/thread'
+import { useGetRecentThreads, useGetTrendingThreadsInfinite } from '../../../../../api/thread'
 import ThreadCard from '../../../../../components/ThreadCard'
 import { useRouter } from 'expo-router'
 
 const DiscoverDialogues = () => {
     const [ selected, setSelected ] = useState('Trending')
     const router = useRouter()
-    const { data : trendingThreads, refetch, hasMore } = useGetTrendingThreadsInfinite(5, true);
-    const { data : controversialThreads, refetch:refetchControversial, hasMore: hasMoreControversial } = useGetTrendingThreadsInfinite(5, false);
+    const { data : trendingThreads, refetch, hasMore } = useGetTrendingThreadsInfinite(10, true);
+    const { data : recentThreads, refetch:refetchRecents, hasMore: hasMoreRecents } = useGetRecentThreads(10, false);
 
 
 
@@ -43,7 +43,7 @@ const DiscoverDialogues = () => {
             />
 
             <FlatList
-                data={selected === 'Trending' ? trendingThreads : controversialThreads}
+                data={selected === 'Trending' ? trendingThreads : recentThreads}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
@@ -58,8 +58,8 @@ const DiscoverDialogues = () => {
                     
                     if (selected === 'Trending' && hasMore){
                         refetch()
-                    } else if (selected === 'Hot Takes' && hasMoreControversial){
-                        refetchControversial()
+                    } else if (selected === 'Hot Takes' && hasMoreRecents){
+                        refetchRecents()
                     }
                 } }
                 onEndReachedThreshold={0}

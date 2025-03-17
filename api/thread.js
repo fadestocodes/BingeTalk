@@ -78,7 +78,7 @@ export const getTrendingThreads = async (limit) => {
 
 export const useGetTrendingThreadsInfinite = (limit, popular) => {
     const [ data, setData ] = useState([])
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore, setHasMore ] = useState(true)
 
@@ -86,7 +86,6 @@ export const useGetTrendingThreadsInfinite = (limit, popular) => {
         if (!hasMore) return
         try {
 
-            setLoading(true)
             console.log('hello')
             const request = await fetch(`${nodeServer.currentIP}/thread/trending/infinite?limit=${limit}&cursor=${cursor}&popular=${popular}`)
             const response = await request.json()
@@ -108,4 +107,35 @@ export const useGetTrendingThreadsInfinite = (limit, popular) => {
 
 
     return { data, refetch : getTrendingThreadsInfinite, loading, hasMore }
+}
+
+export const useGetRecentThreads = (limit) => {
+    const [ data, setData ] = useState([])
+    const [ loading, setLoading ] = useState(true)
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore, setHasMore ] = useState(true)
+
+    const getRecentThreads = async () => {
+        if (!hasMore) return
+        try {
+
+            console.log('hello')
+            const request = await fetch(`${nodeServer.currentIP}/thread/recent/infinite?limit=${limit}&cursor=${cursor}`)
+            const response = await request.json()
+            setData(prev => [...prev, ...response.items])
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+    useEffect(() => {
+        getRecentThreads()
+    }, [])
+
+
+    return { data, refetch : getRecentThreads, loading, hasMore }
 }

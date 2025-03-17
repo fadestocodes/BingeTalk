@@ -8,12 +8,11 @@ import { useUser } from '@clerk/clerk-expo';
 import { useFetchOwnerUser } from '../api/user';
 import { useRouter } from 'expo-router';
 import { threadInteraction } from '../api/thread';
-
-import React from 'react'
+import React, {useState} from 'react'
 import { toPascalCase } from '../lib/ToPascalCase';
 
 
-const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic, fromHome, activity}) => {
+const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic, fromHome, activity, isReposted}) => {
     const userDB = thread.user
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
@@ -26,13 +25,64 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
     const alreadyReposted = thread.threadInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
 
+
+    const [ already, setAlready ] = useState({
+        upvoted : alreadyUpvoted,
+        downvoted : alreadyDownvoted,
+        reposted : alreadyReposted
+    })
+
+    const [ interactionCounts, setInteractionCounts ] = useState({
+        upvotes : thread.upvotes ,
+        downvotes : thread.downvotes ,
+        reposts : thread.reposts
+    })
+ 
+
     const handleInteraction =  async (type, thread) => {
         console.log('type', type)
+        if (type === 'upvotes'){
+            setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
+            if (already.upvoted){
+                setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes + 1}))
+            }
+        } else if (type === 'downvotes'){
+            setAlready(prev => ({...prev, downvoted : !prev.downvoted}))
+            if (already.downvoted){
+                setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes + 1}))
+            }
+        } else if (type === 'reposts'){
+            setAlready(prev => ({...prev, reposted : !prev.reposted}))
+            if (already.reposted){
+                setInteractionCounts(prev => ({...prev, reposts : prev.reposts - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, reposts : prev.reposts + 1}))
+            }
+        }
+        let description
+        if ( type === 'upvotes' ){
+            description = `upvoted your thread "${thread.title}"`
+            
+        } else if (type === 'downvotes'){
+            description = `downvoted your thread "${thread.title}"`
+           
+        }else  if ( type === 'reposts' ){
+            description = `reposted your thread "${thread.title}"`
+           
+        }
         const data = {
             type,
-            threadId : Number(thread.id),
-            userId : ownerUser.id
+            threadId : thread.id,
+            userId : ownerUser.id,
+            description,
+            recipientId : thread.user.id
         }
+
+
         const updatedDialogue = await threadInteraction(data)
 
         refetch();
@@ -67,9 +117,12 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
 
   return (
     <View className='gap-3'  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground ? 12 : 0, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }} >
-
+           
           <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2 ">
+                        { isReposted && (
+                    <RepostIcon size={18} color={Colors.mainGray} style={{ marginRight:10 }}/>
+                ) }
                             <Image
                                 source={{ uri: thread?.user?.profilePic }}
                                 contentFit='cover'
@@ -116,14 +169,14 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         <View className='relative flex-row gap-5 justify-center items-center' >
                         <TouchableOpacity onPress={()=>handleInteraction('upvotes',thread)} >
                                 <View className='flex-row gap-2 justify-center items-center'>
-                                    <ThumbsUp size={16} color={ alreadyUpvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
-                                    <Text className='text-xs font-pbold text-mainGray' style={{ color: alreadyUpvoted ? Colors.secondary : Colors.mainGray }}>{ thread.upvotes }</Text>
+                                    <ThumbsUp size={16} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                    <Text className='text-xs font-pbold text-mainGray' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
                                 </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleInteraction('downvotes',thread)} >
                             <View className='flex-row gap-2 justify-center items-center'>
-                                <ThumbsDown size={18} color={ alreadyDownvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
-                                <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyDownvoted ? Colors.secondary : Colors.mainGray }}>{ thread.downvotes }</Text>
+                                <ThumbsDown size={18} color={ already.downvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
+                                <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                             </View>
                             </TouchableOpacity>
                             <View className='flex-row  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
@@ -132,8 +185,8 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                             </View>
                             <TouchableOpacity onPress={()=>handleInteraction('reposts',thread)} >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <RepostIcon className='' size='14' color={ alreadyReposted ? Colors.secondary :  Colors.mainGray}/>
-                                <Text className='text-xs font-pbold text-gray-400  ' style={{ color: alreadyReposted ? Colors.secondary : Colors.mainGray }}> {thread.reposts}</Text>
+                                <RepostIcon className='' size='14' color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                                <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
                             </View>
                             </TouchableOpacity>
                             <TouchableOpacity   >

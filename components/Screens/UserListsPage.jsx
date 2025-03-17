@@ -14,7 +14,7 @@ import ListCard from '../ListCard';
 
 const UserListsPage = ( { userId } ) => {
     const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
-    console.log('lists are', lists)
+    // console.log('lists are', lists)
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const { user : clerkUser } = useUser()
     const router = useRouter();

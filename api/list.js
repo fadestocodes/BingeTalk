@@ -40,7 +40,7 @@ export const fetchUsersLists = async ( userId ) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/list/user?userId=${userId}`)
         const response = await request.json()
-        console.log('Fetched users lists', response)
+        // console.log('Fetched users lists', response)
         return response
     } catch (err) {
         console.log(err)
@@ -82,7 +82,7 @@ export const fetchSpecificList = async (listId) => {
     try {
         const request = await fetch (`${nodeServer.currentIP}/list?listId=${listId}`)
         const response = await request.json();
-        console.log('fetched list ', response)
+        // console.log('fetched list ', response)
         return response
     } catch (err) {
         console.log(err)

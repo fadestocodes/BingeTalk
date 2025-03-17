@@ -36,7 +36,7 @@ export const useGetFeed = ( userId, limit ) => {
 
 
 export const useGetProfileFeed = (userId, limit) => {
-    console.log("USERID", userId)
+    // console.log("USERID", userId)
     const [ data, setData ] = useState([])
     const [ loading, setLoading  ] = useState(true)
     const [ hasMore, setHasMore] = useState({
@@ -51,17 +51,17 @@ export const useGetProfileFeed = (userId, limit) => {
     })
 
     const getProfileFeed = async () => {
+        if (!hasMore.dialogue && !hasMore.thread && !hasMore.list) return
         try {
             const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&threadCursor=${cursors.thread}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreThreads=${hasMore.thread}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
-
+            console.log('HASMORES FROM RESULTS', results.hasMoreDialoguesServer, results.hasMoreThreadsServer, results.hasMoreListsServer,)
             setData(prev => ([...prev, ...results.items]))
-            setHasMore(prev => ({
-                ...prev,
-                dialogue : results.hasMoreDialoguesServer,
-                thread : results.hasMoreThreadsServer,
-                list : results.hasMoreListsServer
-            }))
+            setHasMore({
+                dialogue : !!results.nextDialogueCursor,
+                thread : !!results.nextThreadCursor,
+                list : !!results.nextListCursor
+            })
             setCursors(prev => ({
                 ...prev,
                 dialogue : results.nextDialogueCursor,
@@ -72,6 +72,7 @@ export const useGetProfileFeed = (userId, limit) => {
         } catch (err){
             console.log(err)
         } finally {
+            console.log("SET HASMORES", hasMore)
             setLoading(false)
         }
     }

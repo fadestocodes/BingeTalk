@@ -1,19 +1,18 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity , SafeAreaView, Touchable} from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity , SafeAreaView, Touchable, ActivityIndicator} from 'react-native'
 import { MessageSquare } from 'lucide-react-native'
 import React, {useState} from 'react'
 import { dialogueCategories } from '../../../../../lib/CategoryOptions'
 import { Image } from 'expo-image'
 import { Colors } from '../../../../../constants/Colors'
 import DialogueCard from '../../../../../components/DialogueCard'
-import { useGetTrendingDialoguesInfinite } from '../../../../../api/dialogue'
+import { useGetRecentDialoguesInfinite, useGetTrendingDialoguesInfinite } from '../../../../../api/dialogue'
 import { useRouter } from 'expo-router'
 
 const DiscoverDialogues = () => {
     const [ selected, setSelected ] = useState('Trending')
     const router = useRouter()
-    const { data : trendingDialogues, refetch, hasMore } = useGetTrendingDialoguesInfinite(5, true);
-    const { data : controversialDialogues, refetch:refetchControversial, hasMore: hasMoreControversial } = useGetTrendingDialoguesInfinite(5, false);
-
+    const { data : trendingDialogues, refetch, hasMore , loading:loadingTrending} = useGetTrendingDialoguesInfinite(10, true);
+    const { data : recentDialogues, refetch:refetchRecents, hasMore: hasMoreRecents, loading:loadingRecents } = useGetRecentDialoguesInfinite(10, false);
 
 
   return (
@@ -42,7 +41,7 @@ const DiscoverDialogues = () => {
             />
 
             <FlatList
-                data={selected === 'Trending' ? trendingDialogues : controversialDialogues}
+                data={selected === 'Trending' ? trendingDialogues : recentDialogues}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
@@ -57,8 +56,8 @@ const DiscoverDialogues = () => {
                     
                     if (selected === 'Trending' && hasMore){
                         refetch()
-                    } else if (selected === 'Hot Takes' && hasMoreControversial){
-                        refetchControversial()
+                    } else if (selected === 'Hot Takes' && hasMoreRecents){
+                        refetchRecents()
                     }
                 } }
                 onEndReachedThreshold={0}

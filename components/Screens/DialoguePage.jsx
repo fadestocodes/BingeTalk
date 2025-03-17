@@ -49,6 +49,24 @@ const DialogueScreen = () => {
     const { data: replyCommentFromNotif , loading} = useFetchSingleComment(replyCommentId)
 
     
+    // const alreadyUpvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
+    // const alreadyDownvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
+    // const alreadyReposted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
+
+    // const [ interactions, setInteractions ] = useState({
+    //     upvotes : {
+    //         alreadyPressed : alreadyUpvoted,
+    //         count : dialogue.upvotes
+    //     } ,
+    //     downvotes :{
+    //         alreadyPressed : alreadyDownvoted,
+    //         count : dialogue.downvotes
+    //     } ,
+    //     reposts : {
+    //         alreadyPressed : alreadyReposted,
+    //         count : dialogue.reposts
+    //     } 
+    // })
 
     
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
@@ -147,16 +165,39 @@ const DialogueScreen = () => {
     }   
 
 
-    const handleInteraction =  async (type, dialogue) => {
-        console.log('type', type)
-        const data = {
-            type,
-            dialogueId : Number(dialogueId),
-            userId : ownerUser.id
-        }
-        const updatedDialogue = await dialogueInteraction(data)
-        refetch();
-    }
+    // const handleInteraction =  async (type, dialogue) => {
+    //     console.log('type', type)
+    //     setInteractions(prev => ({
+    //         ...prev,
+    //         [type]: {
+    //           ...prev[type],
+    //           alreadyPressed: !prev[type].alreadyPressed,
+    //           count : prev[type].alreadyPressed ? prev[type].count -1 : prev[type].count +1
+    //         }
+    //       }))
+     
+    //     let description
+    //     if ( type === 'upvotes' ){
+    //         description = `upvoted your dialogue "${dialogue.content}"`
+            
+    //     } else if (type === 'downvotes'){
+    //         description = `downvoted your dialogue "${dialogue.content}"`
+           
+    //     }else  if ( type === 'reposts' ){
+    //         description = `reposted your dialogue "${dialogue.content}"`
+           
+    //     }
+    //     console.log('made it this far')
+    //     const data = {
+    //         type,
+    //         dialogueId : dialogue.id,
+    //         userId : ownerUser.id,
+    //         description,
+    //         recipientId : dialogue.user.id
+    //     }
+    //     const updatedDialogue = await dialogueInteraction(data)
+    //     refetch();
+    // }
 
 
 
@@ -178,7 +219,7 @@ const DialogueScreen = () => {
 
         <View style={{gap:10, marginVertical:10, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
           <View className='gap-3' >
-          <DialogueCard dialogue={dialogue} refetch={refetch} disableCommentsModal={true} />
+          <DialogueCard dialogue={dialogue} disableCommentsModal={true} />
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
                 { dialogue.comments.length > 0 && (

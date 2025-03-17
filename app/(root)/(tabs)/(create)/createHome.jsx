@@ -29,6 +29,14 @@ const CreateHome = () => {
     const [ threadObject, setThreadObject ] = useState(null)
     const [ selected, setSelected ] = useState('Dialogue')
 
+    const [ inputs, setInputs ] = useState({
+        threadTitle : '',
+        threadCaption : '',
+        listTitle:'',
+        listDescription:''
+
+    })
+
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
     const {user:clerkUser} = useUser();
@@ -156,7 +164,7 @@ const CreateHome = () => {
           keyExtractor={(item,index) => index}
           contentContainerStyle={{ gap:10 }}
           renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setListItems([]) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setListItems([]); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
               <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
             </TouchableOpacity>
           )}
@@ -256,14 +264,14 @@ const CreateHome = () => {
         { createType === 'Dialogue' ? (
             <CreateDialogue flatlistVisible={flatlistVisible} setFlatlistVisible={setFlatlistVisible} />
         ) : createType === 'Thread' ? (
-            <CreateThread threadObject={threadObject}  handleChange={handleChange} content={content} setContent={setContent}
+            <CreateThread threadObject={threadObject}  handleChange={handleChange} inputs={inputs} setInputs={setInputs}
                 results={results} setResults={setResults} resultsOpen={resultsOpen} setResultsOpen={setResultsOpen}
                 handleSearch={handleSearch} searchQuery={searchQuery} setSearchQuery={setSearchQuery}
             />
         ) : createType === 'Showcase' ? (
             <CreateShowcase handleChange={handleChange} content={content} setContent={setContent} />
         ) : createType === 'List' && (
-            <CreateList userId={userId}  handleChange={handleChange} content={content} setContent={setContent} setResultsOpen={setResultsOpen}
+            <CreateList userId={userId}  handleChange={handleChange} inputs={inputs} setInputs={setInputs} setResultsOpen={setResultsOpen}
             setResults={setResults} setSearchQuery={setSearchQuery}  searchQuery={searchQuery} setListItems={setListItems} listItems={listItems} 
             renderItem={renderItem} handleRemoveListItem={handleRemoveListItem}
             />
