@@ -52,7 +52,7 @@ const ThreadsIdPage = () => {
     // const [ thread, setThread ] = useState(null)
 
     const { data: thread , refetch, isFetching} = useFetchSingleThread(Number(threadsId))
-    console.log('thread from hook', thread)
+    // console.log('thread from hook', thread)
 
 
     

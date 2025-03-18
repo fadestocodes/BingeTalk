@@ -31,7 +31,7 @@ export const fetchSingleThread = async (threadId) => {
 
 
 export const useFetchSingleThread = ( threadId ) => {
-    console.log('trying to use hook with ',threadId)
+    // console.log('trying to use hook with ',threadId)
     return useQuery({
         queryKey : ['dialogues', threadId],
         queryFn : async () => {
@@ -68,7 +68,7 @@ export const getTrendingThreads = async (limit) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/thread/trending?limit=${limit}`)
         const response = await request.json();
-        console.log('trending threads response', response)
+        // console.log('trending threads response', response)
         return response
     } catch (err) {
         console.log(err)
@@ -89,7 +89,7 @@ export const useGetTrendingThreadsInfinite = (limit, popular) => {
             console.log('hello')
             const request = await fetch(`${nodeServer.currentIP}/thread/trending/infinite?limit=${limit}&cursor=${cursor}&popular=${popular}`)
             const response = await request.json()
-            console.log('response from infinitethreads', response)
+            // console.log('response from infinitethreads', response)
             setData(prev => [...prev, ...response.items])
             console.log('full data', data)
             setCursor(response.nextCursor)

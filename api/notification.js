@@ -1,22 +1,32 @@
+import { useUser } from '@clerk/clerk-expo';
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
+import { useFetchOwnerUser } from './user';
+
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const [ data, setData ] = useState([])
-    const [ loading, setLoading ] = useState(false);
+    const [ loading, setLoading ] = useState(true);
     const [ hasMore , setHasMore ] = useState(true);
     const [ cursor, setCursor ] = useState(null)
+    const [ isFollowingIds, setIsFollowingIds ] = useState([])
+    const { user:clerkUser } = useUser()
+    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
 
     const getAllNotifs = async () => {
         if (!hasMore) return
         try {
-            setLoading(true);
             console.log('hello')
             const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(prev => [...prev, ...response.items])
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
+
+            const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
+            setIsFollowingIds(isFollowingId)
+
+            
 
             
         } catch (Err){
@@ -27,9 +37,13 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
 
     useEffect(() => {
         getAllNotifs()
-    }, [])
+    }, [recipientId])
 
-    return { data, loading, hasMore, refetch :getAllNotifs }
+    
+
+    
+
+    return { data, loading, hasMore, refetch :getAllNotifs , isFollowingIds, setIsFollowingIds}
 }
 
 export const getAllNotifs = async (recipientId, limit, fetchAll) => {
@@ -52,7 +66,7 @@ export const markNotifRead = async (data) => {
             headers : {
                 'Content-type' : 'application/json'
             },
-            body : JSON.stringify(data)
+            body : JSON.stringify({data})
         })
         const result = await request.json();
         console.log('response', result)

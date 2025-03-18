@@ -1,12 +1,12 @@
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, FlatList, ActivityIndicator, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, FlatList, ActivityIndicator, ScrollView, RefreshControl } from 'react-native'
 import { Image } from 'expo-image'
 import React, {useState, useEffect} from 'react'
 import { useUser } from '@clerk/clerk-expo'
-import { useFetchOwnerUser } from '../../../../api/user'
+import { followUser, unfollowUser, useFetchOwnerUser } from '../../../../api/user'
 import { useGetAllNotifs, markNotifRead } from '../../../../api/notification'
 import { Colors } from '../../../../constants/Colors'
 import { formatDate } from '../../../../lib/formatDate'
-import { Star, ListChecks, MessagesSquare, MessageSquare, Heart, ThumbsUp, ThumbsDown } from 'lucide-react-native'
+import { Star, ListChecks, MessagesSquare, MessageSquare, Heart, ThumbsUp, ThumbsDown, Handshake, UserPlus } from 'lucide-react-native'
 import { ProgressCheckIcon, RepostIcon , MessageIcon} from '../../../../assets/icons/icons'
 import { useRouter } from 'expo-router'
 
@@ -14,33 +14,30 @@ import { useRouter } from 'expo-router'
 const Notification = () => {
   const { user : clerkUser } = useUser();
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
-  const { data : notifications, loading , hasMore, refetch} = useGetAllNotifs(ownerUser.id, 10);
-  // console.log('notfications', notifications)
+  const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds} = useGetAllNotifs(ownerUser.id, 10);
+  
+  const [ isFollowing, setIsFollowing ] = useState(null)
+  
+  
+  
+  
   const router = useRouter()
   
   
+  useEffect(()=>{
+      const isFollowingId = notifications.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.id );
+      setIsFollowing(isFollowingId)
+
+  },[])
   
-  useEffect(  () => {
-    const useMarkRead = async () => {
-      console.log('trying to mark')
-      const notifData = notifications.map( item => item.id )
-      const marked = await markNotifRead( notifData )
-      console.log('marked', marked)
-    }
-    useMarkRead();
-  }, [])
 
-  // if (loading){
-  //   return <ActivityIndicator />
-  // }
+    
 
-  const handlePress = (item) => {
+  const handlePress = async (item) => {
     console.log('notif', item)
-    // if (item?.dialogueId){
-    //   router.push(`/dialogue/${item.dialogueId}`)
-    // } else if (item.dialogue){
-    //   router.push
-    // }
+   
+    const readNotif = await markNotifRead( item.id )
+    await refetch()
     if (item.parentActivityId){
       router.push(`/activity/${item.parentActivityId}`)
     } else if (item.threads){
@@ -49,8 +46,32 @@ const Notification = () => {
       router.push(`/dialogue/${item.dialogue.id}?replyCommentId=${item.replyCommentId}`)
     } else if (item.listId) {
       router.push(`/list/${item.listId}`)
-    } 
+    } else if (item.tv){
+      router.push(`/tv/${item.tv.tmdbId}`)
+    } else if (item.movie){
+      router.push(`/movie/${item.movie.tmdbId}`)
+    } else if (item.castCrew){
+      router.push(`/cast/${item.castCrew.tmdbId}`)
+    }
    
+  }
+
+  const handleFollowBack = async (checkFollow, item) => {
+
+    
+    const data = {
+      followerId : item.user.id,
+      followingId : ownerUser.id
+    }
+    if (checkFollow) {
+      const unfollowed = await unfollowUser(data)
+      setIsFollowingIds(prev => prev.filter( i => i !== item.userId))
+    } else {
+      const followBack = await followUser(data)
+      setIsFollowingIds(prev => [...prev, item.userId])
+    }
+    // await   refetch()
+    setUpdateNotif(true)
   }
 
 
@@ -76,8 +97,15 @@ const Notification = () => {
 
       <View className='w-full my-2 gap-3' style={{paddingBottom:30}}>
         <FlatList
+          refreshControl={
+            <RefreshControl
+              onRefresh={refetch}
+              refreshing={loading}
+              tintColor={Colors.secondary}
+            />
+          }
           data={notifications }
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item, index) => item.id}
           onEndReached={()=>{
             if (hasMore){
               refetch()
@@ -86,11 +114,14 @@ const Notification = () => {
           onEndReachedThreshold={0}
           contentContainerStyle={{width:'100%',  gap:15}}
           renderItem={({item}) => {
-            // console.log('flatlist item', item)
+              //  const checkFollow = ownerUser?.following.some( followingItem => followingItem?.followerId === item.userId );
+              const checkFollow = isFollowingIds.includes( item.userId )
+              console.log('isfllowingids', isFollowingIds)
+              console.log('checkFollow')
             
             return (
-            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: item.isRead ? 0.6 : 1  }}>
-              <View className='flex-row gap-2 justify-between items-center'>
+            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full justify-start items-start' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: item.isRead ? 0.7 : 1  }}>
+              <View className='flex-row gap-2 justify-between items-center w-full'>
                 <View className='flex-row gap-2 justify-center items-center'>
                   <Image 
                     source={{ uri : item.user.profilePic }}
@@ -101,14 +132,21 @@ const Notification = () => {
                 </View>
                 <Text className='text-mainGrayDark'>{ formatDate(item.createdAt)}</Text>
               </View>
-              <View className='flex-row gap-3 justify-center items-center px-4'>
+              <View className='flex-row gap-3 justify-center items-center px-4' >
               { item.activityType === 'RATING' ? <Star size={18} color={Colors.secondary} /> : item.activityType === 'DIALOGUE' ? <MessageSquare size={18} color={Colors.secondary} /> :
                   item.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : item.activityType==='WATCHLIST' ? <ListChecks size={18} color={Colors.secondary} /> :
                   item.activityType === 'LIKE' ? <Heart size={18} color={Colors.secondary} /> : item.activityType === 'UPVOTE' ? <ThumbsUp size={18} color={Colors.secondary} /> : 
                   item.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary} />  : item.activityType === 'REPOST' ? <RepostIcon size={18} color={Colors.secondary} /> : 
-                  item.activityType === 'COMMENT' && <MessageIcon size={18} color={Colors.secondary} />}
+                  item.activityType === 'COMMENT' ? <MessageIcon size={18} color={Colors.secondary} /> : item.activityType === 'RECOMMENDATION' ? <Handshake size={18} color={Colors.secondary} /> : 
+                  item.activityType === 'FOLLOW' && <UserPlus size={18} color={Colors.secondary} /> } 
                 <Text className='text-mainGray' numberOfLines={2}>{item.user.firstName} {item.description}</Text>
+
               </View>
+              { item.activityType === 'FOLLOW' && (
+                <TouchableOpacity  onPress={()=>handleFollowBack(checkFollow, item)} style={{ borderRadius:10, padding:5, borderColor:Colors.secondary, borderWidth:1,  backgroundColor: checkFollow ? 'none' : Colors.secondary, alignSelf:'flex-end' }}>
+                  <Text className='text-primary text-sm font-pbold' style={{color : checkFollow ? Colors.secondary : Colors.primary}}>{checkFollow ? 'Already following' :  'Follow back'}</Text>
+                </TouchableOpacity>
+              )}
             </TouchableOpacity>
           )}}
         

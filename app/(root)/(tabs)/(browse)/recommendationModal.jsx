@@ -58,7 +58,7 @@ const recommendationModal = () => {
             recipientId : params.item.followingId,
             movieId : Number(DBmovieId) || null,
             castId : Number(DBcastId) || null,
-            tvId : Number(DBtvId) || null
+            tvId : Number(DBtvId) || null,
         }
         console.log('DATA', data)
         

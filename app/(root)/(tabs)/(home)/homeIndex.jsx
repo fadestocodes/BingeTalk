@@ -47,7 +47,6 @@ const homeIndex = () => {
         // if (!hasMoreFeed ) return
         try {
           const notifsData = await getAllNotifs( ownerUser.id, null , true )
-          // setNotifications(notifsData)
           const unread = notifsData.filter( item => item.isRead === false)
           setUnreadNotifs(unread)
         } catch {
@@ -74,6 +73,9 @@ const homeIndex = () => {
     const refetchFeed = async () => {
       try {
         setLoading(true);
+        const notifsData = await getAllNotifs( ownerUser.id, null , true )
+        const unread = notifsData.filter( item => item.isRead === false)
+        setUnreadNotifs(unread)
 
         const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=null&threadCursor=null&hasMoreFeed=true&hasMoreThreads=true`);
         const response = await request.json();
@@ -149,7 +151,7 @@ const homeIndex = () => {
           </View>
           <Text className='text-mainGray font-pmedium'>Check out the most bingeable shows right now.</Text>
       </View>
-      <TouchableOpacity onPress={()=>{setUnreadNotifs([]);router.push('/notification')}} style={{ position:'absolute', top:0, right:30 }}>
+      <TouchableOpacity onPress={()=>{router.push('/notification')}} style={{ position:'absolute', top:0, right:30 }}>
         <View className='relative' >
           <Image
             source={{ uri: ownerUser.profilePic }}

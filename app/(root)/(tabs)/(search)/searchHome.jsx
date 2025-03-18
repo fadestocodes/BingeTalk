@@ -325,7 +325,7 @@ const SearchPage = () => {
                   keyExtractor={item => item.id}
                   contentContainerStyle={{gap:15}}
                   renderItem={({item}) => {
-                      console.log('trending thread', item)
+                      // console.log('trending thread', item)
                     return (
                       <TouchableOpacity onPress={()=> handleThreadPress(item)} style={{width:300}} >
                         <ThreadCard  thread={item} isBackground={true} isShortened={true} showThreadTopic={true} />

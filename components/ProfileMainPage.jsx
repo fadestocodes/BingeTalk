@@ -40,10 +40,14 @@ import ListCard from './ListCard'
        
 
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
-        const { data:ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
         const isOwnersProfilePage = user.id === ownerUser.id
         const [ isFollowing, setIsFollowing ] = useState(null)
         const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading } = useGetProfileFeed(user.id, 15)
+        const [ followCounts, setFollowCounts ] = useState({
+            followers : user.followers.length,
+            following : user.following.length
+        })
 
         useEffect(()=>{
             // const checkFollow = ownerUser.following.some( item => item.followingId === user.id );
@@ -96,16 +100,23 @@ import ListCard from './ListCard'
         const handleFollow = async () => {
 
             const followData = {
-                followerId : Number(ownerUser.id),
-                followingId : Number(user.id)
+                followerId : Number(user.id),
+                followingId : Number(ownerUser.id)
             }
             if (isFollowing){
                 const unfollow = await unfollowUser( followData )
+                setFollowCounts(prev => ({
+                    ...prev,
+                    followers : prev.followers - 1,
+                }))
             } else {
                 const follow = await followUser( followData )
+                setFollowCounts(prev => ({
+                    ...prev,
+                    followers : prev.followers + 1
+                }))
             }
             setIsFollowing(prev => !prev)
-            await refetchUser();
         }
     
         const handleLinkPress = async (url) => {
@@ -197,11 +208,11 @@ import ListCard from './ListCard'
                         ) }
                         <View className='flex-row gap-6' style={{marginTop:0}}>
                             <View className='flex-row gap-2 justify-center items-center'>
-                                <Text className='text-gray-400 text-lg font-pblack'>{user.followers.length}</Text>
+                                <Text className='text-gray-400 text-lg font-pblack'>{followCounts.followers}</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Followers</Text>
                             </View>
                             <View className='flex-row gap-2 justify-center items-center'>
-                                <Text className='text-gray-400 text-lg font-pblack'>{user.following.length}</Text>
+                                <Text className='text-gray-400 text-lg font-pblack'>{followCounts.following}</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Following</Text>
                             </View>
                             {/* <View className='flex-row gap-2 justify-center items-center'>

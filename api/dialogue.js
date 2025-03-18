@@ -107,7 +107,7 @@ export const fetchSingleDialogue =  async( dialogueId ) => {
 }
 
 export const useFetchSingleDialogue = ( dialogueId ) => {
-    console.log('trying to use hook with ',dialogueId)
+    // console.log('trying to use hook with ',dialogueId)
     return useQuery({
         queryKey : ['dialogues', dialogueId],
         queryFn : async () => {

@@ -139,7 +139,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
    
     <View  className=''  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
-            <View className='flex justify-center items-start  mb-1 w-full ' style={{gap:15}}>
+            <View className='flex justify-center items-start  mb-1 w-full ' style={{gap:5}}>
               
                 <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
@@ -163,11 +163,11 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                                 </View>
                 ) } */}
                 { tag && (
-                        <View className=' '>
+                        <View className=' my-3'>
                             <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:10}} >{tag.tagName}</Text>
                         </View>
                     ) }
-                <View className='my-0 justify-center items-center w-full gap-3  mb-6'>
+                <View className='my-0 justify-center items-center w-full gap-3  '>
                     <View className='flex gap-2 justify-center items-center'>
                         
                         <View className='justify-center items-center gap-0'>
@@ -177,6 +177,19 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                     </View>
 
                     <Text className='text-third font-pcourier text-custom text-left w-full' numberOfLines={3}> { dialogue.content } </Text>
+                </View>
+
+                <View className='flex-row gap-3  item-center justify-center mt-3' >
+                { dialogue.mentions && dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (
+                    <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
+                        <Image
+                            source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
+                            contentFit='cover'
+                            style={{ width:35, height:40, borderRadius:10, overflow:'hidden' }}
+                        />
+                    </TouchableOpacity>
+                ) ) 
+                }
                 </View>
 
                     
@@ -215,6 +228,9 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         </View>
 
                         </TouchableOpacity>
+                            
+                    </View>
+                    
                         <View className='relative' >
                             <TouchableOpacity   >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
@@ -222,20 +238,6 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                             </View>
                             </TouchableOpacity>
                         </View>
-                            
-                    </View>
-                    <View className='flex-row gap-3  item-center justify-center' >
-                { dialogue.mentions && dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (
-                    <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
-                        <Image
-                            source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
-                            contentFit='cover'
-                            style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
-                        />
-                    </TouchableOpacity>
-                ) ) 
-                }
-                </View>
                 </View>
                 
             </View>
