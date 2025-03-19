@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Platform, Keyboard, FlatList , Image, ImageBackground, TouchableOpacity, TextInput, ActivityIndicator} from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Platform, Keyboard, FlatList , Image, ImageBackground, TouchableOpacity, TextInput, ActivityIndicator, Linking} from 'react-native'
 import React, { useState, useRef } from 'react'
 import { useFetchOwnerUser, useFetchUser } from '../../../../../api/user'
 import { useUser } from '@clerk/clerk-expo'
@@ -9,6 +9,8 @@ import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-re
 import { router, useRouter } from 'expo-router'
 import { updateUser } from '../../../../../api/user'
 import { pickSingleImage } from '../../../../../lib/pickImage'
+import { urlSchema } from '../../../../../lib/zodSchemas'
+
 
 
 const editProfile = () => {
@@ -26,6 +28,7 @@ const editProfile = () => {
     })
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const [error, setError] = useState('')
 
 
     const [ focusedInput, setFocusedInput ] = useState(null)
@@ -36,6 +39,17 @@ const editProfile = () => {
     }));
 
     const handleInputChange = ( name, text ) => {
+
+        // if ( name === 'bioLink'){
+        //     const results = urlSchema.safeParse( inputs.bioLink )
+        //     // console.log('results from validation', results)
+        //     if (!results.success){
+        //         const errorObj = results.error.format();
+        //         setError(errorObj._errors[0])
+        //         console.log('errorObj', errorObj)
+        //     }
+        // }
+
         setInputs( prev => ({
             ...prev,
             [name] : text
@@ -50,13 +64,36 @@ const editProfile = () => {
     }
 
     const handleSave = async () => {
+
+
+        let bioLink = inputs.bioLink.trim(); // Trim any leading/trailing spaces
+
+        // Step 1: Check if URL has a protocol (http:// or https://)
+        if (!/^https?:\/\//i.test(bioLink)) {
+            // Step 2: Check if the URL has 'www.' prefix
+            if (/^www\./i.test(bioLink)) {
+                // If 'www.' is present, prepend 'https://'
+                bioLink = 'https://' + bioLink;
+            } else {
+                // Otherwise, prepend 'https://'
+                bioLink = 'https://www.' + bioLink;
+            }
+        }
+
+        
+        console.log('biolink', inputs.bioLink)
+        const normalizedURL = new URL(bioLink).toString();
+        console.log('Normalized URL:', normalizedURL);
+
+
+
         console.log('image', image)
         const params = {
             id : fetchedUser.id,
             firstName : inputs.firstName,
             lastName : inputs.lastName,
             bio : inputs.bio,
-            bioLink : inputs.bioLink,
+            bioLink :normalizedURL,
             profilePic : image
         }
         const updatedUser = await updateUser( params , fetchedUser.emailAddress);
