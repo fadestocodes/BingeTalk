@@ -216,11 +216,11 @@ import ListCard from './ListCard'
                         <View className='flex-row gap-6' style={{marginTop:0}}>
                             <TouchableOpacity onPress={()=>handleFollowersList('Followers')} className='flex-row gap-2 justify-center items-center'>
                                 <Text className='text-gray-400 text-lg font-pblack'>{followCounts.followers}</Text>
-                                <Text className='text-gray-400 text-sm font-psemibold'>Followers</Text>
+                                <Text className='text-gray-400 text-lg font-psemibold'>Followers</Text>
                             </TouchableOpacity >
                             <TouchableOpacity onPress={()=>handleFollowersList('Following')} className='flex-row gap-2 justify-center items-center'>
                                 <Text className='text-gray-400 text-lg font-pblack'>{followCounts.following}</Text>
-                                <Text className='text-gray-400 text-sm font-psemibold'>Following</Text>
+                                <Text className='text-gray-400 text-lg font-psemibold'>Following</Text>
                             </TouchableOpacity >
                             {/* <View className='flex-row gap-2 justify-center items-center'>
                                 <Text className='text-gray-400 text-lg font-pblack'>21</Text>

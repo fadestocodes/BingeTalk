@@ -608,7 +608,7 @@ export const useGetFollowersListInfinite = (userId, limit) => {
             const response = await fetch(`${nodeServer.currentIP}/user/followers?userId=${userId}&limit=${limit}&cursor=${cursor}`)
             
             const results = await response.json()
-            console.log('resultshere', results)
+            // console.log('resultshere', results)
             // results.items.forEach((item) => {
             //     console.log('result from followers', item.following.id)
             // })

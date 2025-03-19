@@ -12,7 +12,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
     console.log('WHICHLIST?', whichList)
     const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds } = useGetFollowersListInfinite( userId, limit )
-    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing } = useGetFollowingListInfinite( userId, limit )
+    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing, setIsFollowingIds : setIsFollowingIdsFromFollowing } = useGetFollowingListInfinite( userId, limit )
     const {user : clerkUser} = useUser()
     const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
     
@@ -22,21 +22,37 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
 
     const handleFollowBack = async (checkFollow, item) => {
-
-        
+        let toUse 
+        if (whichList === 'Followers'){
+            toUse = item.follower
+        } else if (whichList === 'Following'){
+            toUse = item.follower
+        }
+        console.log('item', item)
         const data = {
-        followerId : item.user.id,
+        followerId : toUse.id,
         followingId : ownerUser.id
         }
+
         if (checkFollow) {
         const unfollowed = await unfollowUser(data)
-        setIsFollowingIds(prev => prev.filter( i => i !== item.userId))
+        console.log('unfollowed', unfollowed)
+        if (whichList === 'Followers'){
+            setIsFollowingIds(prev => prev.filter( i => i !== toUse.id))
         } else {
-        const followBack = await followUser(data)
-        setIsFollowingIds(prev => [...prev, item.userId])
+            setIsFollowingIdsFromFollowing(prev => prev.filter( i => i !== toUse.id))
         }
+        
+        } else {
+            const followBack = await followUser(data)
+            if (whichList === 'Followers'){
+                setIsFollowingIds(prev => [...prev, toUse.id])
+            }else if (whichList === 'Following'){
+                setIsFollowingIdsFromFollowing(prev => [...prev, toUse.id])
+            }
+        }
+        console.log('SETISFOLLOWINGIDS', isFollowingIds, isFollowingIdsFromFollowing)
         // await   refetch()
-        setUpdateNotif(true)
     }
 
 
@@ -91,7 +107,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                                     </View>
                             </TouchableOpacity>
                                 <>
-                                    <TouchableOpacity onPress={()=>handleFollowBack(checkFollow, item)} style={{backgroundColor:checkFollowFromFollower || checkFollowFromFollowing ?  'none' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
+                                    <TouchableOpacity onPress={()=>handleFollowBack( whichList === 'Followers' ? checkFollowFromFollower : checkFollowFromFollowing , item)} style={{backgroundColor:checkFollowFromFollower || checkFollowFromFollowing ?  'none' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
                                         <Text className='   font-pbold text-sm' style={{color: checkFollowFromFollower || checkFollowFromFollowing ? Colors.secondary : Colors.primary}}>{checkFollowFromFollower || checkFollowFromFollowing ? 'Already following' : isOwnersPage ? 'Follow back' : 'Follow'}</Text>
                                     </TouchableOpacity>
 

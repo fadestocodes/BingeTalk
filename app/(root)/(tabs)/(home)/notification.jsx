@@ -16,9 +16,6 @@ const Notification = () => {
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
   const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds} = useGetAllNotifs(ownerUser.id, 10);
   
-  const [ isFollowing, setIsFollowing ] = useState(null)
-  
-  
   
   
   const router = useRouter()
@@ -75,7 +72,6 @@ const Notification = () => {
       setIsFollowingIds(prev => [...prev, item.userId])
     }
     // await   refetch()
-    setUpdateNotif(true)
   }
 
 
