@@ -6,6 +6,7 @@ const UserLayoutBrowse = () => {
   return (
     <Stack  >
         <Stack.Screen name='[userId]' options={{headerShown : false}} />
+        <Stack.Screen name='followersPage' options={{headerShown : false}} />
     </Stack>
   )
 }

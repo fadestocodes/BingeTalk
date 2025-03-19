@@ -1,20 +1,24 @@
 import { StyleSheet, Text, View , FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator} from 'react-native'
 import React from 'react'
 import { Image } from 'expo-image'
-import { useGetFollowersListInfinite, useGetFollowingListInfinite, unfollowUser, followUser } from '../../api/user'
+import { useGetFollowersListInfinite, useGetFollowingListInfinite, unfollowUser, followUser, useFetchOwnerUser } from '../../api/user'
 import { formatDate } from '../../lib/formatDate'
 import { followersListCategories } from '../../lib/CategoryOptions'
 import { Colors } from '../../constants/Colors'
+import { useUser } from '@clerk/clerk-expo'
 
 
 const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
 
     console.log('WHICHLIST?', whichList)
     const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds } = useGetFollowersListInfinite( userId, limit )
-    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings } = useGetFollowingListInfinite( userId, limit )
+    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing } = useGetFollowingListInfinite( userId, limit )
+    const {user : clerkUser} = useUser()
+    const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
     
     console.log('followings', followings)
 
+    const isOwnersPage = userId === ownerUser.id;
 
 
     const handleFollowBack = async (checkFollow, item) => {
@@ -69,9 +73,10 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
                     // console.log('flatlistitem', item)
-                    const checkFollow = isFollowingIds.includes( item?.follower?.id ) 
+                    const checkFollowFromFollower = isFollowingIds.includes( item?.follower?.id ) 
+                    const checkFollowFromFollowing = isFollowingIdsFromFollowing.includes( item?.follower?.id ) 
                     return (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{console.log('presseditem', item)}}>
                        <View className="flex-row justify-between items-center gap-2">
                             <TouchableOpacity onPress={()=>handleUserPress(item?.follower || item?.following)} className='flex-row gap-2 justify-center items-center'>
                                     <Image
@@ -85,11 +90,12 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
                                     </View>
                             </TouchableOpacity>
-                            { whichList === 'Followers' && (
-                            <TouchableOpacity onPress={()=>handleFollowBack(checkFollow, item)} style={{backgroundColor:checkFollow ? Colors.secondary: 'none', borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
-                                <Text className='   font-pbold text-sm' style={{color: checkFollow ? Colors.primary : Colors.secondary}}>{checkFollow ? 'Follow back' :'Already following'}</Text>
-                            </TouchableOpacity>
-                            ) }
+                                <>
+                                    <TouchableOpacity onPress={()=>handleFollowBack(checkFollow, item)} style={{backgroundColor:checkFollowFromFollower || checkFollowFromFollowing ?  'none' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
+                                        <Text className='   font-pbold text-sm' style={{color: checkFollowFromFollower || checkFollowFromFollowing ? Colors.secondary : Colors.primary}}>{checkFollowFromFollower || checkFollowFromFollowing ? 'Already following' : isOwnersPage ? 'Follow back' : 'Follow'}</Text>
+                                    </TouchableOpacity>
+
+                                </>
                         </View>
                     </TouchableOpacity>
                 )}}

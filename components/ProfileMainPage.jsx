@@ -132,7 +132,7 @@ import ListCard from './ListCard'
         const handleFollowersList = (listType) => {
             router.push({
                 pathname : `/user/followersPage`,
-                params : { listType, userId : ownerUser.id }
+                params : { listType, userId : user.id }
             })
         }
 

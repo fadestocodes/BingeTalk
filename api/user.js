@@ -1,6 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { SignOutButton, useAuth } from '@clerk/clerk-react'
+import { SignOutButton, useAuth, useUser } from '@clerk/clerk-react'
 import React, {useState, useCallback, useEffect, useRef} from 'react'
 
 
@@ -81,7 +81,7 @@ export const updateRotation =  async ( userId, rotationItems, listItemObj  ) => 
             body : JSON.stringify(  {userId, rotationItems, listItemObj} )
         })
         const response = await request.json();
-        console.log('resposne from updateRotation', response)
+        // console.log('resposne from updateRotation', response)
     } catch (err) {
         console.log(err)
     }
@@ -89,7 +89,6 @@ export const updateRotation =  async ( userId, rotationItems, listItemObj  ) => 
 
 
 export const fetchUser = async ( emailOrId ) => {
-    console.log('hello here', emailOrId)
     try {
         const request = await fetch(`${nodeServer.currentIP}/user`, {
             method:'POST',
@@ -112,13 +111,12 @@ export const useFetchUser = (emailOrId ) => {
     // const queryClient = useQueryClient(); // Get query client
     // Get all cached queries
     // Log the entire queries object
-    console.log('trying to fetch user with email: ', (emailOrId))
 
 
     return useQuery({
         queryKey: ['user', emailOrId],
         queryFn: async () => {
-            console.log('Executing query function...');
+
             const fetchedUser = await fetchUser(emailOrId);
             return fetchedUser
         },
@@ -199,7 +197,6 @@ export const useRecentlyWatched = (userId, limit=5) => {
 
     const getRecentlyWatched =  async () => {
         if ( !hasMore  ) return
-        console.log('HAS MORE?', hasMore)
 
         setLoading(true)
         // if (cursor){
@@ -208,7 +205,6 @@ export const useRecentlyWatched = (userId, limit=5) => {
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/recently-watched?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            console.log('next CURSOR', result.nextCursor)
             setData(prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
@@ -236,7 +232,6 @@ export const fetchRecentlyWatched = async ( { pageParam = null, userId } ) => {
     // const { userId, cursor, take } = data
     const request  = await fetch(`${nodeServer.currentIP}/user/recently-watched?userId=${userId}&cursor=${pageParam}&limit=5`);
     const response = await request.json();
-    console.log('THE RESPONSE', response)
     return response;
 };
 
@@ -263,7 +258,6 @@ export const useFetchRecentlyWatched = (userId) => {
             // if ( !hasMore  ) return
             if (!hasMore && !reset) return;
 
-            console.log('HAS MORE?', hasMore)
 
             setLoading(true)
             // if (cursor){
@@ -272,7 +266,6 @@ export const useFetchRecentlyWatched = (userId) => {
             try {
                 const response = await fetch (`${nodeServer.currentIP}/user/watchlist?userId=${userId}&cursor=${cursor}&limit=${limit}`)
                 const result = await response.json();
-                console.log('next CURSOR', result.nextCursor)
                 setData(reset ?  result.items  : prev => [...prev, ...result.items]);
                 setCursor(result.nextCursor)
                 // cursorRef.current = result.nextCursor;
@@ -357,7 +350,6 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
 
     const getRecommendationsSent =  async ( reset = false ) => {
         if ( !hasMore && !reset ) return
-        console.log('HAS MORE?', hasMore)
 
         setLoading(true)
      
@@ -404,7 +396,6 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
 
     const getRecommendationsReceived =  async (reset = false) => {
         if ( !hasMore && !reset  ) return
-        console.log('HAS MORE?', hasMore)
 
         setLoading(true)
         // if (cursor){
@@ -413,7 +404,6 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            console.log('next CURSOR', result.nextCursor)
             setData(reset ? result.items : prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
@@ -453,7 +443,6 @@ export const useGetInterestedItems = (userId, limit=5) => {
 
     const getInterestedItems =  async () => {
         if ( !hasMore  ) return
-        console.log('HAS MORE?', hasMore)
 
         setLoading(true)
         // if (cursor){
@@ -462,7 +451,6 @@ export const useGetInterestedItems = (userId, limit=5) => {
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/interested?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            console.log('next CURSOR', result.nextCursor)
             setData(prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
@@ -495,7 +483,6 @@ export const useGetCurrentlyWatchingItems = (userId, limit=5) => {
 
     const getCurrentlyWatchingItems =  async () => {
         if ( !hasMore  ) return
-        console.log('HAS MORE?', hasMore)
 
         setLoading(true)
         // if (cursor){
@@ -504,8 +491,6 @@ export const useGetCurrentlyWatchingItems = (userId, limit=5) => {
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/currently-watching?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            console.log("CURRENTWATCH RESULt", result)
-            console.log('next CURSOR', result.nextCursor)
             setData(prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
@@ -609,28 +594,30 @@ export const deleteInterested = async (data ) => {
 
 
 export const useGetFollowersListInfinite = (userId, limit) => {
+    const { user:clerkUser } = useUser()
+    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
     const [ data, setData ] = useState([])
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore,setHasMore ] = useState(true)
     const [ loading, setLoading ] = useState(true)
     const [ isFollowingIds, setIsFollowingIds ] = useState([])
-    const { data : ownerUser } = useFetchOwnerUser({id : Number(userId)})
 
     const getFollowersListInfinite = async () => {
-        console.log('hellowhere')
         if (!hasMore) return
         try {
             const response = await fetch(`${nodeServer.currentIP}/user/followers?userId=${userId}&limit=${limit}&cursor=${cursor}`)
             
             const results = await response.json()
-            // console.log('resultshere', results)
+            console.log('resultshere', results)
             // results.items.forEach((item) => {
             //     console.log('result from followers', item.following.id)
             // })
             setData(prev => [...prev, ...results.items])
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
-            const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
+          
+
+            const isFollowingId = results.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.following.id ) ).map( element => element.userId );
             setIsFollowingIds(prev=> [...prev, ...isFollowingId])
 
         } catch (Err){
@@ -649,10 +636,13 @@ export const useGetFollowersListInfinite = (userId, limit) => {
 }
 
 export const useGetFollowingListInfinite = (userId, limit) => {
+    const { user:clerkUser } = useUser()
+    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
     const [ data, setData ] = useState([])
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore,setHasMore ] = useState(true)
     const [ loading, setLoading ] = useState(true)
+    const [ isFollowingIds, setIsFollowingIds ] = useState([])
 
     const getFollowingListInfinite = async () => {
         if (!hasMore) return
@@ -666,6 +656,14 @@ export const useGetFollowingListInfinite = (userId, limit) => {
             setData(prev => [...prev, ...results.items])
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
+            results.items.forEach( i => {
+                console.log('forEach',i)
+            } )
+            console.log('owner users following', ownerUser.following)
+            const isFollowingId = results.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.follower.id ) ).map( element => element.follower.id );
+            console.log('isFOllowingIds', isFollowingId)
+            setIsFollowingIds(prev=> [...prev, ...isFollowingId])
+
         } catch (Err){
             console.log(Err)
         } finally {
@@ -678,5 +676,5 @@ export const useGetFollowingListInfinite = (userId, limit) => {
         getFollowingListInfinite()
     },[userId])
 
-    return { data, loading, hasMore, refetch : getFollowingListInfinite }
+    return { data, loading, hasMore, refetch : getFollowingListInfinite, isFollowingIds, setIsFollowingIds }
 }
