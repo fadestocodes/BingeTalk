@@ -239,6 +239,8 @@ const ActivityCard = ( { activity, refetch } ) => {
             router.push(`(home)/movie/${item.rating.movie.tmdbId}`)
         } else if (item?.rating?.tv){
             router.push(`(home)/tv/${item.rating.tv.tmdbId}`)
+        } else if (item?.threads?.castCrew){
+            router.push(`/(home)/cast/${item.threads.castCrew.tmdbId}`)
         }
     }
 
@@ -251,7 +253,7 @@ const ActivityCard = ( { activity, refetch } ) => {
             <ListCard list={activity.list} activity={activity.description} fromHome={true}  refetch={refetch}/>
         </View>
     ): activity.type === 'thread' ?(
-        <TouchableOpacity onPress={()=>{console.log('itempressedfrom1',activity);handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:15}}>
+        <TouchableOpacity onPress={()=>{console.log('itempressedfrom1',activity);handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
              <View className="flex-row justify-between gap-2">
                  <TouchableOpacity onPress={()=>handleUserPress(activity.user)} className='flex-row gap-2 justify-center items-center'>
                          <Image
@@ -272,7 +274,10 @@ const ActivityCard = ( { activity, refetch } ) => {
         ) }
         </View>
         <Text className='text-white text-lg font-pbold leading-6'>{activity.title}</Text>
+        <Text className='text-secondary  font-pcourier text-center text-custom uppercase mt-3  '>{activity.user.firstName}</Text>
+        <Text className='text-white  font-pcourier text-custom mb-2' numberOfLines={10}>{activity.caption}</Text>
             { imagePaths && (
+                <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
                 <Image
                 source ={{ uri : `${posterURL}${activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.threads?.movie?.backdropPath || activity?.threads?.tv?.backdropPath}` }}
                 placeholder ={{ uri :  `${posterURL}${activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.threads?.movie?.backdropPath || activity?.threads?.tv?.backdropPath}` }}
@@ -280,7 +285,27 @@ const ActivityCard = ( { activity, refetch } ) => {
                 contentFit='cover'
                 style ={{ width:35, height:45, borderRadius:10 }}
             />
+            </TouchableOpacity>
             ) }
+            { activity.activityType === 'DIALOGUE' && (
+             <View className='flex-row gap-3  item-center justify-center' >
+             { activity.dialogue.mentions && activity.dialogue.mentions.length > 0 && activity.dialogue.mentions.map( mention => (
+                <>
+                { imagePaths && (
+                    <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
+   
+                        <Image
+                            source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
+                            contentFit='cover'
+                            style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
+                        />
+                    </TouchableOpacity>
+                ) }
+                </>
+             ) ) 
+             }
+             </View>
+          ) }
 
       <View className='flex-row  justify-between w-full items-end '>
           <View className='relative flex-row gap-4 justify-center items-center' >
@@ -306,37 +331,20 @@ const ActivityCard = ( { activity, refetch } ) => {
                   <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
               </View>
               </TouchableOpacity>
-              <TouchableOpacity   >
+              
+          </View>
+          
+          <TouchableOpacity   >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
                   <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
               </View>
               </TouchableOpacity>
-          </View>
-          { activity.activityType === 'DIALOGUE' && (
-             <View className='flex-row gap-3  item-center justify-center' >
-             { activity.dialogue.mentions && activity.dialogue.mentions.length > 0 && activity.dialogue.mentions.map( mention => (
-                <>
-                { imagePaths && (
-                    <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
-   
-                        <Image
-                            source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
-                            contentFit='cover'
-                            style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
-                        />
-                    </TouchableOpacity>
-                ) }
-                </>
-             ) ) 
-             }
-             </View>
-          ) }
       </View>
       
     </TouchableOpacity>
     ) : (
 
-    <TouchableOpacity disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }   onPress={()=>{console.log('itempressed from2',activity);handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:15}}>
+    <TouchableOpacity disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }   onPress={()=>{console.log('itempressed from2',activity);handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
 
             
     {/* ---------------header */}
@@ -361,7 +369,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                 <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:10}} >{activity.dialogue.tag.tagName}</Text>
             </View>
         ) }
-    <View className='my-0 justify-center items-center w-full gap-3  mb-6'>
+    <View className='my-0 justify-center items-center w-full gap-3  mb-2'>
         <View className='flex gap-2 justify-center items-center'>
             
             <View className='justify-center items-center gap-0'>
@@ -387,13 +395,15 @@ const ActivityCard = ( { activity, refetch } ) => {
         </View>
         <Text className='text-white text-lg font-pbold leading-6'>{activity.threads.title}</Text>
         { imagePaths && (
-        <Image
-        source ={{ uri : `${posterURL}${imagePaths}` }}
-        placeholder ={{ uri :  `${posterURL}${imagePaths}` }}
-        placeholderContentFit='cover'
-        contentFit='cover'
-        style ={{ width:35, height:45, borderRadius:10 }}
-      />
+            <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
+                <Image
+                source ={{ uri : `${posterURL}${imagePaths}` }}
+                placeholder ={{ uri :  `${posterURL}${imagePaths}` }}
+                placeholderContentFit='cover'
+                contentFit='cover'
+                style ={{ width:35, height:45, borderRadius:10 }}
+            />
+            </TouchableOpacity>
         ) }
     </>
     ) : !activity.activityType ? (
@@ -470,6 +480,21 @@ const ActivityCard = ( { activity, refetch } ) => {
 
     {/* ---------------------footer */}
     { activity.activityType === 'DIALOGUE' || activity.activityType === 'THREAD' ? (
+        <>
+         { activity.activityType === 'DIALOGUE' && (
+            <View className='flex-row gap-3  item-center justify-start w-full' >
+            { activity.dialogue.mentions && activity.dialogue.mentions.length > 0 && activity.dialogue.mentions.map( mention => (
+                <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
+                    <Image
+                        source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
+                        contentFit='cover'
+                        style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
+                    />
+                </TouchableOpacity>
+            ) ) 
+            }
+            </View>
+         ) }
     <View className='flex-row  justify-between w-full items-end '>
           <View className='relative flex-row gap-3 justify-center items-center' >
           <TouchableOpacity onPress={()=>handleInteraction('upvotes',activity?.threads || activity?.dialogue)} >
@@ -494,34 +519,31 @@ const ActivityCard = ( { activity, refetch } ) => {
                   <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
               </View>
               </TouchableOpacity>
-              <TouchableOpacity   >
+          </View>
+             
+         
+           <TouchableOpacity   >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
                   <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
               </View>
               </TouchableOpacity>
-          </View>
-          { activity.activityType === 'DIALOGUE' && (
-             <View className='flex-row gap-3  item-center justify-center' >
-             { activity.dialogue.mentions && activity.dialogue.mentions.length > 0 && activity.dialogue.mentions.map( mention => (
-                 <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
-                     <Image
-                         source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
-                         contentFit='cover'
-                         style={{ width:35, height:45, borderRadius:10, overflow:'hidden' }}
-                     />
-                 </TouchableOpacity>
-             ) ) 
-             }
-             </View>
-          ) }
-      </View>
+      </View></>
 
     ) : (
         <View className='w-full flex-start items-start flex-row gap-2'>
+            <View className='flex-row justify-between w-full items-center'>
                   <TouchableOpacity onPress={()=>handleLike(activity)} style={{ flexDirection:'row', gap:5, alignItems:'center', justifyContent:'center' }}>
                     <Heart size={20} strokeWidth={2.5} color={ already.liked ? Colors.secondary : Colors.mainGray}></Heart>
                   <Text className='text-mainGray text-xs font-pbold'>{interactionCounts.likes}</Text>
                   </TouchableOpacity>
+                  <TouchableOpacity   >
+              <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
+                  <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+              </View>
+              </TouchableOpacity>
+
+
+            </View>
                 </View>
     ) }
   </TouchableOpacity>

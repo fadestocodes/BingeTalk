@@ -1,0 +1,106 @@
+import { StyleSheet, Text, View , FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator} from 'react-native'
+import React from 'react'
+import { Image } from 'expo-image'
+import { useGetFollowersListInfinite, useGetFollowingListInfinite, unfollowUser, followUser } from '../../api/user'
+import { formatDate } from '../../lib/formatDate'
+import { followersListCategories } from '../../lib/CategoryOptions'
+import { Colors } from '../../constants/Colors'
+
+
+const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
+
+    console.log('WHICHLIST?', whichList)
+    const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds } = useGetFollowersListInfinite( userId, limit )
+    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings } = useGetFollowingListInfinite( userId, limit )
+    
+    console.log('followings', followings)
+
+
+
+    const handleFollowBack = async (checkFollow, item) => {
+
+        
+        const data = {
+        followerId : item.user.id,
+        followingId : ownerUser.id
+        }
+        if (checkFollow) {
+        const unfollowed = await unfollowUser(data)
+        setIsFollowingIds(prev => prev.filter( i => i !== item.userId))
+        } else {
+        const followBack = await followUser(data)
+        setIsFollowingIds(prev => [...prev, item.userId])
+        }
+        // await   refetch()
+        setUpdateNotif(true)
+    }
+
+
+
+  return (
+    <SafeAreaView className='w-full h-full bg-primary'>
+    <View className='w-full  pt-10 px-6 gap-5' style={{paddingBottom:200}}>
+      <View className="gap-3">
+          <View className='flex-row gap-2 justify-start items-center'>
+
+            {/* <FilmIcon size={30} color='white' /> */}
+            <Text className='text-white font-pbold text-3xl'>Your network</Text>
+          </View>
+          <Text className='text-mainGray font-pmedium'>View your followers and who you're following.</Text>
+      </View>
+
+
+      <View className='w-full my-5 gap-8' style={{paddingBottom:100}}>
+        <FlatList
+          horizontal
+          data={followersListCategories}
+          keyExtractor={(item,index) => index}
+          contentContainerStyle={{ gap:10 }}
+          renderItem={({item}) => (
+            <TouchableOpacity onPress={()=>{setWhichList(item) }} style={{ borderRadius:15, backgroundColor:whichList===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+              <Text className=' font-pmedium' style={{ color : whichList===item ? Colors.primary : 'white' }}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+
+            <FlatList
+                data={ whichList === 'Followers' ? followers : (whichList === 'Following' ? followings : [] )}
+                keyExtractor={item => item.id}
+                contentContainerStyle={{gap:15}}
+                renderItem={({item}) => {
+                    // console.log('flatlistitem', item)
+                    const checkFollow = isFollowingIds.includes( item?.follower?.id ) 
+                    return (
+                    <TouchableOpacity>
+                       <View className="flex-row justify-between items-center gap-2">
+                            <TouchableOpacity onPress={()=>handleUserPress(item?.follower || item?.following)} className='flex-row gap-2 justify-center items-center'>
+                                    <Image
+                                    source={{ uri : item?.follower?.profilePic || item?.following?.profilePic }}
+                                    contentFit='cover'
+                                    style={{ width:40, height:40, borderRadius:50 }}
+                                    />
+                                    <View>
+                                        <Text className='text-mainGray font-pbold'>@{item?.follower?.username || item?.following?.username}</Text>
+                                        <Text className='text-white font-pregular'>{item?.follower?.firstName || item?.following?.firstName} { item?.follower?.lastName || item?.following?.lastName }</Text>
+
+                                    </View>
+                            </TouchableOpacity>
+                            { whichList === 'Followers' && (
+                            <TouchableOpacity onPress={()=>handleFollowBack(checkFollow, item)} style={{backgroundColor:checkFollow ? Colors.secondary: 'none', borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
+                                <Text className='   font-pbold text-sm' style={{color: checkFollow ? Colors.primary : Colors.secondary}}>{checkFollow ? 'Follow back' :'Already following'}</Text>
+                            </TouchableOpacity>
+                            ) }
+                        </View>
+                    </TouchableOpacity>
+                )}}
+            />
+            </View>
+
+        </View>
+   </SafeAreaView>
+  )
+}
+
+export default FollowersFollowingsList
+
+const styles = StyleSheet.create({})

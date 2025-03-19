@@ -14,7 +14,7 @@ import { useRouter } from 'expo-router'
 const Notification = () => {
   const { user : clerkUser } = useUser();
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
-  const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds} = useGetAllNotifs(ownerUser.id, 10);
+  const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds} = useGetAllNotifs(ownerUser.id, 10);
   
   const [ isFollowing, setIsFollowing ] = useState(null)
   
@@ -23,21 +23,23 @@ const Notification = () => {
   
   const router = useRouter()
   
-  
-  useEffect(()=>{
-      const isFollowingId = notifications.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.id );
-      setIsFollowing(isFollowingId)
+    
+    // useEffect(()=>{
+    //     const isFollowingId = notifications.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.id );
+    //     setIsFollowing(isFollowingId)
 
-  },[])
-  
+    // },[])
+    
 
     
 
   const handlePress = async (item) => {
     console.log('notif', item)
    
+    setUnreadIds( prev => prev.filter( i => i !== item.id ))
     const readNotif = await markNotifRead( item.id )
-    await refetch()
+
+    // await refetch()
     if (item.parentActivityId){
       router.push(`/activity/${item.parentActivityId}`)
     } else if (item.threads){
@@ -52,6 +54,8 @@ const Notification = () => {
       router.push(`/movie/${item.movie.tmdbId}`)
     } else if (item.castCrew){
       router.push(`/cast/${item.castCrew.tmdbId}`)
+    } else if (item.activityType === 'FOLLOW'){
+      router.push(`/user/${item.userId}`)
     }
    
   }
@@ -116,11 +120,10 @@ const Notification = () => {
           renderItem={({item}) => {
               //  const checkFollow = ownerUser?.following.some( followingItem => followingItem?.followerId === item.userId );
               const checkFollow = isFollowingIds.includes( item.userId )
-              console.log('isfllowingids', isFollowingIds)
-              console.log('checkFollow')
+              const unread = unreadIds.includes( item.id )
             
             return (
-            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full justify-start items-start' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: item.isRead ? 0.7 : 1  }}>
+            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full justify-start items-start' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: unread ? 1 : 0.4  }}>
               <View className='flex-row gap-2 justify-between items-center w-full'>
                 <View className='flex-row gap-2 justify-center items-center'>
                   <Image 

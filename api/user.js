@@ -606,3 +606,77 @@ export const deleteInterested = async (data ) => {
         console.log(err)
     }
 }
+
+
+export const useGetFollowersListInfinite = (userId, limit) => {
+    const [ data, setData ] = useState([])
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore,setHasMore ] = useState(true)
+    const [ loading, setLoading ] = useState(true)
+    const [ isFollowingIds, setIsFollowingIds ] = useState([])
+    const { data : ownerUser } = useFetchOwnerUser({id : Number(userId)})
+
+    const getFollowersListInfinite = async () => {
+        console.log('hellowhere')
+        if (!hasMore) return
+        try {
+            const response = await fetch(`${nodeServer.currentIP}/user/followers?userId=${userId}&limit=${limit}&cursor=${cursor}`)
+            
+            const results = await response.json()
+            // console.log('resultshere', results)
+            // results.items.forEach((item) => {
+            //     console.log('result from followers', item.following.id)
+            // })
+            setData(prev => [...prev, ...results.items])
+            setCursor(results.nextCursor)
+            setHasMore(!!results.nextCursor)
+            const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
+            setIsFollowingIds(prev=> [...prev, ...isFollowingId])
+
+        } catch (Err){
+            console.log(Err)
+        } finally {
+            setLoading(false)
+        }
+
+    }
+
+    useEffect(() => {
+        getFollowersListInfinite()
+    },[])
+
+    return { data, loading, hasMore, refetch : getFollowersListInfinite, isFollowingIds, setIsFollowingIds }
+}
+
+export const useGetFollowingListInfinite = (userId, limit) => {
+    const [ data, setData ] = useState([])
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore,setHasMore ] = useState(true)
+    const [ loading, setLoading ] = useState(true)
+
+    const getFollowingListInfinite = async () => {
+        if (!hasMore) return
+        try {
+            const response = await fetch(`${nodeServer.currentIP}/user/followings?userId=${userId}&limit=${limit}&cursor=${cursor}`)
+            const results = await response.json()
+            results.items.forEach((item) => {
+                console.log('result from followings', item.follower.id)
+            })
+            console.log('results from getting followings')
+            setData(prev => [...prev, ...results.items])
+            setCursor(results.nextCursor)
+            setHasMore(!!results.nextCursor)
+        } catch (Err){
+            console.log(Err)
+        } finally {
+            setLoading(false)
+        }
+
+    }
+
+    useEffect(() => {
+        getFollowingListInfinite()
+    },[userId])
+
+    return { data, loading, hasMore, refetch : getFollowingListInfinite }
+}

@@ -55,7 +55,7 @@ export const useGetProfileFeed = (userId, limit) => {
         try {
             const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&threadCursor=${cursors.thread}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreThreads=${hasMore.thread}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
-            console.log('HASMORES FROM RESULTS', results.hasMoreDialoguesServer, results.hasMoreThreadsServer, results.hasMoreListsServer,)
+            // console.log('HASMORES FROM RESULTS', results.hasMoreDialoguesServer, results.hasMoreThreadsServer, results.hasMoreListsServer,)
             setData(prev => ([...prev, ...results.items]))
             setHasMore({
                 dialogue : !!results.nextDialogueCursor,
@@ -72,7 +72,7 @@ export const useGetProfileFeed = (userId, limit) => {
         } catch (err){
             console.log(err)
         } finally {
-            console.log("SET HASMORES", hasMore)
+            // console.log("SET HASMORES", hasMore)
             setLoading(false)
         }
     }

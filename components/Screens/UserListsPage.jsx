@@ -15,7 +15,7 @@ import ListCard from '../ListCard';
 const UserListsPage = ( { userId } ) => {
     // const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
     const { data : lists, refetch, loading } = useFetchUsersListsInfinite(userId, 10);
-    console.log('lists are', lists)
+    // console.log('lists are', lists)
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const { user : clerkUser } = useUser()
     const router = useRouter();
@@ -91,7 +91,7 @@ const UserListsPage = ( { userId } ) => {
             keyExtractor={item => item.id}
             contentContainerStyle={{ gap:15 }}
             renderItem={ ({item}) => {
-                console.log('each list', item)
+                // console.log('each list', item)
                 return (
                 <ListCard list={item} />
             )} }

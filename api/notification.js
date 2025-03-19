@@ -12,6 +12,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const [ isFollowingIds, setIsFollowingIds ] = useState([])
     const { user:clerkUser } = useUser()
     const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const [ unreadIds, setUnreadIds ] = useState([])
 
     const getAllNotifs = async () => {
         if (!hasMore) return
@@ -24,7 +25,10 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             setHasMore(!!response.nextCursor)
 
             const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
-            setIsFollowingIds(isFollowingId)
+            setIsFollowingIds(prev=> [...prev, ...isFollowingId])
+            const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
+            // console.log('unreadIds', unreadIds)
+            setUnreadIds( prev => [ ...prev, ...unreadIds ] )
 
             
 
@@ -43,7 +47,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
 
     
 
-    return { data, loading, hasMore, refetch :getAllNotifs , isFollowingIds, setIsFollowingIds}
+    return { data, loading, hasMore, refetch :getAllNotifs , isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds}
 }
 
 export const getAllNotifs = async (recipientId, limit, fetchAll) => {

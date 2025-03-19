@@ -129,6 +129,13 @@ import ListCard from './ListCard'
             }
         };
 
+        const handleFollowersList = (listType) => {
+            router.push({
+                pathname : `/user/followersPage`,
+                params : { listType, userId : ownerUser.id }
+            })
+        }
+
         if (isFetchingUser || loading){
             return (
             <View className="bg-primary w-full h-full">
@@ -207,14 +214,14 @@ import ListCard from './ListCard'
                         </TouchableOpacity>
                         ) }
                         <View className='flex-row gap-6' style={{marginTop:0}}>
-                            <View className='flex-row gap-2 justify-center items-center'>
+                            <TouchableOpacity onPress={()=>handleFollowersList('Followers')} className='flex-row gap-2 justify-center items-center'>
                                 <Text className='text-gray-400 text-lg font-pblack'>{followCounts.followers}</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Followers</Text>
-                            </View>
-                            <View className='flex-row gap-2 justify-center items-center'>
+                            </TouchableOpacity >
+                            <TouchableOpacity onPress={()=>handleFollowersList('Following')} className='flex-row gap-2 justify-center items-center'>
                                 <Text className='text-gray-400 text-lg font-pblack'>{followCounts.following}</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Following</Text>
-                            </View>
+                            </TouchableOpacity >
                             {/* <View className='flex-row gap-2 justify-center items-center'>
                                 <Text className='text-gray-400 text-lg font-pblack'>21</Text>
                                 <Text className='text-gray-400 text-sm font-psemibold'>Credits</Text>
@@ -268,12 +275,12 @@ import ListCard from './ListCard'
                             <TouchableOpacity onPress={handleFollow} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, backgroundColor:isFollowing ? Colors.secondary : null , borderColor:Colors.secondary, borderRadius:10,  flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
 
                                  { isFollowing ? (
-                                    < View className='flex-row gap-3'>
+                                    < View  className='flex-row gap-3'>
                                     <UserCheck strokeWidth={2.5} color={ isFollowing ? Colors.primary : Colors.secondary} size={18}/>
                                     <Text style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.primary }} >Following</Text>
                                     </View>
                                 ) : (
-                                    <View className='flex-row gap-3'>
+                                    <View  className='flex-row gap-3'>
                                     <UserPlus strokeWidth={2.5} color={Colors.secondary} size={18} />
                                     <Text style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.secondary }} >Follow</Text>
                                     </View>
