@@ -1,12 +1,14 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity} from 'react-native'
 import { Colors } from '../../../../constants/Colors'
 import React, {useState} from 'react'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Delete, Shield, ShieldAlert } from 'lucide-react-native'
 import { BackIcon } from '../../../../assets/icons/icons'
 import { deleteDialogue } from '../../../../api/dialogue'
 import { reportPost } from '../../../../api/report'
 import ToastMessage from '../../../../components/ui/ToastMessage'
+import { useGetProfileFeed } from '../../../../api/feed'
+import { usePostRemoveContext } from '../../../../lib/PostToRemoveContext'
 
 const postOptions = () => {
     const { fromOwnPost, ownerId, postType, postId, postUserId} = useLocalSearchParams()
@@ -14,6 +16,10 @@ const postOptions = () => {
     const [ pressedButton, setIsPressedButton ] = useState(null)
     const [ reportType, setReportType ] = useState(null)
     const [ toastMessage, setToastMessage ] = useState(null)
+    const router = useRouter();
+    const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading , removeItem} = useGetProfileFeed(ownerId, 15)
+    const { postToRemove, updatePostToRemove } = usePostRemoveContext()
+
 
 
     const handleButton = (type) => {
@@ -21,13 +27,26 @@ const postOptions = () => {
         setIsStep1(false);
     }
 
-    const handleDelete = async (postId) => {
+    const handleDelete = async () => {
         const data = {
             userId :  Number(ownerId),
-            dialogueId : postId.id
+            dialogueId : Number(postId)
         }
         const deleted = await deleteDialogue(data)
         console.log('deleted?', deleted)
+        setToastMessage(deleted.message)
+
+        updatePostToRemove( {
+            id : Number(postId),
+            postType 
+        } )
+
+        setIsStep1(true)
+        setIsPressedButton(null)
+        setReportType(null)
+        setTimeout(() => {
+            router.back()
+        }, 1500)
     }
 
     const handleReportSubmit = async (reportType,postId) => {
@@ -49,7 +68,9 @@ const postOptions = () => {
         setIsStep1(true)
         setIsPressedButton(null)
         setReportType(null)
-
+        setTimeout(() => {
+            router.back()
+        }, 1500)
         
         
 
@@ -89,7 +110,7 @@ const postOptions = () => {
                     <View className='gap-3 justify-center items-center '>
 
                         <Text  className='text-white font-pbold text-xl mb-3' >Are you sure you want to delete?</Text>
-                        <TouchableOpacity style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }}>
+                        <TouchableOpacity onPress={handleDelete} style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }}>
                             <Text className='text-secondary text-center font-pbold'>Yes</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }}>

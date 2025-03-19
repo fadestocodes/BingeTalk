@@ -16,6 +16,7 @@ import { UserDBProvider } from '../lib/UserDBContext'
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '../lib/tanStackClient'; // Import the query client
 import {DialogueProvider} from '../lib/DialoguePostContext'
+import {PostRemoveProvider} from '../lib/PostToRemoveContext'
 
 
 
@@ -62,6 +63,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
         <UserDBProvider>
           <DialogueProvider>
+            <PostRemoveProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar
             backgroundColor={Colors.mainGray} // Any color for background, use a color or hex
@@ -75,6 +77,7 @@ export default function RootLayout() {
             <Stack.Screen name="+not-found" />
           </Stack>
           </GestureHandlerRootView>
+          </PostRemoveProvider>
           </DialogueProvider>
           </UserDBProvider>
         </QueryClientProvider>

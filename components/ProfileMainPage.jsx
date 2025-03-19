@@ -21,6 +21,8 @@ import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'
 import { useGetProfileFeed } from '../api/feed'
 import ThreadCard from './ThreadCard'
 import ListCard from './ListCard'
+import { usePostRemoveContext } from '../lib/PostToRemoveContext'
+ 
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
 
@@ -43,11 +45,13 @@ import ListCard from './ListCard'
         const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
         const isOwnersProfilePage = user.id === ownerUser.id
         const [ isFollowing, setIsFollowing ] = useState(null)
-        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading } = useGetProfileFeed(user.id, 15)
+        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user.id, 15)
         const [ followCounts, setFollowCounts ] = useState({
             followers : user.followers.length,
             following : user.following.length
         })
+
+        const { postToRemove, updatePostToRemove } = usePostRemoveContext()
 
         useEffect(()=>{
             // const checkFollow = ownerUser.following.some( item => item.followingId === user.id );
@@ -62,6 +66,11 @@ import ListCard from './ListCard'
         console.log(isFollowing)
         }, [])
 
+
+        useEffect(()=>{
+            console.log('postToRemove context changed')
+            removeItem( postToRemove.id, postToRemove.postType )
+        },[postToRemove])
        
 
         const handleSignOut = async () => {
@@ -164,7 +173,7 @@ import ListCard from './ListCard'
                 <RefreshControl
                 tintColor={Colors.secondary}
                 refreshing={isFetching}
-                onRefresh={()=>{refetch(); refetchUser()}} 
+                onRefresh={()=>{ refetchUser()}} 
                 />
                 }
             onEndReached={()=> {
@@ -173,7 +182,7 @@ import ListCard from './ListCard'
             }}
             onEndReachedThreshold={0.3}
             keyboardShouldPersistTaps="handled" 
-            keyExtractor={ (item,index) => index }
+            keyExtractor={ (item,index) => `${item.id}-${index}` }
             ListHeaderComponent={(
                
                 <View className='justify-center items-center flex gap-3 ' style={{  marginTop:0, overflow:'hidden'}}>
@@ -309,7 +318,7 @@ import ListCard from './ListCard'
                 ) : item.feedType === 'dialogue' ? (
 
                     <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
-                        <DialogueCard  dialogue={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate } />
+                        <DialogueCard  dialogue={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate } removeItem={removeItem} />
                     </TouchableOpacity>
 
                 ) : item?.feedType === 'list' &&  (

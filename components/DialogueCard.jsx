@@ -15,7 +15,7 @@ import { useFetchOwnerUser } from '../api/user'
 
 
 
-const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity, isReposted} ) => {
+const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity, isReposted, removeItem} ) => {
 
 
     // const [ dialogue, setDialogue ] = useState(null)

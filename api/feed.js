@@ -81,5 +81,15 @@ export const useGetProfileFeed = (userId, limit) => {
         getProfileFeed()
     }, [userId])
 
-    return { data, loading, hasMore, cursors, refetch : getProfileFeed } 
+    const removeItem = (idToRemove, removeType) => {
+        console.log('idToremove and remoeType', idToRemove, removeType)
+        setData(prev => prev.filter( i => i.id !== Number(idToRemove) && i.feedType !== removeType  ) )
+        // console.log('new dataset', data)
+        data.forEach(item => {
+            console.log('data iteration', item.id, item.feedType)
+        })
+
+    }
+
+    return { data, loading, hasMore, cursors, refetch : getProfileFeed , removeItem} 
 }
