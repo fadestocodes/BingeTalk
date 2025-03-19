@@ -128,9 +128,20 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
         refetch();
     }
 
+    const handleThreeDots = (item) => {
+
+        const fromOwnPost = item.userId === ownerUser.id
+        console.log('fromownpost ', fromOwnPost)
+        router.push({
+            pathname:'/postOptions',
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'DIALOGUE', postId : item.id, postUserId : item.userId}
+        })
+    }
+
     if (!dialogue) {
         return <ActivityIndicator></ActivityIndicator>
     }
+
 
 
 
@@ -234,7 +245,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                     </View>
                     
                         <View className='relative' >
-                            <TouchableOpacity   >
+                            <TouchableOpacity onPress={()=>handleThreeDots(dialogue)}  >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
                                 <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
                             </View>

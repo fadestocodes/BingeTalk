@@ -240,3 +240,19 @@ export const useGetRecentDialoguesInfinite = (limit) => {
 
     return { data, refetch : getRecentDialoguesInfinite, loading, hasMore }
 }
+
+export const deleteDialogue = async (data) => {
+    try {
+        const response = await fetch(`${nodeServer.currentIP}/dialogue/delete`, {
+            method:'POST',
+            headers:{
+                'Content-type': 'application/json'
+            },
+            body:JSON.stringify(data)
+        })
+        const result = await response.json()
+        return result
+    } catch(err){
+        console.log(err)
+    }
+}
