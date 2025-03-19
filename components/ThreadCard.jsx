@@ -123,12 +123,14 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         { isReposted && (
                     <RepostIcon size={18} color={Colors.mainGray} style={{ marginRight:10 }}/>
                 ) }
-                            <Image
-                                source={{ uri: thread?.user?.profilePic }}
-                                contentFit='cover'
-                                style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
-                            />
-                            <Text className='text-mainGrayDark   ' >@{thread.user.username}</Text>
+                            <TouchableOpacity onPress={()=>router.push(`/user/${thread.user.id}`)} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
+                                <Image
+                                    source={{ uri: thread?.user?.profilePic }}
+                                    contentFit='cover'
+                                    style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
+                                />
+                                <Text className='text-mainGrayDark   ' >@{thread.user.username}</Text>
+                            </TouchableOpacity>
                         </View>
                     <Text className='text-mainGrayDark '>{formatDate(thread.createdAt)}</Text>
                     

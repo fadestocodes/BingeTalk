@@ -82,16 +82,19 @@
 
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+// import ProfileHomepage from '../../../../../components/Screens/UserPage'
 import ProfileHomepage from '../../../../components/Screens/UserPage'
-import { useLocalSearchParams } from 'expo-router'
-import { useFetchOwnerUser } from '../../../../api/user'
+
 import { useUser } from '@clerk/clerk-expo'
+import { useFetchOwnerUser } from '../../../../api/user'
 
 const UserIDPage = () => {
   console.log('hello')
   const { user:clerkUser } = useUser();
 
   const { data:user, refetch: refetchUser, isFetching: isFetchingUser } = useFetchOwnerUser( {email : clerkUser.emailAddresses[0].emailAddress} )
+  
+  
 
 
   return (

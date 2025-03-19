@@ -146,12 +146,14 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         { isReposted && (
                     <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
                 ) }
+                            <TouchableOpacity onPress={()=>{router.push(`/user/${userDB.id}`)}} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                             <Image
                                 source={{ uri: userDB.profilePic }}
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                             />
                             <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
+                            </TouchableOpacity>
                         </View>
                     <Text className='text-mainGrayDark '>{formatDate(dialogue.createdAt)}</Text>
                     
