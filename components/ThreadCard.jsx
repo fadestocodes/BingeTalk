@@ -110,6 +110,17 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
         }
     }
 
+    
+    const handleThreeDots = (thread) => {
+
+        const fromOwnPost = thread.userId === ownerUser.id
+        console.log('fromownpost ', fromOwnPost)
+        router.push({
+            pathname:'/postOptions',
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'THREAD', postId : thread.id, postUserId : thread.userId}
+        })
+    }
+
     if (!thread){
         return <ActivityIndicator/>
     }
@@ -200,7 +211,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                             </View>
                             </TouchableOpacity>
                         </View>
-                            <TouchableOpacity   >
+                            <TouchableOpacity onPress={()=>handleThreeDots(thread)}   >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
                                 <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
                             </View>

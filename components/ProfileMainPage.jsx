@@ -318,7 +318,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                 ) : item.feedType === 'dialogue' ? (
 
                     <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
-                        <DialogueCard  dialogue={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate } removeItem={removeItem} />
+                        <DialogueCard  dialogue={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate }  />
                     </TouchableOpacity>
 
                 ) : item?.feedType === 'list' &&  (

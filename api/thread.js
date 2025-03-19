@@ -139,3 +139,21 @@ export const useGetRecentThreads = (limit) => {
 
     return { data, refetch : getRecentThreads, loading, hasMore }
 }
+
+
+
+export const deleteThread = async (data) => {
+    try {
+        const response = await fetch(`${nodeServer.currentIP}/thread/delete`, {
+            method:'POST',
+            headers:{
+                'Content-type': 'application/json'
+            },
+            body:JSON.stringify(data)
+        })
+        const result = await response.json()
+        return result
+    } catch(err){
+        console.log(err)
+    }
+}

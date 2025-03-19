@@ -9,6 +9,9 @@ import { reportPost } from '../../../../api/report'
 import ToastMessage from '../../../../components/ui/ToastMessage'
 import { useGetProfileFeed } from '../../../../api/feed'
 import { usePostRemoveContext } from '../../../../lib/PostToRemoveContext'
+import { deleteThread } from '../../../../api/thread'
+import { deleteList } from '../../../../api/list'
+import { deleteComment } from '../../../../api/comments'
 
 const postOptions = () => {
     const { fromOwnPost, ownerId, postType, postId, postUserId} = useLocalSearchParams()
@@ -28,11 +31,25 @@ const postOptions = () => {
     }
 
     const handleDelete = async () => {
-        const data = {
+        let data = {
             userId :  Number(ownerId),
-            dialogueId : Number(postId)
         }
-        const deleted = await deleteDialogue(data)
+        let deleted
+
+        if (postType === 'DIALOGUE' ){
+           
+            data.dialogueId = Number(postId)
+            deleted = await deleteDialogue(data)
+        } else if (postType === 'THREAD'){
+            data.threadId = Number(postId)
+            deleted = await deleteThread(data)
+        } else if (postType === 'LIST'){
+            data.listId = Number(postId)
+            deleted = await deleteList(data)
+        } else if (postType === 'COMMENT'){
+            data.commentId = Number(postId)
+            deleted = await deleteComment(data)
+        }
         console.log('deleted?', deleted)
         setToastMessage(deleted.message)
 

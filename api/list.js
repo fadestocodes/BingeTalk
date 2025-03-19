@@ -206,3 +206,20 @@ export const useGetRecentLists = (limit) => {
     
     return { recentLists, loading, refetch, hasMore  }
 }
+
+
+export const deleteList = async (data) => {
+    try {
+        const response = await fetch(`${nodeServer.currentIP}/list/delete`, {
+            method:'POST',
+            headers:{
+                'Content-type': 'application/json'
+            },
+            body:JSON.stringify(data)
+        })
+        const result = await response.json()
+        return result
+    } catch(err){
+        console.log(err)
+    }
+}

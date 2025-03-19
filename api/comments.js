@@ -44,3 +44,21 @@ export const useFetchSingleComment = (id) => {
     return { data, loading, refetch : fetchSingleComment }
 
 }
+
+
+
+export const deleteComment = async (data) => {
+    try {
+        const response = await fetch(`${nodeServer.currentIP}/comment/delete`, {
+            method:'POST',
+            headers:{
+                'Content-type': 'application/json'
+            },
+            body:JSON.stringify(data)
+        })
+        const result = await response.json()
+        return result
+    } catch(err){
+        console.log(err)
+    }
+}

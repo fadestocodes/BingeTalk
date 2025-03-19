@@ -106,6 +106,19 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     }
 
 
+    
+    const handleThreeDots = (list) => {
+
+        const fromOwnPost = list.userId === ownerUser.id
+        console.log('fromownpost ', fromOwnPost)
+        router.push({
+            pathname:'/postOptions',
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'LIST', postId : list.id, postUserId : list.userId}
+        })
+    }
+
+
+
 
   return (
     <View className='w-full' >
@@ -193,7 +206,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 </TouchableOpacity>
                             </View>
                             <View className='relative' >
-                                <TouchableOpacity   >
+                                <TouchableOpacity onPress={()=>handleThreeDots(item)}  >
                                     <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
                                 </TouchableOpacity>
                             </View>
