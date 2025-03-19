@@ -13,7 +13,7 @@ import ToastMessage from '../../../../components/ui/ToastMessage'
 
 const moreInteractions = () => {
     const router = useRouter()
-    const { DBtvId, DBMovieId, tmdbId } = useLocalSearchParams();
+    const { DBtvId, DBMovieId, DBcastId, tmdbId } = useLocalSearchParams();
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress });
     console.log(ownerUser.interestedItems)

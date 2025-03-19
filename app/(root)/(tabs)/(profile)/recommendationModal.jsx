@@ -100,7 +100,7 @@ const recommendationModal = () => {
                         if (element.recipientId !== item.following.id) return false;
                         if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
                         if (element.type === 'TV') return element.tvId === Number(DBtvId);
-                        if (element.type === 'CAST') return element.castId === Number(DBcastId)
+                        if (element.type === 'CASTCREW') return element.castId === Number(DBcastId)
                         return false;
                     });
                     return (

@@ -3,7 +3,7 @@ import { Image } from 'expo-image'
 import React, {useState, useEffect} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { BackIcon, DownIcon } from '../../assets/icons/icons'
+import { BackIcon, DownIcon, CastCrewIcon } from '../../assets/icons/icons'
 import { Colors } from '../../constants/Colors'
 import { getPerson } from '../../api/tmdb'
 import { useTMDB } from '../../lib/useTMDB'
@@ -16,6 +16,8 @@ import { useFetchCastMentions } from '../../api/castCrew'
 import { fetchPersonFromDB } from '../../api/castCrew'
 import { useQueryClient } from '@tanstack/react-query';
 import ThreadCard from '../ThreadCard'
+import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
+
 
 
 const CastIdPage = () => {
@@ -36,6 +38,7 @@ const CastIdPage = () => {
     const queryClient = useQueryClient();
     const [personData, setPersonData] = useState(null)
     const [ mentions, setMentions ] = useState([])
+    const [DBcast, setDBcast] = useState({})
 
 
 
@@ -81,6 +84,7 @@ const CastIdPage = () => {
             } else {
                 console.log('fetchedPerson', fetchedPerson)
                 const castFromDB = await fetchPersonFromDB({castData})
+                setDBcast(castFromDB)
                 queryClient.setQueryData(['cast', castId]);
     
                 console.log('castfromDB', castFromDB)
@@ -159,6 +163,22 @@ const CastIdPage = () => {
         router.push(`/dialogue/${item.dialogueId}`)
     }
 
+
+
+    const handleRecommendation = () => {
+      router.push({
+          pathname : '/recommendationModal',
+          params: { DBcastId : DBcast.id }
+      })
+  }
+
+
+  const handleMore = () => {
+    router.push({
+        pathname: "/moreInteractions",
+        params: { DBcastId: DBcast.id, tmdbId : castId }, // Convert to string
+    });
+}
     if (!personData) {
 
         return (
@@ -202,24 +222,32 @@ const CastIdPage = () => {
             </View>
           </View>
         </View>
-        <View className="buttons flex gap-4 w-full items-center ">
-                   
-                    <TouchableOpacity>
-                        <View className='border-2 rounded-xl border-secondary bg-secondary p-2 w-96 items-center'>
-                            <Text className='text-primary font-pbold text-sm'>Add to Watchlist</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <View className='border-2 rounded-xl border-secondary bg-secondary p-2 w-96 items-center'>
-                            <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <View className='border-2 rounded-xl border-secondary bg-secondary p-2 w-96 items-center'>
-                            <Text className='text-primary font-pbold text-sm'>Rate</Text>
-                        </View>
-                    </TouchableOpacity>
-        </View>
+        
+        <View className="buttons flex gap-4 w-full items-center mb-6">
+
+          <TouchableOpacity  >
+              <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor:  Colors.secondary }} >
+                      <CastCrewIcon size={20}  color={Colors.primary} />
+                  <Text className='text-primary font-pbold text-sm' style={{ color : Colors.primary }}>{  'Add to Fav Cast/Crew' }</Text>
+              </View>
+          </TouchableOpacity>
+         
+          <TouchableOpacity onPress={handleRecommendation} >
+              <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                  <Handshake color={Colors.primary} size={20} />
+                  <Text className='text-primary font-pbold text-sm'>Recommend to friend</Text>
+              </View>
+          </TouchableOpacity>
+         
+          <TouchableOpacity onPress={handleMore} >
+              <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
+                  <Ellipsis  color={Colors.primary} size={20} />
+                  {/* <Text className='text-primary font-pbold text-sm'>...</Text> */}
+              </View>
+          </TouchableOpacity>
+          </View>
+
+
           <View style={{paddingBottom:70}} >
             <View className="bio relative gap-8 w-full" style={{  height:readMore ? 'auto' : 65 }}>
               <Text className=' text-sm text-mainGray w-full  ' numberOfLines={!readMore && 3} >{personData.biography} </Text>

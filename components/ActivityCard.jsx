@@ -244,6 +244,17 @@ const ActivityCard = ( { activity, refetch } ) => {
         }
     }
 
+
+    // const handleThreeDots = (item) => {
+
+    //     const fromOwnPost = item.userId === ownerUser.id
+    //     console.log('fromownpost ', fromOwnPost)
+    //     router.push({
+    //         pathname:'/postOptions',
+    //         params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'DIALOGUE', postId : item.id, postUserId : item.userId}
+    //     })
+    // }
+
     const imagePaths =  activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.rating?.movie?.backdropPath || activity?.rating?.tv?.backdropPath || activity?.threads?.movie?.backdropPath || activity?.threads?.tv?.backdropPath || activity?.threads?.castCrew?.posterPath
 
   return (
