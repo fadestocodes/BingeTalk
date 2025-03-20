@@ -159,11 +159,13 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
 
             if (replyCommentId){
                 console.log("REORDERING", replyCommentId)
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${id}`)
+                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
+                console.log('specific comment', replyCommentFromNotif)
+
                 const reorderedCommentsData = [
-                    ...dialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
-                    ...dialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
+                    ...fetchedDialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
+                    ...fetchedDialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
                 ]
                 console.log('reorederd comments', reorderedCommentsData)
                 setCommentsData(reorderedCommentsData)

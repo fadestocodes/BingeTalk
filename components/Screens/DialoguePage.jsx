@@ -22,6 +22,7 @@ import DialogueCard from '../DialogueCard'
 const DialogueScreen = () => {
 
     const { replyCommentId } = useLocalSearchParams();
+    console.log("REPLY COMMENT ID ", replyCommentId)
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  // Create a ref for the input
     const [ replyingTo, setReplyingTo ] = useState(null)
@@ -40,7 +41,8 @@ const DialogueScreen = () => {
 
     const { dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
 
-    console.log('interacted comments ', interactedComments)
+    console.log('flatlist data', commentsData)
+    // console.log('interacted comments ', interactedComments)
 
 
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height

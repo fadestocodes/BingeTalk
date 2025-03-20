@@ -5,7 +5,7 @@ import { Colors } from '../constants/Colors'
 import { MessageIcon, ThreeDotsIcon, RepostIcon, ProgressCheckIcon } from '../assets/icons/icons'
 import { ThumbsUp, ThumbsDown, Heart, MessagesSquare, MessageSquare, ListChecks , Star, Eye} from 'lucide-react-native'
 import { useRouter } from 'expo-router'
-import { formatDate } from '../lib/formatDate'
+import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { toPascalCase } from '../lib/ToPascalCase'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
@@ -274,7 +274,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                          />
                          <Text className='text-mainGrayDark '>@{activity.user.username}</Text>
                        </TouchableOpacity>
-                     <Text className='  text-mainGrayDark'>{formatDate(activity.createdAt)}</Text>
+                     <Text className='  text-mainGrayDark'>{formatDateNotif(activity.createdAt)}</Text>
              </View>
              <View className='flex-row gap-3 justify-start items-center  '>
         <View  >
@@ -369,7 +369,7 @@ const ActivityCard = ( { activity, refetch } ) => {
         />
         <Text className='text-mainGrayDark '>@{activity.user.username}</Text>
       </TouchableOpacity>
-    <Text className='  text-mainGrayDark'>{formatDate(activity.createdAt)}</Text>
+    <Text className='  text-mainGrayDark'>{formatDateNotif(activity.createdAt)}</Text>
     </View>
 
     {/* -----------------body */}
@@ -434,7 +434,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                      />
                      <Text className='text-mainGrayDark '>@{activity.user.username}</Text>
                    </TouchableOpacity>
-                   <Text className='  text-mainGrayDark'>{formatDate(activity.createdAt)}</Text>
+                   <Text className='  text-mainGrayDark'>{formatDateNotif(activity.createdAt)}</Text>
                </View>
               
                <View className='flex-row gap-2 justify-center items-center px-4 '>

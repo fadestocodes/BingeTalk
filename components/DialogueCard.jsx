@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, KeyboardAvoidingVi
 import { Image } from 'expo-image'
 import { UpIcon, DownIcon, MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import React, {useState, useEffect} from 'react'
-import { formatDate } from '../lib/formatDate'
+import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { Colors } from '../constants/Colors'
 import { useUserDB } from '../lib/UserDBContext'
 import { useUser } from '@clerk/clerk-expo'
@@ -166,7 +166,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                             <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
                             </TouchableOpacity>
                         </View>
-                    <Text className='text-mainGrayDark '>{formatDate(dialogue.createdAt)}</Text>
+                    <Text className='text-mainGrayDark '>{formatDateNotif(dialogue.createdAt)}</Text>
                     
                 </View>
                 {/* { activity && (

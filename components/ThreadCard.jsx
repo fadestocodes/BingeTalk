@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { MessagesSquare, ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons';
 import { Colors } from '../constants/Colors';
-import { formatDate } from '../lib/formatDate';
+import { formatDate, formatDateNotif } from '../lib/formatDate';
 import { useUser } from '@clerk/clerk-expo';
 import { useFetchOwnerUser } from '../api/user';
 import { useRouter } from 'expo-router';
@@ -143,7 +143,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                                 <Text className='text-mainGrayDark   ' >@{thread.user.username}</Text>
                             </TouchableOpacity>
                         </View>
-                    <Text className='text-mainGrayDark '>{formatDate(thread.createdAt)}</Text>
+                    <Text className='text-mainGrayDark '>{formatDateNotif(thread.createdAt)}</Text>
                     
                 </View>
                 {/* { activity && (

@@ -5,7 +5,7 @@ import { useUser } from '@clerk/clerk-expo'
 import { followUser, unfollowUser, useFetchOwnerUser } from '../../../../api/user'
 import { useGetAllNotifs, markNotifRead } from '../../../../api/notification'
 import { Colors } from '../../../../constants/Colors'
-import { formatDate } from '../../../../lib/formatDate'
+import { formatDate, formatDateNotif } from '../../../../lib/formatDate'
 import { Star, ListChecks, MessagesSquare, MessageSquare, Heart, ThumbsUp, ThumbsDown, Handshake, UserPlus } from 'lucide-react-native'
 import { ProgressCheckIcon, RepostIcon , MessageIcon} from '../../../../assets/icons/icons'
 import { useRouter } from 'expo-router'
@@ -53,6 +53,11 @@ const Notification = () => {
       router.push(`/cast/${item.castCrew.tmdbId}`)
     } else if (item.activityType === 'FOLLOW'){
       router.push(`/user/${item.userId}`)
+    } else if (item.commentId && item.comment.dialogueId){
+      router.push({
+        pathname:`/dialogue/${item.comment.dialogueId}`,
+        params:{ replyCommentId: item.comment.id}
+      })
     }
    
   }
@@ -129,7 +134,7 @@ const Notification = () => {
                   />
                   <Text className='text-mainGrayDark'>@{item.user.username}</Text>
                 </View>
-                <Text className='text-mainGrayDark'>{ formatDate(item.createdAt)}</Text>
+                <Text className='text-mainGrayDark'>{ formatDateNotif(item.createdAt)}</Text>
               </View>
               <View className='flex-row gap-3 justify-center items-center px-4' >
               { item.activityType === 'RATING' ? <Star size={18} color={Colors.secondary} /> : item.activityType === 'DIALOGUE' ? <MessageSquare size={18} color={Colors.secondary} /> :
