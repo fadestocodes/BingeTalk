@@ -33,7 +33,7 @@ const Welcome = () => {
           
           </SignedIn>
           <SignedOut>
-          <Text className="text-4xl text-secondary font-pbold" style={{paddingBottom:20}}>BingeTalk</Text>
+          <Text className="text-4xl text-secondary font-pbold" style={{paddingBottom:20}}>Bingeable</Text>
 
             <TouchableOpacity onPress={handleSignUp}  style={{ borderRadius:10, backgroundColor:Colors.secondary, paddingVertical:10, paddingHorizontal:15, width:200, justifyContent:'center', alignItems:'center' }}>
               <Link href="/(onboarding)/step1-firstName"  >

@@ -12,11 +12,14 @@ import DiscussionThread from '../DiscussionThread'
 import CastCrewHorizontal from '../CastCrewHorizontal'
 import { capitalize } from '../../lib/capitalize'
 import DialogueCard from '../DialogueCard'
-import { useFetchCastMentions } from '../../api/castCrew'
+import { addCastToFav, useFetchCastMentions } from '../../api/castCrew'
 import { fetchPersonFromDB } from '../../api/castCrew'
 import { useQueryClient } from '@tanstack/react-query';
 import ThreadCard from '../ThreadCard'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
+import { useUser } from '@clerk/clerk-expo'
+import { useFetchOwnerUser } from '../../api/user'
+import ToastMessage from '../ui/ToastMessage'
 
 
 
@@ -26,6 +29,8 @@ const CastIdPage = () => {
     const castId = params.castId;
     console.log(castId)
     const router = useRouter();
+    const { user:clerkUser } = useUser()
+    const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const [dropdownMenu, setDropdownMenu] = useState(false);
@@ -39,12 +44,10 @@ const CastIdPage = () => {
     const [personData, setPersonData] = useState(null)
     const [ mentions, setMentions ] = useState([])
     const [DBcast, setDBcast] = useState({})
-
-
-
-    // const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchCastMentions( castId );
-
+    const [ toastMesage, setToastMessage ] = useState(null)
     const [ threads, setThreads ] = useState([])
+
+
 
 
 
@@ -111,23 +114,19 @@ const CastIdPage = () => {
     }, [castId]); 
 
 
-  
-    // useEffect(() => {
-    //     if (personData.combined_credits) {
-    //       const dropdownOptions = Object.keys(personData.combined_credits)
-    //       .filter(key => {
-    //         const credits = personData.combined_credits[key];
-    //         return (key === 'cast' && credits.length > 0) || (key === 'crew' && credits.length > 0)});
-    
-    //       console.log('Dropdown options:', dropdownOptions);
-    //       setCreditOptions(dropdownOptions);
-    
-    //       // Safely set the initial value for whichCredits
-    //       if (dropdownOptions.length > 0) {
-    //         setWhichCredits(dropdownOptions[0]);
-    //       }
-    //     }
-    //   }, [personData.combined_credits]); 
+    const alreadyFav = ownerUser.favCastCrew.some( item => item.castId === DBcast.id )
+
+
+    const handleAddToFav = async () => {
+      
+      const data = {
+        userId : ownerUser.id,
+        castId : DBcast.id
+      }
+      const newFav = await addCastToFav(data);
+      console.log('newFAv', newFav)
+      setToastMessage(newFav.message)
+    }
 
     const refreshData = () => {
         setRefreshing(true);
@@ -178,7 +177,15 @@ const CastIdPage = () => {
         pathname: "/moreInteractions",
         params: { DBcastId: DBcast.id, tmdbId : castId }, // Convert to string
     });
-}
+    }
+
+    // const dynamicIcon = (button) => {
+    //   if (button === 'addToFav'){
+    //     return <CastCrewIcon size ={30} color={Colors.secondary} />
+    //   }
+    // }
+
+
     if (!personData) {
 
         return (
@@ -191,6 +198,7 @@ const CastIdPage = () => {
 
   return (
     <SafeAreaView className='h-full pb-24 bg-primary'>
+      <ToastMessage message={toastMesage} onComplete={()=>setToastMessage(null)} icon={<CastCrewIcon size ={30} color={Colors.secondary} />}   />
     <ScrollView 
      refreshControl={
         <RefreshControl
@@ -199,6 +207,7 @@ const CastIdPage = () => {
           onRefresh={fetchData}
         />
          }
+
     
     className=' h-full  flex  ' style={{backgroundColor:Colors.primary}}>
       <TouchableOpacity className='border-white rounded-md w-16 flex items-center left-2 py-1 absolute   ' style={{}}   onPress={backPress}>
@@ -225,10 +234,10 @@ const CastIdPage = () => {
         
         <View className="buttons flex gap-4 w-full items-center mb-6">
 
-          <TouchableOpacity  >
+          <TouchableOpacity onPress={() => handleAddToFav()}  >
               <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor:  Colors.secondary }} >
-                      <CastCrewIcon size={20}  color={Colors.primary} />
-                  <Text className='text-primary font-pbold text-sm' style={{ color : Colors.primary }}>{  'Add to Fav Cast/Crew' }</Text>
+                      <CastCrewIcon size={20}  color={alreadyFav ? Colors.secondary : Colors.primary} />
+                  <Text className='text-primary font-pbold text-sm' style={{ color : alreadyFav ? Colors.secondary : Colors.primary }}>{  'Add to Fav Cast/Crew' }</Text>
               </View>
           </TouchableOpacity>
          

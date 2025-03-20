@@ -43,6 +43,8 @@ export default function Page() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <View className="gap-5 " style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%', backgroundColor:Colors.primary }} >
       <View className="items-center gap-8">
+      <Text className='text-white font-pbold text-3xl'>Sign in</Text>
+
       
 
         <View className="items-start gap-5">

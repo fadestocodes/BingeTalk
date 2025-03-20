@@ -46,3 +46,20 @@ export const fetchPersonFromDB = async ( {castData} ) => {
         console.log(err)
     }
 }
+
+export const addCastToFav = async (data) => {
+    try {   
+        const response = await fetch(`${nodeServer.currentIP}/person/add-to-fav`, {
+            method : 'POST',
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body:JSON.stringify(data)
+        })
+        console.log('resposne from fav cast crew', response)
+        const result = await response.json()
+        return result
+    } catch(err){
+        console.log(err)
+    }
+}

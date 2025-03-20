@@ -303,7 +303,7 @@ const SearchPage = () => {
                   keyExtractor={item => item.id}
                   contentContainerStyle={{gap:15}}
                   renderItem={({item}) => {
-                      console.log('trending dialogue', item)
+                      // console.log('trending dialogue', item)
                     return (
                       <TouchableOpacity onPress={()=>handleDialoguePress(item)} style={{width:300}}>
                         <DialogueCard  dialogue={item} isBackground={true} />

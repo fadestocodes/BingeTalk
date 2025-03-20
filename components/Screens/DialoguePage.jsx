@@ -7,68 +7,42 @@ import { useLocalSearchParams } from 'expo-router'
 import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon, RepostIcon, ThreeDotsIcon } from '../../assets/icons/icons'
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
-import { createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
+import { commentInteraction, createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
-import { dialogueInteraction, fetchSingleThread , threadInteraction, useFetchSingleThread} from '../../api/dialogue'
+import { dialogueInteraction, fetchSingleThread , threadInteraction, useCustomFetchSingleDialogue, useFetchSingleThread} from '../../api/dialogue'
 import { fetchSingleDialogue, useFetchSingleDialogue } from '../../api/dialogue'
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import ThreadCard from '../ThreadCard'
-
-
-
-
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import DialogueCard from '../DialogueCard'
 
 
 const DialogueScreen = () => {
 
-
-    
-
     const { replyCommentId } = useLocalSearchParams();
-    
-   
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  // Create a ref for the input
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     const { user : clerkUser } = useUser();
-    const { data: ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-    const [ commentIdFromNotif, setCommentIdFromNotif ]  = useState(null)
+    const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    // const [ commentIdFromNotif, setCommentIdFromNotif ]  = useState(null)
+    // const [ interactedCommentIds, setInteractedCommentIds ] = useState([])
+    // const [reorderedComments, setReorderedComments] = useState([])
     const userId = ownerUser.id
-    const queryClient = useQueryClient();
-
-
     const { dialogueId, tvId, movieId, castId }= useLocalSearchParams();
 
-    const { data: dialogue , refetch, isFetching} = useFetchSingleDialogue(Number(dialogueId))
-    const { data: replyCommentFromNotif , loading} = useFetchSingleComment(replyCommentId)
+    // const { data: dialogue , refetch, isFetching} = useFetchSingleDialogue(Number(dialogueId))
+    // const { data: replyCommentFromNotif , loading} = useFetchSingleComment(replyCommentId)
 
-    
-    // const alreadyUpvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
-    // const alreadyDownvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
-    // const alreadyReposted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
+    const { dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
 
-    // const [ interactions, setInteractions ] = useState({
-    //     upvotes : {
-    //         alreadyPressed : alreadyUpvoted,
-    //         count : dialogue.upvotes
-    //     } ,
-    //     downvotes :{
-    //         alreadyPressed : alreadyDownvoted,
-    //         count : dialogue.downvotes
-    //     } ,
-    //     reposts : {
-    //         alreadyPressed : alreadyReposted,
-    //         count : dialogue.reposts
-    //     } 
-    // })
+    console.log('interacted comments ', interactedComments)
 
-    
+
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
     const translateY = useSharedValue(0); // Tracks modal position
     const atTop = useSharedValue(true); // Track if at top of FlatList
@@ -79,32 +53,41 @@ const DialogueScreen = () => {
     }));
 
 
-    if (!dialogue || isFetching ){
+//     useEffect(() => {
+
+//         if (dialogue || replyCommentFromNotif) {
+//             const reorderedCommentsData = [
+//                 ...dialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
+//                 ...dialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
+//             ]
+//             setReorderedComments(reorderedCommentsData)
+        
+//             const interactedComments = reorderedCommentsData.filter( item => {
+//                 return ownerUser.commentInteractions.some( j => j.commentId === item.id)
+//             } )
+//             const interactedCommentsFormatted = interactedComments.map( i => {
+//                 const interaction = ownerUser.commentInteractions.find( j => j.commentId === i.id )
+//                 return {
+//                     ...i,
+//                     interactionType : interaction ? interaction.interactionType : null
+//                 }
+                
+//             } )
+    
+//             setInteractedCommentIds(interactedCommentsFormatted)
+//         }
+
+// }, [dialogue, replyCommentFromNotif])
+
+
+    if (!dialogue ){
         return <ActivityIndicator/>
     }
 
 
 
-    if (replyCommentFromNotif){
-        console.log('REPLY COMMENT FROM NOTIF', replyCommentFromNotif)
-        // setCommentIdFromNotif(replyCommentFromNotif.parentId)
-    }
-
-
-    const reorderedComments = [
-        ...dialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
-        ...dialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
-    ]
-    
-
-   
-
-
-
-
-
-
     const handleReply= (item, parentId) => {
+        console.log('COMMENTINTERACTIONS', interactedComments)
         inputRef.current?.focus();  // Focus the input
         setReplying(true);
         setInput(`@${item.user.username} `)
@@ -165,39 +148,108 @@ const DialogueScreen = () => {
     }   
 
 
-    // const handleInteraction =  async (type, dialogue) => {
-    //     console.log('type', type)
-    //     setInteractions(prev => ({
-    //         ...prev,
-    //         [type]: {
-    //           ...prev[type],
-    //           alreadyPressed: !prev[type].alreadyPressed,
-    //           count : prev[type].alreadyPressed ? prev[type].count -1 : prev[type].count +1
-    //         }
-    //       }))
-     
-    //     let description
-    //     if ( type === 'upvotes' ){
-    //         description = `upvoted your dialogue "${dialogue.content}"`
+    const handleCommentInteraction =  async (type, comment, isAlready) => {
+        console.log('PARAMS', type,comment.id, isAlready)
+
+        let description
+
+        
+        console.log('interacted comments BEFORE', interactedComments)
+        if ( type === 'upvotes' ){
+            description = `upvoted your comment "${comment.content}"`
+            if (isAlready){
+                // setInteractedComments(prev => ({
+                //     ...prev,
+                //     upvotes : prev.upvotes.filter( i => i.commentId !== comment.id )
+                // }))
+
+                setInteractedComments(prev => {
+                    const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
+                    console.log('Updated upvotes:', updatedUpvotes);
+                    return {
+                        ...prev,
+                        upvotes: updatedUpvotes
+                    };
+                });
+                setCommentsData(prev => {
+                    const updatedComments = prev.map(i => 
+                        i.id === comment.id 
+                            ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
+                            : i  // Leave other comments unchanged
+                    );
+                    console.log('Updated comments data:', updatedComments);
+                    return updatedComments;
+                });
+                
+                console.log("HELLO FROM 1") 
+            } else {
+                comment.interactionType = 'UPVOTE'
+                comment.commentId = comment.id
+                setInteractedComments(prev => ({
+                    ...prev,
+                    upvotes : [ ...prev.upvotes, comment ]
+                }))
+
+                setCommentsData(prev => {
+                    const updatedComments = prev.map(i => 
+                        i.id === comment.id 
+                            ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
+                            : i  // Leave other comments unchanged
+                    );
+                    console.log('Updated comments data:', updatedComments);
+                    return updatedComments;
+                });
+            }
             
-    //     } else if (type === 'downvotes'){
-    //         description = `downvoted your dialogue "${dialogue.content}"`
-           
-    //     }else  if ( type === 'reposts' ){
-    //         description = `reposted your dialogue "${dialogue.content}"`
-           
-    //     }
-    //     console.log('made it this far')
-    //     const data = {
-    //         type,
-    //         dialogueId : dialogue.id,
-    //         userId : ownerUser.id,
-    //         description,
-    //         recipientId : dialogue.user.id
-    //     }
-    //     const updatedDialogue = await dialogueInteraction(data)
-    //     refetch();
-    // }
+        } else if (type === 'downvotes'){
+            description = `downvoted your comment "${comment.content}"`
+            if (isAlready){
+                setInteractedComments(prev => ({
+                    ...prev,
+                    downvotes : prev.downvotes.filter( i => i.commentId !== comment.id )
+                }))
+                setCommentsData(prev => {
+                    const updatedComments = prev.map(i => 
+                        i.id === comment.id 
+                            ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
+                            : i  // Leave other comments unchanged
+                    );
+                    console.log('Updated comments data:', updatedComments);
+                    return updatedComments;
+                });
+            } else {
+                comment.interactionType = 'DOWNVOTE'
+                comment.commentId = comment.id
+                setInteractedComments(prev => ({
+                    ...prev,
+                    downvotes : [ ...prev.downvotes, comment ]
+                }))
+                setCommentsData(prev => {
+                    const updatedComments = prev.map(i => 
+                        i.id === comment.id 
+                            ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
+                            : i  // Leave other comments unchanged
+                    );
+                    console.log('Updated comments data:', updatedComments);
+                    return updatedComments;
+                });
+            }
+        }
+
+        console.log('made it this far')
+        const data = {
+            type,
+            commentId : comment.id,
+            userId : ownerUser.id,
+            description,
+            recipientId : comment.user.id
+        }
+        const updatedComment = await commentInteraction(data)
+        console.log('updatedcomment', updatedComment)
+        // refetch();
+        // refetchOwnerUser()
+        console.log('after interaction AFTER', interactedComments)
+    }
 
 
 
@@ -210,7 +262,7 @@ const DialogueScreen = () => {
             refreshControl={
                 <RefreshControl
                     tintColor={Colors.secondary}
-                    refreshing={isFetching}
+                    refreshing={isLoading}
                     onRefresh={refetch}
                 />
 
@@ -225,13 +277,19 @@ const DialogueScreen = () => {
                 { dialogue.comments.length > 0 && (
                     <>
                     <FlatList
-                    data={ reorderedComments ? reorderedComments :  dialogue.comments}
+                    data={ commentsData}
                     keyExtractor={(item, index) => index.toString()}
                     scrollEnabled={false}
                     contentContainerStyle={{ paddingBottom: 80 }}
                     renderItem={({ item }) =>{
     
                         const shownReplies = visibleReplies[item.id] || 0;
+
+
+                        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === item.id )
+                        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === item.id )
+                        
+
                         
                         return (
                         <View>
@@ -254,19 +312,22 @@ const DialogueScreen = () => {
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
                                 <Text className='text-white text-custom font-pcourier'>{item.content}</Text>
     
-                                <View className='flex-row gap-3 w-full justify-start items-center'>
+                                <View className='flex-row gap-5 w-full justify-start items-center'>
     
                                     <TouchableOpacity onPress={()=>handleReply(item, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
     
-                                    <TouchableOpacity >
-                                    <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                        <HeartIcon  size='20' color={Colors.mainGray} />
-                                        {item?.likes !== undefined && item?.likes > 0 ? 
-                                        (
-                                            <Text className='text-xs font-pbold text-gray-400'>{item.likes}</Text>
-                                        ) : null}
+                                    <TouchableOpacity onPress={()=>handleCommentInteraction('upvotes',item, alreadyUpvotedComment)}  >
+                                    <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                        <ThumbsUp  size='20' color={ alreadyUpvotedComment ? Colors.secondary : Colors.mainGray} />
+                                            <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedComment ? Colors.secondary : Colors.mainGray}}>{item.upvotes}</Text>
+                                    </View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={()=>handleCommentInteraction('downvotes',item, alreadyDownvotedComment)}  >
+                                    <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                        <ThumbsDown  size='20' color={ alreadyDownvotedComment ? Colors.secondary :  Colors.mainGray} />
+                                            <Text className='text-xs font-pbold  text-gray-400' style={{ color : alreadyDownvotedComment ? Colors.secondary : Colors.mainGray }}>{item.downvotes}</Text>
                                     </View>
                                     </TouchableOpacity>
                                     

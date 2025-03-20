@@ -42,7 +42,7 @@ const DiscoverDialogues = () => {
 
             <FlatList
                 data={selected === 'Trending' ? trendingDialogues : recentDialogues}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => index}
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
                     // console.log('flatlist item', item.id)

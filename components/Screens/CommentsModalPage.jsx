@@ -122,10 +122,12 @@ const CommentsModalPage = () => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[styles.modalContainer, { transform: [{ translateY }] }]}>
 
-        <View style={{paddingBottom:100, paddingTop:30}}>
+        <View className='w-full justify-center items-center' style={{paddingBottom:100, paddingTop:30, width:'100%', justifyContent:'center'}}>
+              <View style={{ width:55, height:7, borderRadius:10, backgroundColor:Colors.mainGray, position:'absolute', top:20 }} />
             <FlatList
             data={selectedDialogue.comments}
             keyExtractor={(item, index) => index.toString()}
@@ -160,34 +162,26 @@ const CommentsModalPage = () => {
                         <Text className='text-white font-pcourier'>{item.content}</Text>
 
                         <View className='flex-row gap-3 w-full justify-start items-center'>
-
-                            <TouchableOpacity onPress={()=>handleReply(item, item.id)}  style={{borderRadius:10, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:5, paddingHorizontal:8}} >
+    
+                            <TouchableOpacity onPress={()=>handleReply(item, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
                                 <Text className='text-mainGray text-sm'>Reply</Text>
                             </TouchableOpacity>
 
-                            <View className='flex-row  justify-center items-center gap-3  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                {/* <HeartIcon  size='20' color={Colors.mainGray} />
-                                {item?.likes !== undefined && item?.likes > 0 ? 
-                                (
-                                    <Text className='text-xs font-pbold text-gray-400'>{item.likes}</Text>
-                                ) : null} */}
-                                <TouchableOpacity style={{ borderWidth:1, borderRadius:10, borderColor:Colors.mainGray, padding:5 }} >
-                                    <View className='flex-row gap-2 justify-center items-center'>
-                                        <ThumbsUp size={16} color={Colors.mainGray} ></ThumbsUp>
-                                        <Text className='text-xs font-pbold text-mainGray'>{ item.upvotes }</Text>
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={{ borderWidth:1, borderRadius:10, borderColor:Colors.mainGray, padding:5 }} >
-
-                                <View className='flex-row gap-2 justify-center items-center'>
-                                    <ThumbsDown size={18} color={Colors.mainGray} ></ThumbsDown>
-                                    <Text  className='text-xs font-pbold text-mainGray'>{ item.downvotes }</Text>
-                                </View>
-                                </TouchableOpacity>
+                            <TouchableOpacity >
+                            <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <ThumbsUp  size='20' color={Colors.mainGray} />
+                                    <Text className='text-xs font-pbold text-gray-400'>{item.upvotes}</Text>
                             </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity >
+                            <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <ThumbsDown  size='20' color={Colors.mainGray} />
+                                    <Text className='text-xs font-pbold text-gray-400'>{item.downvotes}</Text>
+                            </View>
+                            </TouchableOpacity>
                             
-                        
-                        
+
+
                         </View>
                     </View>
                 ) }

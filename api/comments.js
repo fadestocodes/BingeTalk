@@ -21,11 +21,14 @@ export const createComment = async ( commentData ) => {
     }
 }
 
+
+
 export const useFetchSingleComment = (id) => {
     const [ data, setData] = useState(null);
     const [loading, setLoading ]  = useState(true)
     
      const fetchSingleComment = async () => {
+        if (!id) return
         try {
             const request = await fetch(`${nodeServer.currentIP}/comment?id=${id}`)
             const response = await request.json();
@@ -62,3 +65,22 @@ export const deleteComment = async (data) => {
         console.log(err)
     }
 }
+
+
+
+export const commentInteraction = async ( data ) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/comment/interact`, {
+            method : 'POST',
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body:JSON.stringify( data )
+        })
+        const response = await request.json();
+        console.log('response', response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+} 

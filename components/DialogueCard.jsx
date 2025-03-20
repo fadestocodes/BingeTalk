@@ -218,25 +218,25 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                     <View className='flex-row gap-5 justify-center items-center'>
                         <TouchableOpacity onPress={()=> handleInteraction('upvotes',dialogue) } >
                             <View className='flex-row gap-1 justify-center items-center'>
-                                <ThumbsUp size={16} color={ interactions.upvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                <ThumbsUp size={20} color={ interactions.upvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
                                 <Text className='text-xs font-pbold ' style={{ color: interactions.upvotes.alreadyPressed ? Colors.secondary : Colors.mainGray }}>{ interactions.upvotes.count }</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity  onPress={()=> handleInteraction('downvotes',dialogue) } >
                         <View className='flex-row gap-1 justify-center items-center'>
-                            <ThumbsDown size={18}  color={ interactions.downvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                            <ThumbsDown size={20}  color={ interactions.downvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
                             <Text  className='text-xs font-pbold text-mainGray' style={{ color: interactions.downvotes.alreadyPressed ? Colors.secondary : Colors.mainGray }}>{ interactions.downvotes.count }</Text>
                         </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>handleComment(dialogue)} disabled={disableCommentsModal} >
                         <View className='flex-row gap-1  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <MessageIcon   className='' size='18'  color={   Colors.mainGray}/>
+                            <MessageIcon   className='' size={20}  color={   Colors.mainGray}/>
                             <Text className='text-xs font-pbold text-gray-400  '> {dialogue?.comments?.length}</Text>
                         </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=> handleInteraction('reposts',dialogue) } >
                         <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                            <RepostIcon className='' size='14'  color={ interactions.reposts.alreadyPressed ? Colors.secondary :  Colors.mainGray}/>
+                            <RepostIcon className='' size={20}  color={ interactions.reposts.alreadyPressed ? Colors.secondary :  Colors.mainGray}/>
                             <Text className='text-xs font-pbold text-gray-400  'style={{ color: interactions.reposts.alreadyPressed ? Colors.secondary : Colors.mainGray }}> {interactions.reposts.count}</Text>
                         </View>
 
