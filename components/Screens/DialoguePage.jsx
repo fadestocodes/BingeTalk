@@ -30,19 +30,13 @@ const DialogueScreen = () => {
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     const { user : clerkUser } = useUser();
     const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-    // const [ commentIdFromNotif, setCommentIdFromNotif ]  = useState(null)
-    // const [ interactedCommentIds, setInteractedCommentIds ] = useState([])
-    // const [reorderedComments, setReorderedComments] = useState([])
+   
     const userId = ownerUser.id
     const { dialogueId, tvId, movieId, castId }= useLocalSearchParams();
-
-    // const { data: dialogue , refetch, isFetching} = useFetchSingleDialogue(Number(dialogueId))
-    // const { data: replyCommentFromNotif , loading} = useFetchSingleComment(replyCommentId)
 
     const { dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
 
     console.log('flatlist data', commentsData)
-    // console.log('interacted comments ', interactedComments)
 
 
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
@@ -123,8 +117,8 @@ const DialogueScreen = () => {
     }   
 
 
-    const handleCommentInteraction =  async (type, comment, isAlready) => {
-        console.log('PARAMS', type,comment.id, isAlready)
+    const handleCommentInteraction =  async (type, comment, isAlready, parentId) => {
+        console.log('PARENT ID and commentId', parentId, comment.id)
 
         let description
 
@@ -133,11 +127,7 @@ const DialogueScreen = () => {
         if ( type === 'upvotes' ){
             description = `upvoted your comment "${comment.content}"`
             if (isAlready){
-                // setInteractedComments(prev => ({
-                //     ...prev,
-                //     upvotes : prev.upvotes.filter( i => i.commentId !== comment.id )
-                // }))
-
+             
                 setInteractedComments(prev => {
                     const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
                     console.log('Updated upvotes:', updatedUpvotes);
@@ -146,15 +136,43 @@ const DialogueScreen = () => {
                         upvotes: updatedUpvotes
                     };
                 });
-                setCommentsData(prev => {
-                    const updatedComments = prev.map(i => 
-                        i.id === comment.id 
-                            ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
-                            : i  // Leave other comments unchanged
-                    );
-                    console.log('Updated comments data:', updatedComments);
-                    return updatedComments;
-                });
+                if (parentId) {
+                    setCommentsData(prev => {
+                        const updatedComments = prev.map(c => {
+                            // Check if the comment is the one we're interested in (with the parentId)
+                            if (c.id === parentId) {
+                                // Update the specific reply's upvotes or downvotes
+                                const updatedReplies = c.replies.map(reply => {
+                                    console.log("THE REPLIESSS", reply)
+                                    // Check if the reply id matches the comment we want to update
+                                    if (reply.id === comment.id) {
+                                        return { ...reply, upvotes: reply.upvotes - 1 };  // Example: Decrement the upvotes
+                                    }
+                                    return reply;  // Keep other replies the same
+                                });
+                
+                                // Return the updated comment with updated replies
+                                return { ...c, replies: updatedReplies };
+                            }
+                
+                            return c; // Return the comment unchanged if it's not the one we want
+                        });
+                
+                        console.log('Updated comments data:', updatedComments);
+                        return updatedComments;
+                    }); 
+                } else {
+                    setCommentsData(prev => {
+                        const updatedComments = prev.map(i => 
+                            i.id === comment.id 
+                                ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
+                                : i  // Leave other comments unchanged
+                        );
+                        console.log('Updated comments data:', updatedComments);
+                        return updatedComments;
+                    });
+                }
+
                 
                 console.log("HELLO FROM 1") 
             } else {
@@ -165,15 +183,43 @@ const DialogueScreen = () => {
                     upvotes : [ ...prev.upvotes, comment ]
                 }))
 
-                setCommentsData(prev => {
-                    const updatedComments = prev.map(i => 
-                        i.id === comment.id 
-                            ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
-                            : i  // Leave other comments unchanged
-                    );
-                    console.log('Updated comments data:', updatedComments);
-                    return updatedComments;
-                });
+                if (parentId) {
+                    setCommentsData(prev => {
+                        const updatedComments = prev.map(c => {
+                            // Check if the comment is the one we're interested in (with the parentId)
+                            if (c.id === parentId) {
+                                // Update the specific reply's upvotes or downvotes
+                                const updatedReplies = c.replies.map(reply => {
+                                    // Check if the reply id matches the comment we want to update
+                                    if (reply.id === comment.id) {
+                                        return { ...reply, upvotes: reply.upvotes + 1 };  // Example: Decrement the upvotes
+                                    }
+                                    return reply;  // Keep other replies the same
+                                });
+                
+                                // Return the updated comment with updated replies
+                                return { ...c, replies: updatedReplies };
+                            }
+                
+                            return c; // Return the comment unchanged if it's not the one we want
+                        });
+                
+                        console.log('Updated comments data:', updatedComments);
+                        return updatedComments;
+                    }); 
+                } else {
+                    setCommentsData(prev => {
+                        const updatedComments = prev.map(i => 
+                            i.id === comment.id 
+                                ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
+                                : i  // Leave other comments unchanged
+                        );
+                        console.log('Updated comments data:', updatedComments);
+                        return updatedComments;
+                    });
+                }
+
+              
             }
             
         } else if (type === 'downvotes'){
@@ -183,15 +229,41 @@ const DialogueScreen = () => {
                     ...prev,
                     downvotes : prev.downvotes.filter( i => i.commentId !== comment.id )
                 }))
-                setCommentsData(prev => {
-                    const updatedComments = prev.map(i => 
-                        i.id === comment.id 
-                            ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
-                            : i  // Leave other comments unchanged
-                    );
-                    console.log('Updated comments data:', updatedComments);
-                    return updatedComments;
-                });
+                if (parentId) {
+                    setCommentsData(prev => {
+                        const updatedComments = prev.map(c => {
+                            // Check if the comment is the one we're interested in (with the parentId)
+                            if (c.id === parentId) {
+                                // Update the specific reply's upvotes or downvotes
+                                const updatedReplies = c.replies.map(reply => {
+                                    // Check if the reply id matches the comment we want to update
+                                    if (reply.id === comment.id) {
+                                        return { ...reply, downvotes: reply.downvotes - 1 };  // Example: Decrement the upvotes
+                                    }
+                                    return reply;  // Keep other replies the same
+                                });
+                
+                                // Return the updated comment with updated replies
+                                return { ...c, replies: updatedReplies };
+                            }
+                
+                            return c; // Return the comment unchanged if it's not the one we want
+                        });
+                
+                        console.log('Updated comments data:', updatedComments);
+                        return updatedComments;
+                    }); 
+                } else {
+                    setCommentsData(prev => {
+                        const updatedComments = prev.map(i => 
+                            i.id === comment.id 
+                                ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
+                                : i  // Leave other comments unchanged
+                        );
+                        console.log('Updated comments data:', updatedComments);
+                        return updatedComments;
+                    });
+                }
             } else {
                 comment.interactionType = 'DOWNVOTE'
                 comment.commentId = comment.id
@@ -199,18 +271,43 @@ const DialogueScreen = () => {
                     ...prev,
                     downvotes : [ ...prev.downvotes, comment ]
                 }))
-                setCommentsData(prev => {
-                    const updatedComments = prev.map(i => 
-                        i.id === comment.id 
-                            ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
-                            : i  // Leave other comments unchanged
-                    );
-                    console.log('Updated comments data:', updatedComments);
-                    return updatedComments;
-                });
+                if (parentId) {
+                    setCommentsData(prev => {
+                        const updatedComments = prev.map(c => {
+                            // Check if the comment is the one we're interested in (with the parentId)
+                            if (c.id === parentId) {
+                                // Update the specific reply's upvotes or downvotes
+                                const updatedReplies = c.replies.map(reply => {
+                                    // Check if the reply id matches the comment we want to update
+                                    if (reply.id === comment.id) {
+                                        return { ...reply, downvotes: reply.downvotes + 1 };  // Example: Decrement the upvotes
+                                    }
+                                    return reply;  // Keep other replies the same
+                                });
+                
+                                // Return the updated comment with updated replies
+                                return { ...c, replies: updatedReplies };
+                            }
+                
+                            return c; // Return the comment unchanged if it's not the one we want
+                        });
+                
+                        console.log('Updated comments data:', updatedComments);
+                        return updatedComments;
+                    }); 
+                } else {
+                    setCommentsData(prev => {
+                        const updatedComments = prev.map(i => 
+                            i.id === comment.id 
+                                ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
+                                : i  // Leave other comments unchanged
+                        );
+                        console.log('Updated comments data:', updatedComments);
+                        return updatedComments;
+                    });
+                }
             }
         }
-
         console.log('made it this far')
         const data = {
             type,
@@ -313,10 +410,16 @@ const DialogueScreen = () => {
                         ) }
 
     
-                        { item.replies.length > 0 && (
+{ item.replies.length > 0 && (
                             <>
-                            { item.replies.slice(0, shownReplies).map((reply) => (
-                               <View key={reply.id}  className=' ml-10 pr-5 justify-center items-center gap-3 my-3' style={{ borderLeftWidth:1, borderColor:Colors.secondary, borderBottomLeftRadius:10 }}>
+                            { item.replies.slice(0, shownReplies).map((reply) => {
+                                const alreadyUpvotedReply = interactedComments.upvotes.some( i => i.commentId === reply.id )
+                                const alreadyDownvotedReply = interactedComments.downvotes.some( i => i.commentId === reply.id )
+                                return (
+
+
+                                
+                               <View key={reply.id}  className=' ml-10 pr-5 justify-center items-center gap-3 my-3' style={{ borderLeftWidth:1, borderColor:Colors.secondary, borderBottomLeftRadius:10, paddingHorizontal:15, paddingBottom:10 }}>
                             <View className='flex-row w-full justify-between items-center'>
                                     <View className="flex-row items-center gap-2 pl-10">
                                         <Image
@@ -331,25 +434,31 @@ const DialogueScreen = () => {
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{reply.user.firstName}</Text>
                                 <Text className='text-white text-custom font-pcourier'>{reply.content}</Text>
     
-                                <View className='flex-row gap-3 w-full justify-start items-center  pl-10'>
-    
+                                <View className='flex-row gap-5 w-full justify-start items-center'>
+                                    
                                     <TouchableOpacity onPress={()=>handleReply(reply, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
-    
-                                    <TouchableOpacity >
-                                    <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                        <HeartIcon className=' ' size='20' color={Colors.mainGray} />
-                                        {item?.likes !== undefined && item?.likes > 0 ? 
-                                        (
-                                            <Text className='text-xs font-pbold text-gray-400'>{item.likes}</Text>
-                                        ) : null}
+
+                                    <TouchableOpacity onPress={()=>{console.log('REPLY OBJECT', item);handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
+                                    <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                        <ThumbsUp  size='20' color={ alreadyUpvotedReply ? Colors.secondary : Colors.mainGray} />
+                                            <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedReply ? Colors.secondary : Colors.mainGray}}>{reply.upvotes}</Text>
                                     </View>
                                     </TouchableOpacity>
+                                    <TouchableOpacity onPress={()=>handleCommentInteraction('downvotes',reply, alreadyDownvotedReply,item.id )}  >
+                                    <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                        <ThumbsDown  size='20' color={ alreadyDownvotedReply ? Colors.secondary :  Colors.mainGray} />
+                                            <Text className='text-xs font-pbold  text-gray-400' style={{ color : alreadyDownvotedReply ? Colors.secondary : Colors.mainGray }}>{reply.downvotes}</Text>
+                                    </View>
+                                    </TouchableOpacity>
+                                    
+
+
                                 </View>
                             </View>
     
-                            )) }
+                            )}) }
     
                             { shownReplies < item.replies.length && (
                                 <View className='px-10'>

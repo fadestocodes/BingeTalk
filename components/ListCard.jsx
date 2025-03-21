@@ -118,6 +118,16 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     }
 
 
+    const handleComment = (item) => {
+        console.log('userDB', ownerUser.id)
+
+        router.push({
+            pathname:`/commentsModal`,
+            params : { userId : ownerUser.id, listId : item.id }
+        })
+    }
+
+
 
 
   return (
@@ -189,7 +199,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                     <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                                 </View>
                                 </TouchableOpacity>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={()=>handleComment(item)}>
                                 <View className='flex-row gap-1 justify-center items-center'>
                                     <MessageIcon size={18} color={Colors.mainGray}></MessageIcon>
                                     <Text className='text-xs font-pbold text-mainGray'>{ item.comments.length}</Text>

@@ -429,7 +429,7 @@ const TVPage = () => {
                     height={200}
                     play={true}
                     videoId={videoId}
-                    initialPlayerParams={{controls:0}}
+                    initialPlayerParams={{controls:1}}
                     mute={true}
                     viewContainerStyle={{borderRadius:25, overflow:'hidden'}}
                     webViewProps={{borderRadius:25, overflow:'hidden'}}
@@ -503,8 +503,6 @@ const TVPage = () => {
                             <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
                         )}
                         renderItem={({item}) => {
-                            console.log('tiem from item flatlist', item)
-                            
                             return (
                             <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >
                                 <ThreadCard thread={item} refetch={ fetchData} ></ThreadCard>

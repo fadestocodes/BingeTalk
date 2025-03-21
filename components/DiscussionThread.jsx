@@ -41,7 +41,6 @@ const DiscussionThread = ({threadsPress, threads, refetch}) => {
         <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
       )}
       renderItem={({item}) => {
-        console.log('tiem from item flatlist', item)
         
         return (
         <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >

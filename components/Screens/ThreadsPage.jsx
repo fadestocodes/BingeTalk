@@ -450,7 +450,7 @@ const ThreadsIdPage = () => {
 
 
                                 
-                               <View key={reply.id}  className=' ml-10 pr-5 justify-center items-center gap-3 my-3' style={{ borderLeftWidth:1, borderColor:Colors.secondary, borderBottomLeftRadius:10 }}>
+                               <View key={reply.id}  className=' ml-10 pr-5 justify-center items-center gap-3 my-3' style={{ borderLeftWidth:1, borderColor:Colors.secondary, borderBottomLeftRadius:10, paddingHorizontal:15, paddingBottom:10 }}>
                             <View className='flex-row w-full justify-between items-center'>
                                     <View className="flex-row items-center gap-2 pl-10">
                                         <Image

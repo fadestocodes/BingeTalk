@@ -121,6 +121,17 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
         })
     }
 
+
+
+    const handleComment = (thread) => {
+        console.log('userDB', userDB.id)
+
+        router.push({
+            pathname:`/commentsModal`,
+            params : { userId : userDB.id, threadId : thread.id }
+        })
+    }
+
     if (!thread){
         return <ActivityIndicator/>
     }
@@ -200,10 +211,12 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                                 <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                             </View>
                             </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>handleComment(thread)}  >
                             <View className='flex-row  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
                                 <MessageIcon   className='' size='18' color={Colors.mainGray} />
                                 <Text className='text-xs font-pbold text-gray-400  '> {thread.comments.length}</Text>
                             </View>
+                            </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleInteraction('reposts',thread)} >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
                                 <RepostIcon className='' size='14' color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>

@@ -46,6 +46,7 @@ const CastIdPage = () => {
     const [DBcast, setDBcast] = useState({})
     const [ toastMesage, setToastMessage ] = useState(null)
     const [ threads, setThreads ] = useState([])
+    const [ alreadyFav, setAlreadyFav ] = useState(null)
 
 
 
@@ -80,21 +81,26 @@ const CastIdPage = () => {
                 posterPath  : fetchedPerson.profile_path,
             }
 
-            const cachedCastFromDB = queryClient.getQueryData(['cast', castId]);
-            if (cachedCastFromDB){
-                setThreads(cachedCastFromDB.threads)
-                setMentions(cachedCastFromDB.mentions)
-            } else {
-                console.log('fetchedPerson', fetchedPerson)
+            // const cachedCastFromDB = queryClient.getQueryData(['cast', castId]);
+            // if (cachedCastFromDB){
+            //     setThreads(cachedCastFromDB.threads)
+            //     setMentions(cachedCastFromDB.mentions)
+            //     const alreadyFavCheck = ownerUser.favCastCrew.some( item => item.castId === cachedCastFromDB.id )
+            //     setAlreadyFav(alreadyFavCheck)
+            // } else {
+                // console.log('fetchedPerson', fetchedPerson)
                 const castFromDB = await fetchPersonFromDB({castData})
                 setDBcast(castFromDB)
-                queryClient.setQueryData(['cast', castId]);
+                const alreadyFavCheck = ownerUser.favCastCrew.some( item => item.castId === castFromDB.id )
+                console.log("FAVCASTCREW", ownerUser.favCastCrew)
+                setAlreadyFav(alreadyFavCheck)
+                // queryClient.setQueryData(['cast', castId]);
     
                 console.log('castfromDB', castFromDB)
                 setThreads( castFromDB.threads );
                 setMentions(castFromDB.mentions)
-                queryClient.setQueryData(['threads', castId], castFromDB.threads);
-            }
+                // queryClient.setQueryData(['threads', castId], castFromDB.threads);
+            // }
 
             // const fetchedMentions = await getMovieMentions(movieId);
             // setMentions(fetchedMentions);
@@ -114,18 +120,20 @@ const CastIdPage = () => {
     }, [castId]); 
 
 
-    const alreadyFav = ownerUser.favCastCrew.some( item => item.castId === DBcast.id )
 
 
     const handleAddToFav = async () => {
+
       
       const data = {
         userId : ownerUser.id,
         castId : DBcast.id
       }
       const newFav = await addCastToFav(data);
+      setAlreadyFav(prev => !prev)
       console.log('newFAv', newFav)
       setToastMessage(newFav.message)
+      // fetchData()
     }
 
     const refreshData = () => {
@@ -235,9 +243,9 @@ const CastIdPage = () => {
         <View className="buttons flex gap-4 w-full items-center mb-6">
 
           <TouchableOpacity onPress={() => handleAddToFav()}  >
-              <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor:  Colors.secondary }} >
+              <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyFav ? 'none' :  Colors.secondary }} >
                       <CastCrewIcon size={20}  color={alreadyFav ? Colors.secondary : Colors.primary} />
-                  <Text className='text-primary font-pbold text-sm' style={{ color : alreadyFav ? Colors.secondary : Colors.primary }}>{  'Add to Fav Cast/Crew' }</Text>
+                  <Text className='text-primary font-pbold text-sm' style={{ color : alreadyFav ? Colors.secondary : Colors.primary }}>{ alreadyFav ? 'Remove from Fav Cast/Crew' : 'Add to Fav Cast/Crew' }</Text>
               </View>
           </TouchableOpacity>
          
@@ -360,8 +368,6 @@ const CastIdPage = () => {
                             <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
                         )}
                         renderItem={({item}) => {
-                            console.log('tiem from item flatlist', item)
-                            
                             return (
                             <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >
                                 <ThreadCard thread={item} refetch={ fetchData} ></ThreadCard>
