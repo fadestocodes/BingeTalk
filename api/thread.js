@@ -1,6 +1,8 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
+import { useUser } from '@clerk/clerk-expo'
+import { useFetchOwnerUser } from './user'
 
 export const createThread = async ( threadData ) => {
     console.log('threadData', threadData)
@@ -156,4 +158,74 @@ export const deleteThread = async (data) => {
     } catch(err){
         console.log(err)
     }
+}
+
+
+
+export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
+    const [ thread, setThread ] = useState(null);
+    const [ isLoading, setIsLoading ] = useState(false)
+    const [ error, setEror ] = useState(null)
+    const { user : clerkUser }  = useUser()
+    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+    const [ interactedComments, setInteractedComments ] = useState({
+        upvotes : [],
+        downvotes : []
+    })
+    const [ commentsData, setCommentsData ] = useState([])
+    const [ interactedCount, setInteractedCount ] = useState(null)
+
+    console.log('Initial render of component, threadId:', threadId);
+
+    const fetchThread = async () => {
+        try {
+            setIsLoading(true)
+            const response = await fetch(`${nodeServer.currentIP}/thread?threadId=${threadId}`);
+            const fetchedThread = await response.json();
+            const upvotedComments = ownerUser.commentInteractions.filter( i => {
+                return fetchedThread.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
+            } )
+            const downvotedComments = ownerUser.commentInteractions.filter( i => {
+                return fetchedThread.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
+            } )
+            // setInteractedComments(interactedCommentsData)
+            setInteractedComments(prev => ({
+                ...prev,
+                upvotes : upvotedComments,
+                downvotes : downvotedComments
+            }))
+
+            setThread(fetchedThread)
+
+            if (replyCommentId){
+                console.log("REORDERING", replyCommentId)
+                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const replyCommentFromNotif = await request.json();
+                console.log('specific comment', replyCommentFromNotif)
+
+                const reorderedCommentsData = [
+                    ...fetchedThread?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
+                    ...fetchedThread?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
+                ]
+                console.log('reorederd comments', reorderedCommentsData)
+                setCommentsData(reorderedCommentsData)
+            }else {
+                setCommentsData(fetchedThread.comments)
+            }
+          
+        } catch (err) {
+            console.log(err)
+            setEror(err)
+        } finally {
+            setIsLoading(false)
+        }
+    } 
+
+    useEffect(()=>{
+       
+        console.log('triggerd from useEffect')
+            fetchThread();
+    }, [])
+
+    return { thread, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchThread}
 }

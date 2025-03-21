@@ -11,9 +11,10 @@ import { createComment } from '../../api/comments'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
-import { fetchSingleThread , threadInteraction, useFetchSingleThread} from '../../api/thread'
+import { fetchSingleThread , threadInteraction, useCustomFetchSingleThread, useFetchSingleThread} from '../../api/thread'
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import ThreadCard from '../ThreadCard'
+import { commentInteraction } from '../../api/comments'
 
 
 
@@ -27,9 +28,7 @@ const ThreadsIdPage = () => {
     
 
     const { replyCommentId } = useLocalSearchParams();
-    if (replyCommentId){
-        console.log('REPLYCOMMENTID', replyCommentId)
-    }
+   
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  // Create a ref for the input
     const [ replyingTo, setReplyingTo ] = useState(null)
@@ -47,11 +46,13 @@ const ThreadsIdPage = () => {
 
     const { threadsId, tvId, movieId, castId }= useLocalSearchParams();
     console.log(threadsId, tvId)
-    // const queryClient = useQueryClient();
+    // const queryClient = useQueryClient();    
 
     // const [ thread, setThread ] = useState(null)
 
-    const { data: thread , refetch, isFetching} = useFetchSingleThread(Number(threadsId))
+    // const { data: thread , refetch, isFetching} = useFetchSingleThread(Number(threadsId))
+    const { thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useCustomFetchSingleThread(Number(threadsId), Number(replyCommentId))
+
     // console.log('thread from hook', thread)
 
 
@@ -141,16 +142,121 @@ const ThreadsIdPage = () => {
     }   
 
 
-    const handleInteraction =  async (type, thread) => {
-        console.log('type', type)
+    // const handleInteraction =  async (type, thread) => {
+    //     console.log('type', type)
+    //     const data = {
+    //         type,
+    //         threadId : Number(threadsId),
+    //         userId : ownerUser.id
+    //     }
+    //     const updatedDialogue = await threadInteraction(data)
+    //     refetch();
+    // }
+
+
+    const handleCommentInteraction =  async (type, comment, isAlready) => {
+        console.log('PARAMS', type,comment.id, isAlready)
+
+        let description
+
+        
+        console.log('interacted comments BEFORE', interactedComments)
+        if ( type === 'upvotes' ){
+            description = `upvoted your comment "${comment.content}"`
+            if (isAlready){
+                // setInteractedComments(prev => ({
+                //     ...prev,
+                //     upvotes : prev.upvotes.filter( i => i.commentId !== comment.id )
+                // }))
+
+                setInteractedComments(prev => {
+                    const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
+                    console.log('Updated upvotes:', updatedUpvotes);
+                    return {
+                        ...prev,
+                        upvotes: updatedUpvotes
+                    };
+                });
+                setCommentsData(prev => {
+                    const updatedComments = prev.map(i => 
+                        i.id === comment.id 
+                            ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
+                            : i  // Leave other comments unchanged
+                    );
+                    console.log('Updated comments data:', updatedComments);
+                    return updatedComments;
+                });
+                
+                console.log("HELLO FROM 1") 
+            } else {
+                comment.interactionType = 'UPVOTE'
+                comment.commentId = comment.id
+                setInteractedComments(prev => ({
+                    ...prev,
+                    upvotes : [ ...prev.upvotes, comment ]
+                }))
+
+                setCommentsData(prev => {
+                    const updatedComments = prev.map(i => 
+                        i.id === comment.id 
+                            ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
+                            : i  // Leave other comments unchanged
+                    );
+                    console.log('Updated comments data:', updatedComments);
+                    return updatedComments;
+                });
+            }
+            
+        } else if (type === 'downvotes'){
+            description = `downvoted your comment "${comment.content}"`
+            if (isAlready){
+                setInteractedComments(prev => ({
+                    ...prev,
+                    downvotes : prev.downvotes.filter( i => i.commentId !== comment.id )
+                }))
+                setCommentsData(prev => {
+                    const updatedComments = prev.map(i => 
+                        i.id === comment.id 
+                            ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
+                            : i  // Leave other comments unchanged
+                    );
+                    console.log('Updated comments data:', updatedComments);
+                    return updatedComments;
+                });
+            } else {
+                comment.interactionType = 'DOWNVOTE'
+                comment.commentId = comment.id
+                setInteractedComments(prev => ({
+                    ...prev,
+                    downvotes : [ ...prev.downvotes, comment ]
+                }))
+                setCommentsData(prev => {
+                    const updatedComments = prev.map(i => 
+                        i.id === comment.id 
+                            ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
+                            : i  // Leave other comments unchanged
+                    );
+                    console.log('Updated comments data:', updatedComments);
+                    return updatedComments;
+                });
+            }
+        }
+
+        console.log('made it this far')
         const data = {
             type,
-            threadId : Number(threadsId),
-            userId : ownerUser.id
+            commentId : comment.id,
+            userId : ownerUser.id,
+            description,
+            recipientId : comment.user.id
         }
-        const updatedDialogue = await threadInteraction(data)
-        refetch();
+        const updatedComment = await commentInteraction(data)
+        console.log('updatedcomment', updatedComment)
+        // refetch();
+        // refetchOwnerUser()
+        console.log('after interaction AFTER', interactedComments)
     }
+
 
 
 
@@ -171,14 +277,15 @@ const ThreadsIdPage = () => {
                 { thread.comments.length > 0 && (
                     <>
                     <FlatList
-                    data={thread.comments}
+                    data={commentsData}
                     keyExtractor={(item, index) => index.toString()}
                     scrollEnabled={false}
                     contentContainerStyle={{ paddingBottom: 80 }}
                     renderItem={({ item }) =>{
     
                         const shownReplies = visibleReplies[item.id] || 0;
-                        console.log(item)
+                        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === item.id )
+                        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === item.id )
                         
                         return (
                         <View>
@@ -201,24 +308,27 @@ const ThreadsIdPage = () => {
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
                                 <Text className='text-white text-custom font-pcourier'>{item.content}</Text>
     
-                                <View className='flex-row gap-3 w-full justify-start items-center'>
-    
+                                <View className='flex-row gap-5 w-full justify-start items-center'>
+                                    
                                     <TouchableOpacity onPress={()=>handleReply(item, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
-    
-                                    <TouchableOpacity >
-                                    <View className='flex-row  justify-center items-center  py-1 px-2 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                        <HeartIcon  size='20' color={Colors.mainGray} />
-                                        {item?.likes !== undefined && item?.likes > 0 ? 
-                                        (
-                                            <Text className='text-xs font-pbold text-gray-400'>{item.likes}</Text>
-                                        ) : null}
+
+                                    <TouchableOpacity onPress={()=>handleCommentInteraction('upvotes',item, alreadyUpvotedComment)}  >
+                                    <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                        <ThumbsUp  size='20' color={ alreadyUpvotedComment ? Colors.secondary : Colors.mainGray} />
+                                            <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedComment ? Colors.secondary : Colors.mainGray}}>{item.upvotes}</Text>
+                                    </View>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={()=>handleCommentInteraction('downvotes',item, alreadyDownvotedComment)}  >
+                                    <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                        <ThumbsDown  size='20' color={ alreadyDownvotedComment ? Colors.secondary :  Colors.mainGray} />
+                                            <Text className='text-xs font-pbold  text-gray-400' style={{ color : alreadyDownvotedComment ? Colors.secondary : Colors.mainGray }}>{item.downvotes}</Text>
                                     </View>
                                     </TouchableOpacity>
                                     
-                                
-                                
+
+
                                 </View>
                             </View>
                         ) }

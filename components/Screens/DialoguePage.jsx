@@ -55,33 +55,6 @@ const DialogueScreen = () => {
     }));
 
 
-//     useEffect(() => {
-
-//         if (dialogue || replyCommentFromNotif) {
-//             const reorderedCommentsData = [
-//                 ...dialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
-//                 ...dialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
-//             ]
-//             setReorderedComments(reorderedCommentsData)
-        
-//             const interactedComments = reorderedCommentsData.filter( item => {
-//                 return ownerUser.commentInteractions.some( j => j.commentId === item.id)
-//             } )
-//             const interactedCommentsFormatted = interactedComments.map( i => {
-//                 const interaction = ownerUser.commentInteractions.find( j => j.commentId === i.id )
-//                 return {
-//                     ...i,
-//                     interactionType : interaction ? interaction.interactionType : null
-//                 }
-                
-//             } )
-    
-//             setInteractedCommentIds(interactedCommentsFormatted)
-//         }
-
-// }, [dialogue, replyCommentFromNotif])
-
-
     if (!dialogue ){
         return <ActivityIndicator/>
     }
@@ -229,7 +202,7 @@ const DialogueScreen = () => {
                 setCommentsData(prev => {
                     const updatedComments = prev.map(i => 
                         i.id === comment.id 
-                            ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
+                            ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
                             : i  // Leave other comments unchanged
                     );
                     console.log('Updated comments data:', updatedComments);
