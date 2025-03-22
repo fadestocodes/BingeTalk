@@ -20,6 +20,7 @@ import { getAllNotifs, useGetAllNotifs } from '../../../../api/notification';
 import { likeActivity } from '../../../../api/activity';
 import ThreadActivityCard from '../../../../components/ThreadActivityCard';
 import ActivityCard from '../../../../components/ActivityCard';
+import ActivityCard2 from '../../../../components/ActivityCard2';
 
 
 const homeIndex = () => {
@@ -134,9 +135,22 @@ const homeIndex = () => {
       await refetchFeed()
     } 
 
+    const handlePress =(item) => {
+      if (item.dialogue){
+        router.push(`(home)/dialogue/${item.dialogue.id}`)
+      } else if (item.threads){
+        router.push(`(home)/threads/${item.threads.id}`)
+      } else if (item.feedFrom === 'threadFromWatched'){
+        router.push(`(home)/threads/${item.id}`)
+      }
+    }
+
+
+
   
     if (isLoadingOwnerUser  || !ownerUser) {
-      return <ActivityIndicator />;
+      return
+        <ActivityIndicator />;
     }
 
   return (
@@ -285,8 +299,38 @@ const homeIndex = () => {
         // )}}
 
         renderItem={({item}) => {
+          console.log("item", item)
           return (
-          <ActivityCard activity={item} refetch={refetchFeed} />
+            <>
+          {/* // <ActivityCard activity={item} refetch={refetchFeed} /> */}
+          { item.feedFrom === 'activity' ? (
+            <View>
+              { item.postType === 'dialogue' ? (
+                <TouchableOpacity onPress={()=>handlePress(item)}>
+                 <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} />
+                </TouchableOpacity>
+              ) : item.postType === 'thread' ? (
+                <TouchableOpacity onPress={()=>handlePress(item)}>
+                  <ThreadCard thread={item.threads} isBackground={true} fromHome={true}/>
+                </TouchableOpacity>
+
+              ) : item.postType === 'list' ? (
+                <TouchableOpacity onPress={()=>handlePress(item)}>
+                  <ListCard list={item.list} fromHome={true}/>
+                </TouchableOpacity>
+
+              ) : (
+                <ActivityCard2 activity={item} fromHome={true} />
+              ) }
+            </View>
+          ) : (
+            <TouchableOpacity onPress={()=>handlePress(item)}>
+              <ThreadCard thread={item} isBackground={true} fromHome={true}/>
+            </TouchableOpacity>
+
+          ) }
+
+        </>
         )}}
       />
 

@@ -105,8 +105,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
             content : input,
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
-            description: dialogue ? `commented on your dialogue "${input}"` : thread &&  `commented on your thread "${input}"`,
-            recipientId : dialogue ?  dialogue.user.id : thread && thread.user.id,
+            description: dialogue ? `commented on your dialogue "${input}"` : thread ?  `commented on your thread "${input}"` : list && `commented on your list "${input}"` ,
+            recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list && list.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
         console.log('commentData', commentData)

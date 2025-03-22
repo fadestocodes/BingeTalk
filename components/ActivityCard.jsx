@@ -280,14 +280,14 @@ const ActivityCard = ( { activity, refetch } ) => {
         <View  >
             <Text className='text-white'>/{ toPascalCase( activity?.movie?.title || activity?.tv?.title || activity?.castCrew?.name)}</Text>
         </View>
-        { activity.tag && (
+        { !!activity.tag && (
         <Text className= ' font-pbold text-primary text-xs ' style={{ backgroundColor: activity.tag.color , padding:5, borderRadius:10, alignSelf:'flex-start'}}>{activity.tag.tagName}</Text>
         ) }
         </View>
         <Text className='text-white text-lg font-pbold leading-6'>{activity.title}</Text>
         <Text className='text-secondary  font-pcourier text-center text-custom uppercase mt-3  '>{activity.user.firstName}</Text>
         <Text className='text-white  font-pcourier text-custom mb-2' numberOfLines={10}>{activity.caption}</Text>
-            { imagePaths && (
+            { !!imagePaths && (
                 <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
                 <Image
                 source ={{ uri : `${posterURL}${activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.threads?.movie?.backdropPath || activity?.threads?.tv?.backdropPath}` }}
@@ -300,9 +300,9 @@ const ActivityCard = ( { activity, refetch } ) => {
             ) }
             { activity.activityType === 'DIALOGUE' && (
              <View className='flex-row gap-3  item-center justify-center' >
-             { activity.dialogue.mentions && activity.dialogue.mentions.length > 0 && activity.dialogue.mentions.map( mention => (
+             { !!activity.dialogue.mentions && activity.dialogue.mentions.length > 0 && activity.dialogue.mentions.map( mention => (
                 <>
-                { imagePaths && (
+                { !!imagePaths && (
                     <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
    
                         <Image
@@ -405,7 +405,7 @@ const ActivityCard = ( { activity, refetch } ) => {
         <Text className='text-white'></Text>
         </View>
         <Text className='text-white text-lg font-pbold leading-6'>{activity.threads.title}</Text>
-        { imagePaths && (
+        { !!imagePaths && (
             <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
                 <Image
                 source ={{ uri : `${posterURL}${imagePaths}` }}
@@ -420,7 +420,7 @@ const ActivityCard = ( { activity, refetch } ) => {
     ) : !activity.activityType ? (
         
         <>
-        { activity.threads && (
+        { !!activity.threads && (
         <View>
             <Text className='text-white border-2 border-green-400'>from hereee</Text>
              <Text className='text-mainGray text font-pregular text-center ' >{activity.description}</Text>
@@ -472,7 +472,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                   activity.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary}  /> : activity.activityType === 'WATCHED' && <Eye size={18} color={Colors.secondary} /> }
             <Text className='text-mainGray'>{activity.user.firstName} {activity.description}</Text>
         </View>
-        {imagePaths && (
+        {!!imagePaths && (
              <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
             <Image
                     source={{ uri: `${posterURL}${imagePaths }` }}
@@ -494,7 +494,7 @@ const ActivityCard = ( { activity, refetch } ) => {
         <>
          { activity.activityType === 'DIALOGUE' && (
             <View className='flex-row gap-3  item-center justify-start w-full' >
-            { activity.dialogue.mentions && activity.dialogue.mentions.length > 0 && activity.dialogue.mentions.map( mention => (
+            { !!activity.dialogue.mentions && activity.dialogue.mentions.length > 0 && activity.dialogue.mentions.map( mention => (
                 <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
                     <Image
                         source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}

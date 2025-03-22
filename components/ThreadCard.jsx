@@ -226,7 +226,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         </View>
                             <TouchableOpacity onPress={()=>handleThreeDots(thread)}   >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                                <ThreeDotsIcon className='' size='16' color={Colors.mainGray} />
                             </View>
                             </TouchableOpacity>
                         

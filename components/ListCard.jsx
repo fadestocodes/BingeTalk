@@ -16,6 +16,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
+    console.log('list', item)
 
 
     const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
@@ -217,7 +218,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             </View>
                             <View className='relative' >
                                 <TouchableOpacity onPress={()=>handleThreeDots(item)}  >
-                                    <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                                    <ThreeDotsIcon className='' size='16' color={Colors.mainGray} />
                                 </TouchableOpacity>
                             </View>
                             
