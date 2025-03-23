@@ -28,7 +28,11 @@ const ActivityCard2 = ({activity, fromHome}) => {
 
 
     const handleUserPress = (item) => {
-        router.push(`/(home)/user/${item.id}`)
+        if (fromHome){
+            router.push(`/(home)/user/${item.id}`)
+        } else {
+            router.push(`/user/${item.id}`)
+        }
     }
 
       const handleLike = async (item) => {

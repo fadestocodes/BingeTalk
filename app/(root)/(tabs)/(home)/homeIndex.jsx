@@ -37,9 +37,11 @@ const homeIndex = () => {
     // const [ hasMore, setHasMore ] = useState(true);
     const [ hasMoreFeed, setHasMoreFeed ] = useState(true)
     const [ hasMoreThreads, setHasMoreThreads ] = useState(true)
+    const [ hasMoreRotations, setHasMoreRotations ] = useState(true)
     // const [ cursor, setCursor ] = useState(null);
     const [ feedCursor, setFeedCursor ] = useState(null);
     const [ threadCursor, setThreadCursor ] = useState(null);
+    const [ rotationCursor, setRotationCursor ] = useState(null);
     const [ unreadNotifs, setUnreadNotifs ]  = useState([])
     const flatListRef = useRef(null);
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -53,17 +55,19 @@ const homeIndex = () => {
         } catch {
           console.log('error fetchign notifs')
         }
-        if (!hasMoreFeed && !hasMoreThreads)return 
+        if (!hasMoreFeed && !hasMoreThreads &&!hasMoreRotations )return 
         try {
             setLoading(true);
-            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}`);
+            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&rotationCursor=${rotationCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}&hasMoreRotations=${hasMoreRotations}`);
             const response = await request.json();
             setData( prev => [ ...prev, ...response.items ] );
             setFeedCursor(response.nextFeedCursorServer)
             setThreadCursor(response.nextThreadCursorServer)
+            setRotationCursor(response.nextRotationCursorServer)
             // setHasMore(!!response.hasMore)
             setHasMoreFeed(response.hasMoreFeedServer)
             setHasMoreThreads(response.hasMoreThreadsServer)
+            setHasMoreRotations(response.hasMoreRotationsServer)
 
         } catch (err) {
             console.log(err)
@@ -78,15 +82,17 @@ const homeIndex = () => {
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
 
-        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=null&threadCursor=null&hasMoreFeed=true&hasMoreThreads=true`);
+        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotation=true`);
         const response = await request.json();
         console.log("REFETCH RESPONSE", response)
         setData( response.items );
         setFeedCursor(response.nextFeedCursorServer)
         setThreadCursor(response.nextThreadCursorServer)
+        setRotationCursor(response.nextRotationCursor)
         // setHasMore(!!response.hasMore)
         setHasMoreFeed(response.hasMoreFeedServer)
         setHasMoreThreads(response.hasMoreThreadsServer)
+        setHasMoreRotations(response.hasMoreRotations)
 
 
     } catch (err) {
@@ -208,95 +214,6 @@ const homeIndex = () => {
         }}
         onEndReachedThreshold={0.3}
       
-        // renderItem={({item}) => {
-        //   // console.log('flatlist item', item)
-        //   const alreadyLikedActivity = ownerUser.activityInteractions.some( interaction => interaction.activityId === item.id  )
-        //   return (
-        //   <>
-        //     { item.activityType === 'DIALOGUE'  ? (
-        //       <TouchableOpacity onPress={()=>{router.push(`/dialogue/${item.dialogue.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
-        //         <DialogueCard dialogue ={item.dialogue} isBackground={false} fromHome={true} activity={item.description} refetch={getFeed}/>
-        //       </TouchableOpacity>
-        //     ) : item.threads ? (
-        //       <TouchableOpacity  onPress={()=>{router.push(`/threads/${item.threads.id}`)}} style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, gap:15 }}>
-        //       {/* <Text className='text-mainGray text font-pregular text-center ' >{item.description}</Text> */}
-        //       {/* <ThreadCard thread ={item.threads} isBackground={false} showThreadTopic={true} isShortened={true} fromHome={true} activity={item.description}/> */}
-        //       <View className='w-full justify-between items-center flex-row  '>
-        //           <TouchableOpacity onPress={()=>handleUserPress(item.user)} className='flex-row gap-2 items-center justify-center'>
-        //             <Image
-        //               source={{ uri : item.user.profilePic }}
-        //               contentFit='cover'
-        //               style={{ width:30, height:30, borderRadius:50 }}
-        //             />
-        //             <Text className='text-mainGrayDark '>@{item.user.username}</Text>
-        //           </TouchableOpacity>
-        //           <Text className='  text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
-        //       </View>
-              
-        //       <View className='flex-row gap-2 justify-center items-center '>
-        //         <MessagesSquare size={18} color={Colors.secondary} />
-        //         <Text className='text-mainGray'>{item.user.firstName} {item.description}</Text>
-        //       </View>
-        //       <Image
-        //         source={{ uri: `${posterURL}${item?.threads.movie?.backdropPath || item?.threads.tv?.backdropPath}` }}
-        //         placeholder={{ uri: `${posterURLlow}${item?.threads.movie?.backdropPath || item?.threads.tv?.backdropPath}` }}
-        //         placeholderContentFit='cover'
-        //         contentFit='cover'
-        //         style ={{ width:'100%', height:150, borderRadius:15 }}
-        //       />
-        //       <View className='w-full flex-start items-start flex-row gap-2 '>
-        //           <TouchableOpacity onPress={()=>handleLike(item)} style={{ flexDirection:'row', gap:5, alignItems:'center', justifyContent:'center' }}>
-        //             <Heart size={20} strokeWidth={2.5} color={ alreadyLikedActivity ? Colors.secondary : Colors.mainGray}></Heart>
-        //           <Text className='text-mainGray text-xs font-pbold'>{item.likes}</Text>
-        //           </TouchableOpacity>
-        //         </View>
-        //       </TouchableOpacity>
-        //     ) : item.list ? (
-        //         <ListCard list={item.list}  activity={item.description} fromHome={true}  />
-        //     ) : item.activityType === 'WATCHED' || item.activityType === 'CURRENTLY_WATCHING' || item.activityType === 'WATCHLIST' || item.activityType === 'RATING' ?  (
-        //       <View style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, justifyContent:'center', alignItems:'center', gap:15,  }}>
-        //         <View className='w-full justify-between items-center flex-row'>
-        //           <TouchableOpacity onPress={()=>handleUserPress(item.user)} className='flex-row gap-2 items-center justify-center'>
-        //             <Image
-        //               source={{ uri : item.user.profilePic }}
-        //               contentFit='cover'
-        //               style={{ width:30, height:30, borderRadius:50 }}
-        //             />
-        //             <Text className='text-mainGrayDark '>@{item.user.username}</Text>
-        //           </TouchableOpacity>
-        //           <Text className='  text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
-        //         </View>
-        //         <View className='flex-row gap-3 items-center justify-center w-full px-4 '>
-        //           { item.rating ? <Star size={18} color={Colors.secondary} /> : item.activityType === 'WATCHED' ? <Eye size={18} color={Colors.secondary} /> :
-        //           item.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : item.activityType==='WATCHLIST' && <ListChecks size={18} color={Colors.secondary} />  }
-        //           <Text className='text-mainGray font-pregular  ' >{`${item.user.firstName} ${item.description}`}</Text>
-        //         </View>
-        //         <TouchableOpacity onPress={()=>handlePosterPress(item)} style={{width:'100%'}} >
-        //           <Image
-        //             contentFit='cover'
-        //             source={{ uri: `${posterURL}${item?.movie?.backdropPath || item?.tv?.backdropPath || item?.rating?.movie?.backdropPath || item?.rating?.tv?.backdropPath }` }}
-        //             placeholder={{ uri: `${posterURLlow}${item?.movie?.backdropPath || item?.tv?.backdropPath || item?.rating?.movie?.backdropPath || item?.rating?.tv?.backdropPath }` }}
-        //             placeholderContentFit='cover'
-        //             style ={{ width:'100%', height:150, borderRadius:15 }}
-        //           />
-        //         </TouchableOpacity>
-        //         <View className='w-full flex-start items-start flex-row gap-2'>
-        //           <TouchableOpacity onPress={()=>handleLike(item)} style={{ flexDirection:'row', gap:5, alignItems:'center', justifyContent:'center' }}>
-        //             <Heart size={20} strokeWidth={2.5} color={ alreadyLikedActivity ? Colors.secondary : Colors.mainGray}></Heart>
-        //           <Text className='text-mainGray text-xs font-pbold'>{item.likes}</Text>
-        //           </TouchableOpacity>
-        //         </View>
-        //       </View>
-        //     ) : item.type === 'thread' ? (
-        //         <ThreadActivityCard thread={item} refetch={refetchFeed} />
-        //     ): (
-        //       <>
-        //       { console.log('item in fragment',item) }
-        //       <View className='border-2 border-green-400'></View>
-        //       </>
-        //     ) }
-        //     </> 
-        // )}}
 
         renderItem={({item}) => {
           console.log("item", item)
