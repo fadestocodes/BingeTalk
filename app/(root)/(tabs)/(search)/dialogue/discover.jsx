@@ -40,6 +40,11 @@ const DiscoverDialogues = () => {
             )}
             />
 
+
+            { selected === 'Trending' && loadingTrending || selected === 'Most Recent' && loadingRecents ? (
+                <ActivityIndicator />
+            ) : (
+                <>
             <FlatList
                 data={selected === 'Trending' ? trendingDialogues : recentDialogues}
                 keyExtractor={(item, index) => index}
@@ -47,21 +52,40 @@ const DiscoverDialogues = () => {
                 renderItem={({item}) => {
                     // console.log('flatlist item', item.id)
                 return (
+                    <>
                     <TouchableOpacity onPress={()=>router.push(`/dialogue/${item.id}`)} >
                         <DialogueCard isBackground={true} dialogue={item}  />
                     </TouchableOpacity>
+                   
+                    </>
+
                 )}}
+                onEndReachedThreshold={0}
                 onEndReached={ ()=>{
-                    
-                    
                     if (selected === 'Trending' && hasMore){
                         refetch()
                     } else if (selected === 'Hot Takes' && hasMoreRecents){
                         refetchRecents()
                     }
-                } }
-                onEndReachedThreshold={0}
-            />
+                }
+
+
+                } 
+                ListFooterComponent={(
+                    (selected === 'Trending' && loadingTrending) || (selected === 'Most Recent' && loadingRecents) ? (
+                        <ActivityIndicator />
+                    ) : null
+                )}
+                
+
+                />
+                
+
+
+            </>
+            )}
+
+
         </View>
         </View> 
     </SafeAreaView>

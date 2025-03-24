@@ -86,11 +86,19 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
     const handleComment = (dialogue) => {
         console.log('userDB', userDB.id)
+        if (fromHome){
 
-        router.push({
-            pathname:`/commentsModal`,
-            params : { userId : userDB.id, dialogueId : dialogue.id }
-        })
+            router.push({
+                pathname:`(home)/commentsModal`,
+                params : { userId : userDB.id, dialogueId : dialogue.id }
+            })
+        } else {
+            router.push({
+                pathname:`/commentsModal`,
+                params : { userId : userDB.id, dialogueId : dialogue.id }
+            })
+
+        }
     }
 
     const handleInteraction =  async (type, dialogue) => {

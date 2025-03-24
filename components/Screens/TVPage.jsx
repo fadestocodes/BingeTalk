@@ -69,6 +69,7 @@ const TVPage = () => {
     const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.tvId === Number(DBtvId) )
     // const alreadyRated = ownerUser.ratings.some( item => item.tvId === Number(DBtvId) )
     // const tvRating = ownerUser.ratings.find( item => item.tvId === Number(DBtvId));
+    console.log('dbtvid', DBtvId)
     const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) )
     const tvRating = tvRatings?.find( item => item.userId === ownerUser.id && item.tvId === Number(DBtvId) )
     console.log('TV RATINGS', tvRatings)    

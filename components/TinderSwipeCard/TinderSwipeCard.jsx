@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text , TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity} from "react-native";
+import { View, StyleSheet, Text , TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity, ActivityIndicator} from "react-native";
 import { Image } from "expo-image";
 import SwipeCard from "./SwipeCard";
 import { getTrending } from "../../api/tmdb";
@@ -21,7 +21,7 @@ import { createComment } from "../../api/comments";
 
 
 const TinderSwipeCard = ( { listItems, creator, listId} ) => {
-  const [list, setList] = useState([]);
+  const [list, setList] = useState(null);
 
   const [currentItem, setCurrentItem] = useState(null)
   const router = useRouter();
@@ -81,9 +81,7 @@ const TinderSwipeCard = ( { listItems, creator, listId} ) => {
 
   
 useEffect(() => {
-  if (list.length === 0) {
-    console.log("List is empty after returning. Check state restoration logic.");
-  }
+ 
   restoreSavedItem(); // Make sure the saved item is restored when component remounts
 }, [list]);
 
@@ -212,82 +210,91 @@ useEffect(() => {
     <View style={styles.container}>
       <ToastMessage durationMultiple={Number(1.4)} message={message} onComplete={() => {setMessage(''); setToastIcon(null)}} icon={toastIcon }  />
 
-
-      {list.length >  0   ? (
-        <View className="w-full">
-        <View className="z-1 w-full">
-            <SwipeCard
-              key={list[0].id}  // Ensure the correct movie transition
-              item={ currentItem || list[0]}
-              setItem={setCurrentItem}
-              onLike={handleLike}
-              onReject={handleReject}
-              onSwipeUp = {handleSwipeUp}
-              onAnimationEnd={handleAnimationEnd}
-              setSavedItem={setSavedItem}
-            />
-        </View>
-        
-        <View className='z-0 w-full'>
-            <SwipeCard
-              key={list[0].id}  // Ensure the correct movie transition
-              item={list[0]}
-              onLike={handleLike}
-              onReject={handleReject}
-              onAnimationEnd={handleAnimationEnd}
-            />
-        </View>
-        </View>
-
-      ) : (
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-
-        <Animated.View className="justify-center items-center gap-5 flex-1" style={translateStyle}>
-          <TouchableOpacity onPress={()=>{ router.back() }} style={{ position:'absolute', top:70, left: 10 }} >
-            <BackIcon size={20} color={Colors.mainGray}  />
-          </TouchableOpacity>
-          
-            <View className="justify-center items-center gap-3 mb-8">
-              <Text className="text-white font-pbold text-2xl">Did you like this list?</Text>
-              <View className="flex-row gap-10">
-                <TouchableOpacity>
-                  <ThumbsUp color={Colors.mainGray} size={30}/>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <ThumbsDown color={Colors.mainGray} size={30}/>
-                </TouchableOpacity>
-
-              </View>
-            </View>
-          <TouchableOpacity onPress={()=>handleUserPress(creator)} className="justify-center items-center gap-3 mb-5">
-            <Image
-              source={{ uri : creator.profilePic }}
-              contentFit = 'cover'
-              style ={{ width:100, height:100, borderRadius:50 }}
-            />
-            <Text className="text-mainGray">@{creator.username}</Text>
-            <Text className="text-white  font-pbold">List curated by {creator.firstName}</Text>
-          </TouchableOpacity>
-
-          <View className="gap-0">
-            <TextInput
-              placeholder="Leave a comment for this list"
-              value={comment}
-              onChangeText={handleInput}
-              placeholderTextColor={Colors.mainGray}
-              multiline={true}
-              style={{ color:'white', textAlignVertical:"top",width:350, maxHeight:200, minHeight:150, borderWidth:1, borderColor:Colors.mainGray, fontFamily:'Geist', borderRadius:15, padding:20 }}
-
-            />
+        {!list ? (
+          <View className="h-full bg-primary">
+          <ActivityIndicator />
           </View>
-            <TouchableOpacity onPress={handlePostComment} style={{ backgroundColor:Colors.secondary, borderRadius:10, padding:10 }}>
-              <Text className="text-primary font-pbold">Post comment</Text>
-            </TouchableOpacity>
-        
-        </Animated.View>
-          </TouchableWithoutFeedback>
+        ):(
+          <>
+                {list.length >  0   ? (
+                  <View className="w-full">
+                  <View className="z-1 w-full">
+                      <SwipeCard
+                        key={list[0].id}  // Ensure the correct movie transition
+                        item={ currentItem || list[0]}
+                        setItem={setCurrentItem}
+                        onLike={handleLike}
+                        onReject={handleReject}
+                        onSwipeUp = {handleSwipeUp}
+                        onAnimationEnd={handleAnimationEnd}
+                        setSavedItem={setSavedItem}
+                      />
+                  </View>
+                  
+                  <View className='z-0 w-full'>
+                      <SwipeCard
+                        key={list[0].id}  // Ensure the correct movie transition
+                        item={list[0]}
+                        onLike={handleLike}
+                        onReject={handleReject}
+                        onAnimationEnd={handleAnimationEnd}
+                      />
+                  </View>
+                  </View>
+          
+                ) : (
+                  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          
+                  <Animated.View className="justify-center items-center gap-5 flex-1" style={translateStyle}>
+                    <TouchableOpacity onPress={()=>{ router.back() }} style={{ position:'absolute', top:70, left: 10 }} >
+                      <BackIcon size={20} color={Colors.mainGray}  />
+                    </TouchableOpacity>
+                    
+                      <View className="justify-center items-center gap-3 mb-8">
+                        <Text className="text-white font-pbold text-2xl">Did you like this list?</Text>
+                        <View className="flex-row gap-10">
+                          <TouchableOpacity>
+                            <ThumbsUp color={Colors.mainGray} size={30}/>
+                          </TouchableOpacity>
+                          <TouchableOpacity>
+                            <ThumbsDown color={Colors.mainGray} size={30}/>
+                          </TouchableOpacity>
+          
+                        </View>
+                      </View>
+                    <TouchableOpacity onPress={()=>handleUserPress(creator)} className="justify-center items-center gap-3 mb-5">
+                      <Image
+                        source={{ uri : creator.profilePic }}
+                        contentFit = 'cover'
+                        style ={{ width:100, height:100, borderRadius:50 }}
+                      />
+                      <Text className="text-mainGray">@{creator.username}</Text>
+                      <Text className="text-white  font-pbold">List curated by {creator.firstName}</Text>
+                    </TouchableOpacity>
+          
+                    <View className="gap-0">
+                      <TextInput
+                        placeholder="Leave a comment for this list"
+                        value={comment}
+                        onChangeText={handleInput}
+                        placeholderTextColor={Colors.mainGray}
+                        multiline={true}
+                        style={{ color:'white', textAlignVertical:"top",width:350, maxHeight:200, minHeight:150, borderWidth:1, borderColor:Colors.mainGray, fontFamily:'Geist', borderRadius:15, padding:20 }}
+          
+                      />
+                    </View>
+                      <TouchableOpacity onPress={handlePostComment} style={{ backgroundColor:Colors.secondary, borderRadius:10, padding:10 }}>
+                        <Text className="text-primary font-pbold">Post comment</Text>
+                      </TouchableOpacity>
+                  
+                  </Animated.View>
+                    </TouchableWithoutFeedback>
+          
+                )}
+        </>
+        )
+        }
 
-      )}
     </View>
   );
 };
@@ -299,6 +306,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 0,
     width:'100%',
+    height:'100%',
     backgroundColor: Colors.primary
   },
 });

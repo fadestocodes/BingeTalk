@@ -117,11 +117,17 @@ const ThreadsIdPage = () => {
         console.log(input)
 
         console.log('will try to reate comment')
+       
+
         const commentData = {
             userId : Number(userId),
             threadId : Number(thread.id),
             content : input,
-            parentId : replyingTo ? replyingTo.parentId : null
+            parentId : replyingTo ? replyingTo?.parentId : null,
+            replyingToUserId : replyingTo?.user?.id || null,
+            description: `commented on your thread "${input}"`,
+            recipientId : dialogue.user.id,
+            replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
         console.log('commentData', commentData)
     

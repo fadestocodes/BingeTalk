@@ -21,7 +21,8 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
     //       <ActivityIndicator></ActivityIndicator>  
     //     </View> 
     // } 
-
+  console.log('hereeee')
+  console.log('the user is ', user)
   const router = useRouter();
   const [active, setActive] = useState(0);
   const pagerRef = useRef(null)

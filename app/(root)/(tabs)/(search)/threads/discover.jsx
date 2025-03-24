@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity , SafeAreaView, Touchable} from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity , SafeAreaView, ActivityIndicator} from 'react-native'
 import { MessagesSquare } from 'lucide-react-native'
 import React, {useState} from 'react'
 import { threadCategories } from '../../../../../lib/CategoryOptions'
@@ -12,8 +12,8 @@ import { useRouter } from 'expo-router'
 const DiscoverDialogues = () => {
     const [ selected, setSelected ] = useState('Trending')
     const router = useRouter()
-    const { data : trendingThreads, refetch, hasMore } = useGetTrendingThreadsInfinite(10, true);
-    const { data : recentThreads, refetch:refetchRecents, hasMore: hasMoreRecents } = useGetRecentThreads(10, false);
+    const { data : trendingThreads, refetch, hasMore, loading:loadingTrending } = useGetTrendingThreadsInfinite(10, true);
+    const { data : recentThreads, refetch:refetchRecents, hasMore: hasMoreRecents, loading:loadingRecents } = useGetRecentThreads(10, false);
 
 
 
@@ -42,6 +42,10 @@ const DiscoverDialogues = () => {
             )}
             />
 
+            { selected === 'Trending' && loadingTrending || selected === 'Most Recent' && loadingRecents ? (
+                <ActivityIndicator />
+            ) : (
+
             <FlatList
                 data={selected === 'Trending' ? trendingThreads : recentThreads}
                 keyExtractor={(item, index) => index}
@@ -64,6 +68,7 @@ const DiscoverDialogues = () => {
                 } }
                 onEndReachedThreshold={0}
             />
+            )}
         </View>
         </View> 
     </SafeAreaView>

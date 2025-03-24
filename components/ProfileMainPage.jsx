@@ -168,7 +168,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
    
     <View className='w-full h-full bg-primary'>
         { isFetchingUser || loading ? (
-            <View className="bg-primary w-full h-full">
+            <View className="bg-primary w-full h-full justify-center items-center">
             <ActivityIndicator></ActivityIndicator>
         </View>
         ) : (

@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View, FlatList, TouchableOpacity, RefreshControl } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Image } from 'expo-image'
 import TinderSwipeCard from '../../../../components/TinderSwipeCard/TinderSwipeCard'
@@ -22,12 +22,6 @@ const browseHome = () => {
     const [ selected, setSelected ] = useState('Trending')
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
-
-    // const [ trendingLists, setTrendingLists ] = useState(null)
-
-    // useEffect(()=>{
-
-    // }, [])
     const { trendingList, loading, refetch, hasMore : hasMoreTrending } = useGetTrendingLists(3)
     const { recentLists, loading: loadingRecents, refetch:refetchRecents, hasMore:hasMoreRecents } = useGetRecentLists(3)
 
@@ -72,34 +66,39 @@ const browseHome = () => {
         />
       </View>
 
-        {/* <TinderSwipeCard /> */}
         <View className='w-full ' style={{ paddingBottom:200 }} >
 
+          { selected === 'Trending' && loading  || selected === 'Most Recent' &&  loadingRecents ? (
+            <ActivityIndicator/>
+          ) : (
+            
+                    <FlatList 
+                      refreshControl={
+                        <RefreshControl
+                          tintColor={Colors.secondary}
+                          onRefresh={refetch}
+                          refreshing={loading}
+                        />
+                      }
+                        onEndReached={() => {
+                            if ( hasMoreTrending && selected === 'Trending' ){
+                                refetch()
+                            } else if (hasMoreRecents && selected==='Most Recent'){
+                              refetchRecents()
+                            }
+                        }}
+                        onEndReachedThreshold={0.1}
+                      data={ selected === 'Trending' ?  trendingList : selected === 'Most Recent' && recentLists}
+                      keyExtractor = {item => item.id }
+                      contentContainerStyle={{ gap:15 , width:'100%'}}
+                      renderItem = {({item}) => {
+                        return (
+                        <ListCard list={item} />
+                      )}}
+                    />
 
-        <FlatList 
-          refreshControl={
-            <RefreshControl
-              tintColor={Colors.secondary}
-              onRefresh={refetch}
-              refreshing={loading}
-            />
-          }
-            onEndReached={() => {
-                if ( hasMoreTrending && selected === 'Trending' ){
-                    refetch()
-                } else if (hasMoreRecents && selected==='Most Recent'){
-                  refetchRecents()
-                }
-            }}
-            onEndReachedThreshold={0.1}
-          data={ selected === 'Trending' ?  trendingList : selected === 'Most Recent' && recentLists}
-          keyExtractor = {item => item.id }
-          contentContainerStyle={{ gap:15 , width:'100%'}}
-          renderItem = {({item}) => {
-            return (
-            <ListCard list={item} />
-          )}}
-        />
+          )}
+
 
         </View>
     </View>

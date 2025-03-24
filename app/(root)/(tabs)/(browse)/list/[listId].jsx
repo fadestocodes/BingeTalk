@@ -7,13 +7,17 @@ import TinderSwipeCard from '../../../../../components/TinderSwipeCard/TinderSwi
 const ListPage = () => {
     const {listId} = useLocalSearchParams();
     const { data:list, isLoading,  } = useFetchSpecificList(Number(listId))
-    
-    if (!list){
-        return <ActivityIndicator/>
-    }
-    console.log('Hello from List Page')
+   
   return (
-   <TinderSwipeCard listItems={list.listItem} creator={list.user} listId={listId}/>
+<View className='h-full bg-primary'>
+    { !list ? (
+      <View className='justify-center items-center h-full'>
+      <ActivityIndicator />
+      </View>
+    ) : (
+      <TinderSwipeCard listItems={list.listItem} creator={list.user} listId={listId}/>
+    )}
+    </View>
   )
 }
 

@@ -121,10 +121,18 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     const handleComment = (item) => {
         console.log('userDB', ownerUser.id)
 
-        router.push({
-            pathname:`/commentsModal`,
-            params : { userId : ownerUser.id, listId : item.id }
-        })
+      
+        if (fromHome){
+            router.push({
+                pathname:`(home)/commentsModal`,
+                params : { userId : ownerUser.id, listId : item.id }
+            })
+        } else {
+            router.push({
+                pathname:`/commentsModal`,
+                params : { userId : ownerUser.id, listId : item.id }
+            })
+        }
     }
 
 

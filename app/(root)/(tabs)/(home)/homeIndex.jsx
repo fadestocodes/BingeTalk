@@ -57,7 +57,6 @@ const homeIndex = () => {
         }
         if (!hasMoreFeed && !hasMoreThreads &&!hasMoreRotations )return 
         try {
-            setLoading(true);
             const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&rotationCursor=${rotationCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}&hasMoreRotations=${hasMoreRotations}`);
             const response = await request.json();
             setData( prev => [ ...prev, ...response.items ] );
@@ -77,7 +76,6 @@ const homeIndex = () => {
 
     const refetchFeed = async () => {
       try {
-        setLoading(true);
         const notifsData = await getAllNotifs( ownerUser.id, null , true )
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
@@ -203,6 +201,11 @@ const homeIndex = () => {
           </TouchableOpacity>
         )}
       />
+
+      { loading ? (
+        <ActivityIndicator />
+      ) : (
+
       <FlatList
         data = {data}
         refreshControl={
@@ -256,6 +259,7 @@ const homeIndex = () => {
         </>
         )}}
       />
+      ) }
 
       </View>
       </View>

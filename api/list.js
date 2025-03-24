@@ -148,10 +148,9 @@ export const useGetTrendingLists = (limit) => {
     const [ trendingList, setTrendingList ] = useState([])
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore, setHasMore ] = useState(true)
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
     const getTrendingLists = async (limit) => {
         if (!hasMore) return 
-        setLoading(true)
         try {
             const request = await fetch(`${nodeServer.currentIP}/list/trending?cursor=${cursor}&limit=${limit}`)
             const response = await request.json();
@@ -180,11 +179,10 @@ export const useGetRecentLists = (limit) => {
     const [ recentLists, setRecentLists ] = useState([])
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore, setHasMore ] = useState(true)
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
 
     const getRecentLists = async (limit) => {
         if (!hasMore) return
-        setLoading(true)
         try {
             const request = await fetch(`${nodeServer.currentIP}/list/most-recent?cursor=${cursor}&limit=${limit}`)
             const response = await request.json();

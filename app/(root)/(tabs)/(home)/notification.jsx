@@ -82,7 +82,12 @@ const Notification = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' style={{}}>
-     
+      { loading ? (
+        <View className='h-full justify-center items-center'>
+          <ActivityIndicator />
+        </View>
+      ) : (
+
     <View className='w-full  pt-3 px-4 gap-5' style={{paddingBottom:200}}>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
@@ -158,6 +163,8 @@ const Notification = () => {
       
       </View>
     </View>
+      ) }
+     
   </SafeAreaView>
   )
 }

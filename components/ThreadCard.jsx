@@ -133,11 +133,17 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
 
     const handleComment = (thread) => {
         console.log('userDB', userDB.id)
-
-        router.push({
-            pathname:`/commentsModal`,
-            params : { userId : userDB.id, threadId : thread.id }
-        })
+        if (fromHome){
+            router.push({
+                pathname:`(home)/commentsModal`,
+                params : { userId : userDB.id, threadId : thread.id }
+            })
+        } else {
+            router.push({
+                pathname:`/commentsModal`,
+                params : { userId : userDB.id, threadId : thread.id }
+            })
+        }
     }
 
     if (!thread || !ownerUser){

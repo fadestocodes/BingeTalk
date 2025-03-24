@@ -11,14 +11,17 @@ const ActivityPage = () => {
     const {  data:activity , refetch, loading } = useFetchActivityId(activityId)
     console.log('ACTIVITY FETHED', activity)
 
-    if (loading ){
-        return <ActivityIndicator/>
-    }
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
+      { loading ? (
+        <View className='h-full justify-center items-center'>
+          <ActivityIndicator/>
+        </View>
+      ) : (
         <View className='px-4'>
         <ActivityCard activity={activity} refetch={refetch}  />
         </View>
+      ) }
     </SafeAreaView>
   )
 }

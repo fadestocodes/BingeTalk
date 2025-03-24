@@ -147,6 +147,10 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
 
   return (
   <View className="w-full h-full">
+    { !item ? (
+      <ActivityIndicator />
+    ):(
+      <>
       <ToastMessage message={message} icon={toastIcon}  onComplete={()=>setMessage(null)} durationMultiple={0.7} />
     <View className='h-full w-full'>
 
@@ -189,6 +193,8 @@ const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd,
         </Animated.View>
 
     </View>
+    </>
+    ) }
     </View>
   );
 };
