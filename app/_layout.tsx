@@ -64,7 +64,7 @@ export default function RootLayout() {
         <UserDBProvider>
           <DialogueProvider>
             <PostRemoveProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={{ flex: 1, backgroundColor:Colors.primary }}>
           <StatusBar
             backgroundColor={Colors.mainGray} // Any color for background, use a color or hex
           />

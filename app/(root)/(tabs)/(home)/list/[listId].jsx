@@ -16,7 +16,11 @@ const ListId = () => {
     const router = useRouter()
 
     if (isFetching){
-        return <RefreshControl tintColor={Colors.secondary}   />
+        return (
+            <View className='h-full bg-primary'>
+        <RefreshControl tintColor={Colors.secondary} />
+        </View>
+    )
     }
 
     const handlePress = (item) => {

@@ -80,7 +80,7 @@
 // export default ProfileHomepage
 
 
-import { StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 // import ProfileHomepage from '../../../../../components/Screens/UserPage'
 import ProfileHomepage from '../../../../components/Screens/UserPage'
@@ -98,9 +98,15 @@ const UserIDPage = () => {
 
 
   return (
-    <>
-      <ProfileHomepage user={user} refetchUser={refetchUser} isFetchingUser={isFetchingUser}  />
-    </>
+    <View className='bg-primary h-full'>
+      { !user ? (
+        <View className='h-full justify-center items-center'>
+        <ActivityIndicator/>
+        </View>
+      ) : (
+        <ProfileHomepage user={user} refetchUser={refetchUser} isFetchingUser={isFetchingUser}  />
+      )}
+    </View>
   )
 }
 

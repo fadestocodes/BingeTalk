@@ -49,9 +49,6 @@ const DialogueScreen = () => {
     }));
 
 
-    if (!dialogue ){
-        return <ActivityIndicator/>
-    }
 
 
 
@@ -328,6 +325,12 @@ const DialogueScreen = () => {
 
   return (
     <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
+       
+       { isLoading || !ownerUser ? (
+            <View className='h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        ) : (
      
         <>
         <ScrollView className='bg-primary pt-12  relative ' 
@@ -522,7 +525,9 @@ const DialogueScreen = () => {
                 )}
               </View>
             </Animated.View>
+
             </>
+            )}
 
 
     </SafeAreaView>

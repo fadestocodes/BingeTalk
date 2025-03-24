@@ -122,6 +122,14 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     }
 
 
+    const handleUserPress = (thread) => {
+        if (fromHome){
+            router.push(`/(home)/user/${thread.user.id}`)
+        } else {
+            router.push(`/user/${thread.user.id}`)
+        }
+    }
+
 
     const handleComment = (thread) => {
         console.log('userDB', userDB.id)
@@ -132,8 +140,12 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
         })
     }
 
-    if (!thread){
-        return <ActivityIndicator/>
+    if (!thread || !ownerUser){
+        return (
+            <View className='h-full bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
     }
 
 
@@ -145,7 +157,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         { isReposted && (
                     <RepostIcon size={18} color={Colors.mainGray} style={{ marginRight:10 }}/>
                 ) }
-                            <TouchableOpacity onPress={()=>router.push(`/user/${thread.user.id}`)} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
+                            <TouchableOpacity onPress={()=>handleUserPress(thread)} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                                 <Image
                                     source={{ uri: thread?.user?.profilePic }}
                                     contentFit='cover'

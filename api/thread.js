@@ -164,7 +164,7 @@ export const deleteThread = async (data) => {
 
 export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
     const [ thread, setThread ] = useState(null);
-    const [ isLoading, setIsLoading ] = useState(false)
+    const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
     const { user : clerkUser }  = useUser()
     const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})

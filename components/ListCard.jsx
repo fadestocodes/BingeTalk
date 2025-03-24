@@ -16,7 +16,6 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
-    console.log('list', item)
 
 
     const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
@@ -129,6 +128,15 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     }
 
 
+    const handleUserPress = (item) => {
+        if (fromHome){
+            router.push(`/(home)/user/${item.user.id}`)
+        } else {
+            router.push(`/user/${item.user.id}`)
+        }
+    }
+
+
 
 
   return (
@@ -141,12 +149,14 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 { isReposted && (
                                      <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
                                 ) }
+                                    <TouchableOpacity style={{flexDirection:'row', gap:5}} onPress={()=>handleUserPress(item)}>
                                     <Image
                                     source ={{ uri :item.user.profilePic }}
                                     contentFit='cover'
                                     style={{ width:25, height :25, borderRadius:50 }}
                                     />
                                     <Text className='text-mainGrayDark'>@{item.user.username}</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 <Text className='text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
                             </View>

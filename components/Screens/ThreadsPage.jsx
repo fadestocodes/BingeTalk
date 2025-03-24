@@ -68,9 +68,6 @@ const ThreadsIdPage = () => {
     }));
 
 
-    if (!thread){
-        return <ActivityIndicator/>
-    }
     
 
    
@@ -369,6 +366,12 @@ const ThreadsIdPage = () => {
 
   return (
     <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
+        
+        { isLoading || !ownerUser ? (
+            <View className='h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        ) : (
      
         <>
         <ScrollView className='bg-primary pt-12  relative ' >
@@ -554,6 +557,9 @@ const ThreadsIdPage = () => {
               </View>
             </Animated.View>
             </>
+
+        ) }
+
 
 
     </SafeAreaView>

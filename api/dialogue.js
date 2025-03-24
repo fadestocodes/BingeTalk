@@ -124,7 +124,7 @@ export const useFetchSingleDialogue = ( dialogueId ) => {
 
 export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     const [ dialogue, setDialogue ] = useState(null);
-    const [ isLoading, setIsLoading ] = useState(false)
+    const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
     const { user : clerkUser }  = useUser()
     const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})

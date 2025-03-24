@@ -15,8 +15,12 @@ const ListId = () => {
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
 
-    if (isFetching){
-        return <RefreshControl tintColor={Colors.secondary}   />
+    if (isFetching  || !list){
+        return (
+            <View className='h-full bg-primary'>
+        <RefreshControl tintColor={Colors.secondary} />
+        </View>
+    )
     }
 
     const handlePress = (item) => {

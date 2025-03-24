@@ -13,11 +13,14 @@ import UserListsPage from './UserListsPage';
 
 const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
 
-    if (!user || isFetchingUser) {
+    // if (!user || isFetchingUser) {
             
-        refetchUser();
-        return <ActivityIndicator></ActivityIndicator>  
-    } 
+    //     refetchUser();
+
+    //     return <View className='bg-primary justify-center items-center h-full'>
+    //       <ActivityIndicator></ActivityIndicator>  
+    //     </View> 
+    // } 
 
   const router = useRouter();
   const [active, setActive] = useState(0);
@@ -38,9 +41,17 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
   }
 
   return (
+    
     <View className='flex flex-1 justify-center items-center w-full h-full bg-primary pb-20 relative' >
-     
-   
+      { !user || isFetchingUser ? (
+      <View className='bg-primary justify-center items-center h-full'>
+        <ActivityIndicator></ActivityIndicator>  
+      </View> 
+      ) : (
+        <>
+
+
+
             <View className='flex-row  bg-primaryLight  h-12  absolute top-20 z-10 rounded-xl px-3 gap-4 items-center justify-center  shadow-black  shadow-lg '>
               { tabs.map((item)=>(
                 <TouchableOpacity key={item.id} onPress={()=>tabsChange(item.id)} className={`justify-center items-center flex  px-2 rounded-md ${item.id === active ? `border-2 bg-white border-white`: `` }`}>
@@ -78,6 +89,10 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
               <Credits></Credits>
             </View> */}
           </PagerView>
+          </>
+      ) }
+     
+   
 
           
     </View>

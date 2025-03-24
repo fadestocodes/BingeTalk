@@ -14,7 +14,7 @@ const recommendationModal = () => {
 
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-    console.log('ownerusersender', ownerUser.recommendationSender)
+    // console.log('ownerusersender', ownerUser.recommendationSender)
     const [ mutuals, setMutuals ] = useState([])
     const [ loadingMutuals, setLoadingMutuals ] = useState(false)
     const [ message , setMessage ] = useState(null)

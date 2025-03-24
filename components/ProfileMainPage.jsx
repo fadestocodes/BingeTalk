@@ -145,13 +145,13 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             })
         }
 
-        if (isFetchingUser || loading){
-            return (
-            <View className="bg-primary w-full h-full">
-                <ActivityIndicator></ActivityIndicator>
-            </View>
-            )
-        }
+        // if (isFetchingUser || loading){
+        //     return (
+        //     <View className="bg-primary w-full h-full">
+        //         <ActivityIndicator></ActivityIndicator>
+        //     </View>
+        //     )
+        // }
         // if (!user || isFetchingUser) {
             
         //     refetchUser();
@@ -167,6 +167,12 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
   return (
    
     <View className='w-full h-full bg-primary'>
+        { isFetchingUser || loading ? (
+            <View className="bg-primary w-full h-full">
+            <ActivityIndicator></ActivityIndicator>
+        </View>
+        ) : (
+
         <FlatList
             data={profileDialogues}
             refreshControl={
@@ -334,6 +340,8 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
     
     
         </FlatList>
+
+        ) }
     </View>
   )
 }

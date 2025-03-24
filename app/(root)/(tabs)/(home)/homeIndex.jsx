@@ -33,7 +33,7 @@ const homeIndex = () => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const [ data, setData ] = useState([]);
-    const [ loading, setLoading ] = useState(false);
+    const [ loading, setLoading ] = useState(true);
     // const [ hasMore, setHasMore ] = useState(true);
     const [ hasMoreFeed, setHasMoreFeed ] = useState(true)
     const [ hasMoreThreads, setHasMoreThreads ] = useState(true)
@@ -47,7 +47,7 @@ const homeIndex = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
 
     const getFeed = async () => {
-        // if (!hasMoreFeed ) return
+        if (!hasMoreFeed ) return
         try {
           const notifsData = await getAllNotifs( ownerUser.id, null , true )
           const unread = notifsData.filter( item => item.isRead === false)
@@ -131,9 +131,7 @@ const homeIndex = () => {
         userId : ownerUser.id,
         activityId : item.id
       }
-      console.log('data to handle like', likeData)
       const likedActivity = await likeActivity(likeData)
-      console.log('liekdactivty', likedActivity)
       // setData()
       // setTrigger(prev => !prev)
       // setData(  )
@@ -154,13 +152,22 @@ const homeIndex = () => {
 
 
   
-    if (isLoadingOwnerUser  || !ownerUser) {
-      return
-        <ActivityIndicator />;
-    }
+    // if (isLoadingOwnerUser ) {
+    //   return(
+    //   <View className='bg-primary h-full justify-center items-center'>
+    //     <ActivityIndicator />
+    //   </View>)
+    // }
+    
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
+      { isLoadingOwnerUser  ? (
+        <View className='bg-primary h-full justify-center items-center'>
+          <ActivityIndicator />
+        </View>
+      ) : (
+
      
     <View className='w-full  pt-3 px-4 gap-5' style={{paddingBottom:200}}>
       <View className="gap-3">
@@ -216,7 +223,6 @@ const homeIndex = () => {
       
 
         renderItem={({item}) => {
-          console.log("item", item)
           return (
             <>
           {/* // <ActivityCard activity={item} refetch={refetchFeed} /> */}
@@ -253,6 +259,7 @@ const homeIndex = () => {
 
       </View>
       </View>
+      ) }
       </SafeAreaView>
   )
 }
