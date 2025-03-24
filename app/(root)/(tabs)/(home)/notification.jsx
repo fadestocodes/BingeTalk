@@ -58,6 +58,12 @@ const Notification = () => {
         pathname:`/dialogue/${item.comment.dialogueId}`,
         params:{ replyCommentId: item.comment.id}
       })
+    }else if (item.comment.parentComment && item.comment.parentComment.threadId){
+      console.log('here')
+      router.push(`/threads/${item.comment.parentComment.threadId}?replyCommentId=${item.comment.parentComment.id || item.comment.id}`)
+    } else if (item.comment.parentComment && item.comment.parentComment.dialogueId){
+      console.log('heree')
+      router.push(`/dialogue/${item.comment.parentComment.dialogueId}?replyCommentId=${item.comment.parentComment.id || item.comment.id}`)
     }
    
   }
@@ -129,7 +135,7 @@ const Notification = () => {
               const unread = unreadIds.includes( item.id )
             
             return (
-            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full justify-start items-start' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: unread ? 1 : 0.4  }}>
+            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full justify-start items-start' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: unread ? 1 : 0.6  }}>
               <View className='flex-row gap-2 justify-between items-center w-full'>
                 <View className='flex-row gap-2 justify-center items-center'>
                   <Image 

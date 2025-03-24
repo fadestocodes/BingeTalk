@@ -42,7 +42,8 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
        
 
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
-        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+        // const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+        const ownerUser = user
         const isOwnersProfilePage = user.id === ownerUser.id
         const [ isFollowing, setIsFollowing ] = useState(null)
         const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user.id, 15)

@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ProfileHomepage from '../../../../../components/Screens/UserPage'
 import { useLocalSearchParams } from 'expo-router'
@@ -17,7 +17,9 @@ const userIdPage = () => {
   return (
     < View className='w-full h-full bg-primary' >
       { !user ? (
+        <View className='h-full justify-center items-center'>
         <ActivityIndicator />
+        </View>
       ) : (
         <ProfileHomepage user={user} refetchUser={refetchUser} isFetchingUser={isFetchingUser}  />
       ) }

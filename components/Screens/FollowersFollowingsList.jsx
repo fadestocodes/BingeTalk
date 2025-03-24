@@ -6,6 +6,7 @@ import { formatDate } from '../../lib/formatDate'
 import { followersListCategories } from '../../lib/CategoryOptions'
 import { Colors } from '../../constants/Colors'
 import { useUser } from '@clerk/clerk-expo'
+import { router } from 'expo-router'
 
 
 const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
@@ -55,6 +56,9 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
         // await   refetch()
     }
 
+    const handleUserPress =(item) => {
+        router.push(`/user/${item.id}`)
+    }
 
 
   return (

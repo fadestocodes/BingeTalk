@@ -3,7 +3,7 @@ import { Image } from 'expo-image'
 import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Colors } from '../../constants/Colors'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon, RepostIcon, ThreeDotsIcon } from '../../assets/icons/icons'
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
@@ -365,6 +365,9 @@ const ThreadsIdPage = () => {
         console.log('after interaction AFTER', interactedComments)
     }
 
+    const handleUserPress = (item) => {
+        router.push(`/user/${item.user.id}`)
+    }
 
 
 
@@ -411,14 +414,14 @@ const ThreadsIdPage = () => {
     
                             <View className='w-full  justify-center items-center gap-3 my-3'>
                             <View className='flex-row w-full justify-between items-center'>
-                                    <View className="flex-row items-center gap-2">
+                                    <TouchableOpacity onPress={()=>handleUserPress(item)} className="flex-row items-center gap-2">
                                         <Image
                                             source={{ uri: item.user.profilePic }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
                                         <Text className='text-mainGrayDark' >@{item.user.username}</Text>
-                                    </View>
+                                    </TouchableOpacity>
                                     <Text className='text-mainGrayDark '>{formatDate(item.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
@@ -461,14 +464,14 @@ const ThreadsIdPage = () => {
                                 
                                <View key={reply.id}  className=' ml-10 pr-5 justify-center items-center gap-3 my-3' style={{ borderLeftWidth:1, borderColor:Colors.secondary, borderBottomLeftRadius:10, paddingHorizontal:15, paddingBottom:10 }}>
                             <View className='flex-row w-full justify-between items-center'>
-                                    <View className="flex-row items-center gap-2 pl-10">
+                                    <TouchableOpacity onPress={()=>handleUserPress(reply)} className="flex-row items-center gap-2 pl-10">
                                         <Image
                                             source={{ uri: reply.user.profilePic }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
                                         <Text className='text-mainGrayDark   ' >@{reply.user.username}</Text>
-                                    </View>
+                                    </TouchableOpacity>
                                     <Text className='text-mainGrayDark '>{formatDate(reply.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{reply.user.firstName}</Text>
