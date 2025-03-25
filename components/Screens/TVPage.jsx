@@ -69,10 +69,25 @@ const TVPage = () => {
     const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.tvId === Number(DBtvId) )
     // const alreadyRated = ownerUser.ratings.some( item => item.tvId === Number(DBtvId) )
     // const tvRating = ownerUser.ratings.find( item => item.tvId === Number(DBtvId));
-    console.log('dbtvid', DBtvId)
-    const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) )
-    const tvRating = tvRatings?.find( item => item.userId === ownerUser.id && item.tvId === Number(DBtvId) )
-    console.log('TV RATINGS', tvRatings)    
+
+
+    const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) && item.userId === ownerUser.id )
+    const ownerRating = tvRatings?.find( item => item.userId === ownerUser.id && item.tvId === Number(DBtvId) ) || 'N/A'
+    console.log('OWNER RATING', ownerRating)
+    const followersAndFollowingIds = ownerUser.followers.map(item => item.followerId ).concat(ownerUser.followers.map(f => f.followingId))
+    const friendsRatingList = tvRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser.id )
+    const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
+    console.log('total friends ratings', totalFriendsRatings)
+    const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
+    console.log('averafge friends ratring', averageFriendsRating)
+    console.log('all ratings', tvRatings)
+    const totalOverallRatings = tvRatings?.reduce((sum,rating) => sum + rating.rating, 0)
+    console.log('total overall ratings', totalOverallRatings)
+    const overallRatings = tvRatings.length > 0 ? (totalOverallRatings / tvRatings.length).toFixed(1) : 'N/A'
+    console.log('overall raitns',overallRatings)
+
+
+
     const threadData = {
         tvObj:movie
     }
@@ -259,7 +274,7 @@ const TVPage = () => {
     const handleRate = () => {
         router.push({
             pathname : '/ratingModal',
-            params: { DBtvId : DBtvId, prevRating : tvRating?.rating }
+            params: { DBtvId : DBtvId, prevRating : ownerRating.rating }
         })
     }
 
@@ -400,23 +415,21 @@ const TVPage = () => {
                       
         </View>
         <View className='main-wrapper px-6 flex pt-220 gap-6 ' style={{marginTop:20, marginBottom:200}}>
-            <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
+        <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
                 <View className='gap-0 items-center'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
-                    <Text className='text-mainGray text-2xl font-pbold'>{ alreadyRated ? `${tvRating?.rating}` : 'N/A' }</Text>
+                    <Text className='text-mainGray text-3xl font-pbold'>{ownerRating?.rating?.toFixed(1) || 'N/A'}</Text>
                 </View>
                 <View className='gap-0'>
-                    <Text className='text-mainGray text-sm font-psemibold'>From your network</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Your friends</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
-                        <Text className='text-mainGray text-2xl font-pbold'>8.1</Text>
-                        <Text className='text-mainGray text-xs font-pbold'>(avg)</Text>
+                        <Text className='text-mainGray text-3xl font-pbold'>{averageFriendsRating}</Text>
                     </View>
                 </View>
                 <View className='gap-0'>
-                    <Text className='text-mainGray text-sm font-psemibold'>From others</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Overall rating</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
-                        <Text className='text-mainGray text-2xl font-pbold'>7.3</Text>
-                        <Text className='text-mainGray text-xs font-pbold'>(avg)</Text>
+                        <Text className='text-mainGray text-3xl font-pbold'>{overallRatings}</Text>
                     </View>
                 </View>
                 

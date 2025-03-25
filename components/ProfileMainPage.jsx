@@ -42,8 +42,8 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
        
 
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
-        // const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-        const ownerUser = user
+        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+        // const ownerUser = user
         const isOwnersProfilePage = user.id === ownerUser.id
         const [ isFollowing, setIsFollowing ] = useState(null)
         const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user.id, 15)
@@ -217,14 +217,16 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                     <View className='px-4 items-center ' style={{marginTop:275, gap:15}}>
                         
                         <View className='items-center' style={{gap:10}}>
-                            <View className='gap-1 justify-center items-center mb-5'>
+                            <View className='gap-1 justify-center items-center '>
                                 <Text className='text-secondary font-pblack text-2xl'>{user.firstName} {user.lastName}</Text>
                                 <Text className='text-white font-pbold '>@{user.username}</Text>
                             </View>
-                            <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{user.bio}</Text>
+                            { user.bio && (
+                                <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{user.bio}</Text>
+                            ) }
                         </View>
                         { user.bioLink && (
-                        <TouchableOpacity onPress={()=>handleLinkPress(user.bioLink)} className='flex-row gap-2 opacity-60'  style={{backgroundColor:'black', paddingVertical:5, paddingHorizontal:20, borderRadius:10}}>
+                        <TouchableOpacity onPress={()=>handleLinkPress(user.bioLink)} className='flex-row gap-2 opacity-60 mt-5'  style={{backgroundColor:'black', paddingVertical:5, paddingHorizontal:20, borderRadius:10}}>
                             <LinkIcon size={16} color={Colors.mainGray} />
                             <Text className='text-mainGray text-sm  font-psemibold' >{user.bioLink}</Text>
                         </TouchableOpacity>

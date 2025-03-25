@@ -173,7 +173,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         { isReposted && (
                     <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
                 ) }
-                            <TouchableOpacity onPress={()=>{handleUserPress}} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
+                            <TouchableOpacity onPress={handleUserPress} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                             <Image
                                 source={{ uri: userDB.profilePic }}
                                 contentFit='cover'

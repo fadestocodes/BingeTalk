@@ -79,3 +79,20 @@ export const markNotifRead = async (data) => {
         console.log('Error trying to mark notifications as read')
     }
 }
+
+export const postPushToken = async (token) => {
+    try {
+        const response = await fetch(`${nodeServer.currentIP}/notifications/save-push-token`,{
+            method : 'POST',
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({token})
+        })
+        const result = await response.json()
+        console.log('results from sending push token', result)
+        return result
+    } catch (err){
+        console.log(err)
+    }
+}

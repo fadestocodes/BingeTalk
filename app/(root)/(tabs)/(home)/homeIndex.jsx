@@ -138,6 +138,7 @@ const homeIndex = () => {
     } 
 
     const handlePress =(item) => {
+      console.log("PRESSED ITEM", item)
       if (item.dialogue){
         router.push(`(home)/dialogue/${item.dialogue.id}`)
       } else if (item.threads){
@@ -160,7 +161,7 @@ const homeIndex = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
-      { isLoadingOwnerUser  ? (
+      { isLoadingOwnerUser ? (
         <View className='bg-primary h-full justify-center items-center'>
           <ActivityIndicator />
         </View>
@@ -233,16 +234,16 @@ const homeIndex = () => {
             <View>
               { item.postType === 'dialogue' ? (
                 <TouchableOpacity onPress={()=>handlePress(item)}>
-                 <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} />
+                 <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                 </TouchableOpacity>
               ) : item.postType === 'thread' ? (
                 <TouchableOpacity onPress={()=>handlePress(item)}>
-                  <ThreadCard thread={item.threads} isBackground={true} fromHome={true}/>
+                  <ThreadCard thread={item.threads} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                 </TouchableOpacity>
 
               ) : item.postType === 'list' ? (
                 <TouchableOpacity onPress={()=>handlePress(item)}>
-                  <ListCard list={item.list} fromHome={true}/>
+                  <ListCard list={item.list} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                 </TouchableOpacity>
 
               ) : (
@@ -251,7 +252,7 @@ const homeIndex = () => {
             </View>
           ) : (
             <TouchableOpacity onPress={()=>handlePress(item)}>
-              <ThreadCard thread={item} isBackground={true} fromHome={true}/>
+              <ThreadCard thread={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
             </TouchableOpacity>
 
           ) }

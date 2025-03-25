@@ -45,12 +45,13 @@ const ratingModal = () => {
     }
 
     const handlePost = async (  ) => {
+        const formattedRating = parseFloat(rating.toFixed(1));
 
         const data = {
             userId:ownerUser.id,
             movieId : Number(DBmovieId),
             tvId : Number(DBtvId),
-            rating : Number(rating.toFixed(1))
+            rating : formattedRating
 
         }
         console.log('data ', data)

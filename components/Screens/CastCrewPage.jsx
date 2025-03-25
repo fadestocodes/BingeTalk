@@ -283,20 +283,18 @@ const CastIdPage = () => {
             <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
                 <View className='gap-0 items-center'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
-                    <Text className='text-mainGray text-2xl font-pbold'>N/A</Text>
+                    <Text className='text-mainGray text-3xl font-pbold'>N/A</Text>
                 </View>
                 <View className='gap-0'>
-                    <Text className='text-mainGray text-sm font-psemibold'>From your network</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Your friends</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
-                        <Text className='text-mainGray text-2xl font-pbold'>8.1</Text>
-                        <Text className='text-mainGray text-xs font-pbold'>(avg)</Text>
+                        <Text className='text-mainGray text-3xl font-pbold'>8.1</Text>
                     </View>
                 </View>
                 <View className='gap-0'>
-                    <Text className='text-mainGray text-sm font-psemibold'>From others</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Overall rating</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
-                        <Text className='text-mainGray text-2xl font-pbold'>7.3</Text>
-                        <Text className='text-mainGray text-xs font-pbold'>(avg)</Text>
+                        <Text className='text-mainGray text-3xl font-pbold'>7.3</Text>
                     </View>
                 </View>
             </View>

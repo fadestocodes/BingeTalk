@@ -63,8 +63,23 @@ const MoviePage = () => {
     const alreadyWatched = ownerUser.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
     const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
     const [ movieRatings, setMovieRatings ] = useState([])
-    const alreadyRated = movieRatings?.some( item => item.movieId === Number(DBmovieId) )
-    const movieRating = movieRatings?.find( item => item.userId === ownerUser.id && item.movieId === Number(DBmovieId) )
+    
+    const alreadyRated = movieRatings?.some( item => item.movieId === Number(DBmovieId) && item.userId === ownerUser.id )
+    const ownerRating = movieRatings?.find( item => item.userId === ownerUser.id && item.movieId === Number(DBmovieId) ) || 'N/A'
+    console.log('OWNER RATING', ownerRating)
+    const followersAndFollowingIds = ownerUser.followers.map(item => item.followerId ).concat(ownerUser.followers.map(f => f.followingId))
+    const friendsRatingList = movieRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser.id )
+    const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
+    console.log('total friends ratings', totalFriendsRatings)
+    const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
+    console.log('averafge friends ratring', averageFriendsRating)
+    console.log('all ratings', movieRatings)
+    const totalOverallRatings = movieRatings?.reduce((sum,rating) => sum + rating.rating, 0)
+    console.log('total overall ratings', totalOverallRatings)
+    const overallRatings = movieRatings.length > 0 ? (totalOverallRatings / movieRatings.length).toFixed(1) : 'N/A'
+    console.log('overall raitns',overallRatings)
+
+
 
 
 
@@ -254,7 +269,7 @@ const MoviePage = () => {
     const handleRate = () => {
         router.push({
             pathname : '/ratingModal',
-            params: { DBmovieId : DBmovieId, prevRating : movieRating?.rating }
+            params: { DBmovieId : DBmovieId, prevRating : ownerRating?.rating }
         })
     }
 
@@ -411,20 +426,18 @@ const MoviePage = () => {
             <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
                 <View className='gap-0 items-center'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
-                    <Text className='text-mainGray text-2xl font-pbold'>{ alreadyRated ? `${movieRating?.rating}` : 'N/A' }</Text>
+                    <Text className='text-mainGray text-3xl font-pbold'>{ownerRating?.rating?.toFixed(1) || 'N/A'}</Text>
                 </View>
                 <View className='gap-0'>
-                    <Text className='text-mainGray text-sm font-psemibold'>From your network</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Your friends</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
-                        <Text className='text-mainGray text-2xl font-pbold'>8.1</Text>
-                        <Text className='text-mainGray text-xs font-pbold'>(avg)</Text>
+                        <Text className='text-mainGray text-3xl font-pbold'>{averageFriendsRating}</Text>
                     </View>
                 </View>
                 <View className='gap-0'>
-                    <Text className='text-mainGray text-sm font-psemibold'>From others</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Overall rating</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
-                        <Text className='text-mainGray text-2xl font-pbold'>7.3</Text>
-                        <Text className='text-mainGray text-xs font-pbold'>(avg)</Text>
+                        <Text className='text-mainGray text-3xl font-pbold'>{overallRatings}</Text>
                     </View>
                 </View>
                 
