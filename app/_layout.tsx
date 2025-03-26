@@ -47,6 +47,7 @@ export default function RootLayout() {
     "Geist-Thin": require("../assets/fonts/Geist-Thin.ttf"),
     "Courier" : require("../assets/fonts/Courier.ttf"),
   });
+  
   const router = useRouter()
 
   useEffect(() => {
@@ -54,110 +55,6 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
-  
-
-  // const {user:clerkUser} = useUser()
-  // const { data : ownerUser } = useFetchOwnerUser({email:clerkUser?.emailAddresses[0].emailAddress})
-
-  // useEffect(() => {
-  //   // Foreground notification handler
-  //   const subscription = Notifications.addNotificationReceivedListener(notification => {
-  //     console.log('Notification received:', notification);
-  //   });
-
-  //   // Background notification handler
-  //   const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(response => {
-  //     console.log('Notification response received:', response);
-  //   });
-
-  //   return () => {
-  //     subscription.remove();
-  //     backgroundSubscription.remove();
-  //   };
-  // }, []);
-
-//   const [expoPushToken, setExpoPushToken] = useState(null);
-//   const [isTokenSent, setIsTokenSent] = useState(false);
-
-//   console.log('token', expoPushToken)
-//   // Request permissions and get token
-//   // useEffect(() => {
-//   //   const getPushNotificationPermissions = async () => {
-//   //     const { status } = await Notifications.requestPermissionsAsync();
-//   //     console.log('status', status)
-//   //     if (status !== 'granted') {
-//   //       alert('You must enable push notifications!');
-//   //       return;
-//   //     }
-
-//   //     const token = await Notifications.getExpoPushTokenAsync();
-//   //     console.log("Expo Push Token", token.data);
-//   //     setExpoPushToken(token.data); // Store the token
-//   //     await postPushToken(token.data)
-//   //   };
-
-
-
-//   //   getPushNotificationPermissions();
-//   // }, []);
-
-
-// useEffect(() => {
-//   const getPushNotificationPermissions = async () => {
-//     try {
-//       const { status } = await Notifications.requestPermissionsAsync();
-//       console.log('status', status);  // Log the permission status
-
-//       if (status !== 'granted') {
-//         alert('You must enable push notifications!');
-//         return;
-//       }
-
-//       // Attempt to get the Expo push token
-//       const token = await Notifications.getExpoPushTokenAsync();
-//       console.log('Expo Push Token', token.data);  // Log the token
-//       setExpoPushToken(token.data); // Store the token
-
-//       // Make sure to post the token to your backend
-//       // const params = {
-//       //   userId : ownerUser.id,
-//       //   token : token.data,
-//       //   deviceType : Platform.OS
-
-//       // }
-//       await postPushToken(params);
-
-//     } catch (error) {
-//       console.error('Error getting push token', error);  // Log any errors
-//     }
-//   };
-
-//   // Get push notification permissions and token
-//   getPushNotificationPermissions();
-// }, []);
-
-//   // Handle notifications when the app is in the foreground
-//   useEffect(() => {
-//     const subscription = Notifications.addNotificationReceivedListener(notification => {
-//       console.log('Notification received in foreground:', notification);
-//       Alert.alert('Foreground Notification', notification.request.content.body);
-//     });
-
-//     // Handle notification response when clicked (background)
-//     const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(response => {
-//       console.log('Notification response received:', response);
-//       Alert.alert('Notification Clicked', response.notification.request.content.body);
-//     });
-
-//     // Cleanup the listeners when the component unmounts
-//     return () => {
-//       subscription.remove();
-//       backgroundSubscription.remove();
-//     };
-//   }, []);
-
-
-
 
 
   if (!fontsLoaded) {
@@ -178,7 +75,7 @@ export default function RootLayout() {
             <PostRemoveProvider>
         <GestureHandlerRootView style={{ flex: 1, backgroundColor:Colors.primary }}>
           <StatusBar
-            backgroundColor={Colors.mainGray} // Any color for background, use a color or hex
+            backgroundColor={Colors.mainGray}
           />
           <Stack  >
             <Stack.Screen name="index" options={{ headerShown: false }} />

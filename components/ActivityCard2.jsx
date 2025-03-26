@@ -116,7 +116,7 @@ const ActivityCard2 = ({activity, fromHome}) => {
                 activity.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary}  /> : activity.activityType === 'WATCHED' && <Eye size={18} color={Colors.secondary} /> }
             <Text className='text-mainGray'>{activity.user.firstName} {activity.description}</Text>
         </View>
-        {!!imagePaths && (
+        {!!imagePaths ? (
             <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
                 <Image
                         source={{ uri: `${posterURL}${imagePaths }` }}
@@ -126,7 +126,7 @@ const ActivityCard2 = ({activity, fromHome}) => {
                         style ={{ width:'100%', height:150, borderRadius:15}}
                 />
             </TouchableOpacity>
-        ) }
+        ):null }
 
         <View className='w-full flex-start items-start flex-row gap-2'>
             <View className='flex-row justify-between w-full items-center'>
@@ -136,7 +136,7 @@ const ActivityCard2 = ({activity, fromHome}) => {
                 </TouchableOpacity>
                 <TouchableOpacity   >
             <TouchableOpacity onPress={()=>handleThreeDots(activity)} className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                <ThreeDotsIcon className='' size='16' color={Colors.mainGray} />
+                <ThreeDotsIcon className='' size={16} color={Colors.mainGray} />
             </TouchableOpacity>
             </TouchableOpacity>
 

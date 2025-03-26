@@ -169,13 +169,13 @@ const CommentsModalPage = () => {
 
                             <TouchableOpacity >
                             <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <ThumbsUp  size='20' color={Colors.mainGray} />
+                                <ThumbsUp  size={20} color={Colors.mainGray} />
                                     <Text className='text-xs font-pbold text-gray-400'>{item.upvotes}</Text>
                             </View>
                             </TouchableOpacity>
                             <TouchableOpacity >
                             <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <ThumbsDown  size='20' color={Colors.mainGray} />
+                                <ThumbsDown  size={20} color={Colors.mainGray} />
                                     <Text className='text-xs font-pbold text-gray-400'>{item.downvotes}</Text>
                             </View>
                             </TouchableOpacity>
@@ -214,11 +214,7 @@ const CommentsModalPage = () => {
                             </TouchableOpacity>
 
                             <View className='flex-row  justify-center items-center gap-3  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                {/* <HeartIcon  size='20' color={Colors.mainGray} />
-                                {item?.likes !== undefined && item?.likes > 0 ? 
-                                (
-                                    <Text className='text-xs font-pbold text-gray-400'>{item.likes}</Text>
-                                ) : null} */}
+                             
                                 <TouchableOpacity style={{ borderWidth:1, borderRadius:10, borderColor:Colors.mainGray, padding:5 }} >
                                     <View className='flex-row gap-2 justify-center items-center'>
                                         <ThumbsUp size={16} color={Colors.mainGray} ></ThumbsUp>

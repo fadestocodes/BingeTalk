@@ -219,7 +219,7 @@ const CastIdPage = () => {
     
     className=' h-full  flex  ' style={{backgroundColor:Colors.primary}}>
       <TouchableOpacity className='border-white rounded-md w-16 flex items-center left-2 py-1 absolute   ' style={{}}   onPress={backPress}>
-                      <BackIcon className='' color={Colors.third}  size='22'/>
+                      <BackIcon className='' color={Colors.third}  size={22}/>
       </TouchableOpacity>
       <View className='gap-8 w-full px-6'>
         <View className='image-and-name items-center justify-center gap-5  w-full pt-20 '>
@@ -243,7 +243,7 @@ const CastIdPage = () => {
         <View className="buttons flex gap-4 w-full items-center mb-6">
 
           <TouchableOpacity onPress={() => handleAddToFav()}  >
-              <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyFav ? 'none' :  Colors.secondary }} >
+              <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyFav ? 'transparent' :  Colors.secondary }} >
                       <CastCrewIcon size={20}  color={alreadyFav ? Colors.secondary : Colors.primary} />
                   <Text className='text-primary font-pbold text-sm' style={{ color : alreadyFav ? Colors.secondary : Colors.primary }}>{ alreadyFav ? 'Remove from Fav Cast/Crew' : 'Add to Fav Cast/Crew' }</Text>
               </View>

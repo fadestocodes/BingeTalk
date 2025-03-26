@@ -111,7 +111,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                                     </View>
                             </TouchableOpacity>
                                 <>
-                                    <TouchableOpacity onPress={()=>handleFollowBack( whichList === 'Followers' ? checkFollowFromFollower : checkFollowFromFollowing , item)} style={{backgroundColor:checkFollowFromFollower || checkFollowFromFollowing ?  'none' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
+                                    <TouchableOpacity onPress={()=>handleFollowBack( whichList === 'Followers' ? checkFollowFromFollower : checkFollowFromFollowing , item)} style={{backgroundColor:checkFollowFromFollower || checkFollowFromFollowing ?  'transparent' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
                                         <Text className='   font-pbold text-sm' style={{color: checkFollowFromFollower || checkFollowFromFollowing ? Colors.secondary : Colors.primary}}>{checkFollowFromFollower || checkFollowFromFollowing ? 'Already following' : isOwnersPage ? 'Follow back' : 'Follow'}</Text>
                                     </TouchableOpacity>
 

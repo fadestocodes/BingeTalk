@@ -172,7 +172,6 @@ const homeIndex = () => {
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
 
-            {/* <TVIcon size={30} color='white' /> */}
             <Text className='text-white font-pbold text-3xl'>Home</Text>
           </View>
           <Text className='text-mainGray font-pmedium'>Check out the most bingeable shows right now.</Text>
@@ -184,9 +183,9 @@ const homeIndex = () => {
             contentFit='cover'
             style={{ width:30, height:30, borderRadius:50 }}
           />
-          { unreadNotifs.length > 0 && (
+          { unreadNotifs.length > 0 ? (
             <Text className='text-primary font-psemibold text-sm text-center leading-6' style={{ textAlignVertical:'center' ,borderRadius:50, height:23, width:23, backgroundColor:Colors.secondary, position:'absolute' ,bottom:20, left:20 }} >{unreadNotifs.length}</Text>
-          ) }
+          ) : null}
         </View>
       </TouchableOpacity>
 
@@ -229,7 +228,6 @@ const homeIndex = () => {
         renderItem={({item}) => {
           return (
             <>
-          {/* // <ActivityCard activity={item} refetch={refetchFeed} /> */}
           { item.feedFrom === 'activity' ? (
             <View>
               { item.postType === 'dialogue' ? (

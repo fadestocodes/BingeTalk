@@ -219,7 +219,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                         <View className='items-center' style={{gap:10}}>
                             <View className='gap-1 justify-center items-center '>
                                 <Text className='text-secondary font-pblack text-2xl'>{user.firstName} {user.lastName}</Text>
-                                <Text className='text-white font-pbold '>@{user.username}</Text>
+                                <Text className='text-white font-pbold ' >@{user.username}</Text>
                             </View>
                             { user.bio && (
                                 <Text className='text-third font-pcourier leading-5 ' style={{paddingHorizontal:20}}>{user.bio}</Text>
@@ -240,10 +240,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                                 <Text className='text-gray-400 text-lg font-pblack'>{followCounts.following}</Text>
                                 <Text className='text-gray-400 text-lg font-psemibold'>Following</Text>
                             </TouchableOpacity >
-                            {/* <View className='flex-row gap-2 justify-center items-center'>
-                                <Text className='text-gray-400 text-lg font-pblack'>21</Text>
-                                <Text className='text-gray-400 text-sm font-psemibold'>Credits</Text>
-                            </View> */}
+                           
                         </View>
                         <View className='w-full justify-center items-center mt-4' >
                             <Text className='font-pbold text-mainGray'>Current Rotation</Text>

@@ -70,13 +70,13 @@ const moreInteractions = () => {
         <View style={{ width:55, height:7, borderRadius:10, backgroundColor:Colors.mainGray, position:'absolute', top:20 }} />
         <View className="buttons flex gap-4 w-full items-center mb-6 " style={{paddingHorizontal:50}}>
                     <TouchableOpacity onPress={handleCurrentlyWatching}  >
-                    <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-80 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyWatching ? 'none' : Colors.secondary }} >                        
+                    <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-80 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyWatching ? 'transparent' : Colors.secondary }} >                        
                     { alreadyWatching ? <ProgressCheckIcon color={Colors.secondary} size={20}/> : <ProgressCheckIcon color={Colors.primary} size={20}/>  }                        
                     <Text className='text-primary font-pbold text-sm' style={{ color : alreadyWatching ? Colors.secondary : Colors.primary }}>{ alreadyWatching ? 'Remove from Currently Watching' : 'Add to Currently Watching' }</Text>
                     </View>
                     </TouchableOpacity>
                     <TouchableOpacity  onPress={handleInterested } >
-                        <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-80 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyInterested ? 'none' : Colors.secondary }} >
+                        <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-80 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyInterested ? 'transparent' : Colors.secondary }} >
                         { alreadyInterested ? <BadgeMinus color = {Colors.secondary} size={20}/> : <BadgeHelp color={Colors.primary} size={20}/>  }
                         <Text className='text-primary font-pbold text-sm' style={{ color : alreadyInterested ? Colors.secondary : Colors.primary }}>{ alreadyInterested ? 'Remove from Interested' : 'Mark as Interested' }</Text>
                         </View>

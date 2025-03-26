@@ -333,12 +333,12 @@ const ActivityCard = ( { activity, refetch } ) => {
               </View>
               </TouchableOpacity>
               <View className='flex-row  justify-center items-center   ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <MessageIcon   className='' size='18' color={Colors.mainGray} />
+                  <MessageIcon   className='' size={18} color={Colors.mainGray} />
                   <Text className='text-xs font-pbold text-gray-400  '> {activity.comments.length || 0}</Text>
               </View>
               <TouchableOpacity onPress={()=>handleInteraction('reposts',activity)} >
               <View className='flex-row gap-1  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <RepostIcon className='' size='14' color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                  <RepostIcon className='' size={14} color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
                   <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
               </View>
               </TouchableOpacity>
@@ -347,7 +347,7 @@ const ActivityCard = ( { activity, refetch } ) => {
           
           <TouchableOpacity   >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                  <ThreeDotsIcon className='' size={14} color={Colors.mainGray} />
               </View>
               </TouchableOpacity>
       </View>
@@ -521,12 +521,12 @@ const ActivityCard = ( { activity, refetch } ) => {
               </View>
               </TouchableOpacity>
               <View className='flex-row  justify-center items-center   ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <MessageIcon   className='' size='18' color={Colors.mainGray} />
+                  <MessageIcon   className='' size={18} color={Colors.mainGray} />
                   <Text className='text-xs font-pbold text-gray-400  '> {activity?.threads?.comments?.length || activity?.dialogue?.comments?.length}</Text>
               </View>
               <TouchableOpacity onPress={()=>handleInteraction('reposts',activity?.threads || activity?.dialogue)} >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <RepostIcon className='' size='14' color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                  <RepostIcon className='' size={14} color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
                   <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
               </View>
               </TouchableOpacity>
@@ -535,7 +535,7 @@ const ActivityCard = ( { activity, refetch } ) => {
          
            <TouchableOpacity   >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                  <ThreeDotsIcon className='' size={14} color={Colors.mainGray} />
               </View>
               </TouchableOpacity>
       </View></>
@@ -549,7 +549,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                   </TouchableOpacity>
                   <TouchableOpacity   >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                  <ThreeDotsIcon className='' size={14} color={Colors.mainGray} />
               </View>
               </TouchableOpacity>
 

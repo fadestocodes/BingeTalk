@@ -170,9 +170,9 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
               
                 <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
-                        { isReposted && (
+                        { isReposted ? (
                     <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
-                ) }
+                ) : null}
                             <TouchableOpacity onPress={handleUserPress} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                             <Image
                                 source={{ uri: userDB.profilePic }}
@@ -185,17 +185,12 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                     <Text className='text-mainGrayDark '>{formatDateNotif(dialogue.createdAt)}</Text>
                     
                 </View>
-                {/* { activity && (
-                                <View className='flex-row gap-2'>
-                                    <MessageSquare size={18} color={Colors.secondary} />
-                                    <Text className='text-mainGray '>{dialogue.user.firstName} { activity }</Text>
-                                </View>
-                ) } */}
-                { tag && (
+              
+                { tag ? (
                         <View className=' my-3'>
                             <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:10}} >{tag.tagName}</Text>
                         </View>
-                    ) }
+                    ) : null}
                 <View className='my-0 justify-center items-center w-full gap-3  '>
                     <View className='flex gap-2 justify-center items-center'>
                         
@@ -209,7 +204,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                 </View>
 
                 <View className='flex-row gap-3  item-center justify-center mt-3' >
-                { dialogue.mentions && dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (
+                { dialogue.mentions ? dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (
                     <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
                         <Image
                             source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
@@ -217,7 +212,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                             style={{ width:35, height:40, borderRadius:10, overflow:'hidden' }}
                         />
                     </TouchableOpacity>
-                ) ) 
+                ) ) :null
                 }
                 </View>
 
@@ -263,7 +258,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         <View className='relative' >
                             <TouchableOpacity onPress={()=>handleThreeDots(dialogue)}  >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <ThreeDotsIcon className='' size='16' color={Colors.mainGray} />
+                                <ThreeDotsIcon className='' size={16} color={Colors.mainGray} />
                             </View>
                             </TouchableOpacity>
                         </View>

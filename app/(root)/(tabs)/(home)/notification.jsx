@@ -158,7 +158,7 @@ const Notification = () => {
 
               </View>
               { item.activityType === 'FOLLOW' && (
-                <TouchableOpacity  onPress={()=>handleFollowBack(checkFollow, item)} style={{ borderRadius:10, padding:5, borderColor:Colors.secondary, borderWidth:1,  backgroundColor: checkFollow ? 'none' : Colors.secondary, alignSelf:'flex-end' }}>
+                <TouchableOpacity  onPress={()=>handleFollowBack(checkFollow, item)} style={{ borderRadius:10, padding:5, borderColor:Colors.secondary, borderWidth:1,  backgroundColor: checkFollow ? 'transparent' : Colors.secondary, alignSelf:'flex-end' }}>
                   <Text className='text-primary text-sm font-pbold' style={{color : checkFollow ? Colors.secondary : Colors.primary}}>{checkFollow ? 'Already following' :  'Follow back'}</Text>
                 </TouchableOpacity>
               )}

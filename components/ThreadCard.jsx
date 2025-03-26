@@ -160,9 +160,9 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
            
           <View className='flex-row w-full justify-between items-center '>
                         <View className="flex-row items-center gap-2 ">
-                        { isReposted && (
+                        { isReposted ? (
                     <RepostIcon size={18} color={Colors.mainGray} style={{ marginRight:10 }}/>
-                ) }
+                ) : null }
                             <TouchableOpacity onPress={()=>handleUserPress(thread)} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                                 <Image
                                     source={{ uri: thread?.user?.profilePic }}
@@ -175,12 +175,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                     <Text className='text-mainGrayDark '>{formatDateNotif(thread.createdAt)}</Text>
                     
                 </View>
-                {/* { activity && (
-                                <View className='flex-row gap-2'>
-                                    <MessagesSquare size={18} color={Colors.secondary} />
-                                    <Text className='text-mainGray '>{thread.user.firstName} { activity }</Text>
-                                </View>
-                ) } */}
+              
             <View className='flex-row justify-start items-center gap-3 mt-3 '>
 
                 <TouchableOpacity onPress={()=>handlePress(thread)}  style={{justifyContent:'center', alignItems:'center'}}>
@@ -189,19 +184,19 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
 
 
             <View className='flex-row gap-3' >
-            { thread.tag && (
+            { thread.tag ? (
                   <Text className= 'font-pbold text-primary text-xs' style={{ backgroundColor: thread.tag.color , padding:5, borderRadius:10, alignSelf:'center'}}>{thread.tag.tagName}</Text>
-            ) }
+            ) : null }
             </View>
             </View>
 
             <Text className="text-white  font-pbold text-xl leading-6   ">{thread.title}</Text>
-            { thread.caption && (
+            { thread.caption ? (
               <View className='gap-3 mt-5'>
                 <Text className='text-secondary text-lg leading-5 font-pcourier uppercase text-center'>{thread.user.firstName}</Text>
                 <Text className="text-white  text-custom font-pcourier" numberOfLines={isShortened ? 3 : 10} >{thread.caption}</Text>
               </View>
-            ) }
+            ) : null }
 
                         <TouchableOpacity onPress={()=> handlePress(thread)} >
                             <Image
@@ -212,9 +207,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         </TouchableOpacity>
             
             <View className='flex-row  justify-between w-full items-end'>
-                        {/* <View className='flex-row gap-5 justify-center items-center'>
-                            
-                        </View> */}
+                     
                        
                         <View className='relative flex-row gap-5 justify-center items-center' >
                         <TouchableOpacity onPress={()=>handleInteraction('upvotes',thread)} >
@@ -231,20 +224,20 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                             </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleComment(thread)}  >
                             <View className='flex-row  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <MessageIcon   className='' size='18' color={Colors.mainGray} />
+                                <MessageIcon   className='' size={18} color={Colors.mainGray} />
                                 <Text className='text-xs font-pbold text-gray-400  '> {thread.comments.length}</Text>
                             </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleInteraction('reposts',thread)} >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <RepostIcon className='' size='14' color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                                <RepostIcon className='' size={14} color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
                                 <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
                             </View>
                             </TouchableOpacity>
                         </View>
                             <TouchableOpacity onPress={()=>handleThreeDots(thread)}   >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <ThreeDotsIcon className='' size='16' color={Colors.mainGray} />
+                                <ThreeDotsIcon className='' size={16} color={Colors.mainGray} />
                             </View>
                             </TouchableOpacity>
                         

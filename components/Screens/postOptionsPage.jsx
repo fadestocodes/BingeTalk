@@ -105,13 +105,13 @@ const PostOptions = () => {
             <View className='gap-5' >
 
                 { fromOwnPost === 'true' && (
-                    <TouchableOpacity onPress={()=>{handleButton('delete')}} style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10 }} >
+                    <TouchableOpacity onPress={()=>{handleButton('delete')}} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10 }} >
                     <Delete size={24} color={Colors.secondary} />
                     <Text className='text-secondary text-center font-pbold'>Delete post</Text>
                 </TouchableOpacity>
                 ) }
 
-                <TouchableOpacity  onPress={()=>{handleButton('report')}} style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10 }}>
+                <TouchableOpacity  onPress={()=>{handleButton('report')}} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10 }}>
                     <ShieldAlert size={24} color={Colors.secondary}/>
                     <Text className='text-secondary  font-pbold'>Report</Text>
                 </TouchableOpacity>
@@ -127,10 +127,10 @@ const PostOptions = () => {
                     <View className='gap-3 justify-center items-center '>
 
                         <Text  className='text-white font-pbold text-xl mb-3' >Are you sure you want to delete?</Text>
-                        <TouchableOpacity onPress={handleDelete} style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }}>
+                        <TouchableOpacity onPress={handleDelete} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }}>
                             <Text className='text-secondary text-center font-pbold'>Yes</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }}>
+                        <TouchableOpacity style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }}>
                             <Text className='text-secondary text-center font-pbold'>No</Text>
                         </TouchableOpacity>
                     </View>
@@ -144,13 +144,13 @@ const PostOptions = () => {
                     <View className='gap-3 justify-center items-center '>
 
                         <Text className='text-white font-pbold text-xl mb-3' >Reason for reporting?</Text>
-                        <TouchableOpacity onPress={()=>{handleReportSubmit('hateful content', postId)}} style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }} >
+                        <TouchableOpacity onPress={()=>{handleReportSubmit('hateful content', postId)}} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }} >
                             <Text className='text-secondary text-center font-pbold'>Hateful content</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>{handleReportSubmit('spam content', postId)}} style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, width:250, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }} >
+                        <TouchableOpacity onPress={()=>{handleReportSubmit('spam content', postId)}} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, width:250, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }} >
                             <Text className='text-secondary text-center font-pbold'>Spam</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>{handleReportSubmit('inappropriate content', postId)}} style={{ backgroundColor:'none', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }} >
+                        <TouchableOpacity onPress={()=>{handleReportSubmit('inappropriate content', postId)}} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10, width:250 }} >
                             <Text className='text-secondary text-center font-pbold'>Inappropriate</Text>
                         </TouchableOpacity>
                     </View>

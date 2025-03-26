@@ -303,20 +303,7 @@ const MoviePage = () => {
     >
         
         <View className="flex ">
-            {/* <ImageBackground
-                style={{width : '100%', height: 300, marginBottom:40, position:'absolute' }}
-                source={{uri : `${posterURL}${movie?.backdrop_path}`}}
-                resizeMethod='cover'
-            
-                >
-                <LinearGradient
-                    colors={[ 'transparent',Colors.primary]}
-                    style={{height : '100%', width : '100%'}}>
-                </LinearGradient>
-                <TouchableOpacity className='border-white rounded-md w-16 flex items-center px-3 py-1 absolute top-20 left-4'   onPress={backPress}>
-                        <BackIcon className='' color={Colors.third}  size='22'/>
-                </TouchableOpacity>
-            </ImageBackground> */}
+           
             <Image
                 style={{
                 width: '100%',
@@ -328,8 +315,8 @@ const MoviePage = () => {
                 source={{uri : `${posterURL}${movie?.backdrop_path}`}}
                 placeholder={{uri : `${posterURLlow}${movie?.backdrop_path}`}}
                 placeholderContentFit='cover'
-                contentFit="cover" // Same as resizeMode='cover'
-                transition={300} // Optional: Adds a fade-in effect
+                contentFit="cover" 
+                transition={300} 
             />
             <LinearGradient
                 colors={['transparent', Colors.primary]}
@@ -374,13 +361,13 @@ const MoviePage = () => {
         <View className="buttons flex gap-4 w-full items-center mb-6">
 
                     <TouchableOpacity onPress={handleMarkWatched} >
-                        <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyWatched ? 'none' : Colors.secondary }} >
+                        <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyWatched ? 'transparent' : Colors.secondary }} >
                                 { alreadyWatched ? <EyeOff size={20}  color={Colors.secondary} /> : <Eye size={20} color={Colors.primary} /> }
                             <Text className='text-primary font-pbold text-sm' style={{ color : alreadyWatched ? Colors.secondary : Colors.primary }}>{ alreadyWatched ? 'Remove from watched' : 'Mark as watched' }</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity  onPress={handleWatchlist}>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyInWatchlist ? 'none' : Colors.secondary }}>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyInWatchlist ? 'transparent' : Colors.secondary }}>
                         { alreadyInWatchlist ? <ListChecks color={Colors.secondary} size={20} /> : <ListChecks color={Colors.primary} size={20} /> }
                             <Text className='text-primary font-pbold text-sm' style={{ color : alreadyInWatchlist ? Colors.secondary : Colors.primary }}>{ alreadyInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist' }</Text>
                         </View>
@@ -392,7 +379,7 @@ const MoviePage = () => {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleRate}>
-                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyRated ? 'none' : Colors.secondary }}>
+                        <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyRated ? 'transparent' : Colors.secondary }}>
                         { alreadyRated ? <Star color={Colors.secondary} size={20} /> : <Star color={Colors.primary} size={20} /> }
                             <Text className='text-primary font-pbold text-sm' style={{ color : alreadyRated ? Colors.secondary : Colors.primary }}>{ alreadyRated ? 'Update Rating' : 'Rate' }</Text>
                         </View>
@@ -400,7 +387,6 @@ const MoviePage = () => {
                     <TouchableOpacity onPress={handleMore} >
                         <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
                             <Ellipsis  color={Colors.primary} size={20} />
-                            {/* <Text className='text-primary font-pbold text-sm'>...</Text> */}
                         </View>
                     </TouchableOpacity>
         </View>

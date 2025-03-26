@@ -154,9 +154,9 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                       
                             <View className='flex-row w-full gap-2 justify-between items-center mb-0'>
                                 <View className='flex-row gap-2 justify-center items-center'>
-                                { isReposted && (
+                                { isReposted ? (
                                      <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
-                                ) }
+                                ) : null}
                                     <TouchableOpacity style={{flexDirection:'row', gap:5}} onPress={()=>handleUserPress(item)}>
                                     <Image
                                     source ={{ uri :item.user.profilePic }}
@@ -168,12 +168,12 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 </View>
                                 <Text className='text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
                             </View>
-                            { activity && (
+                            { activity ? (
                                 <View className='flex-row gap-3 items-center justify-center w-full px-4 '>
                                     <List size={18} color={Colors.secondary} />
                                     <Text className='text-mainGray'>{item.user.firstName} { activity }</Text>
                                 </View>
-                            ) }
+                            ): null }
                             <View className=' gap-0 justify-center items-start' >
                                         <Text className='text-white font-pbold text-xl' >{ item.title }</Text>
                                         <Text className='text-white text-sm '>{`(${item.listItem.length} ${item.listItem.length > 1 ? `items` : 'item'})`}</Text>
@@ -183,7 +183,6 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
 
                             <View style={{ flexDirection:'row', gap:10}} >
                         { item.listItem.slice(0,5).map( (element, index) => {
-                        // console.log('EACH ELEMENT', element)
                         return (
 
                             <View key={index} className='flex-row gap-2' > 
@@ -195,14 +194,14 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 />
                             </View>
                         )} ) }
-                        { item.listItem.length - 5 > 0 && (
+                        { item.listItem.length - 5 > 0 ? (
                         <View
                             style={{ width:40, height : 60, borderRadius:10, backgroundColor:Colors.lightBlack, padding:5 }}
                         >
                             <Text className='text-sm text-mainGray font-pbold'>+ {item.listItem.length - 5 } more</Text>
                             </View>
 
-                        ) }
+                        ) : null }
                         </View>
                         <View className='w-full flex-row justify-between items-center'>
                             <View className='flex-row gap-5 justify-center items-center'>
@@ -228,7 +227,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 
                                 <TouchableOpacity onPress={()=> handleInteraction('reposts',item) } >
                                 <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                    <RepostIcon className='' size='14'  color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                                    <RepostIcon className='' size={14}  color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
                                     <Text className='text-xs font-pbold text-mainGray  'style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
                                 </View>
 
@@ -236,7 +235,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             </View>
                             <View className='relative' >
                                 <TouchableOpacity onPress={()=>handleThreeDots(item)}  >
-                                    <ThreeDotsIcon className='' size='16' color={Colors.mainGray} />
+                                    <ThreeDotsIcon className='' size={16} color={Colors.mainGray} />
                                 </TouchableOpacity>
                             </View>
                             

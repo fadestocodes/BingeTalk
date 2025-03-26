@@ -142,19 +142,19 @@ const ThreadActivityCard = ( { thread, refetch } ) => {
               </View>
               </TouchableOpacity>
               <View className='flex-row  justify-center items-center   ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <MessageIcon   className='' size='18' color={Colors.mainGray} />
+                  <MessageIcon   className='' size={18} color={Colors.mainGray} />
                   <Text className='text-xs font-pbold text-gray-400  '> {thread.downVotes}</Text>
               </View>
               <TouchableOpacity onPress={()=>handleInteraction('reposts',thread)} >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <RepostIcon className='' size='14' color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                  <RepostIcon className='' size={14} color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
                   <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
               </View>
               </TouchableOpacity>
           </View>
               <TouchableOpacity   >
               <View className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                  <ThreeDotsIcon className='' size='14' color={Colors.mainGray} />
+                  <ThreeDotsIcon className='' size={14} color={Colors.mainGray} />
               </View>
               </TouchableOpacity>
       </View>
