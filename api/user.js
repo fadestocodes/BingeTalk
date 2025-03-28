@@ -90,6 +90,7 @@ export const updateRotation =  async ( userId, rotationItems, listItemObj  ) => 
 
 export const fetchUser = async ( emailOrId ) => {
     try {
+        console.log('trying to fetch')
         const request = await fetch(`${nodeServer.currentIP}/user`, {
             method:'POST',
             headers:{
@@ -97,6 +98,7 @@ export const fetchUser = async ( emailOrId ) => {
             },
             body:JSON.stringify(emailOrId)
         })
+        console.log('the request', request)
         const response = await request.json();
         return response
     } catch (err) {
@@ -138,6 +140,8 @@ export const useFetchOwnerUser = (email) => {
         refetchOnWindowFocus: true, // Auto refetch when app regains focus
     });
 }
+
+
 
 
 export const searchUsers = async ( query ) => {

@@ -5,7 +5,7 @@ import { Colors } from '../../../../constants/Colors';
 import { useGetFeed } from '../../../../api/feed';
 import { Image } from 'expo-image';
 import { useUser } from '@clerk/clerk-expo';
-import { useFetchOwnerUser } from '../../../../api/user';
+import { fetchUser, useFetchOwnerUser } from '../../../../api/user';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useUserDB } from '../../../../lib/UserDBContext';
 import * as nodeServer from '../../../../lib/ipaddresses'
@@ -47,6 +47,7 @@ const homeIndex = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
 
     const getFeed = async () => {
+       
         if (!hasMoreFeed ) return
         try {
           const notifsData = await getAllNotifs( ownerUser.id, null , true )
@@ -99,6 +100,15 @@ const homeIndex = () => {
     setLoading(false);
     }
 
+    useEffect(()=>{
+      testFunction = async () => {
+        const testResposne = await fetch(`${nodeServer.currentIP}/dialogue?20`)
+        const testResult = await testResposne.json()
+        console.log('test resutl', testR)
+      }
+      testFunction()
+    },[])
+
 
 
     useEffect(() => {
@@ -138,12 +148,13 @@ const homeIndex = () => {
     } 
 
     const handlePress =(item) => {
-      console.log("PRESSED ITEM", item)
+      console.log("PRESSED ITEM", item.id)
       if (item.dialogue){
         router.push(`(home)/dialogue/${item.dialogue.id}`)
       } else if (item.threads){
         router.push(`(home)/threads/${item.threads.id}`)
-      } else if (item.feedFrom === 'threadFromWatched'){
+      } else if (item.feedFrom === 'threadFromWatched' || item.feedFrom === 'threadFromRotations'){
+        console.log('herereee')
         router.push(`(home)/threads/${item.id}`)
       }
     }
@@ -151,17 +162,10 @@ const homeIndex = () => {
 
 
   
-    // if (isLoadingOwnerUser ) {
-    //   return(
-    //   <View className='bg-primary h-full justify-center items-center'>
-    //     <ActivityIndicator />
-    //   </View>)
-    // }
-    
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
-      { isLoadingOwnerUser ? (
+      { isLoadingOwnerUser  ?  (
         <View className='bg-primary h-full justify-center items-center'>
           <ActivityIndicator />
         </View>
@@ -270,3 +274,37 @@ const homeIndex = () => {
 export default homeIndex
 
 const styles = StyleSheet.create({})
+
+
+// import { StyleSheet, Text, View } from 'react-native'
+// import React, {useEffect} from 'react'
+// import * as nodeServer from '../../../../lib/ipaddresses'
+
+// const homeIndex = () => {
+
+
+//   useEffect(()=>{
+//     testFunction = async () => {
+//       try {
+//         console.log('testing...')
+//         const testResposne = await fetch(`http:/18.221.11.192:3000`)
+//         console.log('response obj', testResposne)
+//         const testResult = await testResposne.json()
+//         console.log('test resutl', testR)
+//       } catch (err){
+//         console.log(err)
+//       }
+//     }
+//     testFunction()
+//   },[])
+
+//   return (
+//     <View>
+//       <Text>homeIndex</Text>
+//     </View>
+//   )
+// }
+
+// export default homeIndex
+
+// const styles = StyleSheet.create({})

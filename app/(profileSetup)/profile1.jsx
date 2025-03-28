@@ -10,6 +10,8 @@ import { PlusIcon } from '../../assets/icons/icons'
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient'
 import { useUserDB } from '../../lib/UserDBContext'
+import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
+
 
 
 
@@ -26,6 +28,28 @@ const profile1 = () => {
         bioLink : ''
     })
 
+
+    const textOpacity = useSharedValue(0);
+    const textTranslateY = useSharedValue(60);
+
+    const text2Opacity = useSharedValue(0);
+    const text2TranslateY = useSharedValue(60);
+  
+    const inputOpacity = useSharedValue(0);
+    const inputTranslateY = useSharedValue(60);
+
+    useEffect(() => {
+      textOpacity.value = withTiming(1, { duration: 400, easing: Easing.ease });
+      textTranslateY.value = withTiming(0, { duration: 400, easing: Easing.ease });
+  
+      text2Opacity.value = withDelay(  800,withTiming(1, { duration: 400, easing: Easing.ease }));
+      text2TranslateY.value = withDelay(  800,withTiming(0, { duration: 400, easing: Easing.ease }));
+  
+      inputOpacity.value = withDelay(1600, withTiming(1, { duration: 400, easing: Easing.ease }));
+      inputTranslateY.value = withDelay(1600, withTiming(0, { duration: 400, easing: Easing.ease }));
+    }, []);
+  
+
     const navigation = useNavigation();
 
     const handleUpload = () => {
@@ -34,9 +58,30 @@ const profile1 = () => {
 
     const handleContinue = () => {
         console.log(inputs)
+
+
+
+        let bioLink = inputs.bioLink.trim(); // Trim any leading/trailing spaces
+
+        // Step 1: Check if URL has a protocol (http:// or https://)
+        if (!/^https?:\/\//i.test(bioLink)) {
+            // Step 2: Check if the URL has 'www.' prefix
+            if (/^www\./i.test(bioLink)) {
+                // If 'www.' is present, prepend 'https://'
+                bioLink = 'https://' + bioLink;
+            } else {
+                // Otherwise, prepend 'https://'
+                bioLink = 'https://www.' + bioLink;
+            }
+        }
+
+        
+        console.log('biolink', inputs.bioLink)
+        const normalizedURL = new URL(bioLink).toString();
+        console.log('Normalized URL:', normalizedURL);
         router.push({
             pathname:'/profile2',
-            params : {  bio:inputs.bio, bioLink:inputs.bioLink, image }
+            params : {  bio:inputs.bio, bioLink:normalizedURL, image }
           })
         }
 
@@ -93,7 +138,7 @@ const profile1 = () => {
                             placeholder='Tap to edit your bio'
                             placeholderTextColor={Colors.mainGray}
                             multiline
-                            maxLength={100}
+                            maxLength={150}
                             style={{ fontFamily:'courier', backgroundColor:Colors.lightBlack, paddingHorizontal:20, paddingVertical:20, borderRadius:10, color:'white', width:250  }}
                         />
                        
@@ -122,14 +167,22 @@ const profile1 = () => {
     ) : (
 
           <View  style={{ justifyContent:'center', alignItems:'center', height:'100%', height:'100%', paddingTop:150,paddingHorizontal:50 ,  backgroundColor:Colors.primary, gap:15 }} >
+                <Animated.View style={[styles.animatedText, { opacity: textOpacity, transform: [{ translateY: textTranslateY }] , justifyContent:'center', alignItems:'center', gap:10, marginBottom:20}]}>
+
                 <View className='justify-center items-center gap-3 mb-5' >
-                    <Text className='text-xl text-secondary font-pcourier  uppercase'>BingeTalk</Text>
+                    <Text className='text-xl text-secondary font-pcourier  uppercase'>Bingeable</Text>
                     <Text className='font-pcourier text-white ' >Welcome aboard {user.firstName}!</Text>
                 </View>
+                </Animated.View>
+
+                <Animated.View style={[styles.animatedText, { opacity: text2Opacity, transform: [{ translateY: text2TranslateY }] , justifyContent:'center', alignItems:'center', gap:10, marginBottom:50}]}>
+
                 <View className='justify-center items-center gap-3 mb-10' >
-                    <Text className='text-xl text-secondary font-pcourier uppercase '>BingeTalk (cont.)</Text>
+                    <Text className='text-xl text-secondary font-pcourier uppercase '>Bingeable (cont.)</Text>
                     <Text className='font-pcourier text-white' >Let's go through a few steps to setup your profile, it won't take long. Let's start with adding a profile picture</Text>
                 </View>
+
+
                 <View className='w-full justify-center items-center'>
                   {  loadingImage ?  (
                     <View>
@@ -144,6 +197,7 @@ const profile1 = () => {
                       </TouchableOpacity>
                   ) }
                 </View>
+                </Animated.View>
                   
             </View>
 

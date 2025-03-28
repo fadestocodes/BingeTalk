@@ -1,7 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Redirect, router, Link } from "expo-router";
-import { View, Text, Image, ScrollView, Button, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Button, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
 // import { useNavigation } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -130,11 +131,15 @@ useEffect(() => {
       <View style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%', backgroundColor:Colors.primary }} >
         <View className="items-center gap-3 text-lg font-psemibold text-white">
           <SignedIn>
-          
-          
           </SignedIn>
           <SignedOut>
-          <Text className="text-4xl text-secondary font-pbold" style={{paddingBottom:20}}>Bingeable</Text>
+          <Image
+            source={require('../assets/images/splash.png')}
+            contentFit="cover"
+            style={{width:220, height:220}}
+            transition={200}
+          />
+          {/* <Text className="text-4xl text-secondary font-pbold" style={{paddingBottom:20}}>Bingeable</Text> */}
 
             <TouchableOpacity onPress={handleSignUp}  style={{ borderRadius:10, backgroundColor:Colors.secondary, paddingVertical:10, paddingHorizontal:15, width:200, justifyContent:'center', alignItems:'center' }}>
               <Link href="/(onboarding)/step1-firstName"  >

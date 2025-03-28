@@ -60,6 +60,8 @@ const MovieIndex = () => {
           contentContainerStyle={{gap:15, marginTop:30}}
           renderItem={({item}) => {
             
+            // console.log('item is', item.id, item.title)
+
             return (
             <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
             <Image

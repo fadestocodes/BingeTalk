@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Platform, Keyboard, FlatList , Image, ImageBackground, TouchableOpacity, TextInput, ActivityIndicator, Linking} from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView, Platform, Keyboard, FlatList , ImageBackground, TouchableOpacity, TextInput, ActivityIndicator, Linking} from 'react-native'
+import { Image } from 'expo-image'
 import React, { useState, useRef } from 'react'
 import { useFetchOwnerUser, useFetchUser } from '../../../../../api/user'
 import { useUser } from '@clerk/clerk-expo'
@@ -127,22 +128,33 @@ const editProfile = () => {
                         <ActivityIndicator></ActivityIndicator>
                     </View>
                 ) : (
+                    <View className='w-full' style={{height:100}}>
+                    <Image
+                    style={{
+                    width: '100%',
+                    top:0,
+                    height: 400,
+                    position: 'absolute',
+                    borderRadius:30
+                    }}
+                    source={{ uri: image }}
+                    contentFit="cover" // Same as resizeMode='cover'
+                    transition={300} // Optional: Adds a fade-in effect
+                />
 
-                    <ImageBackground
-                        source={{ uri:image }}
-                        resizeMode='cover'
-                        style = {{ width:'100%', height:250, position:'absolute', top:0 }}
-                    >
-                        <LinearGradient 
-                        colors={[ 'transparent',Colors.primary]} 
-                        style={{height : '100%', width : '100%'}}>
-                        </LinearGradient>
-                            <View className='inset-0 justify-center items-center opacity-85 ' style={{zIndex:30 , position:'absolute'}} >
-                                <TouchableOpacity onPress={handleImageUpload}  style={{ paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.mainGrayDark, borderRadius:10}} >
-                                    <Text className='text-blue-100 ' >Change picture</Text>
-                                </TouchableOpacity>
-                            </View>
-                    </ImageBackground>
+                <LinearGradient
+                    colors={['transparent', Colors.primary]}
+                    style={{
+                    height: 400,
+                    width: '100%',
+                    position: 'absolute',
+                    top:0,
+                    }}
+                />
+                <TouchableOpacity onPress={handleImageUpload} style={{backgroundColor:Colors.mainGrayDark, position:'absolute', borderRadius:15, paddingHorizontal:10, paddingVertical:5, opacity:.7, top:60, right:20}}>
+                    <Text className='text-mainGray font-pbold text-xs'>Change profile pic</Text>
+                </TouchableOpacity>
+                </View>
                 ) }
             </View>
             <View className="w-full" style={{ paddingTop:270, paddingHorizontal:20, gap:10 }} >
@@ -213,6 +225,7 @@ const editProfile = () => {
                             defaultValue={ fetchedUser.bio }
                             onChangeText={(text)=> handleInputChange('bio', text)  }
                             placeholderTextColor={Colors.lightBlack}
+                            maxLength={150}
                             onFocus={()=> {setFocusedInput('bio'); setShouldAnimate(true)}}
                             onBlur={ ()=>{setFocusedInput(null); setShouldAnimate(false)} }
                             style={{ fontSize:16, minHeight:120, paddingVertical:0, justifyContent:'center', alignItems:'center', textAlignVertical:'top', color:Colors.mainGray, borderWidth: focusedInput ==='bio' ? 1 : 1, borderColor:Colors.mainGray, paddingHorizontal:15, paddingVertical:8, borderRadius:10  }}

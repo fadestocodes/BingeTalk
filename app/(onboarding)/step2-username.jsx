@@ -7,6 +7,8 @@ import {  usernameSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams } from 'expo-router'
 import { checkUsername } from '../../api/user'
 import debounce from 'lodash.debounce'
+import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
+
 
 const step2 = () => {
 
@@ -17,6 +19,20 @@ const [ username, setUsername ] = useState('');
 
 
 const router = useRouter();
+
+const textOpacity = useSharedValue(0);
+const textTranslateY = useSharedValue(60);
+
+const inputOpacity = useSharedValue(0);
+const inputTranslateY = useSharedValue(60);
+
+useEffect(() => {
+  textOpacity.value = withTiming(1, { duration: 400, easing: Easing.ease });
+  textTranslateY.value = withTiming(0, { duration: 400, easing: Easing.ease });
+
+  inputOpacity.value = withDelay(800, withTiming(1, { duration: 400, easing: Easing.ease }));
+  inputTranslateY.value = withDelay(800, withTiming(0, { duration: 400, easing: Easing.ease }));
+}, []);
 
 const checkUsernameAvailability = debounce(async ( value ) => {
   if (value.length > 3){
@@ -77,13 +93,20 @@ const onSetup2Press = () => {
         <ScrollView  className='bg-primary' style={{ width:'100%', height:'100%' }}>
           <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()} style={{width:'100%', height:'100%'}}>
             <View className='w-full justify-center items-center' >
+
             <View  style={{ justifyContent:'center', alignItems:'center', height:'100%', height:'100%', paddingTop:100,paddingHorizontal:50 ,  backgroundColor:Colors.primary, gap:15 }} >
-                  <View className='justify-center items-center gap-3 mb-16' >
+            <Animated.View style={[styles.animatedText, { opacity: textOpacity, transform: [{ translateY: textTranslateY }] , justifyContent:'center', alignItems:'center', gap:10, marginBottom:50}]}>
+                  
+                  <View className='justify-center items-center gap-3 ' >
                       <Text className='text-xl text-secondary font-pcourier  uppercase'>BingeTalk</Text>
                       <Text className='font-pcourier text-white ' >Alright {firstName}, let's create your unique username</Text>
                   </View>
+                  </Animated.View>
+
+            <Animated.View style={[styles.animatedText, { opacity: inputOpacity, transform: [{ translateY: inputTranslateY }] , gap:10}]}>
+
                  
-                  <Text className='text-white font-pbold text-2xl '>Create your username.</Text>
+                  <Text className='text-white font-pbold text-2xl self-center '>Create your username.</Text>
         <View className='items-start'>
 
         { errors.username && errors.username.map( (item, index) => (
@@ -109,8 +132,9 @@ const onSetup2Press = () => {
             />
 
               <TouchableOpacity onPress={onSetup2Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !username   } >
-                <Text className='text-secondary text-lg font-psemibold'>Next</Text>
+                <Text className='text-secondary text-lg font-psemibold self-center'>Next</Text>
               </TouchableOpacity>
+              </Animated.View>
             </View>
             </View>
           </TouchableWithoutFeedback>

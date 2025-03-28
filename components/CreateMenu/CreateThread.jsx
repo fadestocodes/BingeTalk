@@ -171,6 +171,7 @@ import { MessagesSquare } from 'lucide-react-native'
             </View>
                 
                     <TextInput
+                        autoCapitalize='sentences'
                         placeholder='Thread title'
                         placeholderTextColor={Colors.mainGray}
                         className='w-full bg-white  text-lg font-pbold text-white'
@@ -178,7 +179,6 @@ import { MessagesSquare } from 'lucide-react-native'
                         maxLength={150}
                         multiline
                         autoCorrect={true}
-                        autoCapitalize='sentences'
                         value={inputs.threadTitle}
                         style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 90 : 50, paddingBottom:40 , borderTopLeftRadius: 15, borderTopRightRadius:15}}
                     />

@@ -44,12 +44,6 @@ const SearchPage = () => {
   const [ trendingDialogues, setTrendingDialogues ] = useState(null)
   const [ trendingThreads, setTrendingThreads ] = useState(null)
 
-  // const queryClient = useQueryClient();
-  // useEffect(()=>{
-  //   queryClient.invalidateQueries(['user'])
-  //   const cachedUsers = queryClient.getQueryData(['user']);
-  //   console.log('Cached users data:', cachedUsers);
-  // },[query])
 
   const handleChange = (text) => {
     setQuery(text)

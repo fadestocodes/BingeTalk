@@ -23,10 +23,21 @@ import { useFetchOwnerUser } from '@/api/user';
 
 
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
+
+
+
 export default function RootLayout() {
+
+  
+
+
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
   if (!publishableKey) {

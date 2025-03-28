@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, TextInput,  Keyboard, FlatList, TouchableWithoutFeedback, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, Button, Image } from 'react-native'
+import { StyleSheet, Text, View, TextInput,  Keyboard, FlatList, TouchableWithoutFeedback, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, Button } from 'react-native'
 import React, {useState} from 'react'
+import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useUser, useSignUp } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
@@ -23,6 +24,7 @@ const profile2 = () => {
     const [ listItems, setListItems ]  = useState([])
     const {user} = useUser();
     const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter();
     const userId = userDB.id
 
@@ -99,7 +101,9 @@ const profile2 = () => {
           >
            <Image 
             source={ item.media_type === 'person' ? {uri:`${posterURL}${item.item.profile_path}`}  : {uri:`${posterURL}${item.item.poster_path}`}}
-            resizeMode='cover'
+            placeholder={ item.media_type === 'person' ? {uri:`${posterURLlow}${item.item.profile_path}`}  : {uri:`${posterURLlow}${item.item.poster_path}`}  }
+            contentFit='cover'
+            placeholderContentFit='cover'
             style={{ width:50, height:80, borderRadius:10, overflow:'hidden' }}
             />
             <TouchableOpacity className='rounded-full' onPress={() => handleRemoveListItem(item.key)}  style={{ backgroundColor:Colors.primary, position:'absolute', top:4, right:1 }}>
@@ -169,12 +173,12 @@ const profile2 = () => {
                         placeholder='Search for a movie/show'
                         placeholderTextColor={Colors.mainGray}
                         onChangeText={(text)=>handleChange(text)}
-                        className='w-full bg-white rounded-3xl text-lg font-pbold'
-                        style={{ height:50, paddingHorizontal:25, paddingBottom:0 }}
+                        className='w-full  rounded-3xl text-white  font-pbold'
+                        style={{  height:50,backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingBottom:0 }}
                         value={searchQuery}
                     />
                 </View>
-                <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:5, top:15 }}>
+                <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:15, top:12 }}>
                     <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
             </View>
@@ -211,7 +215,9 @@ const profile2 = () => {
                                     >
                                     <Image 
                                     source={ item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
-                                    resizeMode='cover'
+                                    placeholder={ item.media_type === 'person' ? {uri:`${posterURLlow}${item.profile_path}`}  : {uri:`${posterURLlow}${item.poster_path}`}}
+                                    placeholderContentFit='cover'
+                                    contentFit='cover'
                                     style={{ width:50, height:75, borderRadius:10, overflow:'hidden' }}
                                     />
                                     <View className='flex flex-1 w-full justify-center pr-0'>
@@ -254,12 +260,12 @@ const profile2 = () => {
                     multiline
                     autoCorrect={false}
                     onChangeText={(text)=> { setSearchQuery(text);  handleSearch(text)  }}
-                    className='w-full text-white rounded-3xl text-lg font-pbold'
-                    style={{ minHeight:50, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop:10, textAlignVertical:'center' }}
+                    className='w-full text-white rounded-3xl  font-pbold'
+                    style={{ minHeight:50, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop:15, alignSelf:'center', textAlignVertical:'center' }}
                     value={searchQuery}
                     onFocus={()=>setResultsOpen(true)}
                 />
-                <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); setResultsOpen(false)}}  style={{ position:'absolute', right:20, top:15 }}>
+                <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); setResultsOpen(false)}}  style={{ position:'absolute', right:20, top:12 }}>
                     <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
             </View>
