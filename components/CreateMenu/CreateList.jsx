@@ -26,6 +26,7 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
 
     const [errors, setErrors] = useState(null)
     const [message, setMessage] = useState(null)
+    const [ isListEmpty, setIsListEmpty ] = useState(null)
 
 
     const handleInput = (name, value) => {
@@ -36,6 +37,12 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
     }
 
     const handlePost = async () => {
+        if (listItems.length < 1){
+            setIsListEmpty(true) 
+            return
+        } else {
+            setIsListEmpty(false)
+        }
 
         const validationResults = createListSchema.safeParse( { ...inputs,  listTitle: inputs.listTitle } )
         console.log('validationreults', validationResults)
@@ -79,7 +86,11 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
     <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<List size={30} color={Colors.secondary}/>}   />
 
     <View className='w-full px-6 relative items-center justify-center gap-5'>
+        { isListEmpty && (
+            <Text className='text-red-400 self-start'>*List cannot be empty</Text>
+        ) }
         <View className='thread-topic w-full relative '>
+
                 <TextInput
                     placeholder='Search for a movie, show, or person'
                     placeholderTextColor={Colors.mainGray}
@@ -103,6 +114,7 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
                     </View>
                 ) }
                 <TextInput
+                        autoCapitalize='sentences'
                         onChangeText={(text) => handleInput('listTitle', text)}
                         value={inputs.listTitle}
                         autoCorrect={true}

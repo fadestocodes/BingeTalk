@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, Text, View, FlatList , TouchableOpacity, TextInput, Keyboard, KeyboardAvoidingView, ActivityIndicator} from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Colors } from '../../../../constants/Colors'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
@@ -13,10 +13,17 @@ import { GetTVById, GetMovieById } from '../../../../api/tmdb'
 
 const addToListModal = () => {
     const { user :clerkUser } = useUser()
+    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const { data : userLists, refetch: refetchUserLists, isFetching } = useFetchUsersLists(ownerUser.id)
+
     const {tmdbId, DBtvId, DBMovieId} = useLocalSearchParams();
-    console.log("DBMOVIEID", DBMovieId, DBtvId)
     const [ tvObj, setTvObj ] = useState(null)
     const [ movieObj, setMovieObj ] = useState(null)
+    const [inputHeight, setInputHeight] = useState(0)
+    const inputRef = useRef(null);
+
+
+
 
     const useGetTitle = async () => {
         if (DBtvId){
@@ -32,7 +39,6 @@ const addToListModal = () => {
     }, [])
 
 
-    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
     const [ isCreatingList, setIsCreatingList ] = useState(false)
     const [ isDescription, setIsDescription ] = useState(false)
     const [ uploadingNewList, setUploadingNewList ] = useState(false)
@@ -40,18 +46,16 @@ const addToListModal = () => {
         title : '',
         description : ''
     })
-        const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
-        const translateStyle = useAnimatedStyle(() => {
-            return {
-              transform: [{ translateY: -keyboard.height.value }],
-            };
-          });
+   
+    const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
 
 
 
-    // const userLists = fetchUsersLists(ownerUser.id)
-    const { data : userLists, refetch: refetchUserLists } = useFetchUsersLists(ownerUser.id)
-    console.log("USER LISTS", userLists)
+    const translateStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ translateY: inputHeight < 480 ? 0 : -keyboard.height.value }],
+        }
+        });
     const handleChange = (name, text) => {
         setInputs( prev => ({
             ...prev,
@@ -64,29 +68,30 @@ const addToListModal = () => {
         setUploadingNewList(true)
         let formattedTitle = {}
         if (DBtvId){
-          console.log('theres a dbtvid')
-          tvObj.media_type = 'tv';
-          formattedTitle.item = {
-            id : tvObj.id,
-            name : tvObj.name,
-            release_date :tvObj.first_air_date ,
-            poster_path :tvObj.poster_path ,
-            backdrop_path: tvObj.backdrop_path,
-            media_type : tvObj.media_type,
-          }
+            console.log('theres a dbtvid')
+            tvObj.media_type = 'tv';
+            formattedTitle.item = {
+              id : tvObj.id,
+              name : tvObj.name,
+              release_date :tvObj.first_air_date ,
+              poster_path :tvObj.poster_path ,
+              backdrop_path: tvObj.backdrop_path,
+              media_type : tvObj.media_type,
+            }
+          
+        } else if (DBMovieId){
+            console.log('theres a dbmovieid')
+            movieObj.media_type = 'movie';
+            formattedTitle.item = {
+              id : movieObj.id,
+              title : movieObj.title,
+              release_date :movieObj.release_date ,
+              poster_path :movieObj.poster_path ,
+              backdrop_path: movieObj.backdrop_path,
+              media_type : movieObj.media_type,
+            } 
+        }
         
-      } else if (DBMovieId){
-          console.log('theres a dbmovieid')
-          movieObj.media_type = 'movie';
-          formattedTitle.item = {
-            id : movieObj.id,
-            title : movieObj.title,
-            release_date :movieObj.release_date ,
-            poster_path :movieObj.poster_path ,
-            backdrop_path: movieObj.backdrop_path,
-            media_type : movieObj.media_type,
-          } 
-      }
         const listData = {
             title : inputs.title,
             caption : inputs.description,
@@ -104,6 +109,8 @@ const addToListModal = () => {
         setIsCreatingList(false)
         setIsDescription(false)
         refetchUserLists();
+
+
     }
 
     const handleSelectList = async (item) => {
@@ -137,9 +144,24 @@ const addToListModal = () => {
         }
     }
 
+    const handleInputLayout = (event) => {
+        // const { y, height } = event.nativeEvent.layout
+        // console.log(`y is: ${y}, height is: ${height}`)
+        // Get the position of the TextInput relative to the parent and set the height for translation
+        // setInputHeight(y + height)
+
+            inputRef.current.measureInWindow((x, y, width, height) => {
+              console.log('Input Position: ', y, 'Height:', height);
+              setInputHeight(y + height); // Set the height as the combined value of y and height
+
+            });
+    }
+
+
 
   return (
-    <ScrollView className='w-full h-full bg-primary  relative' style={{borderRadius:30}}>
+    
+    <ScrollView className='w-full h-full bg-primary  relative flex-1' style={{borderRadius:30}}>
          <Animated.View style={translateStyle}>
         <View className='h-full w-full justify-center items-center relative gap-5'  style={{paddingTop:60, paddingBottom:120, paddingHorizontal:30, width:'100%'}} >
         <View style={{ width:55, height:7, borderRadius:10, backgroundColor:Colors.mainGray, position:'absolute', top:20 }} />
@@ -154,7 +176,6 @@ const addToListModal = () => {
                         keyExtractor={item => item.id}
                         contentContainerStyle={{ gap:15, width:320}}
                         renderItem={({item}) => {
-                            console.log('ITEM',item)
                             const alreadyIncluded = item.listItem.some( item => item.movieId === Number(DBMovieId) || item.tvId === Number(DBtvId) )
                             return (
                                 <TouchableOpacity onPress={()=>handleSelectList(item)} disabled={ alreadyIncluded }  style={{  opacity: alreadyIncluded ? 0.5 : 1, height:'auto', width:'100%',backgroundColor:Colors.mainGrayDark, borderRadius:15, paddingHorizontal:30, paddingVertical:15, gap:10}} >
@@ -172,6 +193,10 @@ const addToListModal = () => {
                              isCreatingList && !isDescription ? (
                                 <View  className='w-full my-3'>
                                     <TextInput
+                                        // onLayout={handleInputLayout}
+                                        ref={inputRef} 
+                                        onLayout={handleInputLayout}
+
                                         value={ inputs.title }
                                         onChangeText={ (text) => handleChange('title', text) }
                                         placeholder='Enter List title'
@@ -236,5 +261,3 @@ const addToListModal = () => {
 }
 
 export default addToListModal
-
-const styles = StyleSheet.create({})

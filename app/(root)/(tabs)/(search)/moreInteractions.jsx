@@ -23,7 +23,6 @@ const moreInteractions = () => {
 
 
     const handleInterested = async (  ) => {
-        console.log('owneruserid', ownerUser.id)
         if (alreadyInterested){
             setMessage('Removed from Interested')
         } else {

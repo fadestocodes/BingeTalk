@@ -66,18 +66,12 @@ const MoviePage = () => {
     
     const alreadyRated = movieRatings?.some( item => item.movieId === Number(DBmovieId) && item.userId === ownerUser.id )
     const ownerRating = movieRatings?.find( item => item.userId === ownerUser.id && item.movieId === Number(DBmovieId) ) || 'N/A'
-    console.log('OWNER RATING', ownerRating)
     const followersAndFollowingIds = ownerUser.followers.map(item => item.followerId ).concat(ownerUser.followers.map(f => f.followingId))
     const friendsRatingList = movieRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser.id )
     const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
-    console.log('total friends ratings', totalFriendsRatings)
     const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
-    console.log('averafge friends ratring', averageFriendsRating)
-    console.log('all ratings', movieRatings)
     const totalOverallRatings = movieRatings?.reduce((sum,rating) => sum + rating.rating, 0)
-    console.log('total overall ratings', totalOverallRatings)
     const overallRatings = movieRatings.length > 0 ? (totalOverallRatings / movieRatings.length).toFixed(1) : 'N/A'
-    console.log('overall raitns',overallRatings)
 
 
 

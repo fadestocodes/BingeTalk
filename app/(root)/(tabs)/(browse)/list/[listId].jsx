@@ -15,7 +15,7 @@ const ListPage = () => {
       <ActivityIndicator />
       </View>
     ) : (
-      <TinderSwipeCard listItems={list.listItem} creator={list.user} listId={listId}/>
+      <TinderSwipeCard listItems={list.listItem} creator={list.user} listId={listId} listObj={list}/>
     )}
     </View>
   )

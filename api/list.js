@@ -90,7 +90,23 @@ export const useFetchUsersListsInfinite = (userId, limit) => {
         fetchUsersListsInfinite()
     }, [])
 
-    return { data, loading, hasMore, refetch: fetchUsersListsInfinite }
+    const refetch = async () => {
+        try {
+            const response = await fetch(`${nodeServer.currentIP}/list/infinite?userId=${userId}&limit=${limit}&cursor=null`)
+            const results = await response.json()
+            setData(results.items)
+            setCursor(results.nextCursor)
+            setHasMore(!!results.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+    }
+    
+    const removeItem = (item) => {
+        setData(prev => prev.filter( i => i.id !== item.id ))
+    }
+
+    return { data, loading, hasMore, refetch, removeItem }
  }
 
 
@@ -114,7 +130,7 @@ export const fetchSpecificList = async (listId) => {
     try {
         const request = await fetch (`${nodeServer.currentIP}/list?listId=${listId}`)
         const response = await request.json();
-        // console.log('fetched list ', response)
+        console.log('fetched list ', response)
         return response
     } catch (err) {
         console.log(err)

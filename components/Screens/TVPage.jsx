@@ -60,7 +60,6 @@ const TVPage = () => {
     const [ tvRatings, setTVRatings ] = useState([])
    
 
-    console.log('MOVIE',movie)
     const { user:clerkUser } = useUser();
     const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
@@ -73,18 +72,12 @@ const TVPage = () => {
 
     const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) && item.userId === ownerUser.id )
     const ownerRating = tvRatings?.find( item => item.userId === ownerUser.id && item.tvId === Number(DBtvId) ) || 'N/A'
-    console.log('OWNER RATING', ownerRating)
     const followersAndFollowingIds = ownerUser.followers.map(item => item.followerId ).concat(ownerUser.followers.map(f => f.followingId))
     const friendsRatingList = tvRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser.id )
     const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
-    console.log('total friends ratings', totalFriendsRatings)
     const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
-    console.log('averafge friends ratring', averageFriendsRating)
-    console.log('all ratings', tvRatings)
     const totalOverallRatings = tvRatings?.reduce((sum,rating) => sum + rating.rating, 0)
-    console.log('total overall ratings', totalOverallRatings)
     const overallRatings = tvRatings.length > 0 ? (totalOverallRatings / tvRatings.length).toFixed(1) : 'N/A'
-    console.log('overall raitns',overallRatings)
 
 
 
@@ -235,7 +228,6 @@ const TVPage = () => {
     }
 
     const handleMore = () => {
-        console.log('SYNCED TV ID', DBtvId)
         router.push({
             pathname: "/moreInteractions",
             params: { DBtvId: String(DBtvId), tmdbId : tvId }, // Convert to string

@@ -356,7 +356,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             </View>
 
 
-
+{/* 
         {   loadingImage ? (
             <View className='bg-transparent justify-center items-center' style={{ width:'100%', height : 200 }}>
                 <ActivityIndicator></ActivityIndicator>
@@ -381,7 +381,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                         </TouchableOpacity>
                     </View>
             </View>
-            ) }
+            ) } */}
         </View>
 
         
@@ -392,12 +392,12 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     />
                     <View className='flex-row items-center  gap-3' style={{width:'100%',  justifyContent:'space-between'}}>
                         <View className="flex-row gap-3">
-                            <TouchableOpacity>
+                            {/* <TouchableOpacity>
                                 <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={15} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={handleTagOptions} style={{ paddingHorizontal:5, paddingVertical:0, borderRadius:5, borderWidth:1.5 , borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
-                                <Text className='text-xs text-mainGray'>TAGS 🏷️</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
+                            <TouchableOpacity onPress={handleTagOptions} style={{ paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderRadius:15, borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
+                                    <Text className='text-xs font-pbold text-mainGray'>Tags 🏷️</Text>
+                                </TouchableOpacity>
                         </View>
                         <View className="flex-row justify-center items-center gap-3">
                             <Text className='text-mainGray text-right '>{input.length}/800</Text>

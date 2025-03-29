@@ -21,10 +21,6 @@ import { MessagesSquare } from 'lucide-react-native'
 
     const CreateThread = ( {threadObject, handleChange, inputs, setInputs, handleSearch, results, setResults, resultsOpen, setResultsOpen, searchQuery, setSearchQuery} ) => {
 
-        // const [ inputs, setInputs ] = useState({
-        //     title : '',
-        //     caption : ''
-        // })
         const [ image, setImage ] = useState(null); 
         const [ loadingImage, setLoadingImage ]  = useState(false);
         const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -34,6 +30,7 @@ import { MessagesSquare } from 'lucide-react-native'
         const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress}  );
         const [errors, setErrors] = useState(null)
         const [ message, setMessage ] = useState(null)
+        const [topicError, setTopicError] = useState(false)
 
         useEffect(()=>{
             setTags({})
@@ -45,25 +42,14 @@ import { MessagesSquare } from 'lucide-react-native'
     }
 
       
-
-        // const toPascalCase = (str) => {
-        //     return str
-        //         .replace(/[^a-zA-Z0-9 ]/g, '') // Remove non-alphanumeric characters except spaces
-        //         .split(' ') // Split words
-        //         .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter
-        //         .join(''); // Join words without spaces
-        // };
-        
-        // const handlePress = (item) => {
-        //     setInputs(prev => ({
-        //         ...prev,
-        //         query: `/${toPascalCase(item.name || item.title)}` // Convert to PascalCase
-        //     }));
-        //     setResultsOpen(false);
-        // };
-
         const handlePost = async () => {
             console.log('input', inputs.threadTitle, inputs.threadCaption)
+            if (searchQuery === '' || searchQuery === null || !threadObject) {
+                setTopicError(true)
+                return
+            } else {
+                setTopicError(false)
+            }
 
             const validationResults = createThreadSchema.safeParse( { ...inputs,  threadTitle: inputs.threadTitle } )
             console.log('validationreults', validationResults)
@@ -78,6 +64,7 @@ import { MessagesSquare } from 'lucide-react-native'
                 }
 
                 console.log('made it here')
+
             const threadData = {
                 userId : Number(ownerUser.id),
                 movieId : threadObject.media_type === 'movie' ? threadObject.id : null  ,
@@ -112,23 +99,28 @@ import { MessagesSquare } from 'lucide-react-native'
         <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<MessagesSquare size={30} color={Colors.secondary}/>}   />
 
         <View  className='w-full px-6  items-center justify-center gap-5' style={{paddingBottom:200}}>
-
-            <View className='thread-topic w-full relative justify-center items-center '>
-                <TextInput
-                    placeholder='Thread topic (film, show, person)'
-                    placeholderTextColor={Colors.mainGray}
-                    multiline
-                    autoCorrect={false}
-                    onChangeText={(text)=> { setSearchQuery(text);  handleSearch(text)  }}
-                    className='w-full bg-white rounded-3xl  font-pregular '
-                    style={{ minHeight:50, paddingHorizontal:25, paddingTop:15, justifyContent:'center', alignItems:'center', textAlignVertical:'center', backgroundColor:Colors.mainGrayDark, color:'white' }}
-                    value={searchQuery}
-                    onFocus={()=>setResultsOpen(true)}
-                />
-                <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); setResultsOpen(false)}}  style={{ position:'absolute', right:20, top:15 }}>
-                    <CloseIcon color={Colors.mainGray} size={24} className=' ' />
-                </TouchableOpacity>
-            </View>
+<View className='w-full'>
+    
+                    { topicError && (
+                        <Text className='text-red-400 text-left self-start my-2'>*Thread needs a topic</Text>
+                     ) }
+                <View className='thread-topic w-full relative justify-center items-center '>
+                    <TextInput
+                        placeholder='Thread topic (film, show, person)'
+                        placeholderTextColor={Colors.mainGray}
+                        multiline
+                        autoCorrect={false}
+                        onChangeText={(text)=> { setSearchQuery(text);  handleSearch(text)  }}
+                        className='w-full bg-white rounded-3xl  font-pregular '
+                        style={{ minHeight:50, paddingHorizontal:25, paddingTop:15, justifyContent:'center', alignItems:'center', textAlignVertical:'center', backgroundColor:Colors.mainGrayDark, color:'white' }}
+                        value={searchQuery}
+                        onFocus={()=>setResultsOpen(true)}
+                    />
+                    <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); setResultsOpen(false)}}  style={{ position:'absolute', right:20, top:15 }}>
+                        <CloseIcon color={Colors.mainGray} size={24} className=' ' />
+                    </TouchableOpacity>
+                </View>
+</View>
 
             
 
@@ -183,7 +175,7 @@ import { MessagesSquare } from 'lucide-react-native'
                         style={{ minHeight: Object.keys(tags).length > 0 ? 120 : 100, backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop: Object.keys(tags).length > 0 ? 90 : 50, paddingBottom:40 , borderTopLeftRadius: 15, borderTopRightRadius:15}}
                     />
                    
-                {   loadingImage ? (
+                {/* {   loadingImage ? (
                     <View className=' w-full justify-center items-center' style={{ width:'100%', height:100 , backgroundColor:Colors.mainGrayDark}}> 
                         <ActivityIndicator></ActivityIndicator>
                     </View>
@@ -202,7 +194,7 @@ import { MessagesSquare } from 'lucide-react-native'
                                 </TouchableOpacity>
                             </View>
                     </View> 
-                    ) }
+                    ) } */}
                     </View>
                     
                 <View className='w-full justify-center items-center gap-3 bg-white' style={{width:'100%',backgroundColor:Colors.mainGrayDark, position:'absolute',bottom:0, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , paddingHorizontal:25, paddingBottom:15}}>
@@ -211,11 +203,11 @@ import { MessagesSquare } from 'lucide-react-native'
                     />
                     <View className='flex-row justify-end items-center  gap-3' style={{width:'100%',  justifyContent:'space-between'}}>
                         <View className='flex-row justify-center items-center gap-3'>
-                            <TouchableOpacity>
+                            {/* <TouchableOpacity>
                                 <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={15} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={handleTagOptions} style={{ paddingHorizontal:5, paddingVertical:3, borderRadius:5, borderWidth:1.5 , borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
-                                    <Text className='text-xs text-mainGray'>TAGS 🏷️</Text>
+                            </TouchableOpacity> */}
+                            <TouchableOpacity onPress={handleTagOptions} style={{ paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderRadius:15, borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
+                                    <Text className='text-xs font-pbold text-mainGray'>Tags 🏷️</Text>
                                 </TouchableOpacity>
                         </View>
                         <Text className='text-mainGray text-right '>{inputs.threadTitle.length}/150</Text>

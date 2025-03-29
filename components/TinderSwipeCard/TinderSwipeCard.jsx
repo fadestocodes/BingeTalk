@@ -17,10 +17,11 @@ import Animated, { useAnimatedKeyboard, useAnimatedStyle } from "react-native-re
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import { BackIcon } from "../../assets/icons/icons";
 import { createComment } from "../../api/comments";
+import { listInteraction } from "../../api/list";
 
 
 
-const TinderSwipeCard = ( { listItems, creator, listId} ) => {
+const TinderSwipeCard = ( { listItems, creator, listId, listObj} ) => {
   const [list, setList] = useState(null);
 
   const [currentItem, setCurrentItem] = useState(null)
@@ -59,18 +60,8 @@ const TinderSwipeCard = ( { listItems, creator, listId} ) => {
   useEffect(() => {
     setMessage('Swipe left to skip.\n\nSwipe right to mark as Interested.\n\nSwipe up to see details.')
     setList(listItems)
-    // const fetchTrending = async () => {
-    //   const res = await getTrending();
-    //   if (res) {
-    //     setList(res.results);
-    //   }
-    // };
-    // fetchTrending();
+   
   }, []);
-
-  // useEffect(() => {
-  //   restoreSavedItem(); // Automatically restore when component re-mounts
-  // }, [router]); // Runs only once, can be adjusted for specific cases
 
   useEffect(() => {
     if (savedItem) {
@@ -101,6 +92,24 @@ useEffect(() => {
       router.push(`/movie/${item.tv.tmdbId}`)
     }
   };
+
+
+
+  const alreadyUpvoted = listObj.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
+  const alreadyDownvoted = listObj.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser.id )
+  const alreadyReposted = listObj.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
+
+  const [ already, setAlready ] = useState({
+      upvoted : alreadyUpvoted,
+      downvoted : alreadyDownvoted,
+      reposted : alreadyReposted
+  })
+
+  const [ interactionCounts, setInteractionCounts ] = useState({
+      upvotes : listObj.upvotes ,
+      downvotes : listObj.downvotes ,
+      reposts : listObj.reposts
+  })
 
 
   const handleLike = async () => {
@@ -205,6 +214,45 @@ useEffect(() => {
 
   }
 
+  const handleInteraction =  async (type, listObj) => {
+    console.log('type', type)
+    if (type === 'upvotes'){
+        setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
+        if (already.upvoted){
+            setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes - 1}))
+        } else {
+            setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes + 1}))
+        }
+    } else if (type === 'downvotes'){
+        setAlready(prev => ({...prev, downvoted : !prev.downvoted}))
+        if (already.downvoted){
+            setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes - 1}))
+        } else {
+            setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes + 1}))
+        }
+    
+    let description
+    if ( type === 'upvotes' ){
+        description = `upvoted your list "${listObj.title}"`
+        
+    } else if (type === 'downvotes'){
+        description = `downvoted your list "${listObj.title}"`
+       
+    
+    const data = {
+        type,
+        listId : Number(listObj.id),
+        userId : ownerUser.id,
+        description,
+        recipientId :creator.id
+    }
+    console.log('data', data)
+      const updatedList = await listInteraction(data)
+      console.log('updated list', updatedList)
+      }
+    }
+  }
+
 
   return (
     <View style={styles.container}>
@@ -253,11 +301,11 @@ useEffect(() => {
                       <View className="justify-center items-center gap-3 mb-8">
                         <Text className="text-white font-pbold text-2xl">Did you like this list?</Text>
                         <View className="flex-row gap-10">
-                          <TouchableOpacity>
-                            <ThumbsUp color={Colors.mainGray} size={30}/>
+                          <TouchableOpacity onPress={()=> handleInteraction('upvotes',listObj) }>
+                            <ThumbsUp color={ already.upvoted ? Colors.secondary :  Colors.mainGray} size={30}/>
                           </TouchableOpacity>
-                          <TouchableOpacity>
-                            <ThumbsDown color={Colors.mainGray} size={30}/>
+                          <TouchableOpacity onPress={()=> handleInteraction('downvotes',listObj) }>
+                            <ThumbsDown color={already.downvoted ? Colors.secondary :  Colors.mainGray} size={30}/>
                           </TouchableOpacity>
           
                         </View>

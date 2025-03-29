@@ -81,7 +81,7 @@ const homeIndex = () => {
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
 
-        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotation=true`);
+        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
         const response = await request.json();
         console.log("REFETCH RESPONSE", response)
         setData( response.items );
@@ -154,7 +154,6 @@ const homeIndex = () => {
       } else if (item.threads){
         router.push(`(home)/threads/${item.threads.id}`)
       } else if (item.feedFrom === 'threadFromWatched' || item.feedFrom === 'threadFromRotations'){
-        console.log('herereee')
         router.push(`(home)/threads/${item.id}`)
       }
     }

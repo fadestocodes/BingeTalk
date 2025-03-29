@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native'
 import { Image } from 'expo-image';
-import React from 'react'
+import React , {useEffect} from 'react'
 import { useFetchUsersLists, listInteraction, useFetchUsersListsInfinite } from '../../api/list'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
@@ -9,19 +9,24 @@ import {  LayersIcon, MessageIcon, RepostIcon, ThreeDotsIcon} from '../../assets
 import { useFetchOwnerUser } from '../../api/user';
 import { useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
+import { usePostRemoveContext } from '../../lib/PostToRemoveContext';
 import ListCard from '../ListCard';
 
 
 const UserListsPage = ( { userId } ) => {
     // const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
-    const { data : lists, refetch, loading } = useFetchUsersListsInfinite(userId, 10);
+    const { data : lists, refetch, loading , removeItem} = useFetchUsersListsInfinite(userId, 10);
     // console.log('lists are', lists)
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const { user : clerkUser } = useUser()
     const router = useRouter();
-
+    const { postToRemove, updatePostToRemove } = usePostRemoveContext()
     const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
 
+
+    useEffect(() => {
+        removeItem(postToRemove)
+    },[postToRemove])
 
 
 
