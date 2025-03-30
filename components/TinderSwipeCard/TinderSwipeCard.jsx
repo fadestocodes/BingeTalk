@@ -199,7 +199,9 @@ useEffect(() => {
     const data = {
       userId : ownerUser.id,
       listId : Number(listId) ,
-      content : comment
+      content : comment,
+      description : `commented on your list "${list.title}"`,
+      recipientId : creator.id
     }
     console.log('data for comment', data)
     const newComment = await createComment(data)

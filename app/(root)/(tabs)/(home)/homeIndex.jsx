@@ -100,14 +100,6 @@ const homeIndex = () => {
     setLoading(false);
     }
 
-    useEffect(()=>{
-      testFunction = async () => {
-        const testResposne = await fetch(`${nodeServer.currentIP}/dialogue?20`)
-        const testResult = await testResposne.json()
-        console.log('test resutl', testR)
-      }
-      testFunction()
-    },[])
 
 
 
@@ -134,21 +126,16 @@ const homeIndex = () => {
     }
 
     const handleLike = async (item) => {
-      console.log('item', item)
       const likeData = {
         userId : ownerUser.id,
         activityId : item.id
       }
       const likedActivity = await likeActivity(likeData)
-      // setData()
-      // setTrigger(prev => !prev)
-      // setData(  )
       refetchOwner()
       await refetchFeed()
     } 
 
     const handlePress =(item) => {
-      console.log("PRESSED ITEM", item.id)
       if (item.dialogue){
         router.push(`(home)/dialogue/${item.dialogue.id}`)
       } else if (item.threads){
@@ -274,36 +261,3 @@ export default homeIndex
 
 const styles = StyleSheet.create({})
 
-
-// import { StyleSheet, Text, View } from 'react-native'
-// import React, {useEffect} from 'react'
-// import * as nodeServer from '../../../../lib/ipaddresses'
-
-// const homeIndex = () => {
-
-
-//   useEffect(()=>{
-//     testFunction = async () => {
-//       try {
-//         console.log('testing...')
-//         const testResposne = await fetch(`http:/18.221.11.192:3000`)
-//         console.log('response obj', testResposne)
-//         const testResult = await testResposne.json()
-//         console.log('test resutl', testR)
-//       } catch (err){
-//         console.log(err)
-//       }
-//     }
-//     testFunction()
-//   },[])
-
-//   return (
-//     <View>
-//       <Text>homeIndex</Text>
-//     </View>
-//   )
-// }
-
-// export default homeIndex
-
-// const styles = StyleSheet.create({})

@@ -82,13 +82,16 @@ export const markNotifRead = async (data) => {
 
 export const postPushToken = async (token) => {
     try {
+        console.log('trying to sasve token', token)
         const response = await fetch(`${nodeServer.currentIP}/notifications/save-push-token`,{
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
             },
-            body : JSON.stringify({token})
+            body : JSON.stringify(token)
         })
+
+        console.log('response', response)
         const result = await response.json()
         console.log('results from sending push token', result)
         return result

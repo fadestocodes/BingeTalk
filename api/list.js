@@ -184,8 +184,19 @@ export const useGetTrendingLists = (limit) => {
         getTrendingLists(limit)
     },[])
 
-    const refetch = () => {
-        getTrendingLists(5);
+    const refetch = async () => {
+        try {
+            const request = await fetch(`${nodeServer.currentIP}/list/trending?cursor=null&limit=${limit}`)
+            const response = await request.json();
+            setTrendingList(response.items)
+            setCursor(response.nextCursor)
+            setHasMore( !!response.nextCursor )
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+       
     }
     
     return { trendingList, loading, refetch , hasMore }
@@ -202,7 +213,6 @@ export const useGetRecentLists = (limit) => {
         try {
             const request = await fetch(`${nodeServer.currentIP}/list/most-recent?cursor=${cursor}&limit=${limit}`)
             const response = await request.json();
-            console.log('respone from recent lists', response)
             setRecentLists(prev => [...prev, ...response.items]);
             setCursor(response.nextCursor)
             setHasMore( !!response.nextCursor )
@@ -217,8 +227,19 @@ export const useGetRecentLists = (limit) => {
         getRecentLists(limit)
     },[])
 
-    const refetch = () => {
-        getRecentLists(5);
+    const refetch = async () => {
+        try {
+            const request = await fetch(`${nodeServer.currentIP}/list/most-recent?cursor=null&limit=${limit}`)
+            const response = await request.json();
+            setRecentLists(response.items);
+            setCursor(response.nextCursor)
+            setHasMore( !!response.nextCursor )
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+       
     }
     
     return { recentLists, loading, refetch, hasMore  }

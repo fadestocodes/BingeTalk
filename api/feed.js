@@ -87,5 +87,29 @@ export const useGetProfileFeed = (userId, limit) => {
         // console.log('new dataset', data)
     }
 
-    return { data, loading, hasMore, cursors, refetch : getProfileFeed , removeItem} 
+    const refetch = async () => {
+        try {
+            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&threadCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreThreads=true&hasMoreLists=true`)
+            const results = await response.json()
+            setData(results.items)
+            setHasMore({
+                dialogue : !!results.nextDialogueCursor,
+                thread : !!results.nextThreadCursor,
+                list : !!results.nextListCursor
+            })
+            setCursors(prev => ({
+                ...prev,
+                dialogue : results.nextDialogueCursor,
+                thread : results.nextThreadCursor,
+                list : results.nextListCursor
+            }))
+
+        } catch (err){
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return { data, loading, hasMore, cursors, refetch  , removeItem} 
 }

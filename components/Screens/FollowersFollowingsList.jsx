@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator} from 'react-native'
+import { StyleSheet, Text, View , FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator, RefreshControl} from 'react-native'
 import React from 'react'
 import { Image } from 'expo-image'
 import { useGetFollowersListInfinite, useGetFollowingListInfinite, unfollowUser, followUser, useFetchOwnerUser } from '../../api/user'
@@ -16,6 +16,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
     const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing, setIsFollowingIds : setIsFollowingIdsFromFollowing } = useGetFollowingListInfinite( userId, limit )
     const {user : clerkUser} = useUser()
     const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
+
     
     console.log('followings', followings)
 
@@ -25,7 +26,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
     const handleFollowBack = async (checkFollow, item) => {
         let toUse 
         if (whichList === 'Followers'){
-            toUse = item.follower
+            toUse = item.following
         } else if (whichList === 'Following'){
             toUse = item.follower
         }
@@ -89,11 +90,16 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
             <FlatList
                 data={ whichList === 'Followers' ? followers : (whichList === 'Following' ? followings : [] )}
+                refreshControl={<RefreshControl
+                    tintColor={Colors.secondary}
+                    onRefresh={whichList === 'Followers' ? refetchFollowers : refetchFollowings}
+                    refreshing={whichList === 'Followers' ? loadingFollowers : loadingFollowings}
+                />}
                 keyExtractor={item => item.id}
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
-                    // console.log('flatlistitem', item)
-                    const checkFollowFromFollower = isFollowingIds.includes( item?.follower?.id ) 
+                    console.log('flatlistitem', item)
+                    const checkFollowFromFollower = isFollowingIds.includes( item?.following?.id ) 
                     const checkFollowFromFollowing = isFollowingIdsFromFollowing.includes( item?.follower?.id ) 
                     return (
                     <TouchableOpacity onPress={()=>{console.log('presseditem', item)}}>

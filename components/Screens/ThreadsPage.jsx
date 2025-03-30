@@ -52,9 +52,10 @@ const ThreadsIdPage = () => {
     // const [ thread, setThread ] = useState(null)
 
     // const { data: thread , refetch, isFetching} = useFetchSingleThread(Number(threadsId))
+    console.log('thread iddddd', threadsId)
     const { thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useCustomFetchSingleThread(Number(threadsId), Number(replyCommentId))
 
-    // console.log('thread from hook', thread)
+    console.log('thread from hook', thread)
 
 
     
@@ -393,7 +394,7 @@ const ThreadsIdPage = () => {
 
           {/* <CommentsComponent commentsData={commentsData} interactedComments={interactedComments} setInteractedComments={setInteractedComments}  input={input} setInput={setInput}  inputRef={inputRef}/> */}
 
-                { thread.comments.length > 0 && (
+                { commentsData.length > 0 && (
                     <>
                     <FlatList
                     data={commentsData}

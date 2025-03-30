@@ -164,7 +164,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
                 console.log('specific comment', replyCommentFromNotif)
 
                 const reorderedCommentsData = [
-                    ...fetchedDialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
+                    ...fetchedDialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id === replyCommentFromNotif.id) ,
                     ...fetchedDialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
                 ]
                 console.log('reorederd comments', reorderedCommentsData)
@@ -246,8 +246,24 @@ export const useGetTrendingDialoguesInfinite = (limit, popular) => {
         getTrendingDialoguesInfinite()
     }, [])
 
+    const refetch = async () => {
+        try {
 
-    return { data, refetch : getTrendingDialoguesInfinite, loading, hasMore }
+            console.log('hello')
+            const request = await fetch(`${nodeServer.currentIP}/dialogue/trending/infinite?limit=${limit}&cursor=null&popular=${popular}`)
+            const response = await request.json()
+            setData(response.items)
+            console.log(response.nextCursor )
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+    return { data, refetch, loading, hasMore }
 }
 
 export const useGetRecentDialoguesInfinite = (limit) => {
@@ -278,8 +294,24 @@ export const useGetRecentDialoguesInfinite = (limit) => {
         getRecentDialoguesInfinite()
     }, [])
 
+    const refetch = async () => {
+        try {
 
-    return { data, refetch : getRecentDialoguesInfinite, loading, hasMore }
+            console.log('hello')
+            const request = await fetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=null`)
+            const response = await request.json()
+            setData(response.items)
+            console.log(response.nextCursor )
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+    return { data, refetch , loading, hasMore }
 }
 
 export const deleteDialogue = async (data) => {

@@ -86,6 +86,8 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
     <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<List size={30} color={Colors.secondary}/>}   />
 
     <View className='w-full px-6 relative items-center justify-center gap-5'>
+        <View className='w-full gap-3'>
+
         { isListEmpty && (
             <Text className='text-red-400 self-start'>*List cannot be empty</Text>
         ) }
@@ -106,6 +108,7 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
                     <CloseIcon color={Colors.mainGray} size={24} className=' ' />
                 </TouchableOpacity>
             </View>
+        </View>
           
             <View className='relative w-full'>
             { errors && (

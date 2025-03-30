@@ -353,7 +353,7 @@ const DialogueScreen = () => {
           <DialogueCard dialogue={dialogue} disableCommentsModal={true} />
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
-                { dialogue.comments.length > 0 && (
+                { commentsData.length > 0 && (
                     <>
                     <FlatList
                     data={ commentsData}

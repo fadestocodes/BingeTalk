@@ -205,10 +205,10 @@ const SearchPage = () => {
       </View>
       { inFocus && (
               <View className='flex-row gap-3 justify-center items-center mb-3' style={{ borderRadius:10, paddingHorizontal:15, paddingVertical:10, backgroundColor:Colors.mainGrayDark, width:'auto' }}>
-                <TouchableOpacity onPress={()=>{setSearchingFor('users'); setResults([]); setQuery('')}}  style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'users' ? 'white' : null }} >
+                <TouchableOpacity onPress={()=>{setSearchingFor('users'); setResults([]); }}  style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'users' ? 'white' : null }} >
                   <Text className=' font-pbold' style={{ color : searchingFor === 'users' ? Colors.primary : Colors.mainGray }}>Users</Text>
                 </TouchableOpacity>
-                <TouchableOpacity  onPress={()=>{setSearchingFor('titles'); setResults([]); setQuery('')}} style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'titles' ? 'white' : null }} >
+                <TouchableOpacity  onPress={()=>{setSearchingFor('titles'); setResults([]); }} style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'titles' ? 'white' : null }} >
                 <Text className='font-pbold' style={{ color : searchingFor === 'titles' ? Colors.primary : Colors.mainGray }} >Title/Cast/Crew</Text>
                 </TouchableOpacity>
               </View>

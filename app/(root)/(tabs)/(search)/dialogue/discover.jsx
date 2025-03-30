@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity , SafeAreaView, Touchable, ActivityIndicator} from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity , SafeAreaView, Touchable, ActivityIndicator, RefreshControl} from 'react-native'
 import { MessageSquare } from 'lucide-react-native'
 import React, {useState} from 'react'
 import { dialogueCategories } from '../../../../../lib/CategoryOptions'
@@ -46,6 +46,13 @@ const DiscoverDialogues = () => {
             ) : (
                 <>
             <FlatList
+                 refreshControl={
+                    <RefreshControl
+                      tintColor={Colors.secondary}
+                      onRefresh={ selected === 'Trending' ? refetch : selected === 'Most Recent' && refetchRecents }
+                      refreshing={ selected === 'Trending' ? loadingTrending : selected === 'Most Recent' && loadingRecents}
+                    />
+                  }
                 data={selected === 'Trending' ? trendingDialogues : recentDialogues}
                 keyExtractor={(item, index) => index}
                 contentContainerStyle={{gap:15}}

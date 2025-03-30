@@ -23,36 +23,12 @@ import  Constants  from 'expo-constants';
 
 const Welcome = () => {
 
+  const {user} = useUser();
 
   
-  const {user} = useUser();
-  const router = useRouter();  // Access navigation object
-  // const { data : ownerUser } = useFetchOwnerUser({email:user.emailAddresses[0].emailAddress})
-
-
+  const router = useRouter(); 
   const [expoPushToken, setExpoPushToken] = useState(null);
   const [isTokenSent, setIsTokenSent] = useState(false);
-
-  // Request permissions and get token
-  // useEffect(() => {
-  //   const getPushNotificationPermissions = async () => {
-  //     const { status } = await Notifications.requestPermissionsAsync();
-  //     console.log('status', status)
-  //     if (status !== 'granted') {
-  //       alert('You must enable push notifications!');
-  //       return;
-  //     }
-
-  //     const token = await Notifications.getExpoPushTokenAsync();
-  //     console.log("Expo Push Token", token.data);
-  //     setExpoPushToken(token.data); // Store the token
-  //     await postPushToken(token.data)
-  //   };
-
-
-
-  //   getPushNotificationPermissions();
-  // }, []);
 
   const projectId =
   Constants?.expoConfig?.extra?.eas?.projectId ??
@@ -61,9 +37,12 @@ const Welcome = () => {
 
 useEffect(() => {
   const getPushNotificationPermissions = async () => {
+    const {user: clerkUser} = useUser();
+
+   
     try {
       const { status } = await Notifications.requestPermissionsAsync();
-      console.log('status', status);  // Log the permission status
+      console.log('status', status); 
 
       if (status !== 'granted') {
         alert('You must enable push notifications!');
@@ -76,17 +55,20 @@ useEffect(() => {
       });
       console.log('Expo Push Token', token.data);  // Log the token
       setExpoPushToken(token.data); // Store the token
+      const owner = await fetchUser({email : clerkUser.emailAddresses[0].emailAddress})
+      console.log('owner id', owner.id)
 
-      // Make sure to post the token to your backend
-      // const params = {
-      //   userId : ownerUser.id,
-      //   token : token.data,
-      //   deviceType : Platform.OS
 
-      // }
-      // console.log('params', params)
-      // const sentToken = await postPushToken(params);
-      // console.log('sent token', sentToken)
+
+      const params = {
+        userId : owner.id,
+        token : token.data,
+        deviceType : Platform.OS
+
+      }
+      console.log('params', params)
+      const sentToken = await postPushToken(params);
+      console.log('sent token', sentToken)
 
     } catch (error) {
       console.error('Error getting push token', error);  // Log any errors
@@ -95,7 +77,7 @@ useEffect(() => {
 
   // Get push notification permissions and token
   getPushNotificationPermissions();
-}, []);
+}, [ ]);
 
   // Handle notifications when the app is in the foreground
   useEffect(() => {

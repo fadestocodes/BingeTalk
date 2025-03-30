@@ -107,8 +107,23 @@ export const useGetTrendingThreadsInfinite = (limit, popular) => {
         getTrendingThreadsInfinite()
     }, [])
 
+    const refetch = async () => {
+        try {
 
-    return { data, refetch : getTrendingThreadsInfinite, loading, hasMore }
+            console.log('hello')
+            const request = await fetch(`${nodeServer.currentIP}/thread/trending/infinite?limit=${limit}&cursor=null&popular=${popular}`)
+            const response = await request.json()
+            setData(response.items)
+            console.log('full data', data)
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+    return { data, refetch , loading, hasMore }
 }
 
 export const useGetRecentThreads = (limit) => {
@@ -138,8 +153,23 @@ export const useGetRecentThreads = (limit) => {
         getRecentThreads()
     }, [])
 
+    const refetch = async () => {
+        try {
 
-    return { data, refetch : getRecentThreads, loading, hasMore }
+            console.log('hello')
+            const request = await fetch(`${nodeServer.currentIP}/thread/recent/infinite?limit=${limit}&cursor=null`)
+            const response = await request.json()
+            setData(response.items)
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (err){
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+    return { data, refetch, loading, hasMore }
 }
 
 
@@ -198,16 +228,13 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
             setThread(fetchedThread)
 
             if (replyCommentId){
-                console.log("REORDERING", replyCommentId)
                 const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
-                console.log('specific comment', replyCommentFromNotif)
 
                 const reorderedCommentsData = [
-                    ...fetchedThread?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
+                    ...fetchedThread?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id ===replyCommentFromNotif.id) ,
                     ...fetchedThread?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
                 ]
-                console.log('reorederd comments', reorderedCommentsData)
                 setCommentsData(reorderedCommentsData)
             }else {
                 setCommentsData(fetchedThread.comments)

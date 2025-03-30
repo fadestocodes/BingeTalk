@@ -39,10 +39,16 @@ const Notification = () => {
     // await refetch()
     if (item.parentActivityId){
       router.push(`/activity/${item.parentActivityId}`)
-    } else if (item.threads){
-      router.push(`/threads/${item.threads.id}?replyCommentId=${item.replyCommentId}`)
-    } else if (item.dialogue){
-      router.push(`/dialogue/${item.dialogue.id}?replyCommentId=${item.replyCommentId}`)
+    } else if (item.threads  && item.activityType !== 'COMMENT'){
+      console.log("came from here", item.threadId)
+      router.push({
+        pathname:`/threads/${item.threads.id}`,
+      })
+    } else if (item.dialogue && item.activityType !== 'COMMENT'){
+      console.log('2')
+      router.push({
+        pathname:`/dialogue/${item.dialogue.id}`,
+      })
     } else if (item.listId) {
       router.push(`/list/${item.listId}`)
     } else if (item.tv){
@@ -54,16 +60,28 @@ const Notification = () => {
     } else if (item.activityType === 'FOLLOW'){
       router.push(`/user/${item.userId}`)
     } else if (item.commentId && item.comment.dialogueId){
+      console.log('1')
       router.push({
         pathname:`/dialogue/${item.comment.dialogueId}`,
         params:{ replyCommentId: item.comment.id}
       })
     }else if (item.comment.parentComment && item.comment.parentComment.threadId){
-      console.log('here')
-      router.push(`/threads/${item.comment.parentComment.threadId}?replyCommentId=${item.comment.parentComment.id || item.comment.id}`)
+      console.log('hereeeee')
+      router.push({
+        pathname:`/threads/${item.comment.parentComment.threadId}`,
+        params:{ replyCommentId: item.comment.parentComment.id}
+      })
     } else if (item.comment.parentComment && item.comment.parentComment.dialogueId){
-      console.log('heree')
-      router.push(`/dialogue/${item.comment.parentComment.dialogueId}?replyCommentId=${item.comment.parentComment.id || item.comment.id}`)
+      console.log('hellloo')
+      router.push({
+        pathname:`/dialogue/${item.comment.parentComment.dialogueId}`,
+        params:{ replyCommentId: item.comment.parentComment.id}
+      })
+    }   else if (item.commentId && item.comment.threadId){
+      router.push({
+        pathname:`/threads/${item.comment.threadId}`,
+        params:{ replyCommentId: item.comment.id}
+      })
     }
    
   }

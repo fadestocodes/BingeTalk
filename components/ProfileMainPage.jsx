@@ -36,14 +36,8 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         const { user:clerkUser } = useUser();
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
-
-
-        const [ refreshing, setRefreshing ] = useState(false)
-       
-
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
         const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-        // const ownerUser = user
         const isOwnersProfilePage = user.id === ownerUser.id
         const [ isFollowing, setIsFollowing ] = useState(null)
         const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user.id, 15)
@@ -51,6 +45,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             followers : user.followers.length,
             following : user.following.length
         })
+        const [ refreshingPage, setRefreshingPage ] = useState(false)
 
         const { postToRemove, updatePostToRemove } = usePostRemoveContext()
 
@@ -146,23 +141,12 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             })
         }
 
-        // if (isFetchingUser || loading){
-        //     return (
-        //     <View className="bg-primary w-full h-full">
-        //         <ActivityIndicator></ActivityIndicator>
-        //     </View>
-        //     )
-        // }
-        // if (!user || isFetchingUser) {
-            
-        //     refetchUser();
-        //     return (
-        //         <View className='w-full h-full bg-primary'>
-        //     <ActivityIndicator></ActivityIndicator>  
-        //         </View>
-
-        //     )
-        // } 
+        const handleRefresh = async () => {
+            setRefreshingPage(true)
+            await refetchUser()
+            await refetchProfileFeed()
+            setRefreshingPage(false)
+        }
 
 
   return (
@@ -179,12 +163,11 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             refreshControl={
                 <RefreshControl
                 tintColor={Colors.secondary}
-                refreshing={isFetching}
-                onRefresh={()=>{ refetchUser()}} 
+                refreshing={refreshingPage}
+                onRefresh={handleRefresh} 
                 />
                 }
             onEndReached={()=> {
-                console.log("HASMORE", hasMore)
                     refetchProfileFeed()
             }}
             onEndReachedThreshold={0.3}

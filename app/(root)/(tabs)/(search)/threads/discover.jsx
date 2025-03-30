@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity , SafeAreaView, ActivityIndicator} from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity , SafeAreaView, ActivityIndicator, RefreshControl} from 'react-native'
 import { MessagesSquare } from 'lucide-react-native'
 import React, {useState} from 'react'
 import { threadCategories } from '../../../../../lib/CategoryOptions'
@@ -31,6 +31,7 @@ const DiscoverDialogues = () => {
 
         <View className='w-full my-5 gap-3' style={{paddingBottom:120}}>
             <FlatList
+           
             horizontal
             data={threadCategories}
             keyExtractor={(item,index) => index}
@@ -47,6 +48,13 @@ const DiscoverDialogues = () => {
             ) : (
 
             <FlatList
+            refreshControl={
+                <RefreshControl
+                  tintColor={Colors.secondary}
+                  onRefresh={ selected === 'Trending' ? refetch : selected === 'Most Recent' && refetchRecents }
+                  refreshing={ selected === 'Trending' ? loadingTrending : selected === 'Most Recent' && loadingRecents}
+                />
+              }
                 data={selected === 'Trending' ? trendingThreads : recentThreads}
                 keyExtractor={(item, index) => index}
                 contentContainerStyle={{gap:15}}
