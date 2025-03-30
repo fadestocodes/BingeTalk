@@ -22,8 +22,8 @@ const browseHome = () => {
     const [ selected, setSelected ] = useState('Trending')
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
-    const { trendingList, loading, refetch, hasMore : hasMoreTrending } = useGetTrendingLists(3)
-    const { recentLists, loading: loadingRecents, refetch:refetchRecents, hasMore:hasMoreRecents } = useGetRecentLists(3)
+    const { trendingList, loading, refetch, hasMore : hasMoreTrending, fetchMore } = useGetTrendingLists(3)
+    const { recentLists, loading: loadingRecents, refetch:refetchRecents, hasMore:hasMoreRecents, fetchMore: fetchMoreRecents } = useGetRecentLists(3)
 
 
     const handleInteraction =  async (type, item) => {
@@ -81,9 +81,9 @@ const browseHome = () => {
                       }
                         onEndReached={() => {
                             if ( hasMoreTrending && selected === 'Trending' ){
-                                refetch()
+                                fetchMore(3)
                             } else if (hasMoreRecents && selected==='Most Recent'){
-                              refetchRecents()
+                              fetchMoreRecents(3)
                             }
                         }}
                         onEndReachedThreshold={0.1}

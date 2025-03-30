@@ -11,8 +11,8 @@ import { useRouter } from 'expo-router'
 const DiscoverDialogues = () => {
     const [ selected, setSelected ] = useState('Trending')
     const router = useRouter()
-    const { data : trendingDialogues, refetch, hasMore , loading:loadingTrending} = useGetTrendingDialoguesInfinite(10, true);
-    const { data : recentDialogues, refetch:refetchRecents, hasMore: hasMoreRecents, loading:loadingRecents } = useGetRecentDialoguesInfinite(10, false);
+    const { data : trendingDialogues, refetch, hasMore , loading:loadingTrending, fetchMore} = useGetTrendingDialoguesInfinite(10, true);
+    const { data : recentDialogues, refetch:refetchRecents, hasMore: hasMoreRecents, loading:loadingRecents, fetchMore : fetchMoreRecents } = useGetRecentDialoguesInfinite(10, false);
 
 
   return (
@@ -70,9 +70,9 @@ const DiscoverDialogues = () => {
                 onEndReachedThreshold={0}
                 onEndReached={ ()=>{
                     if (selected === 'Trending' && hasMore){
-                        refetch()
+                        fetchMore(10, true)
                     } else if (selected === 'Hot Takes' && hasMoreRecents){
-                        refetchRecents()
+                        fetchMoreRecents(10,false)
                     }
                 }
 

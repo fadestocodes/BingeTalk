@@ -26,8 +26,6 @@ export const createDialogue = async ( postData ) => {
 
 export const fetchDialogues = async ( userId ) => {
     try {
-        console.log('trying to fetch dialogues');
-        console.log('userId', userId)
         const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all?id=${userId}`);
         const response = await request.json();
 
@@ -205,7 +203,7 @@ export const useGetTrendingDialoguesInfinite = (limit, popular) => {
     }
 
 
-    return { data, refetch, loading, hasMore }
+    return { data, refetch, loading, hasMore, fetchMore:getTrendingDialoguesInfinite }
 }
 
 export const useGetRecentDialoguesInfinite = (limit) => {
@@ -249,7 +247,7 @@ export const useGetRecentDialoguesInfinite = (limit) => {
     }
 
 
-    return { data, refetch , loading, hasMore }
+    return { data, refetch , loading, hasMore , fetchMore:getRecentDialoguesInfinite}
 }
 
 export const deleteDialogue = async (data) => {

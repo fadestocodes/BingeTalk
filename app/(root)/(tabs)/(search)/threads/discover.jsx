@@ -12,8 +12,8 @@ import { useRouter } from 'expo-router'
 const DiscoverDialogues = () => {
     const [ selected, setSelected ] = useState('Trending')
     const router = useRouter()
-    const { data : trendingThreads, refetch, hasMore, loading:loadingTrending } = useGetTrendingThreadsInfinite(10, true);
-    const { data : recentThreads, refetch:refetchRecents, hasMore: hasMoreRecents, loading:loadingRecents } = useGetRecentThreads(10, false);
+    const { data : trendingThreads, refetch, hasMore, loading:loadingTrending, fetchMore  } = useGetTrendingThreadsInfinite(10, true);
+    const { data : recentThreads, refetch:refetchRecents, hasMore: hasMoreRecents, loading:loadingRecents, fetchMore:fetchMoreRecents } = useGetRecentThreads(10, false);
 
 
 
@@ -69,9 +69,9 @@ const DiscoverDialogues = () => {
                     
                     
                     if (selected === 'Trending' && hasMore){
-                        refetch()
+                        fetchMore(10, true)
                     } else if (selected === 'Hot Takes' && hasMoreRecents){
-                        refetchRecents()
+                        fetchMoreRecents(10, false)
                     }
                 } }
                 onEndReachedThreshold={0}

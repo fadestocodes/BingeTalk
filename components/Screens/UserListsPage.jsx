@@ -14,9 +14,7 @@ import ListCard from '../ListCard';
 
 
 const UserListsPage = ( { userId } ) => {
-    // const { data : lists, refetch, isFetching } = useFetchUsersLists(userId);
-    const { data : lists, refetch, loading , removeItem} = useFetchUsersListsInfinite(userId, 10);
-    // console.log('lists are', lists)
+    const { data : lists, refetch, loading , removeItem, fetchMore, hasMore} = useFetchUsersListsInfinite(userId, 10);
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const { user : clerkUser } = useUser()
     const router = useRouter();
@@ -93,6 +91,12 @@ const UserListsPage = ( { userId } ) => {
         }
             data={lists}
             showsVerticalScrollIndicator={false}
+            onEndReached={()=> {
+                if (hasMore){
+                    fetchMore(userId, 10)
+                }
+            }}
+            onEndReachedThreshold={0.2}
             keyExtractor={item => item.id}
             contentContainerStyle={{ gap:15 }}
             renderItem={ ({item}) => {

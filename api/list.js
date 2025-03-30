@@ -106,7 +106,7 @@ export const useFetchUsersListsInfinite = (userId, limit) => {
         setData(prev => prev.filter( i => i.id !== item.id ))
     }
 
-    return { data, loading, hasMore, refetch, removeItem }
+    return { data, loading, hasMore, refetch, removeItem, fetchMore:fetchUsersListsInfinite }
  }
 
 
@@ -199,7 +199,7 @@ export const useGetTrendingLists = (limit) => {
        
     }
     
-    return { trendingList, loading, refetch , hasMore }
+    return { trendingList, loading, refetch , hasMore, fetchMore:getTrendingLists }
 }
 
 export const useGetRecentLists = (limit) => {
@@ -242,7 +242,7 @@ export const useGetRecentLists = (limit) => {
        
     }
     
-    return { recentLists, loading, refetch, hasMore  }
+    return { recentLists, loading, refetch, hasMore, fetchMore : getRecentLists  }
 }
 
 

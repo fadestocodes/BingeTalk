@@ -171,13 +171,6 @@ const CastIdPage = () => {
   }
 
 
-  const handleMore = () => {
-    router.push({
-        pathname: "/moreInteractions",
-        params: { DBcastId: DBcast.id, tmdbId : castId }, // Convert to string
-    });
-    }
-
     // const dynamicIcon = (button) => {
     //   if (button === 'addToFav'){
     //     return <CastCrewIcon size ={30} color={Colors.secondary} />
@@ -247,12 +240,6 @@ const CastIdPage = () => {
               </View>
           </TouchableOpacity>
          
-          <TouchableOpacity onPress={handleMore} >
-              <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
-                  <Ellipsis  color={Colors.primary} size={20} />
-                  {/* <Text className='text-primary font-pbold text-sm'>...</Text> */}
-              </View>
-          </TouchableOpacity>
           </View>
 
 

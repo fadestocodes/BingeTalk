@@ -90,7 +90,6 @@ const recommendationModal = () => {
                 keyExtractor = { item => item.id }
                 contentContainerStyle={{ gap:20, paddingVertical:30 }}
                 renderItem = { ({item, index}) => {
-                    console.log('item and index',item, index)
                     const alreadySent = ownerUser.recommendationSender.some(element => {
                         if (element.recipientId !== item.following.id) return false;
                         if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);

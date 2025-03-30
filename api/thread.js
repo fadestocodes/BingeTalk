@@ -112,7 +112,7 @@ export const useGetTrendingThreadsInfinite = (limit, popular) => {
         setLoading(false)
     }
 
-    return { data, refetch , loading, hasMore }
+    return { data, refetch , loading, hasMore, fetchMore : getTrendingThreadsInfinite }
 }
 
 export const useGetRecentThreads = (limit) => {
@@ -156,7 +156,7 @@ export const useGetRecentThreads = (limit) => {
     }
 
 
-    return { data, refetch, loading, hasMore }
+    return { data, refetch, loading, hasMore, fetchMore:getRecentThreads }
 }
 
 
