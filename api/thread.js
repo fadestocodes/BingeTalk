@@ -5,7 +5,6 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from './user'
 
 export const createThread = async ( threadData ) => {
-    console.log('threadData', threadData)
     try {
         const request = await fetch(`${nodeServer.currentIP}/thread/create`, {
             method : 'POST',
@@ -33,13 +32,11 @@ export const fetchSingleThread = async (threadId) => {
 
 
 export const useFetchSingleThread = ( threadId ) => {
-    // console.log('trying to use hook with ',threadId)
     return useQuery({
         queryKey : ['dialogues', threadId],
         queryFn : async () => {
             return fetchSingleThread(threadId)
         },
-        // staleTime : 1000 * 60 * 30,
         staleTime : 0,
         refetchOnWindowFocus : true,
         refetchOnMount: true, 
@@ -49,7 +46,6 @@ export const useFetchSingleThread = ( threadId ) => {
 
 
 export const threadInteraction = async ( data ) => {
-    console.log('trying to create thread interaction')
     try {
         const request = await fetch(`${nodeServer.currentIP}/thread/interact`, {
             method : 'POST',
@@ -59,7 +55,6 @@ export const threadInteraction = async ( data ) => {
             body:JSON.stringify( data )
         })
         const response = await request.json();
-        console.log('updated thread', response)
         return response
     } catch (err) {
         console.log(err)
@@ -70,7 +65,6 @@ export const getTrendingThreads = async (limit) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/thread/trending?limit=${limit}`)
         const response = await request.json();
-        // console.log('trending threads response', response)
         return response
     } catch (err) {
         console.log(err)
@@ -88,12 +82,9 @@ export const useGetTrendingThreadsInfinite = (limit, popular) => {
         if (!hasMore) return
         try {
 
-            console.log('hello')
             const request = await fetch(`${nodeServer.currentIP}/thread/trending/infinite?limit=${limit}&cursor=${cursor}&popular=${popular}`)
             const response = await request.json()
-            // console.log('response from infinitethreads', response)
             setData(prev => [...prev, ...response.items])
-            console.log('full data', data)
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
         } catch (err){
@@ -110,11 +101,9 @@ export const useGetTrendingThreadsInfinite = (limit, popular) => {
     const refetch = async () => {
         try {
 
-            console.log('hello')
             const request = await fetch(`${nodeServer.currentIP}/thread/trending/infinite?limit=${limit}&cursor=null&popular=${popular}`)
             const response = await request.json()
             setData(response.items)
-            console.log('full data', data)
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
         } catch (err){
@@ -136,7 +125,6 @@ export const useGetRecentThreads = (limit) => {
         if (!hasMore) return
         try {
 
-            console.log('hello')
             const request = await fetch(`${nodeServer.currentIP}/thread/recent/infinite?limit=${limit}&cursor=${cursor}`)
             const response = await request.json()
             setData(prev => [...prev, ...response.items])
@@ -156,7 +144,6 @@ export const useGetRecentThreads = (limit) => {
     const refetch = async () => {
         try {
 
-            console.log('hello')
             const request = await fetch(`${nodeServer.currentIP}/thread/recent/infinite?limit=${limit}&cursor=null`)
             const response = await request.json()
             setData(response.items)
@@ -205,7 +192,6 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
     const [ commentsData, setCommentsData ] = useState([])
     const [ interactedCount, setInteractedCount ] = useState(null)
 
-    console.log('Initial render of component, threadId:', threadId);
 
     const fetchThread = async () => {
         try {
@@ -218,7 +204,6 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
             const downvotedComments = ownerUser.commentInteractions.filter( i => {
                 return fetchedThread.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
-            // setInteractedComments(interactedCommentsData)
             setInteractedComments(prev => ({
                 ...prev,
                 upvotes : upvotedComments,
@@ -250,7 +235,6 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
 
     useEffect(()=>{
        
-        console.log('triggerd from useEffect')
             fetchThread();
     }, [])
 

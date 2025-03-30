@@ -23,7 +23,6 @@ const CreateShowcase = ( {handleChange, content} ) => {
 
 
     const addCreditLine = () => {
-        console.log('trying to add credit')
         setCreditLines( prev => [ ...prev, { id : Date.now() } ] )
     }
 

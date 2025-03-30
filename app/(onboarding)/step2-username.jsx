@@ -75,7 +75,6 @@ const handleInputs = ( name, value ) => {
 
 
 const onSetup2Press = () => {
-  console.log('its working')
   router.push({
       pathname : '/step3-email',
       params : { firstName, lastName, username  }

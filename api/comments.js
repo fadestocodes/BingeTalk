@@ -2,9 +2,7 @@ import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 
 export const createComment = async ( commentData ) => {
-    console.log('commentData',commentData)
     try {
-        console.log('trting to create comment')
         const request = await fetch(`${nodeServer.currentIP}/comment/create`, {
             method : 'POST',
             headers : {
@@ -14,7 +12,6 @@ export const createComment = async ( commentData ) => {
         })
 
         const newComment = await request.json();
-        console.log('newcomment', newComment)
         return newComment;
     } catch (err) {
         console.log(err)
@@ -78,7 +75,6 @@ export const commentInteraction = async ( data ) => {
             body:JSON.stringify( data )
         })
         const response = await request.json();
-        console.log('response', response)
         return response
     } catch (err) {
         console.log(err)

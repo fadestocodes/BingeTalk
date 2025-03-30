@@ -188,31 +188,24 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             const regex = new RegExp(mentionString, 'g'); // 'g' for global search
             text = text.replace(regex, `/${mention.pascalName}`);
         });
-        console.log('text',text)
         return text;
     }
 
     const handlePost = async () => {
-        console.log('MENTIONS', mentions)
         const formattedString = parseMentions(input, mentions)
 
         const validationResults = createDialogueSchema.safeParse( {content:input} )
-        console.log('validationreults', validationResults)
         if (!validationResults.success) {
             const errorObj = validationResults.error.format();
-            console.log('errorobj from validation', errorObj)
             setErrors(errorObj.content._errors[0] )
-            console.log(errorObj.content._errors[0] )
             return 
             } else {
               setErrors(null)
             }
 
-        console.log('content is ', formattedString);
         setUploadingPost(true);
         const mentionsForPrisma = await Promise.all(
             mentions.map(async (mention) => {
-                console.log('mentino being mapped',mention)
                 const type = mention.mediaType;
                 const tmdbId = mention.tmdbId;
                 const movieData = {
@@ -229,10 +222,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     posterPath : mention.posterPath
                 }
                 try {
-                    console.log('trying to get entity with', movieData)
                     const entity = await findOrCreateEntity(type, movieData, castData);
-                    console.log('entity is ', entity)
-                    console.log('mention type', mention.mentionType)
                     return {
                       userId,
                       tmdbId,
@@ -248,9 +238,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                 }
             })
           ).catch((err)=>{
-            console.log('promise all failed', err)
           })
-        console.log('mentino for prisma',mentionsForPrisma)
         // console.log('tag name', tags[0].name)
         const postData = {
             userId,
@@ -258,7 +246,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             mentions : mentionsForPrisma,
             tags
         }
-        console.log('trying to create dialogue')
         const newPost = await createDialogue(postData); 
 
         setMessage(newPost.message)

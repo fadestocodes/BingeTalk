@@ -43,7 +43,6 @@ import { MessagesSquare } from 'lucide-react-native'
 
       
         const handlePost = async () => {
-            console.log('input', inputs.threadTitle, inputs.threadCaption)
             if (searchQuery === '' || searchQuery === null || !threadObject) {
                 setTopicError(true)
                 return
@@ -52,18 +51,14 @@ import { MessagesSquare } from 'lucide-react-native'
             }
 
             const validationResults = createThreadSchema.safeParse( { ...inputs,  threadTitle: inputs.threadTitle } )
-            console.log('validationreults', validationResults)
             if (!validationResults.success) {
                 const errorObj = validationResults.error.format();
-                console.log('errorobj from validation', errorObj)
                 setErrors(errorObj.threadTitle._errors[0] )
-                console.log(errorObj.threadTitle._errors[0] )
                 return 
                 } else {
                   setErrors(null)
                 }
 
-                console.log('made it here')
 
             const threadData = {
                 userId : Number(ownerUser.id),

@@ -131,7 +131,6 @@ const MoviePage = () => {
             // setMentions(fetchedMentions);
           
         } catch (err) {
-            console.log('Problem fetching data', err);
             Alert.alert("Error", err.message);
         } finally {
             setLoading(false);
@@ -183,7 +182,6 @@ const MoviePage = () => {
       }
 
       const threadsPress = (id) => {
-        console.log('id', id)
         router.push(`/threads/${id}?movieId=${movieId}`)
     }
     
@@ -192,7 +190,6 @@ const MoviePage = () => {
     }
 
     const handleMentionPress = (item) => {
-        console.log('trying to routerpush with these params', item.dialogueId)
         router.push(`/dialogue/${item.dialogueId}`)
     }
 
@@ -205,7 +202,6 @@ const MoviePage = () => {
 
 
     const handleMarkWatched = async (  ) => {
-        console.log('alreadywatched?', alreadyWatched)
         if ( alreadyWatched ){
 
             setButtonPressed('unwatched')
@@ -213,7 +209,6 @@ const MoviePage = () => {
             setButtonPressed('watched')
         }
         const marked = await markMovieWatch({ movieId : DBmovieId, userId : ownerUser.id })
-        console.log('marked?', marked)
         if(marked){
             if ( alreadyWatched ){
                 setMessage('Removed from Watched')

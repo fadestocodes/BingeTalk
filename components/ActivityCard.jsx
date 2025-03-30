@@ -56,7 +56,6 @@ const ActivityCard = ( { activity, refetch } ) => {
       }
 
       const handleInteraction =  async (type, item) => {
-        console.log('typeinteraction', type, item)
         if (type === 'upvotes'){
             if (already.upvoted){
                 setInteractionCounts( prev => ({...prev, upvotes : prev.upvotes - 1}) )
@@ -81,7 +80,6 @@ const ActivityCard = ( { activity, refetch } ) => {
         }
 
         if (item.threads){
-            console.log('hello 1')
             let description;
             const truncatedTitle = item.threads.title.length > 50 ? item.threads.title.slice(0, 50) + '...' : item.threads.title
             if ( type === 'upvotes' ){
@@ -101,12 +99,9 @@ const ActivityCard = ( { activity, refetch } ) => {
                 recipientId : item.user.id,
                 description 
             }
-            console.log('data', data)
             const updatedThread = await threadInteraction(data)
-            console.log('response from thread interaction', updatedThread)
             // refetch();
         } else if (item.type === 'thread' || item.threadInteractions){
-            console.log('hello 2')
             const truncatedTitle = item.title.length > 50 ? item.title.slice(0, 50) + '...' : item.title
             let description
             if ( type === 'upvotes' ){
@@ -126,12 +121,9 @@ const ActivityCard = ( { activity, refetch } ) => {
                 recipientId : item.user.id,
                 description 
             }
-            console.log('data', data)
             const updatedThread = await threadInteraction(data)
-            console.log('response from thread interaction', updatedThread)
             // refetch();
         }else if (item.dialogue) {
-            console.log('hello 3')
             const truncatedCaption =  item.dialogue.content.length > 50 ? item.dialogue.content.slice(0, 50) + '...' : item.dialogue.content
             let description
             if ( type === 'upvotes' ){
@@ -148,12 +140,9 @@ const ActivityCard = ( { activity, refetch } ) => {
                 recipientId : item.user.id,
                 description 
             }
-            console.log('data', data)
             const updatedDialogue = await dialogueInteraction(data)
-            console.log('response from dialouge interaction', updatedDialogue)
             // refetch();
         } else if (item.type === 'dialogue' || item.dialogueInteractions){
-            console.log('hello 4')
             const truncatedCaption = item.content.length > 50 ? item.content.slice(0, 50) + '...' : item.content
             let description
             if ( type === 'upvotes' ){
@@ -170,9 +159,7 @@ const ActivityCard = ( { activity, refetch } ) => {
                 recipientId : item.user.id,
                 description 
             }
-            console.log('data', data)
             const updatedDialogue = await dialogueInteraction(data)
-            console.log('response from dialoge interaction', updatedDialogue)
             // refetch();
         }
     }
@@ -203,9 +190,7 @@ const ActivityCard = ( { activity, refetch } ) => {
           recipientId : item.user.id,
           description : `liked your activity "${item.description || ''}"`
         }
-        console.log('data to handle like', likeData)
         const likedActivity = await likeActivity(likeData)
-        console.log('liekdactivty', likedActivity)
         // setData()
         // setTrigger(prev => !prev)
         // setData(  )
@@ -226,7 +211,6 @@ const ActivityCard = ( { activity, refetch } ) => {
     }
     
     const handlePosterPress = (item) => {
-        console.log('item pressed',item)
         if (item?.movie){
             router.push(`(home)/movie/${item.movie.tmdbId}`)
         } else if (item?.threads?.movie){
@@ -264,7 +248,7 @@ const ActivityCard = ( { activity, refetch } ) => {
             <ListCard list={activity.list} activity={activity.description} fromHome={true}  refetch={refetch}/>
         </View>
     ): activity.type === 'thread' ?(
-        <TouchableOpacity onPress={()=>{console.log('itempressedfrom1',activity);handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
+        <TouchableOpacity onPress={()=>{handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
              <View className="flex-row justify-between gap-2">
                  <TouchableOpacity onPress={()=>handleUserPress(activity.user)} className='flex-row gap-2 justify-center items-center'>
                          <Image
@@ -320,7 +304,7 @@ const ActivityCard = ( { activity, refetch } ) => {
 
       <View className='flex-row  justify-between w-full items-end '>
           <View className='relative flex-row gap-4 justify-center items-center' >
-          <TouchableOpacity onPress={()=>{console.log("FROM HERE");handleInteraction('upvotes',activity )}} >
+          <TouchableOpacity onPress={()=>{handleInteraction('upvotes',activity )}} >
                   <View className='flex-row gap-1 justify-center items-center'>
                       <ThumbsUp size={16} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
                       <Text className='text-xs font-pbold text-mainGray' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{interactionCounts.upvotes}</Text>
@@ -355,7 +339,7 @@ const ActivityCard = ( { activity, refetch } ) => {
     </TouchableOpacity>
     ) : (
 
-    <TouchableOpacity disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }   onPress={()=>{console.log('itempressed from2',activity);handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
+    <TouchableOpacity disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }   onPress={()=>{handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
 
             
     {/* ---------------header */}

@@ -90,8 +90,6 @@ const TVPage = () => {
         try {
             const res = await GetTVById(tvId);  // Pass movieId here
             setMovie(res);
-            console.log("TV SET")
-            console.log('RES',res)
             if (res.videos.results){
                 try {
                     const trailer = res.videos.results.find(item => (item.type === 'Trailer' || item.type === 'Teaser') && item.site === 'YouTube').key ;
@@ -100,8 +98,6 @@ const TVPage = () => {
                     console.log(err)
                 }
             }
-            console.log("TRAILER SET")
-            console.log('tv id ', tvId)
             const credits = res.credits;
             if (credits) {
                 const castCredits = credits.cast;
@@ -122,7 +118,6 @@ const TVPage = () => {
                 posterPath  : res.poster_path,
                 backdropPath : res.backdrop_path
             }
-            console.log('TVDATA',tvData)
             
             const tvFromDB = await fetchTVFromDB({tvData})
             setThreads(tvFromDB.threads)
@@ -194,7 +189,6 @@ const TVPage = () => {
     }
 
     const threadsPress = (id) => {
-        console.log('id', id)
         router.push(`/threads/${id}?tvId=${tvId}`)
     }
 
@@ -214,7 +208,6 @@ const TVPage = () => {
         } else {
             setButtonPressed('watched')
         }
-        console.log('owneruserid', ownerUser.id)
         const marked = await markTVWatch({ tvId : DBtvId, userId : ownerUser.id })
         if (marked){
             if ( alreadyWatched ){
@@ -240,7 +233,6 @@ const TVPage = () => {
         } else {
             setButtonPressed('addToWatchlist')
         }
-        console.log('owneruserid', ownerUser.id)
         const addedToWatchlist = await markTVWatchlist({ tvId : DBtvId, userId : ownerUser.id })
         if (addedToWatchlist){
             if (alreadyInWatchlist){

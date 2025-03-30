@@ -5,7 +5,6 @@ export const fetchCastMentions = async (castId) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/person/mentions?castId=${castId}`)
         const response = await request.json();
-        console.log('response', response)
         return response
 
     } catch (err) {
@@ -16,7 +15,6 @@ export const fetchCastMentions = async (castId) => {
 
 export const useFetchCastMentions = ( castId ) => {
 
-    // const queryClient = useQueryClient(); // Get query client
 
     return useQuery({
         queryKey: ['tvMentions', castId],
@@ -30,7 +28,6 @@ export const useFetchCastMentions = ( castId ) => {
 }
 
 export const fetchPersonFromDB = async ( {castData} ) => {
-    console.log('castData', castData)
     try {
         const request = await fetch(`${nodeServer.currentIP}/person/find-or-create`, {
             method : 'POST',
@@ -56,7 +53,6 @@ export const addCastToFav = async (data) => {
             },
             body:JSON.stringify(data)
         })
-        console.log('resposne from fav cast crew', response)
         const result = await response.json()
         return result
     } catch(err){

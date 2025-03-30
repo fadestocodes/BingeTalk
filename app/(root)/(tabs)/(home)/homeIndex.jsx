@@ -83,7 +83,6 @@ const homeIndex = () => {
 
         const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
         const response = await request.json();
-        console.log("REFETCH RESPONSE", response)
         setData( response.items );
         setFeedCursor(response.nextFeedCursorServer)
         setThreadCursor(response.nextThreadCursorServer)

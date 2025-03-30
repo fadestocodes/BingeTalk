@@ -12,16 +12,13 @@ const step5 = () => {
     const { userDB, updateUserDB } = useUserDB();
     const length = 6;
     const { firstName, lastName, username, email, password } = useLocalSearchParams() // Get email from params
-    // console.log('username and password', username, password)
     const { isLoaded, signUp, setActive } = useSignUp()
     const [pendingVerification, setPendingVerification] = React.useState(false)
-    // const [code, setCode] = React.useState('')
     const [ errors, setErrors ] = useState({})
     const [ confirmPassword, setConfirmPassword ] = useState('')
     const router = useRouter();
     const [code, setCode] = useState(Array(length).fill(''));
     const [ userFromDB, setUserFromDB ] = useState(null)
-    // const [ finalCode, setFinalCode ] = useState(null)
     const verificationInputs = useRef([]);
 
     const handleInputs = (name, value) => {
@@ -138,7 +135,6 @@ const step5 = () => {
         // Trigger onComplete if filled
         if (newCode.every((char) => char !== '')) {
             // setFinalCode(Number(newCode.join('')))
-            console.log('new code is ', newCode)
             const finalCode = newCode.join('');
             onVerifyPress( finalCode );
             

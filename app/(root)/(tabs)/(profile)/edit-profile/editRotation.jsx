@@ -38,7 +38,6 @@ const editRotation = () => {
         ]);
     } )
   }, [])
-  console.log('listitems',listItems)
 
 
 
@@ -129,12 +128,10 @@ const editRotation = () => {
     };
 
   const handleContinue = async () => {
-      console.log('clicked')
       // const listItemObj = listItems.map((item) => (  item.item.movie ? item.item.movie : item.item.tv ? item.item.tv : item.item  ))
       const listItemObj = listItems.map((item) => 
         item.item.movie ?? item.item.tv ?? item.item
     );
-      console.log('listItemObj', listItemObj)
       // const rotationItems = listItems.map((listItem) => {
       //     return {
       //         userId,
@@ -157,7 +154,6 @@ const editRotation = () => {
 
         return rotationObj;
     });
-      console.log('rotationItems', rotationItems)
       try {
           // const params = {
           //     id : userId,
@@ -168,16 +164,13 @@ const editRotation = () => {
           // }
           // const response = await updateUser(params,user.emailAddresses[0].emailAddress )
           const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )
-          console.log('rotationResposne', rotationResponse)
           refetch();
           router.back()
           // updateUserDB(response)
-          console.log('complete')
           
       } catch (err) {
           console.log(err)
       } finally {
-          console.log('finally')
           // router.replace('/')
       }
 

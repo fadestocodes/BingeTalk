@@ -37,7 +37,6 @@ const RecommendedFromProfile = () => {
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
 
 
-  console.log('data', recommendationsSent)
   // const flattenData = data?.pages.flatMap((page) => page.items) || [];
   // console.log(flattenData)
 
@@ -50,7 +49,6 @@ const RecommendedFromProfile = () => {
 
     
     const handlePress = (item) => {
-        console.log('tmbdbId', item.tmdbId)
         if (item.movie){
           router.push(`/movie/${item.movie.tmdbId}`)
         }
@@ -73,26 +71,22 @@ const RecommendedFromProfile = () => {
 
     const handleRemove = async  (type, item) => {
         if (type === 'sent'){
-            console.log('item to remove', item)
             const data = {
                 recipientId : item.recipientId,
                 recommenderId : item.recommenderId,
                 movieId : item?.movie?.id || null,
                 tvId : item?.tv?.id || null
             }
-            console.log('data', data)
             const deletedRec = await deleteRecommendation(data)
             removeSentItems(item)
 
         } else if (type === 'received'){
-            console.log('item to remove', item)
             const data = {
                 recipientId : item.recipientId,
                 recommenderId : item.recommenderId,
                 movieId : item?.movie?.id || null,
                 tvId : item?.tv?.id || null
             }
-            console.log('data', data)
             const deletedRec = await deleteRecommendation(data)
             removeReceivedItems(item)
         }
@@ -172,7 +166,6 @@ const RecommendedFromProfile = () => {
                         onEndReachedThreshold={0.1}
                         // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
-                            console.log('RECOMMENDED ITEM',item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150 ,overflow:'hidden'}}>
                                     <Image
@@ -266,7 +259,6 @@ const RecommendedFromProfile = () => {
                         onEndReachedThreshold={0.1}
                         // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
-                            console.log('RECOMMENDED ITEM',item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden', width:'100%' }}>
                                     <Image

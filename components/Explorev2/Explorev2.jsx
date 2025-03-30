@@ -96,10 +96,8 @@ export const Explorev2 = ({ movies, setMovies, refetch }) => {
   const handleChoice = (value) => {
     // Add custom action based on like (-1) or reject (1)
     if (value === 1) {
-      console.log("Movie liked!");
       // you can put your action here, e.g., adding it to the watchlist
     } else if (value === -1) {
-      console.log("Movie rejected!");
       // handle rejection here
     }
   };

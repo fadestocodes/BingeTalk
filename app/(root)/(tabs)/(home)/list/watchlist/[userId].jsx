@@ -22,7 +22,6 @@ const watchlistItemsProfile = () => {
     const router = useRouter()
     
     const handlePress = (item) => {
-        console.log('tmbdbId', item.tmdbId)
         if (item.movie){
           router.push(`/movie/${item.movie.tmdbId}`)
         }
@@ -33,14 +32,12 @@ const watchlistItemsProfile = () => {
     
 
     const handleRemove = async  (item) => {
-        console.log('item to remove', item)
         if (item.movie){
             const data = {
                 movieId : item.movie.id,
                 userId : Number(userId)
             }
             const removedMovie = await markMovieWatchlist(data)
-            console.log('removed movie',removedMovie)
             removeItem(item)
 
         } else if(item.tv){
@@ -49,7 +46,6 @@ const watchlistItemsProfile = () => {
                 userId : Number(userId)
             }
             const removedMovie = await markTVWatchlist(data)
-            console.log('removed movie',removedMovie)
             removeItem(item)
         }
     }
@@ -105,7 +101,6 @@ const watchlistItemsProfile = () => {
                     onEndReachedThreshold={0.1}
                     // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                     renderItem={({item})=>{
-                        console.log('RECOMMENDED ITEM',item)
                         return (
                             <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden', width:'100%' }}>
                                 <Image

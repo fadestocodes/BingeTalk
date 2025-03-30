@@ -27,7 +27,6 @@ const browseHome = () => {
 
 
     const handleInteraction =  async (type, item) => {
-      console.log('type', type)
       const data = {
           type,
           listId : item.id,

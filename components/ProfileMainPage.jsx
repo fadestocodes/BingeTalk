@@ -59,12 +59,10 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         } else {
             setIsFollowing(false)
         }
-        console.log(isFollowing)
         }, [])
 
 
         useEffect(()=>{
-            console.log('postToRemove context changed')
             removeItem( postToRemove.id, postToRemove.postType )
         },[postToRemove])
        
@@ -78,7 +76,6 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             } 
         }
         const handleRotationPress = (item) => {
-            console.log(item)
             if (item.movie) {
                 router.push(`/movie/${item.movieTMDBId}`)
             } else if (item.tv) {
@@ -125,7 +122,6 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         }
     
         const handleLinkPress = async (url) => {
-            console.log('trying to open link', url)
             const supported = await Linking.canOpenURL(url);
             if (supported) {
                 await Linking.openURL(url); // Opens in default browser
@@ -300,19 +296,19 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             return (
                 <>
                 { item?.feedType === 'thread' ? (
-                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
+                    <TouchableOpacity key={item.id} onPress={()=>{handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
                         <ThreadCard  thread={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate } />
                     </TouchableOpacity>
 
                 ) : item.feedType === 'dialogue' ? (
 
-                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
+                    <TouchableOpacity key={item.id} onPress={()=>{handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
                         <DialogueCard  dialogue={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate }  />
                     </TouchableOpacity>
 
                 ) : item?.feedType === 'list' &&  (
                 
-                    <TouchableOpacity key={item.id} onPress={()=>{console.log('itempressed', item);handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
+                    <TouchableOpacity key={item.id} onPress={()=>{handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
                         <ListCard  list={item} refetch={refetch} isReposted={item.repostDate} pressDisabled={true} />
                     </TouchableOpacity>
                 )} 

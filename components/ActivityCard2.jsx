@@ -51,9 +51,7 @@ const ActivityCard2 = ({activity, fromHome}) => {
           recipientId : item.user.id,
           description : `liked your activity "${item.description || ''}"`
         }
-        console.log('data to handle like', likeData)
         const likedActivity = await likeActivity(likeData)
-        console.log('liekdactivty', likedActivity)
         // setData()
         // setTrigger(prev => !prev)
         // setData(  )
@@ -62,7 +60,6 @@ const ActivityCard2 = ({activity, fromHome}) => {
     } 
 
     const handlePosterPress = (item) => {
-        console.log('item pressed',item)
         if (item?.movie){
             router.push(`(home)/movie/${item.movie.tmdbId}`)
         } else if (item?.threads?.movie){
@@ -84,7 +81,6 @@ const ActivityCard2 = ({activity, fromHome}) => {
     const handleThreeDots = (item) => {
 
         const fromOwnPost = item.userId === ownerUser.id
-        console.log('fromownpost ', fromOwnPost)
 
         router.push({
             pathname: fromHome ? '(home)/postOptions' : '/postOptions',
@@ -95,7 +91,7 @@ const ActivityCard2 = ({activity, fromHome}) => {
 
 
   return (
-    <View disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }   onPress={()=>{console.log('itempressed from2',activity);handleCardPress(activity)}}  style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
+    <View disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }     style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
         <View   className='flex-row gap-2   items-center justify-between '>
 
             <TouchableOpacity onPress={()=>{handleUserPress(activity.user)}} className='flex-row gap-2 justify-center items-center'>

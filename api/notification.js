@@ -17,7 +17,6 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const getAllNotifs = async () => {
         if (!hasMore) return
         try {
-            console.log('hello')
             const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(prev => [...prev, ...response.items])
@@ -27,7 +26,6 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
             setIsFollowingIds(prev=> [...prev, ...isFollowingId])
             const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
-            // console.log('unreadIds', unreadIds)
             setUnreadIds( prev => [ ...prev, ...unreadIds ] )
 
             
@@ -52,7 +50,6 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
 
 export const getAllNotifs = async (recipientId, limit, fetchAll) => {
     try {
-        console.log('hello')
         const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
         const response = await notifications.json();
         return response
@@ -64,7 +61,6 @@ export const getAllNotifs = async (recipientId, limit, fetchAll) => {
 
 export const markNotifRead = async (data) => {
     try {
-        console.log('data', data)
         const request = await fetch(`${nodeServer.currentIP}/notifications/mark-read`, {
             method : 'POST',
             headers : {
@@ -73,7 +69,6 @@ export const markNotifRead = async (data) => {
             body : JSON.stringify({data})
         })
         const result = await request.json();
-        console.log('response', result)
         
     } catch (err){
         console.log('Error trying to mark notifications as read')
@@ -82,7 +77,6 @@ export const markNotifRead = async (data) => {
 
 export const postPushToken = async (token) => {
     try {
-        console.log('trying to sasve token', token)
         const response = await fetch(`${nodeServer.currentIP}/notifications/save-push-token`,{
             method : 'POST',
             headers:{
@@ -91,9 +85,7 @@ export const postPushToken = async (token) => {
             body : JSON.stringify(token)
         })
 
-        console.log('response', response)
         const result = await response.json()
-        console.log('results from sending push token', result)
         return result
     } catch (err){
         console.log(err)

@@ -60,7 +60,6 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     }
 
     const handleInteraction =  async (type, item) => {
-        console.log('type', type)
         if (type === 'upvotes'){
             setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
             if (already.upvoted){
@@ -110,7 +109,6 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     const handleThreeDots = (list) => {
 
         const fromOwnPost = list.userId === ownerUser.id
-        console.log('fromownpost ', fromOwnPost)
         router.push({
             pathname:'/postOptions',
             params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'LIST', postId : list.id, postUserId : list.userId}
@@ -119,7 +117,6 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
 
 
     const handleComment = (item) => {
-        console.log('userDB', ownerUser.id)
 
       
         if (fromHome){

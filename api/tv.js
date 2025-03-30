@@ -6,7 +6,6 @@ export const fetchTVMentions = async (tvId) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/tv/mentions?tvId=${tvId}`)
         const response = await request.json();
-        console.log('response', response)
         return response
 
     } catch (err) {
@@ -32,9 +31,7 @@ export const useFetchTVMentions = ( tvId ) => {
 
 
 export const fetchTVThreads = async ( data ) => {
-    console.log('data from fetch tv threads', data)
     const { tvId, tvObj } = data
-    console.log('TVOBJ', tvObj)
     try {
         const request = await fetch(`${nodeServer.currentIP}/tv/threads?tvId=${tvId}`, {
             method : 'POST',
@@ -44,7 +41,6 @@ export const fetchTVThreads = async ( data ) => {
             body : JSON.stringify( {tvObj} )
         })
         const response = await request.json();
-        console.log('thread response ', response)
         return response
     } catch (err) {
         console.log(err)
@@ -53,10 +49,6 @@ export const fetchTVThreads = async ( data ) => {
 
 
 export const useFetchTVThreads = ( data ) => {
-    console.log('DATAAAA',data)
-
-    // const queryClient = useQueryClient(); // Get query client
-
 
     return useQuery({
         queryKey: ['tvThreads', tvObj.id],
@@ -70,7 +62,6 @@ export const useFetchTVThreads = ( data ) => {
 }
 
 export const fetchTVFromDB = async ( {tvData} ) => {
-    console.log('tvdata', tvData)
     try {
         const request = await fetch(`${nodeServer.currentIP}/tv/find-or-create`, {
             method : 'POST',
@@ -133,7 +124,6 @@ export const useGetTVThreads = (  tvId ) => {
 
 
 export const markTVWatch =  async ( data ) => {
-    console.log('DATAAA', data)
     try {
         const request = await fetch(`${nodeServer.currentIP}/tv/update-hasWatched`, {
             method : 'POST',
@@ -143,7 +133,6 @@ export const markTVWatch =  async ( data ) => {
             body : JSON.stringify(data)
         })
         const response = await request.json();
-        console.log('response after marking tv as watched', response)
         return response
     } catch (err) {
         console.log(err)
@@ -151,7 +140,6 @@ export const markTVWatch =  async ( data ) => {
 }
 
 export const markTVInterested =  async ( data ) => {
-    console.log('DATAAA', data)
     try {
         const request = await fetch(`${nodeServer.currentIP}/tv/update-interested`, {
             method : 'POST',
@@ -161,7 +149,6 @@ export const markTVInterested =  async ( data ) => {
             body : JSON.stringify(data)
         })
         const response = await request.json();
-        console.log('response after marking tv as watched', response)
         return response
     } catch (err) {
         console.log(err)
@@ -169,7 +156,6 @@ export const markTVInterested =  async ( data ) => {
 }
 
 export const markTVCurrentlyWatching =  async ( data ) => {
-    console.log('DATAAA', data)
     try {
         const request = await fetch(`${nodeServer.currentIP}/tv/update-currentlyWatching`, {
             method : 'POST',
@@ -179,7 +165,6 @@ export const markTVCurrentlyWatching =  async ( data ) => {
             body : JSON.stringify(data)
         })
         const response = await request.json();
-        console.log('response after marking tv as watched', response)
         return response
     } catch (err) {
         console.log(err)
@@ -187,7 +172,6 @@ export const markTVCurrentlyWatching =  async ( data ) => {
 }
 
 export const markTVWatchlist =  async ( data ) => {
-    console.log('DATAAA', data)
     try {
         const request = await fetch(`${nodeServer.currentIP}/tv/update-watchlist`, {
             method : 'POST',
@@ -197,7 +181,6 @@ export const markTVWatchlist =  async ( data ) => {
             body : JSON.stringify(data)
         })
         const response = await request.json();
-        console.log('response after marking tv as watched', response)
         return response
     } catch (err) {
         console.log(err)
@@ -243,7 +226,6 @@ export const swipeTVInterested = async (data) => {
         })
         const response = await request.json()
 
-        console.log('swiped tv response', response)
         if (response.status === 201){
             return 
         }

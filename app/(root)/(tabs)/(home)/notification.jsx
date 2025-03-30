@@ -31,7 +31,6 @@ const Notification = () => {
     
 
   const handlePress = async (item) => {
-    console.log('notif', item)
    
     setUnreadIds( prev => prev.filter( i => i !== item.id ))
     const readNotif = await markNotifRead( item.id )
@@ -40,12 +39,10 @@ const Notification = () => {
     if (item.parentActivityId){
       router.push(`/activity/${item.parentActivityId}`)
     } else if (item.threads  && item.activityType !== 'COMMENT'){
-      console.log("came from here", item.threadId)
       router.push({
         pathname:`/threads/${item.threads.id}`,
       })
     } else if (item.dialogue && item.activityType !== 'COMMENT'){
-      console.log('2')
       router.push({
         pathname:`/dialogue/${item.dialogue.id}`,
       })
@@ -60,19 +57,16 @@ const Notification = () => {
     } else if (item.activityType === 'FOLLOW'){
       router.push(`/user/${item.userId}`)
     } else if (item.commentId && item.comment.dialogueId){
-      console.log('1')
       router.push({
         pathname:`/dialogue/${item.comment.dialogueId}`,
         params:{ replyCommentId: item.comment.id}
       })
     }else if (item.comment.parentComment && item.comment.parentComment.threadId){
-      console.log('hereeeee')
       router.push({
         pathname:`/threads/${item.comment.parentComment.threadId}`,
         params:{ replyCommentId: item.comment.parentComment.id}
       })
     } else if (item.comment.parentComment && item.comment.parentComment.dialogueId){
-      console.log('hellloo')
       router.push({
         pathname:`/dialogue/${item.comment.parentComment.dialogueId}`,
         params:{ replyCommentId: item.comment.parentComment.id}

@@ -5,7 +5,6 @@ import { formatDate } from '../lib/formatDate'
 import { Colors } from '../constants/Colors'
 
 const InfiniteScroll = ( { data, hasNextPage, isFetchingNextPage, fetchNextPage, isFetching } ) => {
-    console.log('data from infinite', data)
 
   if (isFetching){
     return(
@@ -32,7 +31,6 @@ const InfiniteScroll = ( { data, hasNextPage, isFetchingNextPage, fetchNextPage,
             onEndReachedThreshold={0.2}
             // ListFooterComponent={hasMore && loading ? <ActivityIndicator /> : <TouchableOpacity onPress={reachedEnd}><Text className='text-white'>Load more</Text></TouchableOpacity>}
             renderItem={({item})=>{
-                console.log('ITEM',item)
                 return (
                     <View className='gap-20'>
                 <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >

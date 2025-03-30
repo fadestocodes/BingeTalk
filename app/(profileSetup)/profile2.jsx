@@ -39,10 +39,8 @@ const profile2 = () => {
         if (text.length > 2) {
           try {
             const response = await searchTitles(text);
-            // console.log('response is ', response)
     
             setResults(response);
-            // console.log('results are ', response.results)
           } catch (err) {
             console.log(err)
           }
@@ -114,9 +112,7 @@ const profile2 = () => {
       };
 
     const handleContinue = async () => {
-        console.log('clicked')
         const listItemObj = listItems.map((item) => item.item)
-        console.log('listItemObj', listItemObj)
         const rotationItems = listItems.map((listItem) => {
             return {
                 userId,
@@ -124,7 +120,6 @@ const profile2 = () => {
                 ...(listItem.item.media_type === 'movie' ? { movieTMDBId: listItem.item.id } : { tvTMDBId: listItem.item.id })
             };
         })
-        console.log('rotationItems', rotationItems)
         try {
             const params = {
                 id : userId,
@@ -135,14 +130,11 @@ const profile2 = () => {
             }
             const response = await updateUser(params,user.emailAddresses[0].emailAddress )
             const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )
-            console.log('rotationResposne', rotationResponse)
             updateUserDB(response)
-            console.log('complete')
             
         } catch (err) {
             console.log(err)
         } finally {
-            console.log('finally')
             router.replace('/')
         }
 
@@ -204,7 +196,6 @@ const profile2 = () => {
                     keyExtractor={(item) => item.id}
                     contentContainerStyle = {{width:'auto', zIndex:40}}
                     renderItem={({item}) =>  {
-                        // console.log(item.title || item.name)
                         return (
                         <>
                             <View className=''>

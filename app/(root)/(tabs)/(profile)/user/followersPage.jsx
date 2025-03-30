@@ -7,7 +7,6 @@ import FollowersFollowingsList from '../../../../../components/Screens/Followers
 const followersPage = () => {
     const { userId, listType } = useLocalSearchParams()
     const [ whichList, setWhichList ] = useState(listType)
-    console.log('userId, listType', userId, listType)
 
 
 

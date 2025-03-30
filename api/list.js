@@ -278,7 +278,6 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     const [ commentsData, setCommentsData ] = useState([])
     const [ interactedCount, setInteractedCount ] = useState(null)
 
-    console.log('Initial render of component, listId:', listId);
 
     const fetchList = async () => {
         try {
@@ -291,7 +290,6 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
             const downvotedComments = ownerUser.commentInteractions.filter( i => {
                 return fetchedList.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
-            // setInteractedComments(interactedCommentsData)
             setInteractedComments(prev => ({
                 ...prev,
                 upvotes : upvotedComments,
@@ -301,16 +299,13 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
             setList(fetchedList)
 
             if (replyCommentId){
-                console.log("REORDERING", replyCommentId)
                 const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
-                console.log('specific comment', replyCommentFromNotif)
 
                 const reorderedCommentsData = [
                     ...fetchedList?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
                     ...fetchedList?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
                 ]
-                console.log('reorederd comments', reorderedCommentsData)
                 setCommentsData(reorderedCommentsData)
             }else {
                 setCommentsData(fetchedList.comments)
@@ -326,7 +321,6 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
 
     useEffect(()=>{
        
-        console.log('triggerd from useEffect')
             fetchList();
     }, [])
 

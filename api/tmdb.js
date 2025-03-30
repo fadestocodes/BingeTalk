@@ -20,7 +20,6 @@ export const GetNowPlaying = async () => {
     try {
       const response = await fetch (`${nodeServer.currentIP}/tmdb/movie/id?movieId=${movieId}`);
       const data = await response.json();
-      // console.log('data is ', data);
       return (data);
     } catch (err) {
       console.log(err.message)
@@ -31,7 +30,6 @@ export const GetNowPlaying = async () => {
     try {
       const response = await fetch (`${nodeServer.currentIP}/tmdb/tv/id?tvId=${tvId}`);
       const data = await response.json();
-      // console.log('data is ', data);
       return (data);
     } catch (err) {
       console.log(err.message)
@@ -215,11 +213,8 @@ export const useGetTrendingMoviesInfinite = () => {
     setLoading(true)
     try {
 
-      console.log('CURSOR', cursor)
       const response = await fetch(`${nodeServer.currentIP}/tmdb/trending/movie/infinite?cursor=${cursor}`)
       const data = await response.json()
-      // setData(prev => [...prev, data.items.results])
-      console.log(data)
       setData(prev => [...prev, ...data.items]);
 
       setCursor(data.nextCursor)
@@ -307,7 +302,6 @@ export const useGetUpcomingMovies = () => {
     try {
       const request = await fetch(`${nodeServer.currentIP}/tmdb/upcoming/movie`)
       const response = await request.json()
-      console.log('RESPONSE ', response)
       setUpcomingMovies(response)
     } catch (Err){
       console.log(Err)

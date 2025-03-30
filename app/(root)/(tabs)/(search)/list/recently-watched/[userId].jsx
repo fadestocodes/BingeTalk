@@ -18,7 +18,6 @@ const RecentlyWatchedProfile = () => {
    
     const { data : recentlyWatched, loading, refetch, hasMore, removeItem  } = useRecentlyWatched(userId)
     const { data : currentlyWatchingItems, loading:loadingCurrentlyWatching, refetch : refetchingCurrentlyWatching, hasMore:hasMoreCurrentlyWatching, removeItem : removeCurrentlyWatchingItem } = useGetCurrentlyWatchingItems(userId)
-        console.log('CURRENTLYWATCHING', currentlyWatchingItems)
     const [ tab, setTab ] = useState('watched')
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -30,7 +29,6 @@ const RecentlyWatchedProfile = () => {
 
     
     const handlePress = (item) => {
-        console.log('tmbdbId', item.tmdbId)
         if (item.movie){
           router.push(`/movie/${item.movie.tmdbId}`)
         }
@@ -50,14 +48,11 @@ const RecentlyWatchedProfile = () => {
                 movieId : item.movieId || null,
                 tvId : item.tvId || null
             }
-            console.log('data', data)
             if (type === 'recentlyWatched'){
                 const deleted = await deleteWatchedItem(data)
-                console.log('deleted'), deleted
                 removeItem(item);
             } else if (type === 'currentlyWatching'){
                 const deleted = await deleteCurrentlyWatching(data)
-                console.log('deleted'), deleted
                 removeCurrentlyWatchingItem(item);
             }
         }
@@ -126,7 +121,6 @@ const RecentlyWatchedProfile = () => {
                         onEndReachedThreshold={0.1}
                         // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
-                            console.log('RECOMMENDED ITEM',item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150,overflow:'hidden' }}>
                                     <Image
@@ -210,7 +204,6 @@ const RecentlyWatchedProfile = () => {
                         onEndReachedThreshold={0.1}
                         // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
-                            console.log('Current ITEM',item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150 , overflow:'hidden'}}>
                                   

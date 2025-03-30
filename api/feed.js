@@ -3,7 +3,6 @@ import React, {useState, useEffect} from 'react'
 
 
 export const useGetFeed = ( userId, limit ) => {
-    console.log('params,', userId, limit)
     const [ data, setData ] = useState([]);
     const [ loading, setLoading ] = useState(false);
     const [ hasMore, setHasMore ] = useState(true);
@@ -15,7 +14,6 @@ export const useGetFeed = ( userId, limit ) => {
             setLoading(true);
             const request = await fetch (`${nodeServer.currentIP}/feed?userId=${userId}&limit=${limit}&cursor=${cursor}`);
             const response = await request.json();
-            console.log('Feed response', response);
             setData( prev => [ ...prev, ...response.items ] );
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
@@ -36,7 +34,6 @@ export const useGetFeed = ( userId, limit ) => {
 
 
 export const useGetProfileFeed = (userId, limit) => {
-    // console.log("USERID", userId)
     const [ data, setData ] = useState([])
     const [ loading, setLoading  ] = useState(true)
     const [ hasMore, setHasMore] = useState({
@@ -55,7 +52,6 @@ export const useGetProfileFeed = (userId, limit) => {
         try {
             const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&threadCursor=${cursors.thread}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreThreads=${hasMore.thread}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
-            // console.log('HASMORES FROM RESULTS', results.hasMoreDialoguesServer, results.hasMoreThreadsServer, results.hasMoreListsServer,)
             setData(prev => ([...prev, ...results.items]))
             setHasMore({
                 dialogue : !!results.nextDialogueCursor,
@@ -72,7 +68,6 @@ export const useGetProfileFeed = (userId, limit) => {
         } catch (err){
             console.log(err)
         } finally {
-            // console.log("SET HASMORES", hasMore)
             setLoading(false)
         }
     }
@@ -82,9 +77,7 @@ export const useGetProfileFeed = (userId, limit) => {
     }, [userId])
 
     const removeItem = (idToRemove, removeType) => {
-        console.log('idToremove and remoeType', idToRemove, removeType)
         setData(prev => prev.filter( i => i.id !== Number(idToRemove) && i.feedType !== removeType  ) )
-        // console.log('new dataset', data)
     }
 
     const refetch = async () => {

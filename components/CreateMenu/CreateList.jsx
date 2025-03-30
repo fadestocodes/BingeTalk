@@ -45,12 +45,9 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
         }
 
         const validationResults = createListSchema.safeParse( { ...inputs,  listTitle: inputs.listTitle } )
-        console.log('validationreults', validationResults)
         if (!validationResults.success) {
             const errorObj = validationResults.error.format();
-            console.log('errorobj from validation', errorObj)
             setErrors(errorObj.listTitle._errors[0] )
-            console.log(errorObj.listTitle._errors[0] )
             return 
             } else {
               setErrors(null)
@@ -62,9 +59,7 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
             userId,
             listItems
         }
-        console.log('POST DATA', postData);
         const newList = await createList(postData)
-        console.log('NEW CREATED LIST', newList)
         setMessage(newList.message)
 
         setInputs(prev => ({

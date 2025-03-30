@@ -15,19 +15,7 @@ import { deleteRecommendation } from '../../../../../../api/recommendation'
 
 const RecommendedFromProfile = () => {
     const {userId} = useLocalSearchParams();
-    // const { data:recommendationsSent, refetch, isFetching  } = useFetchrecommendations(userId);
-    // const {
-    //     data,
-    //     fetchNextPage,
-    //     hasNextPage,
-    //     isFetching,
-    //     isFetchingNextPage,
-    //     isLoading,
-    //     refetch
-    // } = useFetchrecommendations(userId);
-    // console.log('DATAAA', data)
-
-    // const recommendationsSent = data?.pages.flatMap(page => page.items) || [];
+   
     const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(userId)
     const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(userId)
 
@@ -37,20 +25,11 @@ const RecommendedFromProfile = () => {
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
 
 
-  console.log('data', recommendationsSent)
-  // const flattenData = data?.pages.flatMap((page) => page.items) || [];
-  // console.log(flattenData)
-
-
-
-
-    // console.log('recently watched ARRAY', recommendationsSent)
     const router = useRouter()
 
 
     
     const handlePress = (item) => {
-        console.log('tmbdbId', item.tmdbId)
         if (item.movie){
           router.push(`/movie/${item.movie.tmdbId}`)
         }
@@ -60,11 +39,6 @@ const RecommendedFromProfile = () => {
     }
     
 
-        // const reachedEnd = () => {
-        //     if ( hasMore  && !loading  ) {
-        //         refetch();
-        //     }
-        // }
         const ITEM_HEIGHT = 50
 
         const handleOptions = () => {
@@ -73,57 +47,28 @@ const RecommendedFromProfile = () => {
 
     const handleRemove = async  (type, item) => {
         if (type === 'sent'){
-            console.log('item to remove', item)
             const data = {
                 recipientId : item.recipientId,
                 recommenderId : item.recommenderId,
                 movieId : item?.movie?.id || null,
                 tvId : item?.tv?.id || null
             }
-            console.log('data', data)
             const deletedRec = await deleteRecommendation(data)
             removeSentItems(item)
 
         } else if (type === 'received'){
-            console.log('item to remove', item)
             const data = {
                 recipientId : item.recipientId,
                 recommenderId : item.recommenderId,
                 movieId : item?.movie?.id || null,
                 tvId : item?.tv?.id || null
             }
-            console.log('data', data)
             const deletedRec = await deleteRecommendation(data)
             removeReceivedItems(item)
         }
-        // if (item.movie){
-        //     const data = {
-        //         movieId : item.movie.id,
-        //         userId : Number(userId)
-        //     }
-        //     const removedMovie = await markMovieWatchlist(data)
-        //     console.log('removed movie',removedMovie)
-        //     removeItem(item)
-
-        // } else if(item.tv){
-        //     const data = {
-        //         tvId : item.tv.id,
-        //         userId : Number(userId)
-        //     }
-        //     const removedMovie = await markTVWatchlist(data)
-        //     console.log('removed movie',removedMovie)
-        //     removeItem(item)
-        // }
+      
     }
 
-
-  // if (loading  ){
-  //   return(
-  //       <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>   
-  //    <RefreshControl tintColor={Colors.secondary}   />
-  //    </View>
-  //   )
-  // }
 
   return (
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
@@ -172,7 +117,6 @@ const RecommendedFromProfile = () => {
                         onEndReachedThreshold={0.1}
                         // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
-                            console.log('RECOMMENDED ITEM',item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150 ,overflow:'hidden'}}>
                                     <Image
@@ -266,7 +210,6 @@ const RecommendedFromProfile = () => {
                         onEndReachedThreshold={0.1}
                         // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
-                            console.log('RECOMMENDED ITEM',item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden', width:'100%' }}>
                                     <Image

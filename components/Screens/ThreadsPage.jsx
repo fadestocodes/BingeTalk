@@ -46,16 +46,13 @@ const ThreadsIdPage = () => {
 
 
     const { threadsId, tvId, movieId, castId }= useLocalSearchParams();
-    console.log(threadsId, tvId)
     // const queryClient = useQueryClient();    
 
     // const [ thread, setThread ] = useState(null)
 
     // const { data: thread , refetch, isFetching} = useFetchSingleThread(Number(threadsId))
-    console.log('thread iddddd', threadsId)
     const { thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useCustomFetchSingleThread(Number(threadsId), Number(replyCommentId))
 
-    console.log('thread from hook', thread)
 
 
     
@@ -115,9 +112,6 @@ const ThreadsIdPage = () => {
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log(input)
-
-        console.log('will try to reate comment')
        
 
         const commentData = {
@@ -130,25 +124,20 @@ const ThreadsIdPage = () => {
             recipientId : dialogue.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
-        console.log('commentData', commentData)
     
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment);
         setInput('');
         setReplyingTo(null)
         setReplying(false)
         inputRef.current?.blur();
-        console.log('calling refetch')
         // await refetch();
         // await getThread()
         refetch();
-        console.log('after refetch')
 
     }   
 
 
     const handleInteraction =  async (type, thread) => {
-        console.log('type', type)
         const data = {
             type,
             threadId : Number(threadsId),
@@ -160,19 +149,16 @@ const ThreadsIdPage = () => {
 
 
     const handleCommentInteraction =  async (type, comment, isAlready, parentId) => {
-        console.log('PARENT ID and commentId', parentId, comment.id)
 
         let description
 
         
-        console.log('interacted comments BEFORE', interactedComments)
         if ( type === 'upvotes' ){
             description = `upvoted your comment "${comment.content}"`
             if (isAlready){
              
                 setInteractedComments(prev => {
                     const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
-                    console.log('Updated upvotes:', updatedUpvotes);
                     return {
                         ...prev,
                         upvotes: updatedUpvotes
@@ -185,7 +171,6 @@ const ThreadsIdPage = () => {
                             if (c.id === parentId) {
                                 // Update the specific reply's upvotes or downvotes
                                 const updatedReplies = c.replies.map(reply => {
-                                    console.log("THE REPLIESSS", reply)
                                     // Check if the reply id matches the comment we want to update
                                     if (reply.id === comment.id) {
                                         return { ...reply, upvotes: reply.upvotes - 1 };  // Example: Decrement the upvotes
@@ -200,7 +185,6 @@ const ThreadsIdPage = () => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -210,13 +194,11 @@ const ThreadsIdPage = () => {
                                 ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
 
                 
-                console.log("HELLO FROM 1") 
             } else {
                 comment.interactionType = 'UPVOTE'
                 comment.commentId = comment.id
@@ -246,7 +228,6 @@ const ThreadsIdPage = () => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -256,7 +237,6 @@ const ThreadsIdPage = () => {
                                 ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
@@ -292,7 +272,6 @@ const ThreadsIdPage = () => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -302,7 +281,6 @@ const ThreadsIdPage = () => {
                                 ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
@@ -334,7 +312,6 @@ const ThreadsIdPage = () => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -344,14 +321,12 @@ const ThreadsIdPage = () => {
                                 ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
             }
         }
 
-        console.log('made it this far')
         const data = {
             type,
             commentId : comment.id,
@@ -360,10 +335,8 @@ const ThreadsIdPage = () => {
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
-        console.log('updatedcomment', updatedComment)
         // refetch();
         // refetchOwnerUser()
-        console.log('after interaction AFTER', interactedComments)
     }
 
     const handleUserPress = (item) => {

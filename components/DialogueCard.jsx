@@ -85,7 +85,6 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
 
     const handleComment = (dialogue) => {
-        console.log('userDB', userDB.id)
         if (fromHome){
 
             router.push({
@@ -102,7 +101,6 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
     }
 
     const handleInteraction =  async (type, dialogue) => {
-        console.log('type', type)
         setInteractions(prev => ({
             ...prev,
             [type]: {
@@ -112,7 +110,6 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
             }
           }))
      
-        console.log("ITEM", dialogue)
         let description
         if ( type === 'upvotes' ){
             description = `upvoted your dialogue "${dialogue.content}"`
@@ -124,7 +121,6 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
             description = `reposted your dialogue "${dialogue.content}"`
            
         }
-        console.log('made it this far')
         const data = {
             type,
             dialogueId : dialogue.id,
@@ -147,7 +143,6 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
     const handleThreeDots = (item) => {
 
         const fromOwnPost = item.userId === ownerUser.id
-        console.log('fromownpost ', fromOwnPost)
         router.push({
             pathname:'/postOptions',
             params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'DIALOGUE', postId : item.id, postUserId : item.userId}

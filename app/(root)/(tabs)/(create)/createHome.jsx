@@ -55,7 +55,6 @@ const CreateHome = () => {
             try {
                 const response = await searchAll(text);
                 setResults(response.results);
-                // console.log('results are ', results)
             } catch (err) {
                 console.log(err)
             }
@@ -201,7 +200,6 @@ const CreateHome = () => {
                     keyExtractor={(item) => item.id}
                     contentContainerStyle = {{width:'100%' , zIndex:45}}
                     renderItem={({item}) =>  {
-                        console.log(item.title || item.name)
                         return (
                         <View  >
 

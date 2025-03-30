@@ -37,8 +37,6 @@ const ratingModal = () => {
 
 
 
-    console.log('movie', movie)
-    console.log('tv', tv)
 
     const handleImageLoad = () => {
         setImageLoading(false)
@@ -54,15 +52,11 @@ const ratingModal = () => {
             rating : formattedRating
 
         }
-        console.log('data ', data)
         const postedRating = await createRating(data)
         // router.back()
-        console.log('postedRating', postedRating)
         if (postedRating){
-            console.log('hello')
             setMessage('Successfully posted rating')
         }
-        console.log('postedRating', postedRating)
         setTimeout(() => {
             router.back()
         }, 1700)

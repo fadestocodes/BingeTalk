@@ -15,38 +15,17 @@ import { deleteInterested } from '../../../../../../api/user'
 
 const interestedFromProfile = () => {
     const {userId} = useLocalSearchParams();
-    // const { data:interestedItems, refetch, isFetching  } = useFetchrecommendations(userId);
-    // const {
-    //     data,
-    //     fetchNextPage,
-    //     hasNextPage,
-    //     isFetching,
-    //     isFetchingNextPage,
-    //     isLoading,
-    //     refetch
-    // } = useFetchrecommendations(userId);
-    // console.log('DATAAA', data)
-
-    // const interestedItems = data?.pages.flatMap(page => page.items) || [];
+  
     const { data : interestedItems, loading, refetch, hasMore,removeItem  } = useGetInterestedItems(userId)
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
 
-  console.log('data', interestedItems)
-  // const flattenData = data?.pages.flatMap((page) => page.items) || [];
-  // console.log(flattenData)
-
-
-
-
-    // console.log('recently watched ARRAY', interestedItems)
     const router = useRouter()
 
 
     
     const handlePress = (item) => {
-        console.log('tmbdbId', item.tmdbId)
         if (item.movie){
           router.push(`/movie/${item.movie.tmdbId}`)
         }
@@ -55,12 +34,6 @@ const interestedFromProfile = () => {
         }
     }
     
-
-        // const reachedEnd = () => {
-        //     if ( hasMore  && !loading  ) {
-        //         refetch();
-        //     }
-        // }
         const ITEM_HEIGHT = 50
 
         const handleOptions = () => {
@@ -73,19 +46,11 @@ const interestedFromProfile = () => {
                 movieId : item.movieId || null,
                 tvId : item.tvId
             }
-            console.log('DATA to remove interested', data)
             const deletedItem = await deleteInterested(data)
             removeItem(item)
         }
 
 
-  // if (loading  ){
-  //   return(
-  //       <View style={{ backgroundColor:Colors.primary, width:'100%', height:'100%' }}>   
-  //    <RefreshControl tintColor={Colors.secondary}   />
-  //    </View>
-  //   )
-  // }
 
   return (
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
@@ -133,7 +98,6 @@ const interestedFromProfile = () => {
                     onEndReachedThreshold={0.1}
                     // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                     renderItem={({item})=>{
-                        console.log('RECOMMENDED ITEM',item)
                         return (
                             <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
                                 <Image

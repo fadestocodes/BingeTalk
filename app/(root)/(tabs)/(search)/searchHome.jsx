@@ -88,7 +88,6 @@ const SearchPage = () => {
         getTrendingTV(),
         getTrendingMovie()
       ]);
-      console.log('TRENDING TV DATA', trendingTVData)
       setFlatListCategories({
         trending : trendingData.results,
         upcomingMovies : upcomingData.results,

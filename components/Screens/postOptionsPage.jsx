@@ -50,7 +50,6 @@ const PostOptions = () => {
             data.commentId = Number(postId)
             deleted = await deleteComment(data)
         }
-        console.log('deleted?', deleted)
         setToastMessage(deleted.message)
 
         updatePostToRemove( {
@@ -79,7 +78,6 @@ const PostOptions = () => {
             listId : postType === 'COMMENT' ? Number(postId) : null,
             description : reportType
         } 
-        console.log('DATA', data)
         const reportedPost = await reportPost(data)
         setToastMessage(reportedPost.message)
         setIsStep1(true)

@@ -27,7 +27,6 @@ export const likeActivity = async (data) => {
             body: JSON.stringify(data)
         })
         const response = await request.json();
-        console.log('response', response)
         return response
     } catch (err){
         console.log(err)
@@ -38,15 +37,12 @@ export const likeActivity = async (data) => {
 export const useFetchActivityId = (id) => {
     const [ data, setData ] = useState(null)
     const [ loading, setLoading ] = useState(true);
-    console.log('ID IS', id)
 
     const fetchActivityId = async () => {
-        console.log('trying to fetch')
         try {   
             setLoading(true)
             const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
             const response = await request.json();
-            console.log("RESPONE", response)
             setData(response);
         } catch (err) {
             console.log(err)

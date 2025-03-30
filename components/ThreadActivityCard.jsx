@@ -18,7 +18,6 @@ const ThreadActivityCard = ( { thread, refetch } ) => {
     const { user : clerkUser } = useUser()
     const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
 
-    console.log('thread interactions', thread.threadInteractions)
 
     const alreadyUpvoted = thread.threadInteractions?.some( thread => thread.interactionType === 'UPVOTE' && thread.userId === ownerUser.id )
     const alreadyDownvoted = thread.threadInteractions?.some( thread => thread.interactionType === 'DOWNVOTE'  && thread.userId === ownerUser.id )
@@ -44,7 +43,6 @@ const ThreadActivityCard = ( { thread, refetch } ) => {
 
       const handleInteraction =  async (type, thread) => {
 
-        console.log('type', type)
         if (type === 'upvotes'){
             setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
             if (already.upvoted){

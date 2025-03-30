@@ -11,14 +11,12 @@ import { router } from 'expo-router'
 
 const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
 
-    console.log('WHICHLIST?', whichList)
     const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds } = useGetFollowersListInfinite( userId, limit )
     const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing, setIsFollowingIds : setIsFollowingIdsFromFollowing } = useGetFollowingListInfinite( userId, limit )
     const {user : clerkUser} = useUser()
     const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
 
     
-    console.log('followings', followings)
 
     const isOwnersPage = userId === ownerUser.id;
 
@@ -30,7 +28,6 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
         } else if (whichList === 'Following'){
             toUse = item.follower
         }
-        console.log('item', item)
         const data = {
         followerId : toUse.id,
         followingId : ownerUser.id
@@ -38,7 +35,6 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
         if (checkFollow) {
         const unfollowed = await unfollowUser(data)
-        console.log('unfollowed', unfollowed)
         if (whichList === 'Followers'){
             setIsFollowingIds(prev => prev.filter( i => i !== toUse.id))
         } else {
@@ -53,7 +49,6 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                 setIsFollowingIdsFromFollowing(prev => [...prev, toUse.id])
             }
         }
-        console.log('SETISFOLLOWINGIDS', isFollowingIds, isFollowingIdsFromFollowing)
         // await   refetch()
     }
 
@@ -98,7 +93,6 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                 keyExtractor={item => item.id}
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
-                    console.log('flatlistitem', item)
                     const checkFollowFromFollower = isFollowingIds.includes( item?.following?.id ) 
                     const checkFollowFromFollowing = isFollowingIdsFromFollowing.includes( item?.follower?.id ) 
                     return (

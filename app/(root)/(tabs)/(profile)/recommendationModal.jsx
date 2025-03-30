@@ -14,18 +14,15 @@ const recommendationModal = () => {
 
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-    // console.log('ownerusersender', ownerUser.recommendationSender)
     const [ mutuals, setMutuals ] = useState([])
     const [ loadingMutuals, setLoadingMutuals ] = useState(false)
     const [ message , setMessage ] = useState(null)
 
     const { DBmovieId, DBtvId, DBcastId } = useLocalSearchParams();
-    console.log('params', DBmovieId, DBtvId, DBcastId)
    
     const useGetAllMutuals = async () => {
         const mutuals = await getAllMutuals(ownerUser.id);
         setMutuals(mutuals)
-        console.log('mutuals', mutuals)
     }
 
     useEffect(()=>{
@@ -42,7 +39,6 @@ const recommendationModal = () => {
    
 
     const handleRecommendation = async (params) => {
-        console.log('PARAMS', params)
         let type
         if (DBmovieId){
             type = 'MOVIE'
@@ -60,7 +56,6 @@ const recommendationModal = () => {
             castId : Number(DBcastId) || null,
             tvId : Number(DBtvId) || null
         }
-        console.log('DATA', data)
         
         const newRec = await newRecommendation( data );
         if (newRec){
@@ -95,7 +90,6 @@ const recommendationModal = () => {
                 keyExtractor = { item => item.id }
                 contentContainerStyle={{ gap:20, paddingVertical:30 }}
                 renderItem = { ({item, index}) => {
-                    console.log('item and index',item, index)
                     const alreadySent = ownerUser.recommendationSender.some(element => {
                         if (element.recipientId !== item.following.id) return false;
                         if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);

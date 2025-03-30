@@ -40,7 +40,6 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
  
 
     const handleInteraction =  async (type, thread) => {
-        console.log('type', type)
         if (type === 'upvotes'){
             setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
             if (already.upvoted){
@@ -114,7 +113,6 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     const handleThreeDots = (thread) => {
 
         const fromOwnPost = thread.userId === ownerUser.id
-        console.log('fromownpost ', fromOwnPost)
         router.push({
             pathname:'/postOptions',
             params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'THREAD', postId : thread.id, postUserId : thread.userId}
@@ -132,7 +130,6 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
 
 
     const handleComment = (thread) => {
-        console.log('userDB', userDB.id)
         if (fromHome){
             router.push({
                 pathname:`(home)/commentsModal`,

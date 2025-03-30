@@ -15,14 +15,12 @@ const CommentsModalPage = () => {
 
     const router = useRouter();
     const {userId, dialogueId} = useLocalSearchParams();
-    console.log('params', userId, dialogueId)
     // const dialogueId = id;
     // const { userDB, updateUserDB } = useUserDB()
 
     const {data: dialogues, isFetching, refetch} = useFetchDialogues( Number(userId) );
     // console.log('dialogues here ', dialogues)
     const selectedDialogue = dialogues?.find( item => item.id === Number(dialogueId) )
-    console.log(selectedDialogue)
     const [ replyingTo, setReplyingTo ] = useState(null)
     const inputRef = useRef(null);  // Create a ref for the input
     const [ replying, setReplying ] = useState(false)
@@ -61,10 +59,6 @@ const CommentsModalPage = () => {
       });
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log(input)
-
-        console.log('will try to reate comment')
-        console.log('selcted dialogue', selectedDialogue)
         const commentData = {
             userId : Number(userId),
             dialogueId : Number(dialogueId),
@@ -75,10 +69,8 @@ const CommentsModalPage = () => {
             recipientId : selectedDialogue.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
-        console.log('commentData', commentData)
     
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment);
         setInput('');
         setReplyingTo(null)
         setReplying(false)

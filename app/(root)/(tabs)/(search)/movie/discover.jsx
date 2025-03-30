@@ -16,7 +16,6 @@ const MovieIndex = () => {
   const [ selected, setSelected ] = useState('Trending')
   const { trendingMovies, refetch } = useGetTrendingMoviesTest()
   const { upcomingMovies, refetch: refetchUpcoming } = useGetUpcomingMovies()
-  console.log('upcomingmovies', upcomingMovies)
   
   const posterURL = 'https://image.tmdb.org/t/p/w780';
   const posterURLlow = 'https://image.tmdb.org/t/p/w342';
@@ -25,7 +24,6 @@ const MovieIndex = () => {
 
     // console.log('trendingmovies', trendingMovies)
   const handlePress = (item) => {
-    console.log('tmbdbId', item.tmdbId)
     if (item.movie){
       router.push(`/movie/${item.movie.tmdbId}`)
     } else  {
@@ -71,7 +69,6 @@ const MovieIndex = () => {
           // windowSize={10}
           // removeClippedSubviews={true}
           renderItem={({item}) => {
-            console.log('item is', item.id, item.title)
             
             return (
             <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>

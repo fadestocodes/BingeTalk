@@ -22,7 +22,6 @@ import DialogueCard from '../DialogueCard'
 const DialogueScreen = () => {
 
     const { replyCommentId } = useLocalSearchParams();
-    console.log("REPLY COMMENT ID ", replyCommentId)
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  // Create a ref for the input
     const [ replyingTo, setReplyingTo ] = useState(null)
@@ -36,7 +35,6 @@ const DialogueScreen = () => {
 
     const { dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
 
-    console.log('flatlist data', commentsData)
 
 
     const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
@@ -53,7 +51,6 @@ const DialogueScreen = () => {
 
 
     const handleReply= (item, parentId) => {
-        console.log('COMMENTINTERACTIONS', interactedComments)
         inputRef.current?.focus();  // Focus the input
         setReplying(true);
         setInput(`@${item.user.username} `)
@@ -84,9 +81,7 @@ const DialogueScreen = () => {
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log(input)
 
-        console.log('will try to reate comment')
         const commentData = {
             userId : Number(userId),
             dialogueId : Number(dialogueId),
@@ -97,37 +92,30 @@ const DialogueScreen = () => {
             recipientId : dialogue.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
-        console.log('commentData', commentData)
     
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment);
         setInput('');
         setReplyingTo(null)
         setReplying(false)
         inputRef.current?.blur();
-        console.log('calling refetch')
         // await refetch();
         // await getThread()
         refetch();
-        console.log('after refetch')
 
     }   
 
 
     const handleCommentInteraction =  async (type, comment, isAlready, parentId) => {
-        console.log('PARENT ID and commentId', parentId, comment.id)
 
         let description
 
         
-        console.log('interacted comments BEFORE', interactedComments)
         if ( type === 'upvotes' ){
             description = `upvoted your comment "${comment.content}"`
             if (isAlready){
              
                 setInteractedComments(prev => {
                     const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
-                    console.log('Updated upvotes:', updatedUpvotes);
                     return {
                         ...prev,
                         upvotes: updatedUpvotes
@@ -140,7 +128,6 @@ const DialogueScreen = () => {
                             if (c.id === parentId) {
                                 // Update the specific reply's upvotes or downvotes
                                 const updatedReplies = c.replies.map(reply => {
-                                    console.log("THE REPLIESSS", reply)
                                     // Check if the reply id matches the comment we want to update
                                     if (reply.id === comment.id) {
                                         return { ...reply, upvotes: reply.upvotes - 1 };  // Example: Decrement the upvotes
@@ -155,7 +142,6 @@ const DialogueScreen = () => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -165,13 +151,11 @@ const DialogueScreen = () => {
                                 ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
 
                 
-                console.log("HELLO FROM 1") 
             } else {
                 comment.interactionType = 'UPVOTE'
                 comment.commentId = comment.id
@@ -201,7 +185,6 @@ const DialogueScreen = () => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -211,7 +194,6 @@ const DialogueScreen = () => {
                                 ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
@@ -247,7 +229,6 @@ const DialogueScreen = () => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -257,7 +238,6 @@ const DialogueScreen = () => {
                                 ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
@@ -289,7 +269,6 @@ const DialogueScreen = () => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -299,13 +278,11 @@ const DialogueScreen = () => {
                                 ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
             }
         }
-        console.log('made it this far')
         const data = {
             type,
             commentId : comment.id,
@@ -314,10 +291,8 @@ const DialogueScreen = () => {
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
-        console.log('updatedcomment', updatedComment)
         // refetch();
         // refetchOwnerUser()
-        console.log('after interaction AFTER', interactedComments)
     }
 
     const handleUserPress = (item) => {

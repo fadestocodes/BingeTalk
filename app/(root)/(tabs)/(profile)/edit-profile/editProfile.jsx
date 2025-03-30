@@ -82,13 +82,10 @@ const editProfile = () => {
         }
 
         
-        console.log('biolink', inputs.bioLink)
         const normalizedURL = new URL(bioLink).toString();
-        console.log('Normalized URL:', normalizedURL);
 
 
 
-        console.log('image', image)
         const params = {
             id : fetchedUser.id,
             firstName : inputs.firstName,
@@ -98,7 +95,6 @@ const editProfile = () => {
             profilePic : image
         }
         const updatedUser = await updateUser( params , fetchedUser.emailAddress);
-        console.log('updatedUser', updatedUser)
         refetch();
         router.back();
 

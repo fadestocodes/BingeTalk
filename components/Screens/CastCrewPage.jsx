@@ -27,7 +27,6 @@ const CastIdPage = () => {
 
     const params = useLocalSearchParams();
     const castId = params.castId;
-    console.log(castId)
     const router = useRouter();
     const { user:clerkUser } = useUser()
     const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
@@ -65,7 +64,6 @@ const CastIdPage = () => {
                   const credits = fetchedPerson.combined_credits[key];
                   return (key === 'cast' && credits.length > 0) || (key === 'crew' && credits.length > 0)});
           
-                console.log('Dropdown options:', dropdownOptions);
                 setCreditOptions(dropdownOptions);
           
                 // Safely set the initial value for whichCredits
@@ -92,11 +90,9 @@ const CastIdPage = () => {
                 const castFromDB = await fetchPersonFromDB({castData})
                 setDBcast(castFromDB)
                 const alreadyFavCheck = ownerUser.favCastCrew.some( item => item.castId === castFromDB.id )
-                console.log("FAVCASTCREW", ownerUser.favCastCrew)
                 setAlreadyFav(alreadyFavCheck)
                 // queryClient.setQueryData(['cast', castId]);
     
-                console.log('castfromDB', castFromDB)
                 setThreads( castFromDB.threads );
                 setMentions(castFromDB.mentions)
                 // queryClient.setQueryData(['threads', castId], castFromDB.threads);
@@ -106,7 +102,6 @@ const CastIdPage = () => {
             // setMentions(fetchedMentions);
           
         } catch (err) {
-            console.log('Problem fetching data', err);
             Alert.alert("Error", err.message);
         } finally {
             setLoading(false);
@@ -131,7 +126,6 @@ const CastIdPage = () => {
       }
       const newFav = await addCastToFav(data);
       setAlreadyFav(prev => !prev)
-      console.log('newFAv', newFav)
       setToastMessage(newFav.message)
       // fetchData()
     }
@@ -145,7 +139,6 @@ const CastIdPage = () => {
 
 
     const backPress = () => {
-        console.log('pressed')
         router.back()
     }
     
@@ -161,12 +154,10 @@ const CastIdPage = () => {
       }
 
       const threadsPress = (id) => {
-        console.log('id', id)
         router.push(`/threads/${id}?castId=${castId}`)
     }
 
     const handleMentionPress = (item) => {
-        console.log('trying to routerpush with these params', item.dialogueId)
         router.push(`/dialogue/${item.dialogueId}`)
     }
 

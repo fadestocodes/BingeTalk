@@ -1,8 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 
 export const uploadToS3 = async ( fileUri, fileName, fileType ) => {
-    // console.log('filename is ', fileName)
-    // console.log('filetype is ', fileType)
   
     try {
       const response = await fetch (`${nodeServer.currentIP}/aws/s3-upload`, {

@@ -89,7 +89,6 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 
 const UserIDPage = () => {
-  console.log('hello')
   const { user:clerkUser } = useUser();
 
   const { data:user, refetch: refetchUser, isFetching: isFetchingUser } = useFetchOwnerUser( {email : clerkUser.emailAddresses[0].emailAddress} )

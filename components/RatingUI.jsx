@@ -45,7 +45,6 @@ const RatingUI = ({ setRating, rating , handlePost, prevRating}) => {
       // Correct the calculation for rating scale (5 to 10)
       const newRating = 4 + (offset.value / MAX_VALUE) * 6; // Scale to 5-10
       const roundedRating = parseFloat(newRating.toFixed(1)); // Round to 1 decimal place
-      console.log('rounded rating',roundedRating)
   
       // Only update the state if the rating has changed
       if (roundedRating !== rating) {

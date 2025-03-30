@@ -42,7 +42,6 @@ useEffect(() => {
    
     try {
       const { status } = await Notifications.requestPermissionsAsync();
-      console.log('status', status); 
 
       if (status !== 'granted') {
         alert('You must enable push notifications!');
@@ -53,10 +52,8 @@ useEffect(() => {
       const token = await Notifications.getExpoPushTokenAsync({
         'projectId': projectId,
       });
-      console.log('Expo Push Token', token.data);  // Log the token
       setExpoPushToken(token.data); // Store the token
       const owner = await fetchUser({email : clerkUser.emailAddresses[0].emailAddress})
-      console.log('owner id', owner.id)
 
 
 
@@ -66,9 +63,7 @@ useEffect(() => {
         deviceType : Platform.OS
 
       }
-      console.log('params', params)
       const sentToken = await postPushToken(params);
-      console.log('sent token', sentToken)
 
     } catch (error) {
       console.error('Error getting push token', error);  // Log any errors
@@ -82,13 +77,11 @@ useEffect(() => {
   // Handle notifications when the app is in the foreground
   useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(notification => {
-      console.log('Notification received in foreground:', notification);
       Alert.alert('Foreground Notification', notification.request.content.body);
     });
 
     // Handle notification response when clicked (background)
     const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Notification response received:', response);
       Alert.alert('Notification Clicked', response.notification.request.content.body);
     });
 

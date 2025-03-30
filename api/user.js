@@ -154,7 +154,6 @@ export const followUser = async ( followData ) => {
             body : JSON.stringify( followData )
         })
         const response = await request.json();
-        console.log(response);
         return response
     } catch (err){
         console.log(err)
@@ -267,7 +266,6 @@ export const useFetchRecentlyWatched = (userId) => {
         }, [ ]);
         
         const refetch =  async () => {
-            // console.log('triggered refetch()', new Error().stack);
             setCursor(null)
             setHasMore(true)
             await getWatchlistItems(true)
@@ -342,7 +340,6 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            console.log('next CURSOR', result.nextCursor)
             setData(reset ? result.items : prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
@@ -358,7 +355,6 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
     }, [ userId]);
 
     const refetch =  async () => {
-        // console.log('triggered refetch()', new Error().stack);
         setCursor(null)
         setHasMore(true)
         await getRecommendationsSent(true)
@@ -384,15 +380,11 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
         if ( !hasMore && !reset  ) return
 
         setLoading(true)
-        // if (cursor){
-        //     set
-        // }
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
             setData(reset ? result.items : prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
-            // cursorRef.current = result.nextCursor;
             setHasMore( !!result.nextCursor )
         } catch (err) {
             console.log(err)
@@ -537,7 +529,6 @@ export const deleteWatchedItem = async (data) => {
             body : JSON.stringify(data)
         })
         const response = await request.json()
-        console.log('response',response)
         return response
     } catch (err){
         console.log(err)
@@ -554,7 +545,6 @@ export const deleteCurrentlyWatching = async (data) => {
             body : JSON.stringify(data)
         })
         const response = await request.json()
-        console.log('response',response)
         return response
     } catch (err){
         console.log(err)
@@ -571,7 +561,6 @@ export const deleteInterested = async (data ) => {
             body : JSON.stringify(data)
         })
         const response = await request.json()
-        console.log(response)
         return response
     } catch (err) {
         console.log(err)
@@ -599,7 +588,6 @@ export const useGetFollowersListInfinite = (userId, limit) => {
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
           
-            console.log(results.items)
             const isFollowingId = results.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.following.id ) ).map( element => element.following.id );
             setIsFollowingIds(prev=> [...prev, ...isFollowingId])
 
@@ -652,15 +640,10 @@ export const useGetFollowingListInfinite = (userId, limit) => {
         try {
             const response = await fetch(`${nodeServer.currentIP}/user/followings?userId=${userId}&limit=${limit}&cursor=${cursor}`)
             const results = await response.json()
-            results.items.forEach((item) => {
-                console.log('result from followings', item.follower.id)
-            })
-            console.log('results from getting followings')
             setData(results.items)
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
            
-            console.log('owner users following', ownerUser.following)
             const isFollowingId = results.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.follower.id ) ).map( element => element.follower.id );
             setIsFollowingIds(isFollowingId)
 

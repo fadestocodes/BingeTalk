@@ -78,7 +78,6 @@ useEffect(() => {
 
 
   const handleSwipeUp = (item) => {
-    console.log('item ', item)
     setSavedItem(item); // Save the swiped item
    
     setList((prevStack) => prevStack.slice(1)); // Remove it from stack
@@ -114,10 +113,8 @@ useEffect(() => {
 
   const handleLike = async () => {
     
-    console.log('swiped right', list[0].title)
     const item = list[0]
     if (item.media_type === 'movie'){
-      console.log('hello from item.media_type = movie')
       data = {
         tmdbObj : {
           id : item.id,
@@ -129,22 +126,17 @@ useEffect(() => {
         userId : ownerUser.id,
         fromTMDBList : true
       } 
-      console.log('data', data)
       await swipeMovieInterested(data)
 
     } else if ( item.movieId){
-      console.log('hello from item.movieId')
       data = {
         userId : ownerUser.id,
         movieId : item.movieId
       }
-      console.log('data', data)
 
       await swipeMovieInterested(data)
 
     } else if (item.media_type === 'tv'){
-      console.log('hello from item.media_type = tv')
-      console.log('tv obj ', item)
       data = {
         tmdbObj : {
           id : item.id,
@@ -156,29 +148,24 @@ useEffect(() => {
         userId : ownerUser.id,
         fromTMDBList : true
       } 
-      console.log('data', data)
 
       await swipeTVInterested(data)
     } else if (item.tvId){
-      console.log('hello from item.tvId')
       data = {
         userId : ownerUser.id,
         tvId : item.tvId
       }
-      console.log('data', data)
 
       await swipeTVInterested(data)
 
     }
     setSwipeMessage("Added to Watchlist");
     setToastIcon(<ListChecks size={30} color={Colors.secondary} />); 
-    console.log("Liked:", list[0].title);
   };
 
   const handleReject = () => {
     setSwipeMessage("Next");
     setToastIcon(<FastForward size={30} color={Colors.secondary} />); 
-    console.log("Rejected:", list[0]?.movie?.title || list[0]?.tv?.title || list[0]?.title || list[0]?.name);
   };
 
   const handleAnimationEnd = () => {
@@ -203,9 +190,7 @@ useEffect(() => {
       description : `commented on your list "${list.title}"`,
       recipientId : creator.id
     }
-    console.log('data for comment', data)
     const newComment = await createComment(data)
-    console.log('new comment', newComment);
     setToastIcon(<MessageIcon size={30} color={Colors.secondary} />)
     setMessage('Posted new comment')
     setComment('')
@@ -217,7 +202,6 @@ useEffect(() => {
   }
 
   const handleInteraction =  async (type, listObj) => {
-    console.log('type', type)
     if (type === 'upvotes'){
         setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
         if (already.upvoted){
@@ -248,9 +232,7 @@ useEffect(() => {
         description,
         recipientId :creator.id
     }
-    console.log('data', data)
       const updatedList = await listInteraction(data)
-      console.log('updated list', updatedList)
       }
     }
   }

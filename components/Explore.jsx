@@ -32,8 +32,6 @@ const ExploreComponent = ({dataList}) => {
     }
 
     const handleDetails = (item) => {
-        console.log('item type', item.media_type)
-        console.log(item.id)
         if (item.media_type === 'movie') {
             router.push(`/movie/${item.id}`)
         }  

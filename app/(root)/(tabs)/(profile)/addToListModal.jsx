@@ -68,7 +68,6 @@ const addToListModal = () => {
         setUploadingNewList(true)
         let formattedTitle = {}
         if (DBtvId){
-            console.log('theres a dbtvid')
             tvObj.media_type = 'tv';
             formattedTitle.item = {
               id : tvObj.id,
@@ -80,7 +79,6 @@ const addToListModal = () => {
             }
           
         } else if (DBMovieId){
-            console.log('theres a dbmovieid')
             movieObj.media_type = 'movie';
             formattedTitle.item = {
               id : movieObj.id,
@@ -98,10 +96,8 @@ const addToListModal = () => {
             userId :ownerUser.id ,
             listItems : [formattedTitle]
         }
-        console.log('list data', listData)
         const response = await createList(listData)
         setUploadingNewList(false)
-        console.log('response', response)
         setInputs({
             title:'',
             description:''
@@ -115,7 +111,6 @@ const addToListModal = () => {
 
     const handleSelectList = async (item) => {
 
-        console.log('adding to selected list')
         let listIdType, mediaIdType, mediaId
         if (DBtvId){
             listIdType = 'tvId';
@@ -133,10 +128,8 @@ const addToListModal = () => {
             mediaIdType ,
             mediaId
         }
-        console.log('DATA', data)
         try {
             const updatedList = await addToList(data)
-            console.log('updated list', updatedList)
         } catch (err) {
             console.log(err)
         } finally {
@@ -151,7 +144,6 @@ const addToListModal = () => {
         // setInputHeight(y + height)
 
             inputRef.current.measureInWindow((x, y, width, height) => {
-              console.log('Input Position: ', y, 'Height:', height);
               setInputHeight(y + height); // Set the height as the combined value of y and height
 
             });

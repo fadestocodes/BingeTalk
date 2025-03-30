@@ -16,7 +16,6 @@ const moreInteractions = () => {
     const { DBtvId, DBMovieId, tmdbId } = useLocalSearchParams();
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress });
-    console.log(ownerUser.interestedItems)
     const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
     const alreadyWatching = ownerUser.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
     const [ message, setMessage ] = useState(null)
@@ -24,7 +23,6 @@ const moreInteractions = () => {
 
 
     const handleInterested = async (  ) => {
-        console.log('owneruserid', ownerUser.id)
         if (DBtvId){
             await markTVInterested({ tvId : DBtvId, userId : ownerUser.id })
         } else if (DBMovieId){

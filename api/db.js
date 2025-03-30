@@ -14,7 +14,6 @@ export const findOrCreateEntity = async (type, movieData, castData) => {
                 body:JSON.stringify({movieData})
             })
             const response = await entity.json();
-            console.log('response', response);
             return response
         } catch (err) {
             console.log(err)
@@ -29,7 +28,6 @@ export const findOrCreateEntity = async (type, movieData, castData) => {
                 body:JSON.stringify({tvData : movieData})
             })
             const response = await entity.json();
-            console.log('response', response);
             return response
         } catch (err) {
             console.log(err)
@@ -44,7 +42,6 @@ export const findOrCreateEntity = async (type, movieData, castData) => {
                 body:JSON.stringify({castData})
             })
             const response = await entity.json();
-            console.log('response', response);
             return response
         } catch (err) {
             console.log(err)

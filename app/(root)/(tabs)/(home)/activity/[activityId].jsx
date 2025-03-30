@@ -7,9 +7,7 @@ import { useFetchActivityId } from '../../../../../api/activity'
 const ActivityPage = () => {
 
     const { activityId } = useLocalSearchParams();
-    console.log('ACTIVITY ID ', activityId)
     const {  data:activity , refetch, loading } = useFetchActivityId(activityId)
-    console.log('ACTIVITY FETHED', activity)
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>

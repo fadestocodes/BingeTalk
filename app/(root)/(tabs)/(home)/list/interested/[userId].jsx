@@ -33,20 +33,11 @@ const interestedFromProfile = () => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
 
-  console.log('data', interestedItems)
-  // const flattenData = data?.pages.flatMap((page) => page.items) || [];
-  // console.log(flattenData)
-
-
-
-
-    // console.log('recently watched ARRAY', interestedItems)
     const router = useRouter()
 
 
     
     const handlePress = (item) => {
-        console.log('tmbdbId', item.tmdbId)
         if (item.movie){
           router.push(`/movie/${item.movie.tmdbId}`)
         }
@@ -56,11 +47,6 @@ const interestedFromProfile = () => {
     }
     
 
-        // const reachedEnd = () => {
-        //     if ( hasMore  && !loading  ) {
-        //         refetch();
-        //     }
-        // }
         const ITEM_HEIGHT = 50
 
         const handleOptions = () => {
@@ -73,7 +59,6 @@ const interestedFromProfile = () => {
                 movieId : item.movieId || null,
                 tvId : item.tvId
             }
-            console.log('DATA to remove interested', data)
             const deletedItem = await deleteInterested(data)
             removeItem(item)
         }
@@ -133,7 +118,6 @@ const interestedFromProfile = () => {
                     onEndReachedThreshold={0.1}
                     // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                     renderItem={({item})=>{
-                        console.log('RECOMMENDED ITEM',item)
                         return (
                             <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
                                 <Image

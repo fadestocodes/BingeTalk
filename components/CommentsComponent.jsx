@@ -14,7 +14,6 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, use
 import { createComment, commentInteraction } from '../api/comments'
 
 const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
-    console.log("LISTID ", listId)
 
 
 
@@ -61,7 +60,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
 
 
     const handleReply= (item, parentId) => {
-        console.log('COMMENTINTERACTIONS', interactedComments)
         inputRef.current?.focus();  // Focus the input
         setReplying(true);
         setInput(`@${item.user.username} `)
@@ -94,9 +92,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log(input)
 
-        console.log('will try to reate comment')
         const commentData = {
             userId : Number(userId),
             dialogueId : Number(dialogueId) || null,
@@ -109,37 +105,30 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
             recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list && list.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
-        console.log('commentData', commentData)
     
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment);
         setInput('');
         setReplyingTo(null)
         setReplying(false)
         inputRef.current?.blur();
-        console.log('calling refetch')
         // await refetch();
         // await getThread()
         refetch();
-        console.log('after refetch')
 
     }   
 
 
     const handleCommentInteraction =  async (type, comment, isAlready, parentId) => {
-        console.log('PARENT ID and commentId', parentId, comment.id)
 
         let description
 
         
-        console.log('interacted comments BEFORE', interactedComments)
         if ( type === 'upvotes' ){
             description = `upvoted your comment "${comment.content}"`
             if (isAlready){
              
                 setInteractedComments(prev => {
                     const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
-                    console.log('Updated upvotes:', updatedUpvotes);
                     return {
                         ...prev,
                         upvotes: updatedUpvotes
@@ -152,7 +141,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                             if (c.id === parentId) {
                                 // Update the specific reply's upvotes or downvotes
                                 const updatedReplies = c.replies.map(reply => {
-                                    console.log("THE REPLIESSS", reply)
                                     // Check if the reply id matches the comment we want to update
                                     if (reply.id === comment.id) {
                                         return { ...reply, upvotes: reply.upvotes - 1 };  // Example: Decrement the upvotes
@@ -167,7 +155,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -177,13 +164,11 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                                 ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
 
                 
-                console.log("HELLO FROM 1") 
             } else {
                 comment.interactionType = 'UPVOTE'
                 comment.commentId = comment.id
@@ -213,7 +198,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -223,7 +207,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                                 ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
@@ -259,7 +242,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -269,7 +251,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                                 ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
@@ -301,7 +282,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                             return c; // Return the comment unchanged if it's not the one we want
                         });
                 
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     }); 
                 } else {
@@ -311,13 +291,11 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                                 ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
                                 : i  // Leave other comments unchanged
                         );
-                        console.log('Updated comments data:', updatedComments);
                         return updatedComments;
                     });
                 }
             }
         }
-        console.log('made it this far')
         const data = {
             type,
             commentId : comment.id,
@@ -326,10 +304,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
-        console.log('updatedcomment', updatedComment)
         // refetch();
         // refetchOwnerUser()
-        console.log('after interaction AFTER', interactedComments)
     }
 
 
@@ -460,7 +436,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={()=>{console.log('REPLY OBJECT', item);handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
+                                    <TouchableOpacity onPress={()=>{handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
                                     <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
                                         <ThumbsUp  size={20} color={ alreadyUpvotedReply ? Colors.secondary : Colors.mainGray} />
                                             <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedReply ? Colors.secondary : Colors.mainGray}}>{reply.upvotes}</Text>

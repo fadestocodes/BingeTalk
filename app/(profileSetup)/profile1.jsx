@@ -19,7 +19,6 @@ const profile1 = () => {
 
     const { user } = useUser();
     const { userDB, updateUserDB } = useUserDB();
-    console.log('user from db ', userDB)
     const router = useRouter()
     const [ image, setImage ] = useState('');
     const [ loadingImage, setLoadingImage ] = useState(false);
@@ -57,7 +56,6 @@ const profile1 = () => {
     }
 
     const handleContinue = () => {
-        console.log(inputs)
 
 
 
@@ -76,9 +74,7 @@ const profile1 = () => {
         }
 
         
-        console.log('biolink', inputs.bioLink)
         const normalizedURL = new URL(bioLink).toString();
-        console.log('Normalized URL:', normalizedURL);
         router.push({
             pathname:'/profile2',
             params : {  bio:inputs.bio, bioLink:normalizedURL, image }
