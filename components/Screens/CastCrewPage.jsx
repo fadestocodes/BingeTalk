@@ -46,6 +46,7 @@ const CastIdPage = () => {
     const [ toastMesage, setToastMessage ] = useState(null)
     const [ threads, setThreads ] = useState([])
     const [ alreadyFav, setAlreadyFav ] = useState(null)
+    const [ favLength, setFavLength ] = useState(null)
 
 
 
@@ -89,6 +90,7 @@ const CastIdPage = () => {
                 // console.log('fetchedPerson', fetchedPerson)
                 const castFromDB = await fetchPersonFromDB({castData})
                 setDBcast(castFromDB)
+                setFavLength(castFromDB.favCastCrew.length)
                 const alreadyFavCheck = ownerUser.favCastCrew.some( item => item.castId === castFromDB.id )
                 setAlreadyFav(alreadyFavCheck)
                 // queryClient.setQueryData(['cast', castId]);
@@ -260,19 +262,19 @@ const CastIdPage = () => {
           <View className='ratings  flex pt-20 gap-6 ' style={{marginTop:20, marginBottom:20}}>
             <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
                 <View className='gap-0 items-center'>
-                    <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
-                    <Text className='text-mainGray text-3xl font-pbold'>N/A</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Favorites</Text>
+                    <Text className='text-mainGray text-3xl font-pbold'>{favLength < 1 ? 'N/A' : favLength }</Text>
                 </View>
                 <View className='gap-0'>
-                    <Text className='text-mainGray text-sm font-psemibold'>Your friends</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Mentions</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
-                        <Text className='text-mainGray text-3xl font-pbold'>8.1</Text>
+                        <Text className='text-mainGray text-3xl font-pbold'>{mentions.length < 1 ? 'N/A' : mentions.length}</Text>
                     </View>
                 </View>
                 <View className='gap-0'>
-                    <Text className='text-mainGray text-sm font-psemibold'>Overall rating</Text>
+                    <Text className='text-mainGray text-sm font-psemibold'>Threads</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
-                        <Text className='text-mainGray text-3xl font-pbold'>7.3</Text>
+                        <Text className='text-mainGray text-3xl font-pbold'>{threads.length < 1 ? 'N/A' : threads.length}</Text>
                     </View>
                 </View>
             </View>

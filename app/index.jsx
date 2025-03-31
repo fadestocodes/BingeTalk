@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Redirect, router, Link } from "expo-router";
 import { View, Text, ScrollView, Button, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
@@ -19,9 +19,55 @@ import { Platform } from "react-native";
 import  Constants  from 'expo-constants';
 
 
+const initializeNotification = () => {
+  useEffect(( ) => {
+    
+    Notifications.setNotificationHandler({
+      handleNotification: async (notification) => {
+        
+        const { route, userId } = notification.request.content.data;
+        console.log(" Notification Data:", notification.request.content.data); // Debugging log
+        return {
+          shouldShowAlert: true, // Show the alert when the notification arrives in the 
+          shouldPlaySound: true, // Play sound if you want
+          shouldSetBadge: false, // Optionally manage the badge count (e.g., unread notifications)
+        };
+      },
+    });
+    const foreground = Notifications.addNotificationReceivedListener(async (notification) => {
+          console.log('Foreground notification received:', notification.request.content.data);
+          const { route, userId } = notification.request.content.data;
+          return () => {
+           
+          };
+    });
+    const background = Notifications.addNotificationResponseReceivedListener(async (response) => {
+          console.log('Notification clicked!', response.notification.request.content.data);
+          const { route } = response.notification.request.content.data;
+          
+          if (route) {
+            console.log('Navigating to route:', route);
+            router.push(route); // Navigates to the given route
+          } else {
+            console.log('No route found in the notification');
+          }
+          return () => {
+          
+          };
+    });
+  
+    return () => {
+      foreground.remove();
+      background.remove();
+    };
 
+  }, [])
+
+}
+      
 
 const Welcome = () => {
+  initializeNotification()
 
   const {user} = useUser();
 
@@ -29,68 +75,193 @@ const Welcome = () => {
   const router = useRouter(); 
   const [expoPushToken, setExpoPushToken] = useState(null);
   const [isTokenSent, setIsTokenSent] = useState(false);
-
+  const [owner, setOwner] = useState(null)
+  const notificationListener = useRef()
+  const responseListener = useRef()
+  const [notification, setNotification]  = useState(null)
   const projectId =
   Constants?.expoConfig?.extra?.eas?.projectId ??
   Constants?.easConfig?.projectId;
 
 
 useEffect(() => {
-  const getPushNotificationPermissions = async () => {
-    const {user: clerkUser} = useUser();
+  notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+    console.log('from here now')
+    setNotification(notification);
+  });
 
-   
-    try {
-      const { status } = await Notifications.requestPermissionsAsync();
+  console.log('now here?')
 
-      if (status !== 'granted') {
-        alert('You must enable push notifications!');
-        return;
-      }
-
-      // Attempt to get the Expo push token
-      const token = await Notifications.getExpoPushTokenAsync({
-        'projectId': projectId,
-      });
-      setExpoPushToken(token.data); // Store the token
-      const owner = await fetchUser({email : clerkUser.emailAddresses[0].emailAddress})
-
-
-
-      const params = {
-        userId : owner.id,
-        token : token.data,
-        deviceType : Platform.OS
-
-      }
-      const sentToken = await postPushToken(params);
-
-    } catch (error) {
-      console.error('Error getting push token', error);  // Log any errors
+  // Add the background response listener (when clicked)
+   responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+    console.log('Notification clicked!', response.notification.request.content.data);
+    const { route } = response.notification.request.content.data;
+    
+    if (route) {
+      console.log('Navigating to route:', route);
+      router.push(route); // Navigates to the given route
+    } else {
+      console.log('No route found in the notification');
     }
-  };
+  });
+  if (user){
 
-  // Get push notification permissions and token
-  getPushNotificationPermissions();
-}, [ ]);
-
-  // Handle notifications when the app is in the foreground
-  useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener(notification => {
-      Alert.alert('Foreground Notification', notification.request.content.body);
-    });
-
-    // Handle notification response when clicked (background)
-    const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(response => {
-      Alert.alert('Notification Clicked', response.notification.request.content.body);
-    });
-
-    // Cleanup the listeners when the component unmounts
-    return () => {
-      subscription.remove();
-      backgroundSubscription.remove();
+    const getPushNotificationPermissions = async () => {
+  
+     
+      try {
+        const { status } = await Notifications.requestPermissionsAsync();
+  
+        if (status !== 'granted') {
+          alert('You must enable push notifications!');
+          return;
+        }
+  
+        // Attempt to get the Expo push token
+        const token = await Notifications.getExpoPushTokenAsync({
+          'projectId': projectId,
+        });
+        setExpoPushToken(token.data); // Store the token
+        const owner = await fetchUser({email : user.emailAddresses[0].emailAddress})
+        setOwner(owner)
+  
+  
+  
+        const params = {
+          userId : owner.id,
+          token : token.data,
+          deviceType : Platform.OS
+  
+        }
+        const sentToken = await postPushToken(params);
+  
+      } catch (error) {
+        console.error('Error getting push token', error);  // Log any errors
+      }
     };
-  }, []);
+  
+    getPushNotificationPermissions();
+
+  console.log('here!!')
+  
+  console.log('finally here')
+
+  
+
+  }
+}, [user ]);
+
+
+// useEffect(() => {
+ 
+
+//   console.log('here!!')
+//   notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+//     console.log('from here now')
+//     setNotification(notification);
+//   });
+
+
+//   // Add the background response listener (when clicked)
+//    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+//     console.log('Notification clicked!', response.notification.request.content.data);
+//     const { route } = response.notification.request.content.data;
+    
+//     if (route) {
+//       console.log('Navigating to route:', route);
+//       router.push(route); // Navigates to the given route
+//     } else {
+//       console.log('No route found in the notification');
+//     }
+//   });
+
+//   // Return cleanup function for background listener
+//   return () => {
+//     notificationListener.current &&
+//         Notifications.removeNotificationSubscription(notificationListener.current);
+//       responseListener.current &&
+//         Notifications.removeNotificationSubscription(responseListener.current);
+//   };
+// }, []);
+
+// useEffect(() => {
+
+//   const foregroundSubscription = Notifications.addNotificationReceivedListener(async (notification) => {
+//     console.log('Foreground notification received:', notification.request.content.data);
+//     const { route, userId } = notification.request.content.data;
+//   });
+
+//   const backgroundSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
+//     console.log('Notification clicked:', response.notification.request.content.data);
+//     const { route, userId } = response.notification.request.content.data;
+
+//     if (route) {
+//       console.log('Navigating to route:', route);
+//       router.push(route); // Navigates to the given route
+//     } else {
+//       console.log('No route found in the notification');
+//     }
+//   });
+
+//   return () => {
+//     foregroundSubscription.remove();
+//     backgroundSubscription.remove();
+//   };
+// })
+
+  // useEffect(() => {
+  //   const subscription = Notifications.addNotificationReceivedListener(notification => {
+  //     Alert.alert('Foreground Notification', notification.request.content.body);
+  //     const { route , userId} = notification.request.content.data;
+
+  //       if (route) {
+  //         router.push(route)
+  //       }
+      
+  //   });
+
+  //   // Handle notification response when clicked (background)
+  //   const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(response => {
+  //     Alert.alert('Notification Clicked', response.notification.request.content.body);
+  //     const { route, userId } = response.notification.request.content.data;
+
+  //       if (route) {
+  //         router.push(route)
+  //       }
+  //   });
+
+  //   // Cleanup the listeners when the component unmounts
+  //   return () => {
+  //     subscription.remove();
+  //     backgroundSubscription.remove();
+  //   };
+  // }, []);
+
+
+  // useEffect(() => {
+  
+  //   const foregroundSubscription = Notifications.addNotificationReceivedListener(async (notification) => {
+  //     const { route, userId } = notification.request.content.data;
+  //     console.log('Foreground notification received:', notification.request.content.data);
+  //   });
+ 
+  //   const backgroundSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
+  //     console.log('Notification clicked:', response.notification.request.content.data);
+  //     const { route, userId } = response.notification.request.content.data;
+
+  //     if (route) {
+  //       console.log('Navigating to route:', route);
+  //       router.push(route); // Navigates to the given route
+  //     } else {
+  //       console.log('No route found in the notification');
+  //     }
+  //   });
+
+  //   return () => {
+  //     foregroundSubscription.remove();
+  //     backgroundSubscription.remove();
+  //   };
+  // }, []);
 
 
 
