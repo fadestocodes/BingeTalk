@@ -546,7 +546,8 @@ DialogueScreen.options = {
       fontFamily: 'courier',
       borderRadius: 20,
       paddingVertical: 20,
-      paddingHorizontal: 20,
+      paddingLeft: 20,
+      paddingRight:80,
       minHeight: 40,
       maxHeight: 150,
       textAlignVertical: 'center',
@@ -554,7 +555,7 @@ DialogueScreen.options = {
     sendButton: {
       position: 'absolute',
       bottom: 12,
-      right: 20,
+      right: 10,
       backgroundColor: Colors.secondary,
       paddingHorizontal: 20,
       paddingVertical: 8,

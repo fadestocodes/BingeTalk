@@ -240,7 +240,7 @@ import { MessagesSquare } from 'lucide-react-native'
                 </View>
                 </View>
             </View>
-                <TouchableOpacity className=' bg-secondary rounded-xl justify-center items-center' onPress={handlePost} style={{paddingVertical:8, width:200, height:45, paddingHorizontal:20 }}>
+                <TouchableOpacity className=' bg-secondary rounded-xl justify-center items-center' onPress={handlePost} style={{paddingVertical:8, width:200, height:45, paddingHorizontal:20, borderRadius:30 }}>
                     <Text className='font-pbold text-center ' style={{}} >Post</Text>
                 </TouchableOpacity>
         </View>

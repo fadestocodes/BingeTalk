@@ -158,7 +158,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
           <View className='flex-row w-full justify-between items-center '>
                         <View className="flex-row items-center gap-2 ">
                         { isReposted ? (
-                    <RepostIcon size={18} color={Colors.mainGray} style={{ marginRight:10 }}/>
+                    <RepostIcon size={20} color={Colors.mainGray} style={{ marginRight:10 }}/>
                 ) : null }
                             <TouchableOpacity onPress={()=>handleUserPress(thread)} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                                 <Image
@@ -209,32 +209,32 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         <View className='relative flex-row gap-5 justify-center items-center' >
                         <TouchableOpacity onPress={()=>handleInteraction('upvotes',thread)} >
                                 <View className='flex-row gap-2 justify-center items-center'>
-                                    <ThumbsUp size={16} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                    <ThumbsUp size={20} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
                                     <Text className='text-xs font-pbold text-mainGray' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
                                 </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleInteraction('downvotes',thread)} >
                             <View className='flex-row gap-2 justify-center items-center'>
-                                <ThumbsDown size={18} color={ already.downvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
+                                <ThumbsDown size={20} color={ already.downvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
                                 <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                             </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleComment(thread)}  >
                             <View className='flex-row  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <MessageIcon   className='' size={18} color={Colors.mainGray} />
+                                <MessageIcon   className='' size={20} color={Colors.mainGray} />
                                 <Text className='text-xs font-pbold text-gray-400  '> {thread.comments.length}</Text>
                             </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleInteraction('reposts',thread)} >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <RepostIcon className='' size={14} color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                                <RepostIcon className='' size={20} color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
                                 <Text className='text-xs font-pbold text-gray-400  ' style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
                             </View>
                             </TouchableOpacity>
                         </View>
                             <TouchableOpacity onPress={()=>handleThreeDots(thread)}   >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <ThreeDotsIcon className='' size={16} color={Colors.mainGray} />
+                                <ThreeDotsIcon className='' size={20} color={Colors.mainGray} />
                             </View>
                             </TouchableOpacity>
                         

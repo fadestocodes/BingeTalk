@@ -31,6 +31,7 @@ const Notification = () => {
     
 
   const handlePress = async (item) => {
+    console.log(item)
    
     setUnreadIds( prev => prev.filter( i => i !== item.id ))
     const readNotif = await markNotifRead( item.id )
@@ -38,11 +39,13 @@ const Notification = () => {
     // await refetch()
     if (item.parentActivityId){
       router.push(`/activity/${item.parentActivityId}`)
-    } else if (item.threads  && item.activityType !== 'COMMENT'){
+    } else if (item.threads  && !item.commentId){
+      console.log('right here bud')
       router.push({
         pathname:`/threads/${item.threads.id}`,
       })
-    } else if (item.dialogue && item.activityType !== 'COMMENT'){
+    } else if (item.dialogue && !item.commentId){
+      console.log('from here')
       router.push({
         pathname:`/dialogue/${item.dialogue.id}`,
       })
@@ -57,21 +60,25 @@ const Notification = () => {
     } else if (item.activityType === 'FOLLOW'){
       router.push(`/user/${item.userId}`)
     } else if (item.commentId && item.comment.dialogueId){
+      console.log('right here')
       router.push({
         pathname:`/dialogue/${item.comment.dialogueId}`,
         params:{ replyCommentId: item.comment.id}
       })
     }else if (item.comment.parentComment && item.comment.parentComment.threadId){
+      console.log('could it be')
       router.push({
         pathname:`/threads/${item.comment.parentComment.threadId}`,
         params:{ replyCommentId: item.comment.parentComment.id}
       })
     } else if (item.comment.parentComment && item.comment.parentComment.dialogueId){
+      console.log('maybe here')
       router.push({
         pathname:`/dialogue/${item.comment.parentComment.dialogueId}`,
         params:{ replyCommentId: item.comment.parentComment.id}
       })
     }   else if (item.commentId && item.comment.threadId){
+      console.log('hi threre')
       router.push({
         pathname:`/threads/${item.comment.threadId}`,
         params:{ replyCommentId: item.comment.id}
@@ -164,7 +171,7 @@ const Notification = () => {
                   item.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : item.activityType==='WATCHLIST' ? <ListChecks size={18} color={Colors.secondary} /> :
                   item.activityType === 'LIKE' ? <Heart size={18} color={Colors.secondary} /> : item.activityType === 'UPVOTE' ? <ThumbsUp size={18} color={Colors.secondary} /> : 
                   item.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary} />  : item.activityType === 'REPOST' ? <RepostIcon size={18} color={Colors.secondary} /> : 
-                  item.activityType === 'COMMENT' ? <MessageIcon size={18} color={Colors.secondary} /> : item.activityType === 'RECOMMENDATION' ? <Handshake size={18} color={Colors.secondary} /> : 
+                  item.commentId ? <MessageIcon size={18} color={Colors.secondary} /> : item.activityType === 'RECOMMENDATION' ? <Handshake size={18} color={Colors.secondary} /> : 
                   item.activityType === 'FOLLOW' && <UserPlus size={18} color={Colors.secondary} /> } 
                 <Text className='text-mainGray' numberOfLines={2}>{item.user.firstName} {item.description}</Text>
 

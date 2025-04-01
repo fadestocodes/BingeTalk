@@ -165,7 +165,7 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
                 </View>
                 
             </View>
-            <TouchableOpacity className=' bg-secondary rounded-xl justify-center items-center' onPress={handlePost} style={{paddingVertical:8, width:200, height:45, paddingHorizontal:20, marginBottom:50 }}>
+            <TouchableOpacity className=' bg-secondary rounded-xl justify-center items-center' onPress={handlePost} style={{paddingVertical:8, width:200, height:45, paddingHorizontal:20, marginBottom:50, borderRadius:30 }}>
                     <Text className='font-pbold text-center ' style={{}} >Post</Text>
             </TouchableOpacity>
             <View className=" w-full " style={{paddingBottom:120}}>

@@ -17,6 +17,8 @@ import * as Notifications from 'expo-notifications'
 import { postPushToken } from "../api/notification";
 import { Platform } from "react-native";
 import  Constants  from 'expo-constants';
+import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
+
 
 
 const initializeNotification = () => {
@@ -73,8 +75,13 @@ const Welcome = () => {
   Constants?.expoConfig?.extra?.eas?.projectId ??
   Constants?.easConfig?.projectId;
 
+  const logoOpacity = useSharedValue(0);
+  const logoTranslateY = useSharedValue(60);
+
 
 useEffect(() => {
+  logoOpacity.value = withTiming(1, { duration: 400, easing: Easing.ease });
+  logoTranslateY.value = withTiming(0, { duration: 1200, easing: Easing.bounce });
   notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
     setNotification(notification);
   });
@@ -106,9 +113,6 @@ useEffect(() => {
         setExpoPushToken(token.data); // Store the token
         const owner = await fetchUser({email : user.emailAddresses[0].emailAddress})
         setOwner(owner)
-  
-  
-  
         const params = {
           userId : owner.id,
           token : token.data,
@@ -142,15 +146,17 @@ useEffect(() => {
           <SignedIn>
           </SignedIn>
           <SignedOut>
+            < Animated.View style={[{ opacity: logoOpacity, transform: [{ translateY: logoTranslateY }] }]} >
           <Image
             source={require('../assets/images/splash.png')}
             contentFit="cover"
             style={{width:220, height:220}}
             transition={200}
           />
+          </Animated.View>
           {/* <Text className="text-4xl text-secondary font-pbold" style={{paddingBottom:20}}>Bingeable</Text> */}
 
-            <TouchableOpacity onPress={handleSignUp}  style={{ borderRadius:10, backgroundColor:Colors.secondary, paddingVertical:10, paddingHorizontal:15, width:200, justifyContent:'center', alignItems:'center' }}>
+            <TouchableOpacity onPress={handleSignUp}  style={{ borderRadius:30, backgroundColor:Colors.secondary, paddingVertical:10, paddingHorizontal:15, width:200, justifyContent:'center', alignItems:'center' }}>
               <Link href="/(onboarding)/step1-firstName"  >
                 <Text className="text-primary text-lg text-center font-pbold ">Create account </Text>
               </Link>

@@ -4,7 +4,7 @@
     "slug": "bingeable-app",
     "version": "0.9.0",
     "orientation": "portrait",
-    "icon": "./assets/images/bingeable-v1.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "bingeable",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -19,12 +19,11 @@
           "NSAllowsArbitraryLoads": true
         },
         "NSAllowsArbitraryLoadsInWebContent": true
-      },
-      "icon":"./assets/images/bingeable-v1.png"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/bingeable-logo-adaptive.png",
+        "foregroundImage": "./assets/images/icon-adaptive.png",
         "backgroundColor": "#171717"
       },
       "permissions": [
@@ -35,7 +34,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/bingeable-favicon.png"
+      "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",

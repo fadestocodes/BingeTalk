@@ -92,11 +92,11 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-
+        console.log('hello')
         const commentData = {
             userId : Number(userId),
             dialogueId : Number(dialogueId) || null,
-            threadID : Number(threadId) || null,
+            threadId : Number(threadId) || null,
             listId : Number(listId) || null,
             content : input,
             parentId : replyingTo?.parentId || null,
@@ -105,8 +105,10 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId}) => {
             recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list && list.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
+        console.log('commentdata', commentData)
     
         const newComment = await createComment( commentData );
+        console.log('newcomment', newComment)
         setInput('');
         setReplyingTo(null)
         setReplying(false)
@@ -562,7 +564,8 @@ CommentsComponent.options = {
       fontFamily: 'courier',
       borderRadius: 20,
       paddingVertical: 20,
-      paddingHorizontal: 20,
+      paddingLeft: 20,
+      paddingRight:80,
       minHeight: 40,
       maxHeight: 150,
       textAlignVertical: 'center',
@@ -570,7 +573,7 @@ CommentsComponent.options = {
     sendButton: {
       position: 'absolute',
       bottom: 12,
-      right: 20,
+      right: 10,
       backgroundColor: Colors.secondary,
       paddingHorizontal: 20,
       paddingVertical: 8,

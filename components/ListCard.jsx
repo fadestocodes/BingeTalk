@@ -152,7 +152,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             <View className='flex-row w-full gap-2 justify-between items-center mb-0'>
                                 <View className='flex-row gap-2 justify-center items-center'>
                                 { isReposted ? (
-                                     <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
+                                     <RepostIcon size={20} color={Colors.mainGray} style={{marginRight:10}}/>
                                 ) : null}
                                     <TouchableOpacity style={{flexDirection:'row', gap:5}} onPress={()=>handleUserPress(item)}>
                                     <Image
@@ -167,7 +167,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             </View>
                             { activity ? (
                                 <View className='flex-row gap-3 items-center justify-center w-full px-4 '>
-                                    <List size={18} color={Colors.secondary} />
+                                    <List size={20} color={Colors.secondary} />
                                     <Text className='text-mainGray'>{item.user.firstName} { activity }</Text>
                                 </View>
                             ): null }
@@ -204,19 +204,19 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             <View className='flex-row gap-5 justify-center items-center'>
                                 <TouchableOpacity onPress={()=> handleInteraction('upvotes',item) } >
                                     <View className='flex-row gap-1 justify-center items-center'>
-                                        <ThumbsUp size={16} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                        <ThumbsUp size={20} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
                                         <Text className='text-xs font-pbold ' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity  onPress={()=> handleInteraction('downvotes',item) } >
                                 <View className='flex-row gap-1 justify-center items-center'>
-                                    <ThumbsDown size={18}  color={ already.downvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                                    <ThumbsDown size={20}  color={ already.downvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
                                     <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                                 </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={()=>handleComment(item)}>
                                 <View className='flex-row gap-1 justify-center items-center'>
-                                    <MessageIcon size={18} color={Colors.mainGray}></MessageIcon>
+                                    <MessageIcon size={20} color={Colors.mainGray}></MessageIcon>
                                     <Text className='text-xs font-pbold text-mainGray'>{ item.comments.length}</Text>
                                     </View>
                                 </TouchableOpacity>
@@ -224,7 +224,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 
                                 <TouchableOpacity onPress={()=> handleInteraction('reposts',item) } >
                                 <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                    <RepostIcon className='' size={14}  color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
+                                    <RepostIcon className='' size={20}  color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
                                     <Text className='text-xs font-pbold text-mainGray  'style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
                                 </View>
 
@@ -232,7 +232,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             </View>
                             <View className='relative' >
                                 <TouchableOpacity onPress={()=>handleThreeDots(item)}  >
-                                    <ThreeDotsIcon className='' size={16} color={Colors.mainGray} />
+                                    <ThreeDotsIcon className='' size={20} color={Colors.mainGray} />
                                 </TouchableOpacity>
                             </View>
                             

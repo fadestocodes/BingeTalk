@@ -113,7 +113,6 @@ const ThreadsIdPage = () => {
 
     const handlePostComment =  async ({ parentId = null }) => {
        
-
         const commentData = {
             userId : Number(userId),
             threadId : Number(thread.id),
@@ -121,7 +120,7 @@ const ThreadsIdPage = () => {
             parentId : replyingTo ? replyingTo?.parentId : null,
             replyingToUserId : replyingTo?.user?.id || null,
             description: `commented on your thread "${input}"`,
-            recipientId : dialogue.user.id,
+            recipientId : thread.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
     
@@ -582,7 +581,8 @@ ThreadsIdPage.options = {
       fontFamily: 'courier',
       borderRadius: 20,
       paddingVertical: 20,
-      paddingHorizontal: 20,
+      paddingLeft: 20,
+      paddingRight:80,
       minHeight: 40,
       maxHeight: 150,
       textAlignVertical: 'center',
@@ -590,7 +590,7 @@ ThreadsIdPage.options = {
     sendButton: {
       position: 'absolute',
       bottom: 12,
-      right: 20,
+      right: 10,
       backgroundColor: Colors.secondary,
       paddingHorizontal: 20,
       paddingVertical: 8,

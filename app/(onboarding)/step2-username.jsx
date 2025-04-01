@@ -97,7 +97,7 @@ const onSetup2Press = () => {
             <Animated.View style={[styles.animatedText, { opacity: textOpacity, transform: [{ translateY: textTranslateY }] , justifyContent:'center', alignItems:'center', gap:10, marginBottom:50}]}>
                   
                   <View className='justify-center items-center gap-3 ' >
-                      <Text className='text-xl text-secondary font-pcourier  uppercase'>BingeTalk</Text>
+                      <Text className='text-xl text-secondary font-pcourier  uppercase'>Bingeable</Text>
                       <Text className='font-pcourier text-white ' >Alright {firstName}, let's create your unique username</Text>
                   </View>
                   </Animated.View>

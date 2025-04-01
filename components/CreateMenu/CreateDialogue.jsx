@@ -389,7 +389,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                         <View className="flex-row justify-center items-center gap-3">
                             <Text className='text-mainGray text-right '>{input.length}/800</Text>
                             <TouchableOpacity onPress={handlePost} >
-                        <Text className='font-pbold bg-secondary rounded-xl ' style={{paddingVertical:8, paddingHorizontal:20}} >Post</Text>
+                        <Text className='font-pbold bg-secondary  ' style={{paddingVertical:8, paddingHorizontal:20, borderRadius:30}} >Post</Text>
                     </TouchableOpacity>
 
                         </View>

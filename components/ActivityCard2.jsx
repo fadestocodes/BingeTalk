@@ -106,10 +106,10 @@ const ActivityCard2 = ({activity, fromHome}) => {
         </View>
         <View className='flex-row gap-2 justify-center items-center px-4 '>
 
-            { activity.activityType === 'RATING' ? <Star size={18} color={Colors.secondary} /> : activity.activityType === 'DIALOGUE' ? <MessageSquare size={18} color={Colors.secondary} /> :
-                activity.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={18} color={Colors.secondary} /> : activity.activityType==='WATCHLIST' ? <ListChecks size={18} color={Colors.secondary} /> :
-                activity.activityType === 'LIKE' ? <Heart size={18} color={Colors.secondary} /> : activity.activityType === 'UPVOTE' ? <ThumbsUp size={18} color={Colors.secondary} /> : 
-                activity.activityType === 'DOWNVOTE' ? <ThumbsDown size={18} color={Colors.secondary}  /> : activity.activityType === 'WATCHED' && <Eye size={18} color={Colors.secondary} /> }
+            { activity.activityType === 'RATING' ? <Star size={20} color={Colors.secondary} /> : activity.activityType === 'DIALOGUE' ? <MessageSquare size={20} color={Colors.secondary} /> :
+                activity.activityType === 'CURRENTLY_WATCHING' ? <ProgressCheckIcon size={20} color={Colors.secondary} /> : activity.activityType==='WATCHLIST' ? <ListChecks size={20} color={Colors.secondary} /> :
+                activity.activityType === 'LIKE' ? <Heart size={20} color={Colors.secondary} /> : activity.activityType === 'UPVOTE' ? <ThumbsUp size={20} color={Colors.secondary} /> : 
+                activity.activityType === 'DOWNVOTE' ? <ThumbsDown size={20} color={Colors.secondary}  /> : activity.activityType === 'WATCHED' && <Eye size={20} color={Colors.secondary} /> }
             <Text className='text-mainGray'>{activity.user.firstName} {activity.description}</Text>
         </View>
         {!!imagePaths ? (
@@ -132,7 +132,7 @@ const ActivityCard2 = ({activity, fromHome}) => {
                 </TouchableOpacity>
                 <TouchableOpacity   >
             <TouchableOpacity onPress={()=>handleThreeDots(activity)} className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                <ThreeDotsIcon className='' size={16} color={Colors.mainGray} />
+                <ThreeDotsIcon className='' size={20} color={Colors.mainGray} />
             </TouchableOpacity>
             </TouchableOpacity>
 

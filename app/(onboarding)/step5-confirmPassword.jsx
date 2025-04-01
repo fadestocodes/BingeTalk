@@ -198,7 +198,7 @@ const step5 = () => {
         <View className='items-start'>
         { errors.confirmPassword && errors.confirmPassword.map( (item, index) => (
             <View key={index}  >
-            <Text className='text-red-600 text-sm'>* {item}</Text>
+            <Text className='text-red-400 text-sm'>* {item}</Text>
             </View>
             )) 
         }

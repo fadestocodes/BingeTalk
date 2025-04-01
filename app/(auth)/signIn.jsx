@@ -66,15 +66,18 @@ export default function Page() {
             onChangeText={(password) => setPassword(password)}
           />
         </View>
-        <View className="gap-3">
-          <TouchableOpacity onPress={onSignInPress}  style={{ borderRadius:10, backgroundColor:Colors.secondary, paddingVertical:5, paddingHorizontal:15, width:150, justifyContent:'center', alignItems:'center' }}>
-            <Text className='text-primary text-lg font-bold w-full text-center' >Sign in</Text>
+        <View className="gap-3 justify-center items-center w-full">
+          <TouchableOpacity onPress={onSignInPress}  style={{ borderRadius:30, backgroundColor:Colors.secondary, paddingVertical:10, paddingHorizontal:15, width:280, justifyContent:'center', alignItems:'center' }}>
+            <Text className='text-primary text-lg font-bold w-full  text-center' style={{width:'100%'}} >Sign in</Text>
           </TouchableOpacity>
-          <View>
-            <Text className="text-white">Don't have an account?</Text>
-            <Link href="(onboarding)/step1-firstName">
-              <Text className='text-white underline'>Sign up</Text>
-            </Link>
+          <View className='gap-3 flex-row  justify-center items-center mt-5'>
+            <TouchableOpacity onPress={()=>router.push('/(onboarding)/step1-firstName')} style={{borderRadius:15, borderWidth:1, borderColor:'white', paddingHorizontal:10, paddingVertical:3}}>
+                <Text className='text-white  text-sm text-center' >Create an account</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>router.push('/(auth)/resetPassword')} style={{borderRadius:15, borderWidth:1, borderColor:'white', paddingHorizontal:10, paddingVertical:3}}>
+                <Text className='text-white text-sm  text-center' >Forgot password</Text>
+            </TouchableOpacity>
+
           </View>
         </View>
       </View>
