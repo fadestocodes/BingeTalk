@@ -23,7 +23,6 @@ import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-n
 
 const initializeNotification = () => {
   useEffect(( ) => {
-    
     Notifications.setNotificationHandler({
       handleNotification: async (notification) => {
         
@@ -35,15 +34,19 @@ const initializeNotification = () => {
       },
     });
     const foreground = Notifications.addNotificationReceivedListener(async (notification) => {
+
           const { route, userId } = notification.request.content.data;
+
           return () => {
            
           };
     });
     const background = Notifications.addNotificationResponseReceivedListener(async (response) => {
           const { route } = response.notification.request.content.data;
+
           
           if (route) {
+
             router.push(route); // Navigates to the given route
           } 
     });
@@ -90,7 +93,9 @@ useEffect(() => {
    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
     const { route } = response.notification.request.content.data;
     
+    
     if (route) {
+
       router.push(route); // Navigates to the given route
     }
   });

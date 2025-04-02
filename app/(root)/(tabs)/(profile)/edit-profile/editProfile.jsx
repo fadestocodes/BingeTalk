@@ -65,35 +65,39 @@ const editProfile = () => {
     }
 
     const handleSave = async () => {
+        console.log("handling save")
+        console.log('inputs biuo link', inputs.bioLink)
 
+        let normalizedURL = ''
+        
+        if (inputs.bioLink ){
+            let bioLink = inputs.bioLink.trim(); // Trim any leading/trailing spaces
 
-        let bioLink = inputs.bioLink.trim(); // Trim any leading/trailing spaces
-
-        // Step 1: Check if URL has a protocol (http:// or https://)
-        if (!/^https?:\/\//i.test(bioLink)) {
-            // Step 2: Check if the URL has 'www.' prefix
-            if (/^www\./i.test(bioLink)) {
-                // If 'www.' is present, prepend 'https://'
-                bioLink = 'https://' + bioLink;
-            } else {
-                // Otherwise, prepend 'https://'
-                bioLink = 'https://www.' + bioLink;
+            if (!/^https?:\/\//i.test(bioLink)) {
+                // Step 2: Check if the URL has 'www.' prefix
+                if (/^www\./i.test(bioLink)) {
+                    // If 'www.' is present, prepend 'https://'
+                    bioLink = 'https://' + bioLink;
+                } else {
+                    // Otherwise, prepend 'https://'
+                    bioLink = 'https://www.' + bioLink;
+                }
             }
+            normalizedURL = new URL(bioLink).toString();
         }
 
-        
-        const normalizedURL = new URL(bioLink).toString();
 
-
-
+        console.log('here')
         const params = {
             id : fetchedUser.id,
+            email : clerkUser.emailAddresses[0].emailAddress,
             firstName : inputs.firstName,
             lastName : inputs.lastName,
             bio : inputs.bio,
             bioLink :normalizedURL,
             profilePic : image
         }
+        console.log('params', params)
         const updatedUser = await updateUser( params , fetchedUser.emailAddress);
         refetch();
         router.back();
@@ -250,7 +254,7 @@ const editProfile = () => {
 
                                 <Image
                                     source={{uri: item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : null }}
-                                    resizeMode='cover'
+                                    contentFit='cover'
                                     style={{ width:50, height:80, borderRadius:10, overflow:'hidden'}}
                                 />
                         ) }}

@@ -10,7 +10,7 @@ import { Slot } from "expo-router"
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Colors } from '@/constants/Colors';
-import { ClerkProvider, ClerkLoaded, useUser } from '@clerk/clerk-expo'
+import { ClerkProvider, ClerkLoaded, useUser, useClerk } from '@clerk/clerk-expo'
 import {tokenCache} from '@/cache'
 import { UserDBProvider } from '../lib/UserDBContext'
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -35,10 +35,11 @@ SplashScreen.setOptions({
 
 export default function RootLayout() {
 
+    console.log('from root layout')
   
 
-
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+  
 
   if (!publishableKey) {
     throw new Error(
@@ -78,7 +79,7 @@ export default function RootLayout() {
 
   return (
     
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey} >
       <ClerkLoaded>
         <QueryClientProvider client={queryClient}>
         <UserDBProvider>

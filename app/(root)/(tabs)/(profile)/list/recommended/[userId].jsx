@@ -98,13 +98,7 @@ const RecommendedFromProfile = () => {
   return (
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
        <View 
-            refreshControl={
-                <RefreshControl
-                    tintColor={Colors.secondary}
-                    refreshing={loading}
-                    onRefresh={refetch}
-                />
-            }
+           
             style={{ paddingTop:30, gap:10, paddingHorizontal:15, paddingBottom:200,alignItems:'center', width:'100%' }}>
             <View className="flex-row justify-center items-center gap-2">
                 <Handshake color='white'  />
@@ -129,6 +123,12 @@ const RecommendedFromProfile = () => {
                 ) : (
 
                     <FlatList
+                        refreshControl={<RefreshControl
+                                onRefresh={ tab === 'received' ? refetchReceived : refetch }
+                                refreshing={tab==='received' ? loadingReceived : loading}
+                                tintColor={Colors.secondary}
+                            />
+                        }
                         scrollEnabled={true}
                         data={recommendationsReceived}
                         keyExtractor={item => item.id}
@@ -142,6 +142,7 @@ const RecommendedFromProfile = () => {
                         onEndReachedThreshold={0.1}
                         // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
+                            console.log('item', item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150 ,overflow:'hidden'}}>
                                     <Image
@@ -171,7 +172,7 @@ const RecommendedFromProfile = () => {
                                             
                                                 <View className='flex-row gap-1 justify-center items-center'>
                                                     { item.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
-                                                    <Text className='text-white text font-pbold'>{ item.movieId ? `${item.movie.title} (${getYear(item.movie.releaseDate)})` : `${item.tv.title} (${getYear(item.tv.releaseDate)})` }</Text>
+                                                    <Text className='text-white text font-pbold'>{ item?.movieId ? `${item.movie.title} (${getYear(item.movie.releaseDate)})` : `${item.tv.title} (${getYear(item.tv.releaseDate)})` }</Text>
                                                 </View>
                                             </TouchableOpacity>
                                                         <View className="">
@@ -214,13 +215,12 @@ const RecommendedFromProfile = () => {
                 ) : (
 
                     <FlatList
-                        // refreshControl={
-                        //     <RefreshControl
-                        //         tintColor={Colors.secondary}
-                        //         refreshing={loading}
-                        //         onRefresh={refetch}
-                        //     />
-                        // }
+                    refreshControl={<RefreshControl
+                        onRefresh={ tab === 'received' ? refetchReceived : refetch }
+                        refreshing={tab==='received' ? loadingReceived : loading}
+                        tintColor={Colors.secondary}
+                    />
+                }
 
                         scrollEnabled={true}
                         data={recommendationsSent}

@@ -62,7 +62,7 @@ const step4 = () => {
         <View className='items-start'>
         { errors.password && errors.password.map( (item, index) => (
             <View key={index} >
-                <Text className='text-red-600 text-sm text-start'>* {item}</Text>
+                <Text className='text-red-400 text-sm text-start'>* {item}</Text>
             </View>
             )) 
         }

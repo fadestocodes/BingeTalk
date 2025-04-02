@@ -73,13 +73,13 @@ const step3 = () => {
 
           { errors.email && errors.email.map( (item, index) => (
               <View key={index} >
-                <Text className='text-red-600 text-sm'>* {item}</Text>
+                <Text className='text-red-400 text-sm'>* {item}</Text>
               </View>
               )) 
           }
           { emailTakenError && (
              <View  >
-             <Text className='text-red-600 text-sm'>* {emailTakenError}</Text>
+             <Text className='text-red-400 text-sm'>* {emailTakenError}</Text>
            </View>
           ) }
             </View>

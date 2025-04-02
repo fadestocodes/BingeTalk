@@ -328,19 +328,19 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
     const getRecommendationsSent =  async ( reset = false ) => {
         if ( !hasMore && !reset ) return
 
-        setLoading(true)
      
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            setData(reset ? result.items : prev => [...prev, ...result.items]);
+            const resultFiltered = result.items.filter(i => i.movie || i.tv)
+            setData(reset ? resultFiltered : prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
             setHasMore( !!result.nextCursor )
@@ -355,9 +355,18 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
     }, [ userId]);
 
     const refetch =  async () => {
-        setCursor(null)
-        setHasMore(true)
-        await getRecommendationsSent(true)
+        try {
+            const response = await fetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=null&limit=${limit}`)
+            const result = await response.json();
+            const resultFiltered = result.items.filter(i => i.movie || i.tv)
+            setData( resultFiltered );
+            setCursor(result.nextCursor)
+            // cursorRef.current = result.nextCursor;
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
     }
 
     const removeSentItems = (item) => {
@@ -372,18 +381,19 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
     const getRecommendationsReceived =  async (reset = false) => {
         if ( !hasMore && !reset  ) return
 
-        setLoading(true)
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            setData(reset ? result.items : prev => [...prev, ...result.items]);
+            // setData(reset ? result.items : prev => [...prev, ...result.items]);
+            const resultFiltered = result.items.filter(i => i.movie || i.tv)
+            setData(reset ? resultFiltered : prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
             setHasMore( !!result.nextCursor )
         } catch (err) {
@@ -398,10 +408,18 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
 
 
     const refetchReceived =  async () => {
-        // console.log('triggered refetchReceived()', new Error().stack);
-        setCursor(null)
-        setHasMore(true)
-        await getRecommendationsSent(true)
+        try {
+            const response = await fetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
+            const result = await response.json();
+            // setData(reset ? result.items : prev => [...prev, ...result.items]);
+            const resultFiltered = result.items.filter(i => i.movie || i.tv)
+            setData(resultFiltered );
+            setCursor(result.nextCursor)
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
     }
 
     const removeReceivedItems = (item) => {

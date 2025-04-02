@@ -127,6 +127,10 @@ const profile2 = () => {
                 bio,
                 bioLink,
                 profilePic : image,
+                firstName : user.firstName,
+                lastName : user.lastName,
+                email : user.email,
+                
             }
             const response = await updateUser(params,user.emailAddresses[0].emailAddress )
             const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )

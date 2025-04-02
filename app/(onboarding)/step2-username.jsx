@@ -110,13 +110,13 @@ const onSetup2Press = () => {
 
         { errors.username && errors.username.map( (item, index) => (
             <View key={index} >
-                <Text className='text-red-600 text-sm text-start'>* {item}</Text>
+                <Text className='text-red-400 text-sm text-start'>* {item}</Text>
             </View>
             )) 
         }
         { usernameTakenError && (
            <View  >
-            <Text className='text-red-600 text-sm text-start'>* {usernameTakenError}</Text>
+            <Text className='text-red-400 text-sm text-start'>* {usernameTakenError}</Text>
            </View>
         ) }
         </View>

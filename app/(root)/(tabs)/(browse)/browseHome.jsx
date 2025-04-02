@@ -46,7 +46,7 @@ const browseHome = () => {
     <View className='w-full h-full bg-primary justify-start items-center pt-3 px-4 gap-5 '>
       <View className='w-full'>
         <View className='flex-row gap-2'>
-          <LayersIcon size={30} color='white' />
+          {/* <LayersIcon size={30} color='white' /> */}
           <Text className='text-white font-pbold text-3xl'>Browse</Text>
         </View>
         <Text className='text-mainGray font-pmedium'>Go through user created Lists and browse titles</Text>

@@ -57,10 +57,11 @@ const profile1 = () => {
 
     const handleContinue = () => {
 
-
+      let normalizedURL = ''
+      if (inputs.bioLink !== ''){
 
         let bioLink = inputs.bioLink.trim(); // Trim any leading/trailing spaces
-
+  
         // Step 1: Check if URL has a protocol (http:// or https://)
         if (!/^https?:\/\//i.test(bioLink)) {
             // Step 2: Check if the URL has 'www.' prefix
@@ -72,12 +73,12 @@ const profile1 = () => {
                 bioLink = 'https://www.' + bioLink;
             }
         }
-
+        normalizedURL = new URL(bioLink).toString();
+      }
         
-        const normalizedURL = new URL(bioLink).toString();
         router.push({
             pathname:'/profile2',
-            params : {  bio:inputs.bio, bioLink:normalizedURL, image }
+            params : {  bio:inputs.bio, bioLink:normalizedURL , image }
           })
         }
 

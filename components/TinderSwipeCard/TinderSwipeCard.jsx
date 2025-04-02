@@ -187,7 +187,7 @@ useEffect(() => {
       userId : ownerUser.id,
       listId : Number(listId) ,
       content : comment,
-      description : `commented on your list "${list.title}"`,
+      description : `commented on your list "${listObj.title}"`,
       recipientId : creator.id
     }
     const newComment = await createComment(data)
@@ -307,6 +307,7 @@ useEffect(() => {
                     <View className="gap-0">
                       <TextInput
                         placeholder="Leave a comment for this list"
+                        autoCapitalize="sentences"
                         value={comment}
                         onChangeText={handleInput}
                         placeholderTextColor={Colors.mainGray}
@@ -315,7 +316,7 @@ useEffect(() => {
           
                       />
                     </View>
-                      <TouchableOpacity onPress={handlePostComment} style={{ backgroundColor:Colors.secondary, borderRadius:10, padding:10 }}>
+                      <TouchableOpacity disabled={!comment} onPress={handlePostComment} style={{ backgroundColor:Colors.secondary, borderRadius:30, padding:10 }}>
                         <Text className="text-primary font-pbold">Post comment</Text>
                       </TouchableOpacity>
                   

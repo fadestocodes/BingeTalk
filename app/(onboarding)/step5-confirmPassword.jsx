@@ -45,14 +45,13 @@ const step5 = () => {
     
         // Start sign-up process using email and password provided
         try {
-            await signUp.create({
+             await signUp.create({
             emailAddress : email,
             password,
             firstName,
             lastName,
             username
             })
-    
             // Send user an email with verification code
             await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
     
@@ -61,6 +60,7 @@ const step5 = () => {
             setPendingVerification(true)
             try {
                 const response = await addUser( { firstName, lastName, email, username } );
+                console.log('new user', response)
                 updateUserDB(response)
 
                 if (!response) {

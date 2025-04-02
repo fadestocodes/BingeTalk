@@ -48,7 +48,6 @@ const homeIndex = () => {
 
     const getFeed = async () => {
        
-        if (!hasMoreFeed ) return
         try {
           const notifsData = await getAllNotifs( ownerUser.id, null , true )
           const unread = notifsData.filter( item => item.isRead === false)
@@ -68,6 +67,7 @@ const homeIndex = () => {
             setHasMoreFeed(response.hasMoreFeedServer)
             setHasMoreThreads(response.hasMoreThreadsServer)
             setHasMoreRotations(response.hasMoreRotationsServer)
+
 
         } catch (err) {
             console.log(err)
@@ -149,7 +149,7 @@ const homeIndex = () => {
   
 
   return (
-    <SafeAreaView className='w-full h-full bg-primary'>
+    <SafeAreaView className='w-full h-full bg-primary' >
       { isLoadingOwnerUser  ?  (
         <View className='bg-primary h-full justify-center items-center'>
           <ActivityIndicator />
@@ -157,13 +157,13 @@ const homeIndex = () => {
       ) : (
 
      
-    <View className='w-full  pt-3 px-4 gap-5' style={{paddingBottom:200}}>
+    <View className='w-full  pt-3 px-4 gap-5' style={{paddingBottom:130}}>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
 
             <Text className='text-white font-pbold text-3xl'>Home</Text>
           </View>
-          <Text className='text-mainGray font-pmedium'>Check out the most bingeable shows right now.</Text>
+          <Text className='text-mainGray font-pmedium'>See what your friends are up to.</Text>
       </View>
       <TouchableOpacity onPress={()=>{router.push('/notification')}} style={{ position:'absolute', top:0, right:30 }}>
         <View className='relative' >
@@ -179,7 +179,7 @@ const homeIndex = () => {
       </TouchableOpacity>
 
       <View className='w-full my-2 gap-3' style={{paddingBottom:100}}>
-      <FlatList
+      {/* <FlatList
         horizontal
         data={homeCategories}
         keyExtractor={(item,index) => index}
@@ -189,64 +189,72 @@ const homeIndex = () => {
             <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
           </TouchableOpacity>
         )}
-      />
+      /> */}
 
       { loading ? (
         <ActivityIndicator />
       ) : (
 
-      <FlatList
-        data = {data}
-        refreshControl={
-          <RefreshControl
-            tintColor={Colors.secondary}
-            refreshing={loading}
-            onRefresh={refetchFeed}
-          />
-        }
-        keyExtractor={(item,index) => index}
-        contentContainerStyle={{gap:10, }}
-        onEndReached={()=>{
-          if (hasMoreFeed || hasMoreThreads){
-            getFeed()
-          }
-        }}
-        onEndReachedThreshold={0.3}
-      
+         data.length < 1 ? (
+          <View>
+            <Text className='text-mainGray font-pbold text-2xl self-center pt-12'>Nothing to show yet...</Text>
+          </View>
+        ) : (
+              <View className='h-full'>
+                <FlatList
+                  data = {data}
+                  refreshControl={
+                    <RefreshControl
+                      tintColor={Colors.secondary}
+                      refreshing={loading}
+                      onRefresh={refetchFeed}
+                    />
+                  }
+                  showsVerticalScrollIndicator={false}
+                  keyExtractor={(item,index) => index}
+                  contentContainerStyle={{gap:10}}
+                  onEndReached={()=>{
+                      getFeed()
+                  }}
+                  onEndReachedThreshold={0.3}
+                
+          
+                  renderItem={({item}) => {
+                    return (
+                      <>
+                    { item.feedFrom === 'activity' ? (
+                      <View>
+                        { item.postType === 'dialogue' ? (
+                          <TouchableOpacity onPress={()=>handlePress(item)}>
+                           <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
+                          </TouchableOpacity>
+                        ) : item.postType === 'thread' ? (
+                          <TouchableOpacity onPress={()=>handlePress(item)}>
+                            <ThreadCard thread={item.threads} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
+                          </TouchableOpacity>
+          
+                        ) : item.postType === 'list' ? (
+                          <TouchableOpacity onPress={()=>handlePress(item)}>
+                            <ListCard list={item.list} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
+                          </TouchableOpacity>
+          
+                        ) : (
+                          <ActivityCard2 activity={item} fromHome={true} />
+                        ) }
+                      </View>
+                    ) : (
+                      <TouchableOpacity onPress={()=>handlePress(item)}>
+                        <ThreadCard thread={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
+                      </TouchableOpacity>
+          
+                    ) }
+          
+                  </>
+                  )}}
+                  />
+                  </View>
 
-        renderItem={({item}) => {
-          return (
-            <>
-          { item.feedFrom === 'activity' ? (
-            <View>
-              { item.postType === 'dialogue' ? (
-                <TouchableOpacity onPress={()=>handlePress(item)}>
-                 <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
-                </TouchableOpacity>
-              ) : item.postType === 'thread' ? (
-                <TouchableOpacity onPress={()=>handlePress(item)}>
-                  <ThreadCard thread={item.threads} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
-                </TouchableOpacity>
-
-              ) : item.postType === 'list' ? (
-                <TouchableOpacity onPress={()=>handlePress(item)}>
-                  <ListCard list={item.list} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
-                </TouchableOpacity>
-
-              ) : (
-                <ActivityCard2 activity={item} fromHome={true} />
-              ) }
-            </View>
-          ) : (
-            <TouchableOpacity onPress={()=>handlePress(item)}>
-              <ThreadCard thread={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
-            </TouchableOpacity>
-
-          ) }
-
-        </>
-        )}}
-      />
+        ) 
       ) }
 
       </View>

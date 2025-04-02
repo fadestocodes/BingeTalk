@@ -1,7 +1,7 @@
 import { useSignIn } from '@clerk/clerk-expo'
 import { Link, useRouter } from 'expo-router'
 import { Text, TextInput, Button, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native'
-import React from 'react'
+import React, {useState} from 'react'
 import { Colors } from '../../constants/Colors'
 
 export default function Page() {
@@ -10,6 +10,8 @@ export default function Page() {
 
   const [emailAddress, setEmailAddress] = React.useState('')
   const [password, setPassword] = React.useState('')
+  const [ validationErrors, setValidationErrors ] = useState('')
+
 
   // Handle the submission of the sign-in form
   const onSignInPress = React.useCallback(async () => {
@@ -30,12 +32,15 @@ export default function Page() {
       } else {
         // If the status isn't complete, check why. User might need to
         // complete further steps.
-        console.error(JSON.stringify(signInAttempt, null, 2))
+        setValidationErrors(err.errors[0].message)
+
+        console.log(JSON.stringify(signInAttempt, null, 2))
       }
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
+      setValidationErrors(err.errors[0].message)
+      console.log(JSON.stringify(err, null, 2));
     }
   }, [isLoaded, emailAddress, password])
 
@@ -45,7 +50,12 @@ export default function Page() {
       <View className="items-center gap-8">
       <Text className='text-white font-pbold text-3xl'>Sign in</Text>
 
-      
+      { validationErrors && (
+            <View  >
+                <Text className='text-red-400 text-sm text-start'>* {validationErrors}</Text>
+            </View>
+            ) 
+        }
 
         <View className="items-start gap-5">
           <TextInput
