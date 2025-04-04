@@ -8,13 +8,13 @@
       "developmentClient": true,
       "distribution": "internal",
       "env":{
-        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_live_Y2xlcmsuYmluZ2VhYmxlLmFwcCQ"
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_test_c3RpbGwtZmFsY29uLTM2LmNsZXJrLmFjY291bnRzLmRldiQ"
       }
     },
     "preview": {
       "distribution": "internal",
       "env":{
-        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_live_Y2xlcmsuYmluZ2VhYmxlLmFwcCQ"
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_test_c3RpbGwtZmFsY29uLTM2LmNsZXJrLmFjY291bnRzLmRldiQ"
       }
     },
     "production": {

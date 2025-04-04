@@ -18,7 +18,6 @@ import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-n
 const profile1 = () => {
 
     const { user } = useUser();
-    const { userDB, updateUserDB } = useUserDB();
     const router = useRouter()
     const [ image, setImage ] = useState('');
     const [ loadingImage, setLoadingImage ] = useState(false);
@@ -154,7 +153,7 @@ const profile1 = () => {
                 </View>
                 <View className='justify-center items-center gap-10 px-14'>
                    
-                    <TouchableOpacity onPress={handleContinue} style={{ paddingVertical:10, paddingHorizontal:15, backgroundColor:Colors.secondary, borderRadius:10 }}    >
+                    <TouchableOpacity onPress={handleContinue} style={{ paddingVertical:10, paddingHorizontal:15, backgroundColor:Colors.secondary, borderRadius:30 }}    >
                         <Text className='text-primary  font-pbold'>One step left</Text>
                     </TouchableOpacity>
                 </View>
@@ -188,7 +187,7 @@ const profile1 = () => {
                   ) : (
                     
 
-                      <TouchableOpacity onPress={handleUpload}  style={{ paddingHorizontal:20, paddingVertical:10, backgroundColor:Colors.secondary, borderRadius:10 }} >
+                      <TouchableOpacity onPress={handleUpload}  style={{ paddingHorizontal:20, paddingVertical:10, backgroundColor:Colors.secondary, borderRadius:30 }} >
                         {/* <PlusIcon color={Colors.secondary} size={50} ></PlusIcon> */}
                         <Text className='text-primary font-pbold '>Add profile picture</Text>
                       </TouchableOpacity>

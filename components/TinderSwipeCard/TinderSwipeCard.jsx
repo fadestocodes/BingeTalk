@@ -79,7 +79,6 @@ useEffect(() => {
 
   const handleSwipeUp = (item) => {
     setSavedItem(item); // Save the swiped item
-   
     setList((prevStack) => prevStack.slice(1)); // Remove it from stack
     if (item.media_type === "movie") {
       router.push(`/movie/${item.id}`);
@@ -88,7 +87,7 @@ useEffect(() => {
     } else if (item.media_type === "tv") {
       router.push(`/tv/${item.id}`);
     } else if (item.tvId){
-      router.push(`/movie/${item.tv.tmdbId}`)
+      router.push(`/tv/${item.tv.tmdbId}`)
     }
   };
 

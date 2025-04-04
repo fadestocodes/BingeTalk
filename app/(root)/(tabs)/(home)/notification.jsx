@@ -9,43 +9,35 @@ import { formatDate, formatDateNotif } from '../../../../lib/formatDate'
 import { Star, ListChecks, MessagesSquare, MessageSquare, Heart, ThumbsUp, ThumbsDown, Handshake, UserPlus } from 'lucide-react-native'
 import { ProgressCheckIcon, RepostIcon , MessageIcon} from '../../../../assets/icons/icons'
 import { useRouter } from 'expo-router'
-
+import { useNotificationCountContext } from '../../../../lib/NotificationCountContext'
 
 const Notification = () => {
   const { user : clerkUser } = useUser();
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
   const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds} = useGetAllNotifs(ownerUser.id, 10);
+  const { updateNotifCount, notifCount } = useNotificationCountContext()
   
   
   
   const router = useRouter()
   
     
-    // useEffect(()=>{
-    //     const isFollowingId = notifications.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.id );
-    //     setIsFollowing(isFollowingId)
-
-    // },[])
-    
-
     
 
   const handlePress = async (item) => {
     console.log(item)
    
     setUnreadIds( prev => prev.filter( i => i !== item.id ))
-    const readNotif = await markNotifRead( item.id )
+    const readNotif = await markNotifRead( item.id, notifCount, updateNotifCount )
 
     // await refetch()
     if (item.parentActivityId){
       router.push(`/activity/${item.parentActivityId}`)
     } else if (item.threads  && !item.commentId){
-      console.log('right here bud')
       router.push({
         pathname:`/threads/${item.threads.id}`,
       })
     } else if (item.dialogue && !item.commentId){
-      console.log('from here')
       router.push({
         pathname:`/dialogue/${item.dialogue.id}`,
       })
@@ -60,25 +52,21 @@ const Notification = () => {
     } else if (item.activityType === 'FOLLOW'){
       router.push(`/user/${item.userId}`)
     } else if (item.commentId && item.comment.dialogueId){
-      console.log('right here')
       router.push({
         pathname:`/dialogue/${item.comment.dialogueId}`,
         params:{ replyCommentId: item.comment.id}
       })
     }else if (item.comment.parentComment && item.comment.parentComment.threadId){
-      console.log('could it be')
       router.push({
         pathname:`/threads/${item.comment.parentComment.threadId}`,
         params:{ replyCommentId: item.comment.parentComment.id}
       })
     } else if (item.comment.parentComment && item.comment.parentComment.dialogueId){
-      console.log('maybe here')
       router.push({
         pathname:`/dialogue/${item.comment.parentComment.dialogueId}`,
         params:{ replyCommentId: item.comment.parentComment.id}
       })
     }   else if (item.commentId && item.comment.threadId){
-      console.log('hi threre')
       router.push({
         pathname:`/threads/${item.comment.threadId}`,
         params:{ replyCommentId: item.comment.id}

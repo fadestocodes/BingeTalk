@@ -54,13 +54,64 @@ const MovieIndex = () => {
             </TouchableOpacity>
           )}
         />
-        <FlatList
-          data = { selected === 'Trending' ? trendingShows : selected === 'Upcoming' && upcomingShows }
+
+        { selected === 'Trending' && (
+          <FlatList
+          data = { trendingShows }
           keyExtractor={item => item.id + new Date().getTime().toString()}
           contentContainerStyle={{gap:15, marginTop:30}}
           renderItem={({item}) => {
             
             // console.log('item is', item.id, item.title)
+
+            return (
+            <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
+            <Image
+                style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                }}
+                source={{ uri: `${posterURL}${ item.backdrop_path  }` }}
+                placeholder={{ uri: `${posterURLlow}${ item.backdrop_path }`  }}
+                placeholderContentFit="cover"
+                contentFit="cover" // Same as resizeMode='cover'
+             />
+            <LinearGradient
+                colors={['transparent', 'black']}
+                style={{
+                height: '100%',
+                width: '100%',
+                position: 'absolute',
+                }}
+            />
+            <View className='flex-row justify-between items-end w-full h-full' style={{paddingHorizontal:15, paddingVertical:15}}>
+
+            <View  className='justify-end items-start  h-full' style={{maxWidth:220}} > 
+                <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
+                
+                    <View className='flex-row gap-1 justify-center items-center'>
+                        <TVIcon color={Colors.secondary}/> 
+                        <Text className='text-white text font-pbold'>{ item.tvId ? `${item.tv.title} (${getYear(item.tv.releaseDate)})` : `${item.title} (${getYear(item.first_air_date)})` }</Text>
+                    </View>
+                </TouchableOpacity>
+                            
+            </View>
+            <View className='flex-row gap-3 items-center justify-center ' >
+                    
+                    </View>
+            </View>
+        </TouchableOpacity>
+          )}}
+        />
+        ) }
+        { selected === 'Upcoming' && (
+          <FlatList
+          data = {  upcomingShows }
+          keyExtractor={item => item.id + new Date().getTime().toString()}
+          contentContainerStyle={{gap:15, marginTop:30}}
+          renderItem={({item}) => {
+            
 
             return (
             <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
@@ -97,18 +148,14 @@ const MovieIndex = () => {
                             
             </View>
             <View className='flex-row gap-3 items-center justify-center ' >
-                        {/* <TouchableOpacity  style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                            <Text className='text-primary font-pbold text-sm'>Remove</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <EllipsisVertical size={20} color={Colors.mainGray} />
-                        </TouchableOpacity> */}
+                    
                     </View>
             </View>
-        {/* <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/> */}
         </TouchableOpacity>
           )}}
         />
+        ) }
+        
       </View>
 
       </View>

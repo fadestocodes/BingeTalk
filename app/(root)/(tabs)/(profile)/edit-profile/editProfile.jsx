@@ -241,7 +241,7 @@ const editProfile = () => {
             <View className='gap-3 py-3 px-5  my-3 w-full justify-center items-center'>
                 <Text className='text-mainGray font-pbold'>Current Rotation</Text>
                 <TouchableOpacity onPress={handleEditRotation}  style={{ width:'100%', backgroundColor:Colors.mainGrayDark, paddingHorizontal:20, paddingVertical:10, height:120, borderRadius:15 }} >
-
+                    <Text className='font-pbold text-mainGray self-center' style={{position:'absolute', top:50, borderRadius:30, borderWidth:1, borderColor:Colors.mainGray, paddingHorizontal:30, paddingVertical:5  }} >Edit</Text>
                     <FlatList
                         data={fetchedUser.currentRotation}
                         horizontal
@@ -267,7 +267,7 @@ const editProfile = () => {
             </View>
 
             
-            <TouchableOpacity onPress={handleSave}  style={{ marginTop:30, backgroundColor:Colors.secondary, paddingHorizontal:20, paddingVertical:10, borderRadius:10 }} >
+            <TouchableOpacity onPress={handleSave}  style={{ marginTop:30, backgroundColor:Colors.secondary, paddingHorizontal:20, paddingVertical:10, borderRadius:30 }} >
                 <Text className='font-pbold'>Save changes</Text>
             </TouchableOpacity>
 

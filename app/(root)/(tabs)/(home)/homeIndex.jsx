@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl,  } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, ScrollView,  } from 'react-native'
 import React, {useState, useEffect, useRef} from 'react'
 import { homeCategories } from '../../../../lib/CategoryOptions'
 import { Colors } from '../../../../constants/Colors';
@@ -21,9 +21,11 @@ import { likeActivity } from '../../../../api/activity';
 import ThreadActivityCard from '../../../../components/ThreadActivityCard';
 import ActivityCard from '../../../../components/ActivityCard';
 import ActivityCard2 from '../../../../components/ActivityCard2';
+import { useNotificationCountContext } from '../../../../lib/NotificationCountContext';
 
 
 const homeIndex = () => {
+  const { notifCount, updateNotifCount } = useNotificationCountContext()
     const [selected, setSelected] = useState('All');
     const { user: clerkUser } = useUser();
     const { data: ownerUser, isLoading: isLoadingOwnerUser, refetch:refetchOwner } = useFetchOwnerUser({
@@ -49,7 +51,7 @@ const homeIndex = () => {
     const getFeed = async () => {
        
         try {
-          const notifsData = await getAllNotifs( ownerUser.id, null , true )
+          const notifsData = await getAllNotifs( ownerUser.id, null , true, updateNotifCount )
           const unread = notifsData.filter( item => item.isRead === false)
           setUnreadNotifs(unread)
         } catch {
@@ -77,7 +79,7 @@ const homeIndex = () => {
 
     const refetchFeed = async () => {
       try {
-        const notifsData = await getAllNotifs( ownerUser.id, null , true )
+        const notifsData = await getAllNotifs( ownerUser.id, null , true, updateNotifCount )
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
 
@@ -112,9 +114,6 @@ const homeIndex = () => {
      
 
 
-    const handleUserPress = (item) => {
-      router.push(`/(home)/user/${item.id}`)
-    }
     
     const handlePosterPress = (item) => {
       if (item?.movie || item?.rating?.movie){
@@ -172,8 +171,8 @@ const homeIndex = () => {
             contentFit='cover'
             style={{ width:30, height:30, borderRadius:50 }}
           />
-          { unreadNotifs.length > 0 ? (
-            <Text className='text-primary font-psemibold text-sm text-center leading-6' style={{ textAlignVertical:'center' ,borderRadius:50, height:23, width:23, backgroundColor:Colors.secondary, position:'absolute' ,bottom:20, left:20 }} >{unreadNotifs.length}</Text>
+          { notifCount > 0 ? (
+            <Text className='text-primary font-psemibold text-sm text-center leading-6' style={{ textAlignVertical:'center' ,borderRadius:50, height:23, width:23, backgroundColor:Colors.secondary, position:'absolute' ,bottom:20, left:20 }} >{notifCount}</Text>
           ) : null}
         </View>
       </TouchableOpacity>
@@ -196,9 +195,15 @@ const homeIndex = () => {
       ) : (
 
          data.length < 1 ? (
-          <View>
+          <ScrollView style={{height:'100%'}} refreshControl={
+            <RefreshControl
+              tintColor={Colors.secondary}
+              refreshing={loading}
+              onRefresh={refetchFeed}
+            />
+          }> 
             <Text className='text-mainGray font-pbold text-2xl self-center pt-12'>Nothing to show yet...</Text>
-          </View>
+          </ScrollView>
         ) : (
               <View className='h-full'>
                 <FlatList

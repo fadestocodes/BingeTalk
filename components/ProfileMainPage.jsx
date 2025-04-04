@@ -31,9 +31,11 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         // useEffect(()=> {
         //     refetchUser();
         // }, [ user ])
+        console.log('hello from profilemainpage')
 
         const { signOut } = useClerk();
         const { user:clerkUser } = useUser();
+
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );

@@ -70,31 +70,60 @@ const browseHome = () => {
           { selected === 'Trending' && loading  || selected === 'Most Recent' &&  loadingRecents ? (
             <ActivityIndicator/>
           ) : (
-            
-                    <FlatList 
-                      refreshControl={
-                        <RefreshControl
-                          tintColor={Colors.secondary}
-                          onRefresh={refetch}
-                          refreshing={loading}
-                        />
+
+            <>
+              { selected === 'Trending' && (
+                <FlatList 
+                refreshControl={
+                  <RefreshControl
+                    tintColor={Colors.secondary}
+                    onRefresh={refetch}
+                    refreshing={loading}
+                  />
+                }
+                  onEndReached={() => {
+                      if ( hasMoreTrending  ){
+                          fetchMore(3)
+                      } 
+                  }}
+                  onEndReachedThreshold={0.1}
+                data={  trendingList }
+                keyExtractor = {item => item.id }
+                contentContainerStyle={{ gap:15 , width:'100%'}}
+                renderItem = {({item}) => {
+                  return (
+                  <ListCard list={item} />
+                )}}
+              />
+              ) }
+
+              { selected === 'Most Recent' && (
+                <FlatList 
+                refreshControl={
+                  <RefreshControl
+                    tintColor={Colors.secondary}
+                    onRefresh={refetchRecents}
+                    refreshing={loadingRecents}
+                  />
+                }
+                  onEndReached={() => {
+                      if (hasMoreRecents ){
+                        fetchMoreRecents(3)
                       }
-                        onEndReached={() => {
-                            if ( hasMoreTrending && selected === 'Trending' ){
-                                fetchMore(3)
-                            } else if (hasMoreRecents && selected==='Most Recent'){
-                              fetchMoreRecents(3)
-                            }
-                        }}
-                        onEndReachedThreshold={0.1}
-                      data={ selected === 'Trending' ?  trendingList : selected === 'Most Recent' && recentLists}
-                      keyExtractor = {item => item.id }
-                      contentContainerStyle={{ gap:15 , width:'100%'}}
-                      renderItem = {({item}) => {
-                        return (
-                        <ListCard list={item} />
-                      )}}
-                    />
+                  }}
+                  onEndReachedThreshold={0.1}
+                data={  recentLists }
+                keyExtractor = {item => item.id }
+                contentContainerStyle={{ gap:15 , width:'100%'}}
+                renderItem = {({item}) => {
+                  return (
+                  <ListCard list={item} />
+                )}}
+              />
+              ) }
+            </>
+            
+                    
 
           )}
 

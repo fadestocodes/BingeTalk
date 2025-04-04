@@ -130,7 +130,6 @@ export const fetchSpecificList = async (listId) => {
     try {
         const request = await fetch (`${nodeServer.currentIP}/list?listId=${listId}`)
         const response = await request.json();
-        console.log('fetched list ', response)
         return response
     } catch (err) {
         console.log(err)

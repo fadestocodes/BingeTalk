@@ -45,15 +45,17 @@ const DiscoverDialogues = () => {
                 <ActivityIndicator />
             ) : (
                 <>
+                { selected === 'Trending' && (
+
             <FlatList
                  refreshControl={
                     <RefreshControl
                       tintColor={Colors.secondary}
-                      onRefresh={ selected === 'Trending' ? refetch : selected === 'Most Recent' && refetchRecents }
-                      refreshing={ selected === 'Trending' ? loadingTrending : selected === 'Most Recent' && loadingRecents}
+                      onRefresh={ refetch }
+                      refreshing={loadingTrending}
                     />
                   }
-                data={selected === 'Trending' ? trendingDialogues : recentDialogues}
+                data={trendingDialogues}
                 keyExtractor={(item, index) => index}
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
@@ -69,23 +71,47 @@ const DiscoverDialogues = () => {
                 )}}
                 onEndReachedThreshold={0}
                 onEndReached={ ()=>{
-                    if (selected === 'Trending' && hasMore){
+                    if ( hasMore){
                         fetchMore(10, true)
-                    } else if (selected === 'Hot Takes' && hasMoreRecents){
-                        fetchMoreRecents(10,false)
-                    }
+                    } 
                 }
-
-
                 } 
-                ListFooterComponent={(
-                    (selected === 'Trending' && loadingTrending) || (selected === 'Most Recent' && loadingRecents) ? (
-                        <ActivityIndicator />
-                    ) : null
-                )}
-                
-
                 />
+                ) }
+
+                { selected === 'Most Recent' && (
+                    <FlatList
+                    refreshControl={
+                       <RefreshControl
+                         tintColor={Colors.secondary}
+                         onRefresh={refetchRecents }
+                         refreshing={  loadingRecents}
+                       />
+                     }
+                   data={ recentDialogues}
+                   keyExtractor={(item, index) => index}
+                   contentContainerStyle={{gap:15}}
+                   renderItem={({item}) => {
+                       // console.log('flatlist item', item.id)
+                   return (
+                       <>
+                       <TouchableOpacity onPress={()=>router.push(`/dialogue/${item.id}`)} >
+                           <DialogueCard isBackground={true} dialogue={item}  />
+                       </TouchableOpacity>
+                      
+                       </>
+   
+                   )}}
+                   onEndReachedThreshold={0}
+                   onEndReached={ ()=>{
+                       if ( hasMoreRecents){
+                           fetchMoreRecents(10,false )
+                       }
+                   }
+                   } 
+                   />
+                ) }
+
                 
 
 

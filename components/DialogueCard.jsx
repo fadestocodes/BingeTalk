@@ -32,14 +32,13 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
     //     return <ActivityIndicator></ActivityIndicator>
     // }
 
-
     // const { data: userDB, refetch } = useFetchUser( {email : clerkUser.emailAddresses[0].emailAddress} )
     const userDB = dialogue.user
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
     const tag = dialogue.tag;
     const { user: clerkUser } = useUser()
-    const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
+    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
     
     
     const alreadyUpvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )

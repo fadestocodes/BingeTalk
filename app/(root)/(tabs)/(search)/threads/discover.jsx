@@ -46,16 +46,17 @@ const DiscoverDialogues = () => {
             { selected === 'Trending' && loadingTrending || selected === 'Most Recent' && loadingRecents ? (
                 <ActivityIndicator />
             ) : (
-
-            <FlatList
+                <>
+                { selected === 'Trending' && (
+                    <FlatList
             refreshControl={
                 <RefreshControl
                   tintColor={Colors.secondary}
-                  onRefresh={ selected === 'Trending' ? refetch : selected === 'Most Recent' && refetchRecents }
-                  refreshing={ selected === 'Trending' ? loadingTrending : selected === 'Most Recent' && loadingRecents}
+                  onRefresh={ refetch  }
+                  refreshing={ loadingTrending}
                 />
               }
-                data={selected === 'Trending' ? trendingThreads : recentThreads}
+                data={trendingThreads }
                 keyExtractor={(item, index) => index}
                 contentContainerStyle={{gap:15}}
                 renderItem={({item}) => {
@@ -66,16 +67,43 @@ const DiscoverDialogues = () => {
                     </TouchableOpacity>
                 )}}
                 onEndReached={ ()=>{
-                    
-                    
-                    if (selected === 'Trending' && hasMore){
+                    if (hasMore){
                         fetchMore(10, true)
-                    } else if (selected === 'Hot Takes' && hasMoreRecents){
+                    } 
+                } }
+                onEndReachedThreshold={0}
+            />
+                ) }
+
+                { selected === 'Most Recent' && (
+                    <FlatList
+            refreshControl={
+                <RefreshControl
+                  tintColor={Colors.secondary}
+                  onRefresh={  refetchRecents }
+                  refreshing={loadingRecents}
+                />
+              }
+                data={ recentThreads}
+                keyExtractor={(item, index) => index}
+                contentContainerStyle={{gap:15}}
+                renderItem={({item}) => {
+                    // console.log('flatlist item', item.id)
+                return (
+                    <TouchableOpacity onPress={()=>router.push(`/threads/${item.id}`)} >  
+                        <ThreadCard isBackground={true} thread={item} showThreadTopic={true} />
+                    </TouchableOpacity>
+                )}}
+                onEndReached={ ()=>{
+                  if (hasMoreRecents){
                         fetchMoreRecents(10, false)
                     }
                 } }
                 onEndReachedThreshold={0}
             />
+                ) }
+            </>
+            
             )}
         </View>
         </View> 

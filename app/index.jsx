@@ -22,7 +22,9 @@ import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-n
 
 
 const initializeNotification = () => {
+  
   useEffect(( ) => {
+    
     Notifications.setNotificationHandler({
       handleNotification: async (notification) => {
         
@@ -37,9 +39,9 @@ const initializeNotification = () => {
 
           const { route, userId } = notification.request.content.data;
 
-          return () => {
+          // return () => {
            
-          };
+          // };
     });
     const background = Notifications.addNotificationResponseReceivedListener(async (response) => {
           const { route } = response.notification.request.content.data;
@@ -108,7 +110,6 @@ useEffect(() => {
         const { status } = await Notifications.requestPermissionsAsync();
   
         if (status !== 'granted') {
-          alert('You must enable push notifications!');
           return;
         }
   

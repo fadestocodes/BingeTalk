@@ -2,6 +2,7 @@ import { useUser } from '@clerk/clerk-expo';
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user';
+import { useNotificationCountContext } from '@/lib/NotificationCountContext';
 
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
@@ -20,6 +21,8 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(prev => [...prev, ...response.items])
+
+
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
 
@@ -48,10 +51,12 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     return { data, loading, hasMore, refetch :getAllNotifs , isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds}
 }
 
-export const getAllNotifs = async (recipientId, limit, fetchAll) => {
+export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCount) => {
     try {
         const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
         const response = await notifications.json();
+        const unreadNotifs = response.filter(i => i.isRead === false)
+        updateNotifCount(unreadNotifs.length)
         return response
         
     } catch (Err){
@@ -59,7 +64,7 @@ export const getAllNotifs = async (recipientId, limit, fetchAll) => {
     }
 }
 
-export const markNotifRead = async (data) => {
+export const markNotifRead = async (data, notifCount, updateNotifCount) => {
     try {
         const request = await fetch(`${nodeServer.currentIP}/notifications/mark-read`, {
             method : 'POST',
@@ -69,6 +74,7 @@ export const markNotifRead = async (data) => {
             body : JSON.stringify({data})
         })
         const result = await request.json();
+        updateNotifCount(notifCount-1)
         
     } catch (err){
         console.log('Error trying to mark notifications as read')

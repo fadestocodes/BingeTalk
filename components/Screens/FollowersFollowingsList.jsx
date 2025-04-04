@@ -70,7 +70,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
       </View>
 
 
-      <View className='w-full my-5 gap-8' style={{paddingBottom:100}}>
+      <View className='w-full my-5 gap-8' style={{paddingBottom:150}}>
         <FlatList
           horizontal
           data={followersListCategories}
@@ -84,6 +84,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
         />
 
             <FlatList
+                showsVerticalScrollIndicator={false}
                 data={ whichList === 'Followers' ? followers : (whichList === 'Following' ? followings : [] )}
                 refreshControl={<RefreshControl
                     tintColor={Colors.secondary}

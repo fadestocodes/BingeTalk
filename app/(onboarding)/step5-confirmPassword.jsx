@@ -18,7 +18,6 @@ const step5 = () => {
     const [ confirmPassword, setConfirmPassword ] = useState('')
     const router = useRouter();
     const [code, setCode] = useState(Array(length).fill(''));
-    const [ userFromDB, setUserFromDB ] = useState(null)
     const verificationInputs = useRef([]);
 
     const handleInputs = (name, value) => {
@@ -50,7 +49,7 @@ const step5 = () => {
             password,
             firstName,
             lastName,
-            username
+            username : username.toLocaleLowerCase()
             })
             // Send user an email with verification code
             await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
@@ -58,18 +57,7 @@ const step5 = () => {
             // Set 'pendingVerification' to true to display second form
             // and capture OTP code
             setPendingVerification(true)
-            try {
-                const response = await addUser( { firstName, lastName, email, username } );
-                console.log('new user', response)
-                updateUserDB(response)
-
-                if (!response) {
-                    console.log('Error trying to add user')
-                }
-            } catch (err) {
-                console.log(err)
-            }
-
+            
         } catch (err) {
             // See https://clerk.com/docs/custom-flows/error-handling
             // for more info on error handling
@@ -91,6 +79,14 @@ const step5 = () => {
             // and redirect the user
             if (signUpAttempt.status === 'complete') {
             await setActive({ session: signUpAttempt.createdSessionId })
+            const response = await addUser( { firstName, lastName, email, username : username.toLocaleLowerCase() } );
+            console.log('new user', response)
+            updateUserDB(response)
+
+            if (!response) {
+                console.log('Error trying to add user')
+            }
+
             router.replace({
                 pathname:'(profileSetup)/profile1',
             })

@@ -201,8 +201,8 @@ return (
                       placeholder='Search for a movie/show'
                       placeholderTextColor={Colors.mainGray}
                       onChangeText={(text)=>handleChange(text)}
-                      className='w-full bg-white rounded-3xl text-lg font-pbold'
-                      style={{ height:50, paddingHorizontal:25, paddingBottom:0 }}
+                      className='w-full  rounded-3xl text-lg font-pbold'
+                      style={{ height:50, paddingHorizontal:25, paddingBottom:0, backgroundColor:Colors.mainGrayDark }}
                       value={searchQuery}
                   />
               </View>

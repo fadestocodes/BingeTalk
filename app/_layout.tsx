@@ -20,6 +20,7 @@ import {PostRemoveProvider} from '../lib/PostToRemoveContext'
 import * as Notifications from 'expo-notifications'
 import {postPushToken} from '../api/notification'
 import { useFetchOwnerUser } from '@/api/user';
+import {NotificationProvider} from '../lib/NotificationCountContext'
 
 
 
@@ -35,7 +36,6 @@ SplashScreen.setOptions({
 
 export default function RootLayout() {
 
-    console.log('from root layout')
   
 
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
@@ -83,6 +83,7 @@ export default function RootLayout() {
       <ClerkLoaded>
         <QueryClientProvider client={queryClient}>
         <UserDBProvider>
+          <NotificationProvider>
           <DialogueProvider>
             <PostRemoveProvider>
         <GestureHandlerRootView style={{ flex: 1, backgroundColor:Colors.primary }}>
@@ -100,6 +101,7 @@ export default function RootLayout() {
           </GestureHandlerRootView>
           </PostRemoveProvider>
           </DialogueProvider>
+          </NotificationProvider>
           </UserDBProvider>
         </QueryClientProvider>
       </ ClerkLoaded >

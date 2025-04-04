@@ -6,6 +6,7 @@ import { useFetchUser } from '../../../../../api/user'
 import { fetchUser } from '../../../../../api/user'
 
 const userIdPageBrowse = () => {
+  console.log('from browse/user')
     const { userId } = useLocalSearchParams();
 
     const { data:user, refetch:refetchUser, isFetching:isFetchingUser } = useFetchUser( { id : Number(userId)} )

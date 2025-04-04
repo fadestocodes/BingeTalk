@@ -9,7 +9,7 @@ import { DraggableGrid } from 'react-native-draggable-grid';
 import { CloseIcon, BackIcon, TVIcon, FilmIcon } from '../../assets/icons/icons'
 import { searchTitles } from '../../api/tmdb'
 import { getYear } from '../../lib/formatDate'
-import { updateUser } from '../../api/user'
+import { updateUser, useFetchOwnerUser } from '../../api/user'
 import { useUserDB } from '../../lib/UserDBContext'
 import { updateRotation } from '../../api/user'
 
@@ -23,6 +23,7 @@ const profile2 = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [ listItems, setListItems ]  = useState([])
     const {user} = useUser();
+    // const { data:ownerUser } = useFetchOwnerUser({email : user.emailAddresses[0].emailAddress})
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter();
@@ -130,9 +131,10 @@ const profile2 = () => {
                 firstName : user.firstName,
                 lastName : user.lastName,
                 email : user.email,
-                
+
             }
             const response = await updateUser(params,user.emailAddresses[0].emailAddress )
+
             const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )
             updateUserDB(response)
             
@@ -194,7 +196,7 @@ const profile2 = () => {
                     
                 ) : (
 
-                    <View className='' >
+                    <View className='' style={{ paddingBottom:120 }} >
                     <FlatList
                     data={results}
                     keyExtractor={(item) => item.id}
@@ -278,7 +280,7 @@ const profile2 = () => {
 
             </View>
            
-            <TouchableOpacity onPress={handleContinue}  style={{ borderRadius:10, paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.secondary, width:100 }}  >
+            <TouchableOpacity onPress={handleContinue}  style={{ borderRadius:30, paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.secondary, width:100 }}  >
               <Text className='text-primary text-lg font-pbold text-center'>Continue</Text>
             </TouchableOpacity>
             </View>
