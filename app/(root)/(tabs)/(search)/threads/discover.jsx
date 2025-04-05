@@ -8,6 +8,7 @@ import DialogueCard from '../../../../../components/DialogueCard'
 import { useGetRecentThreads, useGetTrendingThreadsInfinite } from '../../../../../api/thread'
 import ThreadCard from '../../../../../components/ThreadCard'
 import { useRouter } from 'expo-router'
+import { BackIcon } from '../../../../../assets/icons/icons'
 
 const DiscoverDialogues = () => {
     const [ selected, setSelected ] = useState('Trending')
@@ -19,7 +20,10 @@ const DiscoverDialogues = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
-      <View className='w-full  pt-10 px-4 gap-5' style={{paddingBottom:200}}>
+      <View className='w-full  px-4 gap-5' style={{paddingBottom:200}}>
+      <TouchableOpacity onPress={()=>router.back()}>
+              <BackIcon size={22} color={Colors.mainGray}/>
+            </TouchableOpacity>
         <View className="gap-3">
             <View className='flex-row gap-2 justify-start items-center'>
 
@@ -29,7 +33,7 @@ const DiscoverDialogues = () => {
             <Text className='text-mainGray font-pmedium'>Discover conversations about your fav titles, cast, or crew!</Text>
         </View>
 
-        <View className='w-full my-5 gap-3' style={{paddingBottom:120}}>
+        <View className='w-full  gap-3' style={{paddingBottom:120}}>
             <FlatList
            
             horizontal

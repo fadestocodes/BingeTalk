@@ -10,6 +10,7 @@ import { Star, ListChecks, MessagesSquare, MessageSquare, Heart, ThumbsUp, Thumb
 import { ProgressCheckIcon, RepostIcon , MessageIcon} from '../../../../assets/icons/icons'
 import { useRouter } from 'expo-router'
 import { useNotificationCountContext } from '../../../../lib/NotificationCountContext'
+import { BackIcon } from '../../../../assets/icons/icons'
 
 const Notification = () => {
   const { user : clerkUser } = useUser();
@@ -101,7 +102,10 @@ const Notification = () => {
         </View>
       ) : (
 
-    <View className='w-full  pt-3 px-4 gap-5' style={{paddingBottom:200}}>
+    <View className='w-full   px-4 gap-5' style={{paddingBottom:200}}>
+            <TouchableOpacity onPress={()=>router.back()}>
+              <BackIcon size={22} color={Colors.mainGray}/>
+            </TouchableOpacity>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
 

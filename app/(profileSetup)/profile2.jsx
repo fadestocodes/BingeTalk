@@ -125,11 +125,11 @@ const profile2 = () => {
             const params = {
                 id : userId,
                 clerkId : user.id,
-                bio,
+                bio : bio.trim(),
                 bioLink,
                 profilePic : image,
-                firstName : user.firstName,
-                lastName : user.lastName,
+                firstName : user.firstName.trim(),
+                lastName : user.lastName.trim(),
                 email : user.email,
 
             }

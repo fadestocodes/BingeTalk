@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Colors } from '../../constants/Colors'
 import { router, useLocalSearchParams } from 'expo-router'
-import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon, RepostIcon, ThreeDotsIcon } from '../../assets/icons/icons'
+import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon, RepostIcon, ThreeDotsIcon, BackIcon } from '../../assets/icons/icons'
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
 import { createComment } from '../../api/comments'
@@ -356,9 +356,12 @@ const ThreadsIdPage = () => {
         ) : (
      
         <>
-        <ScrollView className='bg-primary pt-12  relative ' >
+        <ScrollView className='bg-primary   relative ' >
 
-        <View style={{gap:10, marginVertical:10, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
+        <View style={{gap:10, marginVertical:0, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
+        <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:20}}>
+              <BackIcon size={20} color={Colors.mainGray}/>
+            </TouchableOpacity>
           <View className='gap-3'>
 
           <ThreadCard thread={thread} refetch={refetch} showThreadTopic={true} />

@@ -156,7 +156,7 @@ const homeIndex = () => {
       ) : (
 
      
-    <View className='w-full  pt-3 px-4 gap-5' style={{paddingBottom:130}}>
+    <View className='w-full  px-4 gap-5' style={{paddingBottom:130}}>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
 

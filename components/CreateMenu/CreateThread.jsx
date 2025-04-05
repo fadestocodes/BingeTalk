@@ -65,8 +65,8 @@ import { MessagesSquare } from 'lucide-react-native'
                 movieId : threadObject.media_type === 'movie' ? threadObject.id : null  ,
                 tvId : threadObject.media_type === 'tv' ? threadObject.id : null ,
                 castId :threadObject.media_type === 'person' ? threadObject.id : null ,
-                title : inputs.threadTitle,
-                caption : inputs.threadCaption ,
+                title : inputs.threadTitle.trim(),
+                caption : inputs.threadCaption.trim() ,
                 tags : Object.keys(tags).length > 0 ? tags : null,
                 threadObject
             }

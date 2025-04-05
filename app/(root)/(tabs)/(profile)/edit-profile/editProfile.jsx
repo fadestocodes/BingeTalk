@@ -5,7 +5,7 @@ import { useFetchOwnerUser, useFetchUser } from '../../../../../api/user'
 import { useUser } from '@clerk/clerk-expo'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Colors } from '../../../../../constants/Colors'
-import { CloseIcon } from '../../../../../assets/icons/icons'
+import { CloseIcon, BackIcon } from '../../../../../assets/icons/icons'
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { router, useRouter } from 'expo-router'
 import { updateUser } from '../../../../../api/user'
@@ -121,7 +121,9 @@ const editProfile = () => {
         
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}  >
         <ScrollView className="bg-primary">
+            
         <View style={{   justifyContent: 'start', alignItems: 'center', paddingBottom:200 }}>
+        
             <View className='relative w-full justify-center items-center' >
                 { loadingImage ? (
                     <View style = {{ width:'100%', height:250, position:'absolute', top:0 }} >
@@ -151,6 +153,9 @@ const editProfile = () => {
                     top:0,
                     }}
                 />
+                <TouchableOpacity onPress={()=>router.back()} style={{position:'absolute', top:60, left:20}}>
+              <BackIcon size={22} color={Colors.mainGray}/>
+            </TouchableOpacity>
                 <TouchableOpacity onPress={handleImageUpload} style={{backgroundColor:Colors.mainGrayDark, position:'absolute', borderRadius:15, paddingHorizontal:10, paddingVertical:5, opacity:.7, top:60, right:20}}>
                     <Text className='text-mainGray font-pbold text-xs'>Change profile pic</Text>
                 </TouchableOpacity>

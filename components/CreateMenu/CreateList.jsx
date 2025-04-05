@@ -54,8 +54,8 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
             }
 
         const postData = {
-            title : inputs.listTitle ,
-            caption : inputs.listDescription,
+            title : inputs.listTitle.trim() ,
+            caption : inputs.listDescription.trim(),
             userId,
             listItems
         }

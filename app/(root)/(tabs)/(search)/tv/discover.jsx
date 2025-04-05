@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Image } from 'expo-image'
 import { getYear } from '../../../../../lib/formatDate'
 import { LinearGradient } from 'expo-linear-gradient'
-import { TVIcon } from '../../../../../assets/icons/icons'
+import { TVIcon , BackIcon} from '../../../../../assets/icons/icons'
 import { movieCategories } from '../../../../../lib/CategoryOptions'
 import { Colors } from '../../../../../constants/Colors'
 import { tvCategories } from '../../../../../lib/CategoryOptions'
@@ -32,7 +32,10 @@ const MovieIndex = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
-      <View className='w-full  pt-10 px-6 gap-5' style={{paddingBottom:200}}>
+      <View className='w-full  px-6 gap-5' style={{paddingBottom:200}}>
+      <TouchableOpacity onPress={()=>router.back()}>
+              <BackIcon size={22} color={Colors.mainGray}/>
+            </TouchableOpacity>
         <View className="gap-3">
             <View className='flex-row gap-2 justify-start items-center'>
 
@@ -42,7 +45,7 @@ const MovieIndex = () => {
             <Text className='text-mainGray font-pmedium'>Check out the most bingeable shows right now.</Text>
         </View>
 
-        <View className='w-full my-5 gap-3' style={{paddingBottom:100}}>
+        <View className='w-full  gap-3' style={{paddingBottom:100}}>
         <FlatList
           horizontal
           data={movieCategories}

@@ -242,7 +242,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         // console.log('tag name', tags[0].name)
         const postData = {
             userId,
-            content : formattedString,
+            content : formattedString.trim(),
             mentions : mentionsForPrisma,
             tags
         }

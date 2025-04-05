@@ -601,13 +601,18 @@ export const useGetFollowersListInfinite = (userId, limit) => {
             const response = await fetch(`${nodeServer.currentIP}/user/followers?userId=${userId}&limit=${limit}&cursor=${cursor}`)
             
             const results = await response.json()
+            
+            const isFollowingId = results.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.following.id ) ).map( element => element.following.id );
+            setIsFollowingIds(prev=> [...prev, ...isFollowingId])
+            const checkFollowResults = results.items.map( i => ({
+                ...i,
+                alreadyFollowing : isFollowingId.includes( i?.follower?.id ) 
+            }) )
           
-            setData(prev => [...prev, ...results.items])
+            setData(prev => [...prev, ...checkFollowResults])
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
           
-            const isFollowingId = results.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.following.id ) ).map( element => element.following.id );
-            setIsFollowingIds(prev=> [...prev, ...isFollowingId])
 
         } catch (Err){
             console.log(Err)
@@ -641,7 +646,7 @@ export const useGetFollowersListInfinite = (userId, limit) => {
         }
     }
 
-    return { data, loading, hasMore, refetch , isFollowingIds, setIsFollowingIds }
+    return { data, loading, hasMore, refetch , isFollowingIds, setIsFollowingIds, fetchMore : getFollowersListInfinite }
 }
 
 export const useGetFollowingListInfinite = (userId, limit) => {
@@ -658,12 +663,16 @@ export const useGetFollowingListInfinite = (userId, limit) => {
         try {
             const response = await fetch(`${nodeServer.currentIP}/user/followings?userId=${userId}&limit=${limit}&cursor=${cursor}`)
             const results = await response.json()
-            setData(results.items)
+            const isFollowingId = results.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.follower.id ) ).map( element => element.follower.id );
+            setIsFollowingIds(isFollowingId)
+            const checkFollowResults = results.items.map( i => ({
+                ...i,
+                alreadyFollowing : isFollowingId.includes( i?.follower?.id ) 
+            }) )
+            setData(prev => [...prev,...checkFollowResults])
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
            
-            const isFollowingId = results.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.follower.id ) ).map( element => element.follower.id );
-            setIsFollowingIds(isFollowingId)
 
         } catch (Err){
             console.log(Err)
@@ -682,7 +691,7 @@ export const useGetFollowingListInfinite = (userId, limit) => {
             const response = await fetch(`${nodeServer.currentIP}/user/followings?userId=${userId}&limit=${limit}&cursor=null`)
             const results = await response.json()
           
-            setData(results.items)
+            setData(prev => [...prev,results.items])
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
           
@@ -696,5 +705,5 @@ export const useGetFollowingListInfinite = (userId, limit) => {
         }
     }
 
-    return { data, loading, hasMore, refetch , isFollowingIds, setIsFollowingIds }
+    return { data, loading, hasMore, refetch , isFollowingIds, setIsFollowingIds, fetchMore : getFollowingListInfinite }
 }

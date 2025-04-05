@@ -11,8 +11,8 @@ import { router } from 'expo-router'
 
 const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
 
-    const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds } = useGetFollowersListInfinite( userId, limit )
-    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing, setIsFollowingIds : setIsFollowingIdsFromFollowing } = useGetFollowingListInfinite( userId, limit )
+    const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds, fetchMore } = useGetFollowersListInfinite( userId, limit )
+    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing, setIsFollowingIds : setIsFollowingIdsFromFollowing, fetchMore:fetchMoreFollowings } = useGetFollowingListInfinite( userId, limit )
     const {user : clerkUser} = useUser()
     const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
 
@@ -64,10 +64,12 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
           <View className='flex-row gap-2 justify-start items-center'>
 
             {/* <FilmIcon size={30} color='white' /> */}
-            <Text className='text-white font-pbold text-3xl'>Your network</Text>
+            <Text className='text-white font-pbold text-3xl'>Your friends</Text>
           </View>
           <Text className='text-mainGray font-pmedium'>View your followers and who you're following.</Text>
       </View>
+
+     
 
 
       <View className='w-full my-5 gap-8' style={{paddingBottom:150}}>
@@ -83,44 +85,94 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
           )}
         />
 
+        { whichList === 'Followers' && (
             <FlatList
-                showsVerticalScrollIndicator={false}
-                data={ whichList === 'Followers' ? followers : (whichList === 'Following' ? followings : [] )}
-                refreshControl={<RefreshControl
-                    tintColor={Colors.secondary}
-                    onRefresh={whichList === 'Followers' ? refetchFollowers : refetchFollowings}
-                    refreshing={whichList === 'Followers' ? loadingFollowers : loadingFollowings}
-                />}
-                keyExtractor={item => item.id}
-                contentContainerStyle={{gap:15}}
-                renderItem={({item}) => {
-                    const checkFollowFromFollower = isFollowingIds.includes( item?.following?.id ) 
-                    const checkFollowFromFollowing = isFollowingIdsFromFollowing.includes( item?.follower?.id ) 
-                    return (
-                    <TouchableOpacity onPress={()=>{console.log('presseditem', item)}}>
-                       <View className="flex-row justify-between items-center gap-2">
-                            <TouchableOpacity onPress={()=>handleUserPress(item?.follower || item?.following)} className='flex-row gap-2 justify-center items-center'>
-                                    <Image
-                                    source={{ uri : item?.follower?.profilePic || item?.following?.profilePic }}
-                                    contentFit='cover'
-                                    style={{ width:40, height:40, borderRadius:50 }}
-                                    />
-                                    <View>
-                                        <Text className='text-mainGray font-pbold'>@{item?.follower?.username || item?.following?.username}</Text>
-                                        <Text className='text-white font-pregular'>{item?.follower?.firstName || item?.following?.firstName} { item?.follower?.lastName || item?.following?.lastName }</Text>
+            showsVerticalScrollIndicator={false}
+            data={ followers }
+            refreshControl={<RefreshControl
+                tintColor={Colors.secondary}
+                onRefresh={refetchFollowers }
+                refreshing={loadingFollowers}
+            />}
+            keyExtractor={item => item.id}
+            onEndReached={fetchMore}
+            onEndReachedThreshold={0.2}
+            contentContainerStyle={{gap:15}}
+            renderItem={({item}) => {
+                const checkFollowFromFollower = isFollowingIds.includes( item?.following?.id ) 
+                // const checkFollowFromFollowing = isFollowingIdsFromFollowing.includes( item?.follower?.id ) 
+                return (
+                <TouchableOpacity onPress={()=>{console.log('presseditem', item)}}>
+                   <View className="flex-row justify-between items-center gap-2">
+                        <TouchableOpacity onPress={()=>handleUserPress(item?.follower || item?.following)} className='flex-row gap-2 justify-center items-center'>
+                                <Image
+                                source={{ uri : item?.follower?.profilePic || item?.following?.profilePic }}
+                                contentFit='cover'
+                                style={{ width:40, height:40, borderRadius:50 }}
+                                />
+                                <View>
+                                    <Text className='text-mainGray font-pbold'>@{item?.follower?.username || item?.following?.username}</Text>
+                                    <Text className='text-white font-pregular'>{item?.follower?.firstName || item?.following?.firstName} { item?.follower?.lastName || item?.following?.lastName }</Text>
 
-                                    </View>
-                            </TouchableOpacity>
-                                <>
-                                    <TouchableOpacity onPress={()=>handleFollowBack( whichList === 'Followers' ? checkFollowFromFollower : checkFollowFromFollowing , item)} style={{backgroundColor:checkFollowFromFollower || checkFollowFromFollowing ?  'transparent' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
-                                        <Text className='   font-pbold text-sm' style={{color: checkFollowFromFollower || checkFollowFromFollowing ? Colors.secondary : Colors.primary}}>{checkFollowFromFollower || checkFollowFromFollowing ? 'Already following' : isOwnersPage ? 'Follow back' : 'Follow'}</Text>
-                                    </TouchableOpacity>
+                                </View>
+                        </TouchableOpacity>
+                            <>
+                                <TouchableOpacity onPress={()=>handleFollowBack(  checkFollowFromFollower  , item)} style={{backgroundColor:checkFollowFromFollower  ?  'transparent' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
+                                    <Text className='   font-pbold text-sm' style={{color: checkFollowFromFollower  ? Colors.secondary : Colors.primary}}>{checkFollowFromFollower  ? 'Already following' : isOwnersPage ? 'Follow back' : 'Follow'}</Text>
+                                </TouchableOpacity>
 
-                                </>
-                        </View>
-                    </TouchableOpacity>
-                )}}
-            />
+                            </>
+                    </View>
+                </TouchableOpacity>
+            )}}
+        />
+            
+        ) }
+        { whichList === 'Following' && (
+            <FlatList
+            showsVerticalScrollIndicator={false}
+            data={ followings}
+            refreshControl={<RefreshControl
+                tintColor={Colors.secondary}
+                onRefresh={refetchFollowings}
+                refreshing={loadingFollowings}
+            />}
+            keyExtractor={item => item.id}
+            onEndReached={fetchMoreFollowings}
+            onEndReachedThreshold={0.2}
+            contentContainerStyle={{gap:15}}
+            renderItem={({item}) => {
+                // const checkFollowFromFollower = isFollowingIds.includes( item?.following?.id ) 
+                // const checkFollowFromFollowing = isFollowingIdsFromFollowing.includes( item?.follower?.id ) 
+                // console.log('items',item)
+                return (
+                <TouchableOpacity onPress={()=>{console.log('presseditem', item)}}>
+                   <View className="flex-row justify-between items-center gap-2">
+                        <TouchableOpacity onPress={()=>handleUserPress(item?.follower || item?.following)} className='flex-row gap-2 justify-center items-center'>
+                                <Image
+                                source={{ uri : item?.follower?.profilePic || item?.following?.profilePic }}
+                                contentFit='cover'
+                                style={{ width:40, height:40, borderRadius:50 }}
+                                />
+                                <View>
+                                    <Text className='text-mainGray font-pbold'>@{item?.follower?.username || item?.following?.username}</Text>
+                                    <Text className='text-white font-pregular'>{item?.follower?.firstName || item?.following?.firstName} { item?.follower?.lastName || item?.following?.lastName }</Text>
+
+                                </View>
+                        </TouchableOpacity>
+                            <>
+                                <TouchableOpacity onPress={()=>handleFollowBack( item.alreadyFollowing , item)} style={{backgroundColor:item.alreadyFollowing ?  'transparent' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
+                                    <Text className='   font-pbold text-sm' style={{color: item.alreadyFollowing ? Colors.secondary : Colors.primary}}>{item.alreadyFollowing ? 'Already following' : isOwnersPage ? 'Follow back' : 'Follow'}</Text>
+                                </TouchableOpacity>
+
+                            </>
+                    </View>
+                </TouchableOpacity>
+            )}}
+        />
+        ) }
+
+            
             </View>
 
         </View>
