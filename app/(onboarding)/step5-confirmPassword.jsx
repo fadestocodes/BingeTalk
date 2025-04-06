@@ -9,16 +9,20 @@ import { addUser } from '../../api/user'
 import { useUserDB } from '../../lib/UserDBContext'
 
 const step5 = () => {
+    const { isLoaded, signUp, setActive } = useSignUp()
     const { userDB, updateUserDB } = useUserDB();
     const length = 6;
     const { firstName, lastName, username, email, password } = useLocalSearchParams() // Get email from params
-    const { isLoaded, signUp, setActive } = useSignUp()
     const [pendingVerification, setPendingVerification] = React.useState(false)
     const [ errors, setErrors ] = useState({})
     const [ confirmPassword, setConfirmPassword ] = useState('')
     const router = useRouter();
     const [code, setCode] = useState(Array(length).fill(''));
     const verificationInputs = useRef([]);
+
+    if (!isLoaded){
+        return null
+    }
 
     const handleInputs = (name, value) => {
         setConfirmPassword( value) 
@@ -40,7 +44,7 @@ const step5 = () => {
     }
 
     const onSignUpPress = async () => {
-        if (!isLoaded) return
+        // if (!isLoaded) return
     
         // Start sign-up process using email and password provided
         try {
@@ -67,7 +71,7 @@ const step5 = () => {
     
         // Handle submission of verification form
     const onVerifyPress = async ( finalCode ) => {
-        if (!isLoaded) return
+        // if (!isLoaded) return
     
         try {
             // Use the code the user provided to attempt verificatione

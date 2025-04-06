@@ -46,7 +46,7 @@ const PostOptions = () => {
         } else if (postType === 'LIST'){
             data.listId = Number(postId)
             deleted = await deleteList(data)
-        } else if (postType === 'COMMENT'){
+        } else if (postType === 'COMMENT' || postType === 'REPLY'){
             data.commentId = Number(postId)
             deleted = await deleteComment(data)
         }
@@ -56,6 +56,7 @@ const PostOptions = () => {
             id : Number(postId),
             postType 
         } )
+        console.log('updaed post to remove ', )
 
         setIsStep1(true)
         setIsPressedButton(null)
@@ -75,7 +76,7 @@ const PostOptions = () => {
             dialogueId : postType === 'DIALOGUE' ? Number(postId) : null,
             threadId : postType === 'THREAD' ? Number(postId) : null,
             listId : postType === 'LIST' ? Number(postId) : null,
-            listId : postType === 'COMMENT' ? Number(postId) : null,
+            commentId : postType === 'COMMENT' ? Number(postId) : null,
             description : reportType
         } 
         const reportedPost = await reportPost(data)

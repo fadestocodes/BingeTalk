@@ -218,7 +218,7 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
 
                 const reorderedCommentsData = [
                     ...fetchedThread?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id ===replyCommentFromNotif.id) ,
-                    ...fetchedThread?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
+                    ...fetchedThread?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId && comment.id !== replyCommentFromNotif?.id) 
                 ]
                 setCommentsData(reorderedCommentsData)
             }else {
@@ -238,5 +238,21 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
             fetchThread();
     }, [])
 
-    return { thread, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchThread}
+    const removeItem = (removeId, removePostType) => {
+        if (removePostType === 'REPLY'){
+            const filteredComments = commentsData.map( i => {
+
+                if (i.replies.length > 0 && i.replies.some( x => x.id === Number(removeId))){
+                    i.replies = i.replies.filter( reply => reply.id !== Number(removeId) )
+                }
+                return i
+            } )
+            setCommentsData(filteredComments)
+        } else {
+            const filteredCommments = commentsData.filter( i => i.id !== Number(removeId) )
+            setCommentsData(filteredCommments)
+        }
+    }
+
+    return { thread, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchThread, removeItem}
 }

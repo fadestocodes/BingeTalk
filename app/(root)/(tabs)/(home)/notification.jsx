@@ -148,14 +148,15 @@ const Notification = () => {
             return (
             <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full justify-start items-start' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: unread ? 1 : 0.6  }}>
               <View className='flex-row gap-2 justify-between items-center w-full'>
-                <View className='flex-row gap-2 justify-center items-center'>
+                <TouchableOpacity onPress={()=>router.push(`user/${item.user.id}`)} className='flex-row gap-2 justify-center items-center'>
+
                   <Image 
                     source={{ uri : item.user.profilePic }}
                     style={{ width:30, height:30, borderRadius:50 }}
                     contentFit='cover'
                   />
                   <Text className='text-mainGrayDark'>@{item.user.username}</Text>
-                </View>
+                </TouchableOpacity>
                 <Text className='text-mainGrayDark'>{ formatDateNotif(item.createdAt)}</Text>
               </View>
               <View className='flex-row gap-3 justify-center items-center px-4' >

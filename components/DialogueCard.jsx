@@ -252,7 +252,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         <View className='relative' >
                             <TouchableOpacity onPress={()=>handleThreeDots(dialogue)}  >
                             <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                <ThreeDotsIcon className='' size={16} color={Colors.mainGray} />
+                                <ThreeDotsIcon className='' size={20} color={Colors.mainGray} />
                             </View>
                             </TouchableOpacity>
                         </View>

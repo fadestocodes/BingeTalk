@@ -113,7 +113,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
 
                 const reorderedCommentsData = [
                     ...fetchedDialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id === replyCommentFromNotif.id) ,
-                    ...fetchedDialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
+                    ...fetchedDialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId && comment.id !== replyCommentFromNotif?.id) 
                 ]
                 setCommentsData(reorderedCommentsData)
             }else {
@@ -133,7 +133,24 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
             fetchDialogue();
     }, [])
 
-    return { dialogue, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchDialogue}
+    const removeItem = (removeId, removePostType) => {
+        if (removePostType === 'REPLY'){
+            const filteredComments = commentsData.map( i => {
+
+                if (i.replies.length > 0 && i.replies.some( x => x.id === Number(removeId))){
+                    i.replies = i.replies.filter( reply => reply.id !== Number(removeId) )
+                }
+                return i
+            } )
+            setCommentsData(filteredComments)
+        } else {
+            const filteredCommments = commentsData.filter( i => i.id !== Number(removeId) )
+            setCommentsData(filteredCommments)
+        }
+    }
+
+   
+    return { dialogue, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchDialogue, removeItem}
 }
 
 export const dialogueInteraction = async ( data ) => {

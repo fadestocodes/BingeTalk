@@ -10,7 +10,7 @@ const step4 = () => {
     const length = 6;
     const router = useRouter();
     const { firstName, lastName, username, email } = useLocalSearchParams() // Get email from params
-    const { isLoaded, signUp, setActive } = useSignUp()
+    // const { isLoaded, signUp, setActive } = useSignUp()
     const [ errors, setErrors ] = useState({})
     const [ password, setPassword ] = useState('')
    

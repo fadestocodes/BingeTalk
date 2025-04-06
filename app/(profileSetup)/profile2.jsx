@@ -135,7 +135,7 @@ const profile2 = () => {
             }
             const response = await updateUser(params,user.emailAddresses[0].emailAddress )
 
-            const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )
+            await updateRotation( userId, rotationItems, listItemObj )
             updateUserDB(response)
             
         } catch (err) {
@@ -151,7 +151,7 @@ const profile2 = () => {
     <SafeAreaView className='w-full h-full   bg-primary' style ={{height:'100%', height:'100%' , justifyContent:'center', alignItems:'center'}}>
        <KeyboardAvoidingView
       style={{ flex: 1, width:'100%', height:'100%' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    //   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
     <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()} style={{width:'100%', height:'100%', backgroundColor:Colors.primary}}>
       <View  style={{ justifyContent:'center', alignItems:'center', height:'100%', height:'100%', paddingTop:0,  backgroundColor:Colors.primary, gap:15 , paddingHorizontal:30}} >

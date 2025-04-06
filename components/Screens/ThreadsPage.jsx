@@ -15,6 +15,8 @@ import { fetchSingleThread , threadInteraction, useCustomFetchSingleThread, useF
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import ThreadCard from '../ThreadCard'
 import { commentInteraction } from '../../api/comments'
+import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
+
 
 
 
@@ -39,6 +41,8 @@ const ThreadsIdPage = () => {
     const { data: ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
     const userId = ownerUser.id
     const queryClient = useQueryClient();
+    const { postToRemove, updatePostToRemove } = usePostRemoveContext()
+
 
 
     // console.log('threads array', threads)
@@ -51,7 +55,7 @@ const ThreadsIdPage = () => {
     // const [ thread, setThread ] = useState(null)
 
     // const { data: thread , refetch, isFetching} = useFetchSingleThread(Number(threadsId))
-    const { thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useCustomFetchSingleThread(Number(threadsId), Number(replyCommentId))
+    const { thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleThread(Number(threadsId), Number(replyCommentId))
 
 
 
@@ -64,6 +68,14 @@ const ThreadsIdPage = () => {
     const animatedStyle = useAnimatedStyle(() => ({
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
+
+
+    useEffect(()=>{
+        console.log('triggeredf from useeffect')
+        removeItem( postToRemove.id, postToRemove.postType )
+        // refetch()
+    },[postToRemove])
+   
 
 
     
@@ -343,6 +355,18 @@ const ThreadsIdPage = () => {
     }
 
 
+    const handleThreeDots = (item, fromReply) => {
+        console.log('from threedots', item)
+        console.log('from reply?', fromReply)
+
+        const fromOwnPost = item.userId === ownerUser.id
+        router.push({
+            pathname:'/postOptions',
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
+        })
+    }
+
+
 
 
 
@@ -403,12 +427,12 @@ const ThreadsIdPage = () => {
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
                                 <Text className='text-white text-custom font-pcourier'>{item.content}</Text>
     
-                                <View className='flex-row gap-5 w-full justify-start items-center'>
-                                    
+                                <View className='flex-row justify-between w-full items-center'>
+                                        <View  className='flex-row gap-5 items-center'>
                                     <TouchableOpacity onPress={()=>handleReply(item, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
-
+    
                                     <TouchableOpacity onPress={()=>handleCommentInteraction('upvotes',item, alreadyUpvotedComment)}  >
                                     <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
                                         <ThumbsUp  size={20} color={ alreadyUpvotedComment ? Colors.secondary : Colors.mainGray} />
@@ -421,10 +445,12 @@ const ThreadsIdPage = () => {
                                             <Text className='text-xs font-pbold  text-gray-400' style={{ color : alreadyDownvotedComment ? Colors.secondary : Colors.mainGray }}>{item.downvotes}</Text>
                                     </View>
                                     </TouchableOpacity>
-                                    
+                                    </View>
+                                    <TouchableOpacity onPress={()=>handleThreeDots(item)}>
+                                        <ThreeDotsIcon size={20} color={Colors.mainGray} />
+                                    </TouchableOpacity>
 
-
-                                </View>
+                                    </View>
                             </View>
                         ) }
     
@@ -453,28 +479,34 @@ const ThreadsIdPage = () => {
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{reply.user.firstName}</Text>
                                 <Text className='text-white text-custom font-pcourier'>{reply.content}</Text>
     
-                                <View className='flex-row gap-5 w-full justify-start items-center'>
-                                    
-                                    <TouchableOpacity onPress={()=>handleReply(reply, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
-                                        <Text className='text-mainGray text-sm'>Reply</Text>
-                                    </TouchableOpacity>
+                                <View className='w-full justify-between flex-row'>
 
-                                    <TouchableOpacity onPress={()=>{console.log('REPLY OBJECT', item);handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
-                                    <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                        <ThumbsUp  size={20} color={ alreadyUpvotedReply ? Colors.secondary : Colors.mainGray} />
-                                            <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedReply ? Colors.secondary : Colors.mainGray}}>{reply.upvotes}</Text>
+                                    <View className='flex-row gap-5 w-full justify-start items-center'>
+                                        
+                                        <TouchableOpacity onPress={()=>handleReply(reply, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
+                                            <Text className='text-mainGray text-sm'>Reply</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity onPress={()=>{console.log('REPLY OBJECT', item);handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
+                                        <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                            <ThumbsUp  size={20} color={ alreadyUpvotedReply ? Colors.secondary : Colors.mainGray} />
+                                                <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedReply ? Colors.secondary : Colors.mainGray}}>{reply.upvotes}</Text>
+                                        </View>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={()=>handleCommentInteraction('downvotes',reply, alreadyDownvotedReply,item.id )}  >
+                                        <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
+                                            <ThumbsDown  size={20} color={ alreadyDownvotedReply ? Colors.secondary :  Colors.mainGray} />
+                                                <Text className='text-xs font-pbold  text-gray-400' style={{ color : alreadyDownvotedReply ? Colors.secondary : Colors.mainGray }}>{reply.downvotes}</Text>
+                                        </View>
+                                        </TouchableOpacity>
+                                        
+
+
                                     </View>
+                                    <TouchableOpacity onPress={()=> handleThreeDots(reply, 'fromReply')}>
+                                        <ThreeDotsIcon size={20} color={Colors.mainGray} />
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={()=>handleCommentInteraction('downvotes',reply, alreadyDownvotedReply,item.id )}  >
-                                    <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
-                                        <ThumbsDown  size={20} color={ alreadyDownvotedReply ? Colors.secondary :  Colors.mainGray} />
-                                            <Text className='text-xs font-pbold  text-gray-400' style={{ color : alreadyDownvotedReply ? Colors.secondary : Colors.mainGray }}>{reply.downvotes}</Text>
                                     </View>
-                                    </TouchableOpacity>
-                                    
-
-
-                                </View>
                             </View>
     
                             )}) }

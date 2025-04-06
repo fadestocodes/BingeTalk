@@ -72,7 +72,7 @@ const Welcome = () => {
   const router = useRouter(); 
   const [expoPushToken, setExpoPushToken] = useState(null);
   const [isTokenSent, setIsTokenSent] = useState(false);
-  const [owner, setOwner] = useState(null)
+  // const [owner, setOwner] = useState(null)
   const notificationListener = useRef()
   const responseListener = useRef()
   const [notification, setNotification]  = useState(null)
@@ -118,7 +118,7 @@ useEffect(() => {
         });
         setExpoPushToken(token.data); // Store the token
         const owner = await fetchUser({email : user.emailAddresses[0].emailAddress})
-        setOwner(owner)
+        // setOwner(owner)
         const params = {
           userId : owner.id,
           token : token.data,
@@ -128,7 +128,7 @@ useEffect(() => {
         const sentToken = await postPushToken(params);
   
       } catch (error) {
-        console.error('Error getting push token', error);  // Log any errors
+        console.log('Error getting push token', error);  // Log any errors
       }
     };
   
