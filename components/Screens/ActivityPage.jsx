@@ -47,7 +47,7 @@ const ActivityPage = () => {
   
     // Move input with keyboard automatically
     const animatedStyle = useAnimatedStyle(() => ({
-      bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+      bottom: withTiming(keyboard.height.value-50, { duration: 0 }),
     }));
 
     useEffect(()=>{
