@@ -1,36 +1,30 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, SafeAreaView, ScrollView, RefreshControl, TextInput } from 'react-native'
-import React, {useState, useRef} from 'react'
-import { Colors } from '../constants/Colors'
-import { formatDateNotif } from '../lib/formatDate'
+import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform , ActivityIndicator, RefreshControl} from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
 import { Image } from 'expo-image'
-import { CloseIcon } from '../assets/icons/icons'
-import { ThumbsDown, ThumbsUp} from 'lucide-react-native'
-import { useFetchOwnerUser } from '../api/user'
-import { useCustomFetchSingleDialogue } from '../api/dialogue'
-import { useCustomFetchSingleThread } from '../api/thread'
-import { useCustomFetchSingleList } from '../api/list'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Colors } from '../../constants/Colors'
+import { router, useLocalSearchParams } from 'expo-router'
+import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon, RepostIcon, ThreeDotsIcon , BackIcon} from '../../assets/icons/icons'
+import { formatDate } from '../../lib/formatDate'
+import { GestureDetector, Gesture} from 'react-native-gesture-handler';
+import { commentInteraction, createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
 import { useUser } from '@clerk/clerk-expo'
+import { useFetchOwnerUser } from '../../api/user'
+import { useQueryClient, useQuery } from '@tanstack/react-query'
+import { fetchSingleDialogue, useFetchSingleDialogue } from '../../api/dialogue'
+import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import ThreadCard from '../ThreadCard'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
-import { createComment, commentInteraction } from '../api/comments'
-import { useFetchActivityId } from '../api/activity'
+import DialogueCard from '../DialogueCard'
+import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
+import { useFetchActivityId } from '../../api/activity'
+import ActivityCard2 from '../ActivityCard2'
 
-const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}) => {
 
 
+const ActivityPage = () => {
 
-    let dialogue, thread, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData;
-
-    if (postType === 'dialogue') {
-        // Destructure the values from useCustomFetchSingleDialogue hook
-        ({ dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleDialogue(Number(dialogueId)));
-    } else if (postType === 'thread') {
-        // Destructure the values from useCustomFetchSingleThread hook
-        ({ thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleThread(Number(threadId)));
-    } else if (postType === 'list'){
-        ({ list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleList(Number(listId)));
-    } else if (postType === 'activity'){
-        ({ data:activity, interactedComments, commentsData, refetch, setInteractedComments, setCommentsData } = useFetchActivityId(Number(activityId)))
-    }
+    const { replyCommentId } = useLocalSearchParams();
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  // Create a ref for the input
     const [ replyingTo, setReplyingTo ] = useState(null)
@@ -38,11 +32,12 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     const { user : clerkUser } = useUser();
     const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-
-
    
     const userId = ownerUser.id
+    const { activityId, tvId, movieId, castId }= useLocalSearchParams();
 
+    const { data:activity, interactedComments, commentsData, loading:isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useFetchActivityId(Number(activityId), Number(replyCommentId))
+    const { postToRemove, updatePostToRemove } = usePostRemoveContext()
 
 
 
@@ -55,10 +50,13 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
 
+    useEffect(()=>{
+        removeItem( postToRemove.id, postToRemove.postType )
+        // refetch()
+    },[postToRemove])
+   
 
-    if (!dialogue && !thread && !list && !activity ){ 
-        return <ActivityIndicator/>
-    }
+
 
 
 
@@ -69,10 +67,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
         
         const replyingToData = {
             user : item.user,
-            dialogueId : dialogue ? Number(dialogue.id) : null,
-            threadId : thread ? Number(thread.id) : null,
-            listId : list ? Number(list.id) : null,
-            activityId : activity ? Number(activity.id) : null,
+            activityId : Number(activity.id),
             content : item.content,
             parentId
         }
@@ -96,24 +91,19 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log('hello')
+
         const commentData = {
             userId : Number(userId),
-            dialogueId : Number(dialogueId) || null,
-            threadId : Number(threadId) || null,
-            listId : Number(listId) || null,
-            activityIdCommentedOn : Number(activityId) || null,
+            activityId : Number(activityId),
             content : input,
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
-            description: dialogue ? `commented on your dialogue "${input}"` : thread ?  `commented on your thread "${input}"` : list ? `commented on your list "${input}"` : activity && `commented on your activity "${input}"` ,
-            recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list ? list.user.id : activity && activity.user.id ,
+            description: `commented on your activity "${input}"`,
+            recipientId : activity.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
-        console.log('commentdata', commentData)
     
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment)
         setInput('');
         setReplyingTo(null)
         setReplying(false)
@@ -315,43 +305,53 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
         // refetchOwnerUser()
     }
 
+    const handleUserPress = (item) => {
+        router.push(`/user/${item.user.id}`)
+    }
+
+    const handleThreeDots = (item, fromReply) => {
+
+        const fromOwnPost = item.userId === ownerUser.id
+        router.push({
+            pathname:'/postOptions',
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
+        })
+    }
 
 
 
   return (
-    <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary, borderRadius:30}} >
-
+    <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
+       
+       { isLoading || !ownerUser ? (
+            <View className='h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        ) : (
      
         <>
-        <View style={{ width:55, height:7, borderRadius:10,  backgroundColor:Colors.mainGray, position:'sticky', alignSelf:'center',  marginVertical:30}} />
-
-        <ScrollView className='bg-primary pt-0  relative '  style={{borderRadius:30}}
+        <ScrollView className='bg-primary  relative ' 
             refreshControl={
                 <RefreshControl
-                tintColor={Colors.secondary}
-                refreshing={isLoading}
-                onRefresh={refetch}
+                    tintColor={Colors.secondary}
+                    refreshing={isLoading}
+                    onRefresh={refetch}
                 />
+
             }
-         
         >
 
         <View style={{gap:10, marginVertical:0, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
+        <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:20}}>
+              <BackIcon size={22} color={Colors.mainGray}/>
+            </TouchableOpacity>
           <View className='gap-3' >
-
+          <ActivityCard2 activity={activity} disableCommentsModal={true} />
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
-                { commentsData.length > 0 ? (
+                { commentsData.length > 0 && (
                     <>
                     <FlatList
-                    refreshControl={
-                        <RefreshControl
-                            tintColor={Colors.secondary}
-                            refreshing={isLoading}
-                            onRefresh={refetch}
-                        />
-        
-                    }
                     data={ commentsData}
                     keyExtractor={(item, index) => index.toString()}
                     scrollEnabled={false}
@@ -374,21 +374,21 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     
                             <View className='w-full  justify-center items-center gap-3 my-3'>
                             <View className='flex-row w-full justify-between items-center'>
-                                    <View className="flex-row items-center gap-2">
+                                    <TouchableOpacity onPress={()=>handleUserPress(item)} className="flex-row items-center gap-2">
                                         <Image
                                             source={{ uri: item.user.profilePic }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
                                         <Text className='text-mainGrayDark' >@{item.user.username}</Text>
-                                    </View>
-                                    <Text className='text-mainGrayDark '>{formatDateNotif(item.createdAt)}</Text>
+                                    </TouchableOpacity>
+                                    <Text className='text-mainGrayDark '>{formatDate(item.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
                                 <Text className='text-white text-custom font-pcourier'>{item.content}</Text>
     
-                                <View className='flex-row gap-5 w-full justify-start items-center'>
-    
+                                    <View className='flex-row justify-between w-full items-center'>
+                                        <View  className='flex-row gap-5 items-center'>
                                     <TouchableOpacity onPress={()=>handleReply(item, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
@@ -405,15 +405,21 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                             <Text className='text-xs font-pbold  text-gray-400' style={{ color : alreadyDownvotedComment ? Colors.secondary : Colors.mainGray }}>{item.downvotes}</Text>
                                     </View>
                                     </TouchableOpacity>
+                                    </View>
+                                    <TouchableOpacity onPress={()=>handleThreeDots(item)}>
+                                        <ThreeDotsIcon size={20} color={Colors.mainGray} />
+                                    </TouchableOpacity>
+
+                                    </View>
+    
                                     
                                 
                                 
-                                </View>
                             </View>
                         ) }
 
     
-                        { item.replies.length > 0 && (
+{ item.replies.length > 0 && (
                             <>
                             { item.replies.slice(0, shownReplies).map((reply) => {
                                 const alreadyUpvotedReply = interactedComments.upvotes.some( i => i.commentId === reply.id )
@@ -424,26 +430,28 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                 
                                <View key={reply.id}  className=' ml-10 pr-5 justify-center items-center gap-3 my-3' style={{ borderLeftWidth:1, borderColor:Colors.secondary, borderBottomLeftRadius:10, paddingHorizontal:15, paddingBottom:10 }}>
                             <View className='flex-row w-full justify-between items-center'>
-                                    <View className="flex-row items-center gap-2 pl-10">
+                                    <TouchableOpacity onPress={()=>handleUserPress(reply)} className="flex-row  items-center gap-2 ">
                                         <Image
                                             source={{ uri: reply.user.profilePic }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
                                         <Text className='text-mainGrayDark   ' >@{reply.user.username}</Text>
-                                    </View>
-                                    <Text className='text-mainGrayDark '>{formatDateNotif(reply.createdAt)}</Text>
+                                    </TouchableOpacity>
+                                    <Text className='text-mainGrayDark '>{formatDate(reply.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{reply.user.firstName}</Text>
                                 <Text className='text-white text-custom font-pcourier'>{reply.content}</Text>
-    
+                                
+                                <View className='w-full justify-between flex-row'>
+
                                 <View className='flex-row gap-5 w-full justify-start items-center'>
                                     
                                     <TouchableOpacity onPress={()=>handleReply(reply, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={()=>{handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
+                                    <TouchableOpacity onPress={()=>{console.log('REPLY OBJECT', item);handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
                                     <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
                                         <ThumbsUp  size={20} color={ alreadyUpvotedReply ? Colors.secondary : Colors.mainGray} />
                                             <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedReply ? Colors.secondary : Colors.mainGray}}>{reply.upvotes}</Text>
@@ -458,6 +466,10 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                     
 
 
+                                </View>
+                                <TouchableOpacity onPress={()=> handleThreeDots(reply, 'fromReply')}>
+                                    <ThreeDotsIcon size={20} color={Colors.mainGray} />
+                                </TouchableOpacity>
                                 </View>
                             </View>
     
@@ -482,10 +494,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                     />
                     </>
 
-                ) : (
-                    <>
-                    <Text className='text-mainGray text-2xl font-pbold text-center py-4'>No comments</Text>
-                    </>
                 ) }
 
 
@@ -529,17 +537,19 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                 )}
               </View>
             </Animated.View>
+
             </>
+            )}
 
 
     </SafeAreaView>
   )
 }
 
-export default CommentsComponent
+export default ActivityPage
 
 
-CommentsComponent.options = {
+ActivityPage.options = {
     headerShown: false,  // Optional: Hide header if not needed
   }
 

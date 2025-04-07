@@ -5,7 +5,7 @@ import CommentsComponent from '../../../../components/CommentsComponent'
 import { useLocalSearchParams } from 'expo-router'
 
 const commentsModalFromHome = () => {
-  const {dialogueId, threadId, listId} = useLocalSearchParams()
+  const {dialogueId, threadId, listId, activityId} = useLocalSearchParams()
   let postType
   if (dialogueId){
     postType = 'dialogue'
@@ -13,9 +13,11 @@ const commentsModalFromHome = () => {
     postType = 'thread'
   } else if (listId){
     postType = 'list'
+  } else if (activityId){
+    postType = 'activity'
   }
   return (
-    <CommentsComponent postType={postType} dialogueId={dialogueId} threadId={threadId} listId={listId} />
+    <CommentsComponent postType={postType} dialogueId={dialogueId} threadId={threadId} listId={listId}  activityId={activityId}/>
   )
 }
 

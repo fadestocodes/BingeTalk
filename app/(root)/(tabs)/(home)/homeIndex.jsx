@@ -244,16 +244,16 @@ const homeIndex = () => {
                           </TouchableOpacity>
           
                         ) : (
-                          <ActivityCard2 activity={item} fromHome={true} />
+                          <TouchableOpacity onPress={()=>{console.log('item',item);router.push(`(home)/activity/${item.id}`)}}>
+                            <ActivityCard2 activity={item} fromHome={true} isBackground={true}/>
+                          </TouchableOpacity>
                         ) }
                       </View>
                     ) : (
                       <TouchableOpacity onPress={()=>handlePress(item)}>
                         <ThreadCard thread={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                       </TouchableOpacity>
-          
                     ) }
-          
                   </>
                   )}}
                   />

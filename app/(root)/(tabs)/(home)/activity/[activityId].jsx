@@ -1,29 +1,24 @@
 import { ActivityIndicator, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import ActivityCard from '../../../../../components/ActivityCard'
+// import ActivityCard from '../../../../../components/ActivityCard'
+import ActivityCard2 from '../../../../../components/ActivityCard2'
 import { useLocalSearchParams } from 'expo-router'
 import { useFetchActivityId } from '../../../../../api/activity'
+import ActivityPage from '../../../../../components/Screens/ActivityPage'
 
-const ActivityPage = () => {
+const ActivityId = () => {
 
     const { activityId } = useLocalSearchParams();
     const {  data:activity , refetch, loading } = useFetchActivityId(activityId)
 
   return (
-    <SafeAreaView className='w-full h-full bg-primary'>
-      { loading ? (
-        <View className='h-full justify-center items-center'>
-          <ActivityIndicator/>
-        </View>
-      ) : (
-        <View className='px-4'>
-        <ActivityCard activity={activity} refetch={refetch}  />
-        </View>
-      ) }
-    </SafeAreaView>
+    <>
+     
+        <ActivityPage />
+      </>
   )
 }
 
-export default ActivityPage
+export default ActivityId
 
 const styles = StyleSheet.create({})

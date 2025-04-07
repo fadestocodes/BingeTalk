@@ -9,9 +9,9 @@ import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { toPascalCase } from '../lib/ToPascalCase'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
-import { likeActivity } from '../api/activity'
+import { likeActivity, activityInteraction } from '../api/activity'
 
-const ActivityCard2 = ({activity, fromHome}) => {
+const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground}) => {
 
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -19,12 +19,31 @@ const ActivityCard2 = ({activity, fromHome}) => {
     const { user : clerkUser } = useUser()
     const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })  
 
-    const [ interactionCounts, setInteractionCounts ] = useState(activity.likes || 0)
-    const alreadyLikedActivity = ownerUser?.activityInteractions.some( interaction => interaction.activityId === activity.id  )
 
-    const [ already, setAlready ] = useState(alreadyLikedActivity)
+    const alreadyUpvoted = activity.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
+    const alreadyDownvoted = activity.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
+    const alreadyReposted = activity.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
+    // const [ interactionCounts, setInteractionCounts ] = useState(activity.likes || 0)
+    // const alreadyLikedActivity = ownerUser?.activityInteractions.some( interaction => interaction.activityId === activity.id  )
+
+    // const [ already, setAlready ] = useState(alreadyLikedActivity)
 
     const imagePaths =  activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.rating?.movie?.backdropPath || activity?.rating?.tv?.backdropPath 
+    
+    const [ interactions, setInteractions ] = useState({
+        upvotes : {
+            alreadyPressed : alreadyUpvoted,
+            count : activity.upvotes
+        } ,
+        downvotes :{
+            alreadyPressed : alreadyDownvoted,
+            count : activity.downvotes
+        } ,
+        reposts : {
+            alreadyPressed : alreadyReposted,
+            count : activity.reposts
+        } 
+    })
 
 
     const handleUserPress = (item) => {
@@ -35,29 +54,23 @@ const ActivityCard2 = ({activity, fromHome}) => {
         }
     }
 
-      const handleLike = async (item) => {
 
-        if (alreadyLikedActivity){
-            setInteractionCounts( prev =>prev-1 )
+
+    const handleComment = (activity) => {
+        if (fromHome){
+
+            router.push({
+                pathname:`(home)/commentsModal`,
+                params : { userId : ownerUser.id, activityId : activity.id }
+            })
         } else {
-            setInteractionCounts( prev =>prev+1 )
-        }
-        setAlready( prev =>!prev)
+            router.push({
+                pathname:`/commentsModal`,
+                params : { userId : ownerUser.id, activityId : activity.id }
+            })
 
-
-        const likeData = {
-          userId : ownerUser.id,
-          activityId : item.id,
-          recipientId : item.user.id,
-          description : `liked your activity "${item.description || ''}"`
         }
-        const likedActivity = await likeActivity(likeData)
-        // setData()
-        // setTrigger(prev => !prev)
-        // setData(  )
-        refetchOwner()
-        // await refetch()
-    } 
+    }
 
     const handlePosterPress = (item) => {
         if (item?.movie){
@@ -77,6 +90,37 @@ const ActivityCard2 = ({activity, fromHome}) => {
         }
     }
 
+    const handleInteraction =  async (type, activity) => {
+        setInteractions(prev => ({
+            ...prev,
+            [type]: {
+              ...prev[type],
+              alreadyPressed: !prev[type].alreadyPressed,
+              count : prev[type].alreadyPressed ? prev[type].count -1 : prev[type].count +1
+            }
+          }))
+     
+        let description
+        if ( type === 'upvotes' ){
+            description = `upvoted your activity "${activity.description}"`
+            
+        } else if (type === 'downvotes'){
+            description = `downvoted your activity "${activity.description}"`
+           
+        }else  if ( type === 'reposts' ){
+            description = `reposted your activity "${activity.description}"`
+           
+        }
+        const data = {
+            type,
+            activityId : activity.id,
+            userId : ownerUser.id,
+            description,
+            recipientId : activity.user.id
+        }
+        const updatedDialogue = await activityInteraction(data)
+        refetch();
+    }
 
     const handleThreeDots = (item) => {
 
@@ -91,7 +135,7 @@ const ActivityCard2 = ({activity, fromHome}) => {
 
 
   return (
-    <View disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }     style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15,gap:10}}>
+    <View disabled={ activity.activityType !== 'THREAD' && activity.activityType !== 'DIALOGUE' }     style={{ backgroundColor: isBackground && Colors.mainGrayDark, padding: isBackground && 15, borderRadius:15,gap:10}}>
         <View   className='flex-row gap-2   items-center justify-between '>
 
             <TouchableOpacity onPress={()=>{handleUserPress(activity.user)}} className='flex-row gap-2 justify-center items-center'>
@@ -124,21 +168,48 @@ const ActivityCard2 = ({activity, fromHome}) => {
             </TouchableOpacity>
         ):null }
 
-        <View className='w-full flex-start items-start flex-row gap-2'>
-            <View className='flex-row justify-between w-full items-center'>
-                <TouchableOpacity onPress={()=>handleLike(activity)} style={{ flexDirection:'row', gap:5, alignItems:'center', justifyContent:'center' }}>
-                    <Heart size={20} strokeWidth={2.5} color={ alreadyLikedActivity ? Colors.secondary : Colors.mainGray}></Heart>
-                <Text className='text-mainGray text-xs font-pbold'>{interactionCounts}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity   >
-            <TouchableOpacity onPress={()=>handleThreeDots(activity)} className='flex-row  justify-center items-center  ' style={{height:'auto', borderColor:Colors.mainGray}}>
-                <ThreeDotsIcon className='' size={20} color={Colors.mainGray} />
-            </TouchableOpacity>
-            </TouchableOpacity>
+      
+<View className=' flex-row items-end justify-between  w-full '>
+                <View className='flex-row gap-4 items-end justify-between w-full '>
+                    <View className='flex-row gap-5 justify-center items-center'>
+                        <TouchableOpacity onPress={()=> handleInteraction('upvotes',activity) } >
+                            <View className='flex-row gap-1 justify-center items-center'>
+                                <ThumbsUp size={20} color={ interactions.upvotes.alreadyPressed ? Colors.green :  Colors.mainGray} ></ThumbsUp>
+                                <Text className='text-xs font-pbold ' style={{ color: interactions.upvotes.alreadyPressed ? Colors.green : Colors.mainGray }}>{ interactions.upvotes.count }</Text>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity  onPress={()=> handleInteraction('downvotes',activity) } >
+                        <View className='flex-row gap-1 justify-center items-center'>
+                            <ThumbsDown size={20}  color={ interactions.downvotes.alreadyPressed ? Colors.red :  Colors.mainGray}></ThumbsDown>
+                            <Text  className='text-xs font-pbold text-mainGray' style={{ color: interactions.downvotes.alreadyPressed ? Colors.red : Colors.mainGray }}>{ interactions.downvotes.count }</Text>
+                        </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=>handleComment(activity)} disabled={disableCommentsModal} >
+                        <View className='flex-row gap-1  justify-center items-center   ' style={{height:32, borderColor:Colors.mainGray}}>
+                            <MessageIcon   className='' size={20}  color={   Colors.mainGray}/>
+                            <Text className='text-xs font-pbold text-gray-400  '> {activity?.commentsOnActivity?.length}</Text>
+                        </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=> handleInteraction('reposts',activity) } >
+                        <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
+                            <RepostIcon className='' size={20}  color={ interactions.reposts.alreadyPressed ? Colors.secondary :  Colors.mainGray}/>
+                            <Text className='text-xs font-pbold text-gray-400  'style={{ color: interactions.reposts.alreadyPressed ? Colors.secondary : Colors.mainGray }}> {interactions.reposts.count}</Text>
+                        </View>
 
-
+                        </TouchableOpacity>
+                            
+                    </View>
+                    
+                        <View className='relative' >
+                            <TouchableOpacity onPress={()=>handleThreeDots(activity)}  >
+                            <View className='flex-row  justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
+                                <ThreeDotsIcon className='' size={20} color={Colors.mainGray} />
+                            </View>
+                            </TouchableOpacity>
+                        </View>
+                </View>
+                
             </View>
-        </View>
 
 
     
