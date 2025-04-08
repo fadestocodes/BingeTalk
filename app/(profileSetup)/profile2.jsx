@@ -246,7 +246,7 @@ const profile2 = () => {
 
         <View className='w-full h-full justify-center items-center gap-5 '>
           <Text className='text-white font-pbold text-2xl  text-center'>Current Rotation.</Text>
-          <Text className='text-mainGray px-2  '>Pick 5 titles to be displayed on your profile you want to highlight. These can be titles you've seen recently, currently watching, or anticipating.</Text>
+          <Text className='text-mainGray px-2  '>Pick 5 titles you want to highlight on your profile page. These can be titles you're anticipating, currently watching, or have seen.</Text>
           <View className='items-center justify-center w-full gap-5'>
 
          

@@ -34,6 +34,8 @@ const Notification = () => {
     // await refetch()
     if (item.parentActivityId){
       router.push(`/activity/${item.parentActivityId}`)
+    } else if (item.activityType === 'RECOMMENDATION'){
+      router.push(`(profile)/list/recommended/${ownerUser.id}`)
     } else if (item.threads  && !item.commentId){
       router.push({
         pathname:`/threads/${item.threads.id}`,
@@ -42,7 +44,7 @@ const Notification = () => {
       router.push({
         pathname:`/dialogue/${item.dialogue.id}`,
       })
-    } else if (item.listId) {
+    } else if (item.listId && !item.commentId ) {
       router.push(`/list/${item.listId}`)
     } else if (item.tv){
       router.push(`/tv/${item.tv.tmdbId}`)
@@ -67,9 +69,19 @@ const Notification = () => {
         pathname:`/dialogue/${item.comment.parentComment.dialogueId}`,
         params:{ replyCommentId: item.comment.parentComment.id}
       })
-    }   else if (item.commentId && item.comment.threadId){
+    } else if (item.comment.parentComment && item.comment.parentComment.listId)  {
+      router.push({
+        pathname:`/list/${item.comment.parentComment.listId}`,
+        params:{ replyCommentId: item.comment.parentComment.id}
+      })
+    } else if (item.commentId && item.comment.threadId){
       router.push({
         pathname:`/threads/${item.comment.threadId}`,
+        params:{ replyCommentId: item.comment.id}
+      })
+    } else if (item.commentId && item.comment.listId){
+      router.push({
+        pathname:`/list/${item.comment.listId}`,
         params:{ replyCommentId: item.comment.id}
       })
     }
@@ -112,7 +124,7 @@ const Notification = () => {
             {/* <TVIcon size={30} color='white' /> */}
             <Text className='text-white font-pbold text-3xl'>Notifications</Text>
           </View>
-          <Text className='text-mainGray font-pmedium'>Check out the most bingeable shows right now.</Text>
+          <Text className='text-mainGray font-pmedium'>See what you missed.</Text>
       </View>
       {/* <TouchableOpacity  style={{ position:'absolute', top:0, right:30 }}>
         <Image

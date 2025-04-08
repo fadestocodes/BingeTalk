@@ -167,7 +167,7 @@ const profile1 = () => {
 
                 <View className='justify-center items-center gap-3 mb-5' >
                     <Text className='text-xl text-secondary font-pcourier  uppercase'>Bingeable</Text>
-                    <Text className='font-pcourier text-white ' >Welcome aboard {user.firstName}!</Text>
+                    <Text className='font-pcourier text-white ' >Welcome, {user.firstName}!</Text>
                 </View>
                 </Animated.View>
 
@@ -175,7 +175,7 @@ const profile1 = () => {
 
                 <View className='justify-center items-center gap-3 mb-10' >
                     <Text className='text-xl text-secondary font-pcourier uppercase '>Bingeable (cont.)</Text>
-                    <Text className='font-pcourier text-white' >Let's go through a few steps to setup your profile, it won't take long. Let's start with adding a profile picture</Text>
+                    <Text className='font-pcourier text-white' >Let's go through a few steps to set up your profile. This won't take long. Start by adding a profile picture.</Text>
                 </View>
 
 

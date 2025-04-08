@@ -243,15 +243,15 @@ const editProfile = () => {
 
             </View>
 
-            <View className='gap-3 py-3 px-5  my-3 w-full justify-center items-center'>
+            <View className='gap-3 py-3 px-5  my-3 w-full justify-center items-center '>
                 <Text className='text-mainGray font-pbold'>Current Rotation</Text>
                 <TouchableOpacity onPress={handleEditRotation}  style={{ width:'100%', backgroundColor:Colors.mainGrayDark, paddingHorizontal:20, paddingVertical:10, height:120, borderRadius:15 }} >
-                    <Text className='font-pbold text-mainGray self-center' style={{position:'absolute', top:50, borderRadius:30, borderWidth:1, borderColor:Colors.mainGray, paddingHorizontal:30, paddingVertical:5  }} >Edit</Text>
+                    <Text className='font-pbold text-white z-10 text-lg self-center' style={{position:'absolute', top:50, paddingHorizontal:50, paddingVertical:5 , backgroundColor:Colors.primary, borderRadius:15, opacity:0.8 }} >Edit</Text>
                     <FlatList
                         data={fetchedUser.currentRotation}
                         horizontal
                         
-                        contentContainerStyle={{ width:'100%', height:100, justifyContent:'flex-start', gap:15, alignItems:'center' }}
+                        contentContainerStyle={{ width:'100%', height:100, justifyContent:'flex-start', gap:15, alignItems:'center', opacity:1 }}
                         scrollEnabled={false}
                         keyExtractor={item => item.id}
                         renderItem={ ({item}) => {

@@ -202,7 +202,7 @@ return (
                       placeholderTextColor={Colors.mainGray}
                       onChangeText={(text)=>handleChange(text)}
                       className='w-full  rounded-3xl text-lg font-pbold'
-                      style={{ height:50, paddingHorizontal:25, paddingBottom:0, backgroundColor:Colors.mainGrayDark }}
+                      style={{ height:50, paddingHorizontal:25, paddingBottom:0, backgroundColor:Colors.mainGrayDark, color:'white' }}
                       value={searchQuery}
                   />
               </View>
