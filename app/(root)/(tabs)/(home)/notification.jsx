@@ -122,7 +122,7 @@ const Notification = () => {
         />
       </TouchableOpacity> */}
 
-      <View className='w-full my-2 gap-3' style={{paddingBottom:30}}>
+      <View className='w-full my-2 gap-3' style={{paddingBottom:100}}>
         <FlatList
           refreshControl={
             <RefreshControl

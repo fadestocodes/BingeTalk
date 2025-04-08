@@ -672,6 +672,7 @@ export const useGetFollowingListInfinite = (userId, limit) => {
             setData(prev => [...prev,...checkFollowResults])
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
+            console.log('has more?', !!results.nextCursor)
            
 
         } catch (Err){
@@ -691,7 +692,7 @@ export const useGetFollowingListInfinite = (userId, limit) => {
             const response = await fetch(`${nodeServer.currentIP}/user/followings?userId=${userId}&limit=${limit}&cursor=null`)
             const results = await response.json()
           
-            setData(prev => [...prev,results.items])
+            setData(prev,results.items)
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
           

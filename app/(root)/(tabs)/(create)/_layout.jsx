@@ -10,6 +10,7 @@ const CreateLayout = () => {
     <Stack  >
         <Stack.Screen name='createHome' options={{headerShown : false}} />
         <Stack.Screen name='tagOptionsModal'options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:200  , borderRadius:30, backgroundColor:Colors.primary }}}  />
+        <Stack.Screen name='addURLModal'options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:200  , borderRadius:30, backgroundColor:Colors.primary }}}  />
     </Stack>
     </TagsProvider>
   )

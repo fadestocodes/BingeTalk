@@ -31,9 +31,6 @@ import ListIdScreen from '../../../../../components/Screens/ListIdPage'
 
 const ListPage = () => {
   return (
-    // <View>
-    //   <Text>ListPage</Text>
-    // </View>
     <ListIdScreen/>
   )
 }

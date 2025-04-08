@@ -30,6 +30,8 @@ const tagOptionsModal = () => {
 
   return (
     <View className='w-full px-8 py-8'>
+                <View style={{ width:55, height:7, borderRadius:10, backgroundColor:Colors.mainGray, position:'absolute', top:30 , alignSelf:'center'}} />
+
         <FlatList
             data={tagOptions}
             keyExtractor={(item, index) => index.toString()}

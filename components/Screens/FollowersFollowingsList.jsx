@@ -11,8 +11,8 @@ import { router } from 'expo-router'
 
 const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
 
-    const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds, fetchMore } = useGetFollowersListInfinite( userId, limit )
-    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing, setIsFollowingIds : setIsFollowingIdsFromFollowing, fetchMore:fetchMoreFollowings } = useGetFollowingListInfinite( userId, limit )
+    const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds, fetchMore, hasMore } = useGetFollowersListInfinite( userId, limit )
+    const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing, setIsFollowingIds : setIsFollowingIdsFromFollowing, fetchMore:fetchMoreFollowings, hasMore : hasMoreFollowings } = useGetFollowingListInfinite( userId, limit )
     const {user : clerkUser} = useUser()
     const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
 
@@ -138,7 +138,11 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                 refreshing={loadingFollowings}
             />}
             keyExtractor={item => item.id}
-            onEndReached={fetchMoreFollowings}
+            onEndReached={()=>{
+                if (hasMoreFollowings){
+                    fetchMoreFollowings()
+                }
+            }}
             onEndReachedThreshold={0.2}
             contentContainerStyle={{gap:15}}
             renderItem={({item}) => {

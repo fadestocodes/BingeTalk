@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, KeyboardAvoidingView, Keyboard, Platform,TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, KeyboardAvoidingView, Keyboard, Platform,TouchableWithoutFeedback, ActivityIndicator, Linking } from 'react-native'
 import { Image } from 'expo-image'
-import { UpIcon, DownIcon, MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons'
+import { UpIcon, DownIcon, MessageIcon, RepostIcon, ThreeDotsIcon , CloseIcon} from '../assets/icons/icons'
 import React, {useState, useEffect} from 'react'
 import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { Colors } from '../constants/Colors'
@@ -9,9 +9,12 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchUser } from '../api/user'
 import { useRouter } from 'expo-router'
 import { fetchSingleDialogue } from '../api/dialogue'
-import { MessageSquare, ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import { MessageSquare, ThumbsDown, ThumbsUp, ExternalLink } from 'lucide-react-native';
 import { dialogueInteraction } from '../api/dialogue'
 import { useFetchOwnerUser } from '../api/user'
+import { getLinkPreview } from '../api/linkPreview'
+import { LinearGradient } from 'expo-linear-gradient'
+
 
 
 
@@ -39,6 +42,13 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
     const tag = dialogue.tag;
     const { user: clerkUser } = useUser()
     const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
+    const [ url, setUrl ] = useState({
+        image : '',
+        title : '',
+        subtitle : '',
+        link : ''
+    })
+
     
     
     const alreadyUpvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
@@ -59,6 +69,25 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
             count : dialogue.reposts
         } 
     })
+
+    useEffect(() => {
+        console.log('from useeffect')
+        const useGetLinkPreview = async () => {
+
+            const linkPreview = await getLinkPreview(dialogue.url);
+            setUrl({
+                link : dialogue.url,
+                image : linkPreview.imageUrl,
+                title : linkPreview.title,
+                subtitle : linkPreview.h1
+            })
+        }
+        if (dialogue && dialogue.url){
+            useGetLinkPreview()
+        }
+    }, [dialogue])
+
+
 
     const handleMentionPress = (mention) => {
         if (mention.movie) {
@@ -148,6 +177,15 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
         })
     }
 
+
+    const handleLinkPress = async () => {
+        const supported = await Linking.canOpenURL(dialogue.url);
+        if (supported) {
+            await Linking.openURL(dialogue.url); // Opens in default browser
+        } 
+    };
+
+
     if (!dialogue) {
         return <ActivityIndicator></ActivityIndicator>
     }
@@ -195,7 +233,51 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                     </View>
 
                     <Text className='text-third font-pcourier text-custom text-left w-full' numberOfLines={3}> { dialogue.content } </Text>
+                    { dialogue.image && (
+                        <Image 
+                            source={{ uri: dialogue.image }}
+                            contentFit='cover'
+                            style={{ width:'100%', height:300, borderRadius:15 }}
+                        />
+                    ) }
+                    { url.image && (
+
+                        dialogue.image ? (
+                            <>
+                                <TouchableOpacity onPress={handleLinkPress} style={{ backgroundColor:isBackground ? Colors.primary : Colors.mainGrayDark, paddingHorizontal:25, paddingVertical:7, borderRadius:15, flexDirection:'row' , gap:5, width:'85%', justifyContent:'center', alignItems:'center'}}>
+                                    <ExternalLink size={14} color={Colors.mainGray} />
+                                    <Text className='text-sm text-mainGray font-pregular' numberOfLines={1}>{url.link}</Text>
+                                   
+                                </TouchableOpacity>
+                            </>
+                        ) : (
+                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height:150, width:'100%', position:'relative'}}>
+                          
+                            <Image
+                                source ={{ uri :url.image }}
+                                contentFit='cover'
+                                style={{ width:'100%', height:'100%', borderRadius:15 , position:'absolute'}}
+                            />
+                            <LinearGradient
+                                colors={['transparent', isBackground ?  Colors.mainGrayDark : Colors.primary]}
+                                style={{
+                                height: '100%',
+                                width: '100%',
+                                position: 'absolute',
+                                }}
+                            />
+                            <View className='flex-row justify-between items-end h-full gap-3 w-full' style={{ paddingHorizontal:15, paddingVertical:30  }}>
+                                <Text className='text-mainGray  font-pbold ' numberOfLines={2} style={{width:'85%'}}>{url.title}</Text>
+                            <TouchableOpacity disabled style={{  }}>
+                                <ExternalLink size={22} color={Colors.mainGray}  />
+                            </TouchableOpacity>
+                            </View>
+                            </TouchableOpacity>
+
+                        )
+                        ) }
                 </View>
+                { dialogue.mentions.length > 0 && (
 
                 <View className='flex-row gap-3  item-center justify-center mt-3' >
                 { dialogue.mentions ? dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (
@@ -206,9 +288,10 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                             style={{ width:35, height:40, borderRadius:10, overflow:'hidden' }}
                         />
                     </TouchableOpacity>
-                ) ) :null
+                ) ) : null
                 }
                 </View>
+                ) }
 
                     
                

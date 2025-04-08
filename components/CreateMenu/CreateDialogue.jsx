@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Keyboard, SectionList, Pressable } from 'react-native'
+import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Keyboard, SectionList, Pressable, Linking } from 'react-native'
 import { Image } from 'expo-image'
 import React, { useState, useEffect, useRef } from 'react'
 import { Colors } from '../../constants/Colors'
@@ -20,7 +20,11 @@ import { useTagsContext } from '../../lib/TagsContext'
 import { formatDate } from '../../lib/formatDate'
 import { createDialogueSchema } from '../../lib/zodSchemas'
 import ToastMessage from '../ui/ToastMessage'
-import { MessageSquare } from 'lucide-react-native'
+import { MessageSquare, FileImage, Link , ExternalLink} from 'lucide-react-native'
+import { getLinkPreview } from '../../api/linkPreview'
+import { useCreateContext } from '../../lib/CreateContext'
+import { LinearGradient } from 'expo-linear-gradient'
+
 
 const toPascalCase = (str) => {
         return str
@@ -48,6 +52,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const [isMentioning, setIsMentioning] = useState(false);
     const [errors, setErrors] = useState(null)
     const [ message, setMessage ] = useState(null)
+    const { url, updateUrl } = useCreateContext()
+
 
    
     useEffect(()=>{
@@ -60,6 +66,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const { user } = useUser();
     const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchOwnerUser({email: user.emailAddresses[0].emailAddress} )
     const { data : dialogues, refetch, isFetching } = useFetchDialogues(userDB.id);
+    const urlPattern = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}(?:\/[^\s]*)?/;
 
 
     const userId = userDB.id
@@ -97,7 +104,15 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         } 
     }, 300)
 
-    const handleInput = (text) => {
+    const handleURLPreview = debounce( async (param) => {
+
+        const linkPreview = await getLinkPreview(param);
+        const previewImage = linkPreview.imageUrl
+        console.log('linkpreview', linkPreview)
+
+    } , 1200)
+
+    const handleInput = async (text) => {
         setInput(text);
         const words = text.split(' ');
         const lastMentionIndex = text.lastIndexOf('/');
@@ -107,6 +122,30 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
           setIsMentioning(mentionText.length > 0); // Still in mention mode if text exists after '/'
         } else {
           setIsMentioning(false); // Reset when there's no '/'
+        }
+
+
+        const urlMatch = text.match(urlPattern);
+        if (urlMatch) {
+            console.log('url match!',urlMatch)
+            let normalizedURL = ''
+            let url = urlMatch[0];  // Get the matched URL
+          if (!/^https?:\/\//i.test(url)) {
+            // Step 2: Check if the URL has 'www.' prefix
+            if (/^www\./i.test(url)) {
+                // If 'www.' is present, prepend 'https://'
+                url = 'https://' + url;
+            } else {
+                // Otherwise, prepend 'https://'
+                url = 'https://www.' + url;
+            }
+        }
+
+        normalizedURL = new URL(url).toString();
+        console.log('normalized url ', normalizedURL)
+          await handleURLPreview(normalizedURL)
+
+
         }
     }
 
@@ -244,13 +283,22 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             userId,
             content : formattedString.trim(),
             mentions : mentionsForPrisma,
-            tags
+            tags,
+            image,
+            url : url.link || null
         }
         const newPost = await createDialogue(postData); 
 
         setMessage(newPost.message)
         setUploadingPost(false);
         setInput('')
+        setImage(null)
+        updateUrl({
+            link : '',
+            title : '',
+            image : '',
+            subtitle  :''
+        })
         setTags([])
         refetch();
     }
@@ -260,6 +308,22 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     }
     
 
+    const handleLinkPress = async () => {
+        console.log('trying to open link')
+        const supported = await Linking.canOpenURL(url.link);
+        if (supported) {
+            await Linking.openURL(url.link); // Opens in default browser
+        } 
+    };
+
+    const handleClearUrl = () => {
+        updateUrl({
+            link : '',
+            image : '',
+            title : '',
+            subtitle : ''
+        })
+    }
 
     
  
@@ -268,7 +332,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
   return (
     <>
     <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<MessageSquare size={30} color={Colors.secondary}/>}   />
-    <View onPress={()=>{setResultsOpen(false); setFlatlistVisible(false)}} className='w-full px-6 relative items-center justify-center' style={{  }} >
+    <View onPress={()=>{setResultsOpen(false); setFlatlistVisible(false)}} className=' px-6 relative items-center justify-center' style={{ width:'100%'}} >
         { uploadingPost && (
             <View style={{ position:'absolute', inset:0, justifyContent:'center', alignItems:'center', zIndex:30 }} >
                 <ActivityIndicator />
@@ -281,11 +345,11 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     <Text className='text-red-400'>*{errors}</Text>
                     </View>
                 ) }
-        <View className='w-full relative items-center justify-between ' style={{marginBottom:20, position:'relative'}}>
+        <View className='w-full relative items-center justify-between ' style={{marginBottom:20, position:'relative', backgroundColor:Colors.mainGrayDark, borderRadius:15 , paddingHorizontal:0, gap:10, paddingBottom:60,width:'100%'}}>
             
            
 
-            <View className='flex justify-start items-start w-full' style={{ position:'absolute', top:10, left:0 , zIndex:40, width:'100%', gap:15 , paddingHorizontal:15}} >
+            <View className='flex justify-start items-start w-full' style={{ position:'relative', top:10, left:0 , zIndex:40, width:'100%', gap:15 , paddingHorizontal:15}} >
             <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
                             <Image
@@ -313,6 +377,9 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                         </View>
                     ) ) } */}
             </View>
+            <View style={{position:"relative", alignItems:'center', justifyContent:'center', width:'100%', zIndex:10}}>
+                <Text className='font-pcourier uppercase text-lg text-secondary ' >{userDB.firstName}</Text>
+            </View>
         
            <MentionInput
             value = {input}
@@ -332,26 +399,25 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     isInsertSpaceAfterMention:true
                 }
             ] }
-            containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18,minHeight:250,paddingTop: Object.keys(tags).length > 0 ? 110 :  Object.keys(tags) <1 && 60, paddingHorizontal:20, paddingBottom:50, minHeight:200, borderTopLeftRadius:15, borderTopRightRadius:15} }
+            // containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18,minHeight:250, paddingTop: Object.keys(tags).length > 0 ? 110 :  Object.keys(tags) <1 && 60, paddingHorizontal:20, paddingBottom:image || url.image ? 20 : 70, minHeight: Object.keys(tags).length > 0 && !image && !url.image ? 250  : Object.keys(tags).length > 0 && image  ? 180 :  image || url.image ? 130  : 180 , borderTopLeftRadius:15, borderTopRightRadius:15} }
+            containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18, paddingTop:0, paddingHorizontal:20, paddingBottom: 0 , borderTopLeftRadius:15, borderTopRightRadius:15} }
            
            />
 
        
 
-            <View style={{position:"absolute", top: Object.keys(tags).length > 0 ? 90 : 40, alignItems:'center', justifyContent:'center', width:'100%'}}>
-                <Text className='font-pcourier uppercase text-lg text-secondary ' >{userDB.firstName}</Text>
-            </View>
+         
 
 
-{/* 
+
         {   loadingImage ? (
-            <View className='bg-transparent justify-center items-center' style={{ width:'100%', height : 200 }}>
+            <View className='bg-transparent justify-center items-center' style={{ width:'100%', backgroundColor:Colors.mainGrayDark,height : 200 }}>
                 <ActivityIndicator></ActivityIndicator>
             </View>
         ) 
         
         : image && (
-            <View className='bg-mainGrayDark w-full  justify-center items-center  mb-5' style={{ paddingBottom:50, backgroundColor:Colors.mainGrayDark}}>
+            <View className='bg-mainGrayDark w-full  justify-center items-center  ' style={{ paddingBottom:0, backgroundColor:Colors.mainGrayDark,  }}>
                     <View className="relative">
 
                         
@@ -363,12 +429,53 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                             style={{ width:300, height:200 , zIndex:30, borderRadius:15, overflow:'hidden'}}
                             contentFit='cover'
                         />
-                        <TouchableOpacity onPress={()=> setImage(null)} className='rounded-full bg-primary border-[1px] border-mainGray' style={{  position:'absolute', zIndex:30, top:6, right:10 }}>
-                            <CloseIcon color={Colors.mainGray} size={22} className='' style={{  }} />
+                        <TouchableOpacity onPress={()=> setImage(null)} className='rounded-full bg-primary ' style={{  position:'absolute', zIndex:30, padding:3, top:6, right:10 }}>
+                            <CloseIcon color={Colors.mainGray} size={20} className='' style={{  }} />
                         </TouchableOpacity>
                     </View>
             </View>
-            ) } */}
+            ) } 
+                    { url.image && (
+
+                        image ? (
+                            <>
+                                <TouchableOpacity onPress={handleLinkPress} style={{ backgroundColor:Colors.primary, paddingHorizontal:25, paddingVertical:7, borderRadius:15, flexDirection:'row' , gap:5, width:'85%', justifyContent:'center', alignItems:'center'}}>
+                                    <ExternalLink size={14} color={Colors.mainGray} />
+                                    <Text className='text-sm text-mainGray font-pregular' numberOfLines={1}>{url.link}</Text>
+                                    <TouchableOpacity onPress={handleClearUrl} style={{ backgroundColor:Colors.mainGray,borderRadius:50  }}>
+                                        <CloseIcon size={18} color={Colors.primary}  />
+
+                                    </TouchableOpacity>
+                                </TouchableOpacity>
+                            </>
+                        ) : (
+                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height:150, width:'90%', position:'relative'}}>
+                               <TouchableOpacity onPress={handleClearUrl} style={{ backgroundColor:Colors.primary, padding:3, borderRadius:50, position:'absolute', top:5, right:5, zIndex:10 }}>
+                                   <CloseIcon size={20} color={Colors.mainGray} />
+                               </TouchableOpacity>
+                            <Image
+                                source ={{ uri :url.image }}
+                                style={{ width:'100%', height:'100%', borderRadius:15 , position:'absolute'}}
+                            />
+                             <LinearGradient
+                                colors={['transparent', Colors.mainGrayDark]}
+                                style={{
+                                height: '100%',
+                                width: '100%',
+                                position: 'absolute',
+                                }}
+                            />
+                            <View className='flex-row justify-between items-end h-full gap-3 w-full' style={{ paddingHorizontal:15, paddingVertical:30  }}>
+                                <Text className='text-mainGray  font-pbold ' numberOfLines={2} style={{width:'85%'}}>{url.title}</Text>
+                            <TouchableOpacity disabled style={{  }}>
+                                <ExternalLink size={22} color={Colors.mainGray}  />
+                            </TouchableOpacity>
+                            </View>
+                            </TouchableOpacity>
+
+                        )
+                    ) }
+
         </View>
 
         
@@ -377,11 +484,15 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                     
                     <View className='border-t-[1px] w-full' style={{borderColor:Colors.mainGray, borderTopWidth:1}}
                     />
-                    <View className='flex-row items-center  gap-3' style={{width:'100%',  justifyContent:'space-between'}}>
-                        <View className="flex-row gap-3">
-                            {/* <TouchableOpacity>
-                                <UploadPictureIcon onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={15} />
-                            </TouchableOpacity> */}
+                    <View className='flex-row items-center  gap-3' style={{width:'100%', backgroundColor:Colors.mainGrayDark, justifyContent:'space-between'}}>
+                        <View className="flex-row gap-5">
+                            <TouchableOpacity>
+                                
+                                <FileImage onPress={()=>pickSingleImage(setImage, setLoadingImage)} color={Colors.mainGray} size={24} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>router.push('/addURLModal')}>
+                                <Link size={20} color={Colors.mainGray} />
+                            </TouchableOpacity>
                             <TouchableOpacity onPress={handleTagOptions} style={{ paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderRadius:15, borderColor:Colors.mainGray, justifyContent:'center', alignItems:'center'}}>
                                     <Text className='text-xs font-pbold text-mainGray'>Tags 🏷️</Text>
                                 </TouchableOpacity>

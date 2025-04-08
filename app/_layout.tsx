@@ -22,6 +22,7 @@ import * as Notifications from 'expo-notifications'
 import {postPushToken} from '../api/notification'
 import { useFetchOwnerUser } from '@/api/user';
 import {NotificationProvider} from '../lib/NotificationCountContext'
+import {CreateProvider} from '../lib/CreateContext'
 
 
 
@@ -87,6 +88,7 @@ export default function RootLayout() {
           <NotificationProvider>
           <DialogueProvider>
             <PostRemoveProvider>
+              <CreateProvider>
         <GestureHandlerRootView style={{ flex: 1, backgroundColor:Colors.primary }}>
           <StatusBar
             backgroundColor={Colors.mainGray}
@@ -100,6 +102,7 @@ export default function RootLayout() {
             <Stack.Screen name="+not-found" />
           </Stack>
           </GestureHandlerRootView>
+          </CreateProvider>
           </PostRemoveProvider>
           </DialogueProvider>
           </NotificationProvider>

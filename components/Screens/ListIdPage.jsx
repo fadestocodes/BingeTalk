@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCustomFetchSingleList, useFetchSpecificList } from '../../api/list'
 import { Colors } from '../../constants/Colors'
 import { formatDate, getYear } from '../../lib/formatDate'
-import { BackIcon, ThreeDotsIcon, CloseIcon } from '../../assets/icons/icons'
+import { BackIcon, ThreeDotsIcon, CloseIcon, MessageIcon } from '../../assets/icons/icons'
 import { ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react-native'
 import { RepostIcon } from '../../assets/icons/icons'
 import { useUser } from '@clerk/clerk-expo'
@@ -14,6 +14,7 @@ import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { commentInteraction } from '../../api/comments'
 import { createComment } from '../../api/comments'
+import { listInteraction } from '../../api/list'
 
 
 const ListIdScreen = () => {
@@ -67,6 +68,55 @@ const ListIdScreen = () => {
         <ActivityIndicator tintColor={Colors.secondary} />
         </View>
     )
+    }
+
+
+    const handleInteraction =  async (type, item) => {
+        console.log(item)
+        if (type === 'upvotes'){
+            setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
+            if (already.upvoted){
+                setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes + 1}))
+            }
+        } else if (type === 'downvotes'){
+            setAlready(prev => ({...prev, downvoted : !prev.downvoted}))
+            if (already.downvoted){
+                setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes + 1}))
+            }
+        } else if (type === 'reposts'){
+            setAlready(prev => ({...prev, reposted : !prev.reposted}))
+            if (already.reposted){
+                setInteractionCounts(prev => ({...prev, reposts : prev.reposts - 1}))
+            } else {
+                setInteractionCounts(prev => ({...prev, reposts : prev.reposts + 1}))
+            }
+        }
+        let description
+        if ( type === 'upvotes' ){
+            description = `upvoted your list "${item.title}"`
+            
+        } else if (type === 'downvotes'){
+            description = `downvoted your list "${item.title}"`
+           
+        }else  if ( type === 'reposts' ){
+            description = `reposted your list "${item.title}"`
+           
+        }
+        const data = {
+            type,
+            listId : item.id,
+            userId : ownerUser.id,
+            description,
+            recipientId : item.user.id
+        }
+        console.log('data', data)
+        const updatedList = await listInteraction(data)
+        console.log('updatedlist', updatedList)
+        refetch();
     }
 
     
@@ -336,6 +386,7 @@ const ListIdScreen = () => {
   return (
     <SafeAreaView style={{ backgroundColor : Colors.primary, width:'100%', height : '100%'}} >
          <ScrollView
+         showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl 
                 onRefresh={refetch}
                 refreshing={isLoading}
@@ -360,36 +411,36 @@ const ListIdScreen = () => {
         </TouchableOpacity>
         <Text className='text-mainGray'>{formatDate(list.user.createdAt)}</Text>
       </View>
-      <View className="gap-3">
+      <View className="gap-3 px-3">
           <View className='flex-row gap-2 justify-start items-center'>
 
             {/* <TVIcon size={30} color='white' /> */}
             <Text className='text-white font-pbold text-3xl'>{list.title}</Text>
           </View>
           { list.caption && (
-              <Text className='text-mainGray text-lg font-pmedium'>{list.caption}</Text>
+              <Text className='text-mainGray text-lg font-psemibold'>{list.caption}</Text>
           ) }
       </View>
       
         <View className='flex-row justify-between items-center' style={{marginTop:10}}>
 
       <View className='flex-row gap-8 justify-start items-center' >
-                            <View onPress={()=>handleFollowersList('Followers')} className='flex-row gap-2 justify-center items-center'>
+                            <TouchableOpacity onPress={()=>handleInteraction('upvotes', list)} className='flex-row gap-2 justify-center items-center'>
                                 <ThumbsUp size={24} color={ already.upvoted ? Colors.secondary : Colors.mainGray} />
                                 <Text className='text-gray-400 text-lg font-pblack' style={{color: already.upvoted ? Colors.secondary : Colors.mainGray}}>{list.upvotes}</Text>
-                            </View >
-                            <View onPress={()=>handleFollowersList('Following')} className='flex-row gap-2 justify-center items-center'>
+                            </TouchableOpacity >
+                            <TouchableOpacity onPress={()=>handleInteraction('downvotes', list)} className='flex-row gap-2 justify-center items-center'>
                                 <ThumbsDown size={24} color={ already.downvoted ? Colors.secondary : Colors.mainGray} />
                                 <Text className='text-gray-400 text-lg font-pblack' style={{color: already.downvoted ? Colors.secondary : Colors.mainGray}}>{list.downvotes}</Text>
-                            </View >
-                            <View onPress={()=>handleFollowersList('Following')} className='flex-row gap-2 justify-center items-center'>
-                                <MessageSquare size={24} color={Colors.mainGray} />
+                            </TouchableOpacity >
+                            <View  className='flex-row gap-2 justify-center items-center'>
+                                <MessageIcon size={24} color={Colors.mainGray} />
                                 <Text className='text-gray-400 text-lg font-pblack' >{list.comments.length}</Text>
                             </View >
-                            <View onPress={()=>handleFollowersList('Following')} className='flex-row gap-2 justify-center items-center'>
+                            <TouchableOpacity onPress={()=>handleInteraction('reposts', list)} className='flex-row gap-2 justify-center items-center'>
                                 <RepostIcon size={24} color={ already.reposted ? Colors.secondary : Colors.mainGray} />
                                 <Text className='text-gray-400 text-lg font-pblack' style={{color: already.reposted ? Colors.secondary : Colors.mainGray}}>{list.reposts}</Text>
-                            </View >
+                            </TouchableOpacity >
                            
                         </View>
                         <ThreeDotsIcon  size={20} color={Colors.mainGray}/>
@@ -428,11 +479,7 @@ const ListIdScreen = () => {
         />
 
         <View style={{paddingTop:30, gap:15}}>
-                <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-
-                <Text className='text-mainGray text-lg self-center font-pbold'>Comments</Text>
-
-
+        <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
         <>
        
 

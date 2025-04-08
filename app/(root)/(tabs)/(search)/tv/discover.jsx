@@ -45,7 +45,7 @@ const MovieIndex = () => {
             <Text className='text-mainGray font-pmedium'>Check out the most bingeable shows right now.</Text>
         </View>
 
-        <View className='w-full  gap-3' style={{paddingBottom:100}}>
+        <View className='w-full  gap-3' style={{paddingBottom:180}}>
         <FlatList
           horizontal
           data={movieCategories}
@@ -58,7 +58,7 @@ const MovieIndex = () => {
           )}
         />
 
-        { selected === 'Trending' && (
+        { selected === 'Trending' ? (
           <FlatList
           data = { trendingShows }
           keyExtractor={item => item.id + new Date().getTime().toString()}
@@ -107,9 +107,8 @@ const MovieIndex = () => {
         </TouchableOpacity>
           )}}
         />
-        ) }
-        { selected === 'Upcoming' && (
-          <FlatList
+        ) : selected === 'Upcoming' && (
+<FlatList
           data = {  upcomingShows }
           keyExtractor={item => item.id + new Date().getTime().toString()}
           contentContainerStyle={{gap:15, marginTop:30}}
@@ -158,6 +157,7 @@ const MovieIndex = () => {
           )}}
         />
         ) }
+        
         
       </View>
 

@@ -15,6 +15,7 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 import { useRouter } from 'expo-router'
 import { createCategories } from '../../../../lib/CategoryOptions'
+import { useCreateContext } from '../../../../lib/CreateContext'
 
 const CreateHome = () => {
 
@@ -28,6 +29,7 @@ const CreateHome = () => {
     const [ flatlistVisible, setFlatlistVisible ] = useState(false);
     const [ threadObject, setThreadObject ] = useState(null)
     const [ selected, setSelected ] = useState('Dialogue')
+    const { url, updateUrl } = useCreateContext()
 
     const [ inputs, setInputs ] = useState({
         threadTitle : '',
@@ -163,7 +165,7 @@ const CreateHome = () => {
           keyExtractor={(item,index) => index}
           contentContainerStyle={{ gap:10 }}
           renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setListItems([]); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setListItems([]); updateUrl({link:'',image:'',titel:'',subtitle:''}); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
               <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
             </TouchableOpacity>
           )}

@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View , TouchableOpacity, ActivityIndicator,} from 'react-native'
+import { StyleSheet, Text, View , TouchableOpacity, ActivityIndicator,Linking} from 'react-native'
 import { Image } from 'expo-image';
-import { MessagesSquare, ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import { MessagesSquare, ThumbsDown, ThumbsUp, ExternalLink } from 'lucide-react-native';
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons';
 import { Colors } from '../constants/Colors';
 import { formatDate, formatDateNotif } from '../lib/formatDate';
@@ -8,8 +8,11 @@ import { useUser } from '@clerk/clerk-expo';
 import { useFetchOwnerUser } from '../api/user';
 import { useRouter } from 'expo-router';
 import { threadInteraction } from '../api/thread';
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { toPascalCase } from '../lib/ToPascalCase';
+import { getLinkPreview } from '../api/linkPreview'
+import { LinearGradient } from 'expo-linear-gradient'
+
 
 
 const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic, fromHome, activity, isReposted}) => {
@@ -19,6 +22,12 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     const tag = thread.tag;
     const { user: clerkUser } = useUser()
     const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
+    const [ url, setUrl ] = useState({
+        image : '',
+        title : '',
+        subtitle : '',
+        link : ''
+    })
 
 
     const alreadyUpvoted = thread.threadInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
@@ -37,6 +46,22 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
         downvotes : thread.downvotes ,
         reposts : thread.reposts
     })
+
+    useEffect(() => {
+        const useGetLinkPreview = async () => {
+
+            const linkPreview = await getLinkPreview(thread.url);
+            setUrl({
+                link : thread.url,
+                image : linkPreview.imageUrl,
+                title : linkPreview.title,
+                subtitle : linkPreview.h1
+            })
+        }
+        if (thread && thread.url){
+            useGetLinkPreview()
+        }
+    }, [thread])
  
 
     const handleInteraction =  async (type, thread) => {
@@ -143,6 +168,15 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
         }
     }
 
+
+    const handleLinkPress = async () => {
+        const supported = await Linking.canOpenURL(thread.url);
+        if (supported) {
+            await Linking.openURL(thread.url); // Opens in default browser
+        } 
+    };
+
+
     if (!thread || !ownerUser){
         return (
             <View className='h-full bg-primary'>
@@ -173,35 +207,82 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                     
                 </View>
               
-            <View className='flex-row justify-start items-center gap-3 mt-3 '>
+                <TouchableOpacity onPress={()=> handlePress(thread)} >
 
-                <TouchableOpacity onPress={()=>handlePress(thread)}  style={{justifyContent:'center', alignItems:'center'}}>
-                    <Text className='textlg text-white '  style={{  }}>{ thread.movie ? `/${toPascalCase(thread.movie.title)}` : thread.tv ? `/${toPascalCase(thread.tv.title)}` : thread.castCrew && `/${toPascalCase(thread.castCrew.name)}` }</Text>
+            <View className='flex-row justify-start items-center gap-2 mt-3 ' >
+                            <Image
+                                source = {{ uri : thread.movie ? `${posterURL}${thread.movie.posterPath}` : thread.tv ? `${posterURL}${thread.tv.posterPath}` : thread.castCrew && `${posterURL}${thread.castCrew.posterPath}` }}
+                                contentFit='cover'
+                                style={{ width:25, height:30, borderRadius:8, overflow:'hidden' }}
+                            />
+                <View onPress={()=>handlePress(thread)}  style={{}}>
+                    <Text className=' text-white '  style={{  }}>{ thread.movie ? `/${toPascalCase(thread.movie.title)}` : thread.tv ? `/${toPascalCase(thread.tv.title)}` : thread.castCrew && `/${toPascalCase(thread.castCrew.name)}` }</Text>
+                </View>
+                        </View>
                 </TouchableOpacity>
 
 
+            { thread.tag && (
             <View className='flex-row gap-3' >
-            { thread.tag ? (
-                  <Text className= 'font-pbold text-primary text-xs' style={{ backgroundColor: thread.tag.color , padding:5, borderRadius:10, alignSelf:'center'}}>{thread.tag.tagName}</Text>
-            ) : null }
+                <Text className= 'font-pbold text-primary text-xs' style={{ backgroundColor: thread.tag.color , padding:5, borderRadius:10, alignSelf:'center'}}>{thread.tag.tagName}</Text>
             </View>
-            </View>
+                
+            ) }
 
             <Text className="text-white  font-pbold text-xl leading-6   ">{thread.title}</Text>
             { thread.caption ? (
               <View className='gap-3 mt-5'>
                 <Text className='text-secondary text-lg leading-5 font-pcourier uppercase text-center'>{thread.user.firstName}</Text>
-                <Text className="text-white  text-custom font-pcourier" numberOfLines={isShortened ? 3 : 10} >{thread.caption}</Text>
+                <Text className="text-white  text-custom font-pcourier" numberOfLines={isBackground && 3 } >{thread.caption}</Text>
               </View>
             ) : null }
 
-                        <TouchableOpacity onPress={()=> handlePress(thread)} >
+
+{ thread.image && (
+                        <Image 
+                            source={{ uri: thread.image }}
+                            contentFit='cover'
+                            style={{ width:'100%', height:300, borderRadius:15 }}
+                        />
+                    ) }
+                    { url.image && (
+
+                        thread.image ? (
+                            <View className='w-full justify-center items-center'>
+                                <TouchableOpacity onPress={handleLinkPress} style={{ backgroundColor:isBackground ? Colors.primary : Colors.mainGrayDark, paddingHorizontal:25, paddingVertical:7, borderRadius:15, flexDirection:'row' , gap:5, width:'85%', justifyContent:'center', alignItems:'center'}}>
+                                    <ExternalLink size={14} color={Colors.mainGray} />
+                                    <Text className='text-sm text-mainGray font-pregular' numberOfLines={1}>{url.link}</Text>
+                                   
+                                </TouchableOpacity>
+                            </View>
+                        ) : (
+                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height:150, width:'100%', position:'relative'}}>
+                          
                             <Image
-                                source = {{ uri : thread.movie ? `${posterURL}${thread.movie.posterPath}` : thread.tv ? `${posterURL}${thread.tv.posterPath}` : thread.castCrew && `${posterURL}${thread.castCrew.posterPath}` }}
+                                source ={{ uri :url.image }}
                                 contentFit='cover'
-                                style={{ width:35, height:40, borderRadius:10, overflow:'hidden' }}
+                                style={{ width:'100%', height:'100%', borderRadius:15 , position:'absolute'}}
                             />
-                        </TouchableOpacity>
+                            <LinearGradient
+                                colors={['transparent', isBackground ?  Colors.mainGrayDark : Colors.primary]}
+                                style={{
+                                height: '100%',
+                                width: '100%',
+                                position: 'absolute',
+                                }}
+                            />
+                            <View className='flex-row justify-between items-end h-full gap-3 w-full' style={{ paddingHorizontal:15, paddingVertical:30  }}>
+                                <Text className='text-mainGray  font-pbold ' numberOfLines={2} style={{width:'85%'}}>{url.title}</Text>
+                            <TouchableOpacity disabled style={{  }}>
+                                <ExternalLink size={22} color={Colors.mainGray}  />
+                            </TouchableOpacity>
+                            </View>
+                            </TouchableOpacity>
+
+                        )
+                        ) }
+
+                       
             
             <View className='flex-row  justify-between w-full items-end'>
                      
