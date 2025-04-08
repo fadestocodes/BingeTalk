@@ -72,7 +72,7 @@ const browseHome = () => {
           ) : (
 
             <>
-              { selected === 'Trending' && (
+              { selected === 'Trending' ? (
                 <FlatList 
                 refreshControl={
                   <RefreshControl
@@ -95,9 +95,8 @@ const browseHome = () => {
                   <ListCard list={item} />
                 )}}
               />
-              ) }
+              ): selected === 'Most Recent' && (
 
-              { selected === 'Most Recent' && (
                 <FlatList 
                 refreshControl={
                   <RefreshControl
@@ -121,6 +120,7 @@ const browseHome = () => {
                 )}}
               />
               ) }
+
             </>
             
                     

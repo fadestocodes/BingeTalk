@@ -209,14 +209,14 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         <View className='relative flex-row gap-5 justify-center items-center' >
                         <TouchableOpacity onPress={()=>handleInteraction('upvotes',thread)} >
                                 <View className='flex-row gap-2 justify-center items-center'>
-                                    <ThumbsUp size={20} color={ already.upvoted ? Colors.green :  Colors.mainGray} ></ThumbsUp>
-                                    <Text className='text-xs font-pbold text-mainGray' style={{ color: already.upvoted ? Colors.green : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
+                                    <ThumbsUp size={20} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                    <Text className='text-xs font-pbold text-mainGray' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
                                 </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleInteraction('downvotes',thread)} >
                             <View className='flex-row gap-2 justify-center items-center'>
-                                <ThumbsDown size={20} color={ already.downvoted ? Colors.red :  Colors.mainGray} ></ThumbsDown>
-                                <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.red : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
+                                <ThumbsDown size={20} color={ already.downvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsDown>
+                                <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                             </View>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={()=>handleComment(thread)}  >

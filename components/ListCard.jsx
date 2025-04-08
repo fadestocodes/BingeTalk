@@ -204,14 +204,14 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             <View className='flex-row gap-5 justify-center items-center'>
                                 <TouchableOpacity onPress={()=> handleInteraction('upvotes',item) } >
                                     <View className='flex-row gap-1 justify-center items-center'>
-                                        <ThumbsUp size={20} color={ already.upvoted ? Colors.green :  Colors.mainGray} ></ThumbsUp>
-                                        <Text className='text-xs font-pbold ' style={{ color: already.upvoted ? Colors.green : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
+                                        <ThumbsUp size={20} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                        <Text className='text-xs font-pbold ' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity  onPress={()=> handleInteraction('downvotes',item) } >
                                 <View className='flex-row gap-1 justify-center items-center'>
-                                    <ThumbsDown size={20}  color={ already.downvoted ? Colors.red :  Colors.mainGray}></ThumbsDown>
-                                    <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.red : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
+                                    <ThumbsDown size={20}  color={ already.downvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                                    <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                                 </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={()=>handleComment(item)}>

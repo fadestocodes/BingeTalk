@@ -174,14 +174,14 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                     <View className='flex-row gap-5 justify-center items-center'>
                         <TouchableOpacity onPress={()=> handleInteraction('upvotes',activity) } >
                             <View className='flex-row gap-1 justify-center items-center'>
-                                <ThumbsUp size={20} color={ interactions.upvotes.alreadyPressed ? Colors.green :  Colors.mainGray} ></ThumbsUp>
-                                <Text className='text-xs font-pbold ' style={{ color: interactions.upvotes.alreadyPressed ? Colors.green : Colors.mainGray }}>{ interactions.upvotes.count }</Text>
+                                <ThumbsUp size={20} color={ interactions.upvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                <Text className='text-xs font-pbold ' style={{ color: interactions.upvotes.alreadyPressed ? Colors.secondary : Colors.mainGray }}>{ interactions.upvotes.count }</Text>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity  onPress={()=> handleInteraction('downvotes',activity) } >
                         <View className='flex-row gap-1 justify-center items-center'>
-                            <ThumbsDown size={20}  color={ interactions.downvotes.alreadyPressed ? Colors.red :  Colors.mainGray}></ThumbsDown>
-                            <Text  className='text-xs font-pbold text-mainGray' style={{ color: interactions.downvotes.alreadyPressed ? Colors.red : Colors.mainGray }}>{ interactions.downvotes.count }</Text>
+                            <ThumbsDown size={20}  color={ interactions.downvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                            <Text  className='text-xs font-pbold text-mainGray' style={{ color: interactions.downvotes.alreadyPressed ? Colors.secondary : Colors.mainGray }}>{ interactions.downvotes.count }</Text>
                         </View>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>handleComment(activity)} disabled={disableCommentsModal} >

@@ -136,6 +136,7 @@ export const fetchSpecificList = async (listId) => {
     }
 }
 
+
 export const useFetchSpecificList = ( listId ) => {
     return useQuery({
         queryKey : ['lists', listId],
@@ -266,7 +267,7 @@ export const deleteList = async (data) => {
 
 export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     const [ list, setList ] = useState(null);
-    const [ isLoading, setIsLoading ] = useState(false)
+    const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
     const { user : clerkUser }  = useUser()
     const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
@@ -276,24 +277,53 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     })
     const [ commentsData, setCommentsData ] = useState([])
     const [ interactedCount, setInteractedCount ] = useState(null)
+   
+    const [ already, setAlready ] = useState({
+        upvoted : null,
+        downvoted : null,
+        reposted : null
+    })
 
+    const [ interactionCounts, setInteractionCounts ] = useState({
+        upvotes : 0 ,
+        downvotes : 0 ,
+        reposts : 0
+    })
+    
 
     const fetchList = async () => {
         try {
             setIsLoading(true)
             const response = await fetch(`${nodeServer.currentIP}/list?listId=${listId}`);
             const fetchedList = await response.json();
+
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
                 return fetchedList.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
             } )
             const downvotedComments = ownerUser.commentInteractions.filter( i => {
                 return fetchedList.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
-            setInteractedComments(prev => ({
-                ...prev,
+            setInteractedComments({
                 upvotes : upvotedComments,
                 downvotes : downvotedComments
-            }))
+            })
+
+
+
+            const alreadyUpvoted = fetchedList.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
+            const alreadyDownvoted = fetchedList.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser.id )
+            const alreadyReposted = fetchedList.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
+            setAlready({
+                upvoted : alreadyUpvoted,
+                downvoted: alreadyDownvoted,
+                reposted : alreadyReposted
+            })
+            setInteractionCounts({
+                upvotes: fetchedList.upvotes,
+                downvotes : fetchedList.downvotes,
+                reposts : fetchedList.reposts
+            })
+
 
             setList(fetchedList)
 
@@ -323,5 +353,5 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
             fetchList();
     }, [])
 
-    return { list, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchList}
+    return { list, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchList, already, setAlready, interactionCounts, setInteractionCounts}
 }
