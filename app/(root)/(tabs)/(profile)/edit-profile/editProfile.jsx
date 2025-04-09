@@ -19,13 +19,13 @@ const editProfile = () => {
     const { user:clerkUser } = useUser()
     const router = useRouter();
     const { data : fetchedUser, refetch } = useFetchOwnerUser( {email:clerkUser.emailAddresses[0].emailAddress} )
-    const [ image, setImage ] = useState(fetchedUser.profilePic);
+    const [ image, setImage ] = useState(fetchedUser?.profilePic);
     const [ loadingImage, setLoadingImage] = useState(false) 
     const [ inputs, setInputs ] = useState({
-        firstName : fetchedUser.firstName,
-        lastName : fetchedUser.lastName,
-        bio : fetchedUser.bio,
-        bioLink : fetchedUser.bioLink
+        firstName : fetchedUser?.firstName,
+        lastName : fetchedUser?.lastName,
+        bio : fetchedUser?.bio,
+        bioLink : fetchedUser?.bioLink
     })
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -89,8 +89,8 @@ const editProfile = () => {
 
         console.log('here')
         const params = {
-            id : fetchedUser.id,
-            email : clerkUser.emailAddresses[0].emailAddress,
+            id : fetchedUser?.id,
+            email : clerkUser?.emailAddresses[0].emailAddress,
             firstName : inputs.firstName,
             lastName : inputs.lastName,
             bio : inputs.bio,
@@ -98,7 +98,7 @@ const editProfile = () => {
             profilePic : image
         }
         console.log('params', params)
-        const updatedUser = await updateUser( params , fetchedUser.emailAddress);
+        const updatedUser = await updateUser( params , fetchedUser?.emailAddress);
         refetch();
         router.back();
 
@@ -112,6 +112,15 @@ const editProfile = () => {
 
     const handleImageUpload = () => {
         pickSingleImage( setImage, setLoadingImage );
+      }
+
+      if (!fetchedUser){
+        return (
+            <View className='w-full h-full bg-primary justify-center items-center'>
+                <ActivityIndicator />
+            </View>
+
+        )
       }
 
     
@@ -246,7 +255,7 @@ const editProfile = () => {
             <View className='gap-3 py-3 px-5  my-3 w-full justify-center items-center '>
                 <Text className='text-mainGray font-pbold'>Current Rotation</Text>
                 <TouchableOpacity onPress={handleEditRotation}  style={{ width:'100%', backgroundColor:Colors.mainGrayDark, paddingHorizontal:20, paddingVertical:10, height:120, borderRadius:15 }} >
-                    <Text className='font-pbold text-white z-10 text-lg self-center' style={{position:'absolute', top:50, paddingHorizontal:50, paddingVertical:5 , backgroundColor:Colors.primary, borderRadius:15, opacity:0.8 }} >Edit</Text>
+                    <Text className='font-pbold text-white z-10 text-lg self-center' style={{position:'absolute', top:40, paddingHorizontal:45, paddingVertical:10 , backgroundColor:Colors.primary, borderRadius:20, opacity:0.8 }} >Edit</Text>
                     <FlatList
                         data={fetchedUser.currentRotation}
                         horizontal

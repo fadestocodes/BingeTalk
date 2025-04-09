@@ -3,7 +3,7 @@ import React, {useState, useRef} from 'react'
 import { Colors } from '../constants/Colors'
 import { formatDateNotif } from '../lib/formatDate'
 import { Image } from 'expo-image'
-import { CloseIcon } from '../assets/icons/icons'
+import { CloseIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { ThumbsDown, ThumbsUp} from 'lucide-react-native'
 import { useFetchOwnerUser } from '../api/user'
 import { useCustomFetchSingleDialogue } from '../api/dialogue'
@@ -13,6 +13,7 @@ import { useUser } from '@clerk/clerk-expo'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { createComment, commentInteraction } from '../api/comments'
 import { useFetchActivityId } from '../api/activity'
+import { useRouter } from 'expo-router'
 
 const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}) => {
 
@@ -38,10 +39,11 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     const { user : clerkUser } = useUser();
     const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const router = useRouter()
 
 
    
-    const userId = ownerUser.id
+    const userId = ownerUser?.id
 
 
 
@@ -306,13 +308,25 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
         const data = {
             type,
             commentId : comment.id,
-            userId : ownerUser.id,
+            userId : ownerUser?.id,
             description,
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
         // refetch();
         // refetchOwnerUser()
+    }
+
+
+    const handleThreeDots = (item, fromReply) => {
+        console.log('from threedots', item)
+        console.log('from reply?', fromReply)
+
+        const fromOwnPost = item.userId === ownerUser?.id
+        router.push({
+            pathname:'/postOptions',
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
+        })
     }
 
 
@@ -387,8 +401,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
                                 <Text className='text-white text-custom font-pcourier'>{item.content}</Text>
     
-                                <View className='flex-row gap-5 w-full justify-start items-center'>
-    
+                                <View className='flex-row justify-between w-full items-center'>
+                                        <View  className='flex-row gap-5 items-center'>
                                     <TouchableOpacity onPress={()=>handleReply(item, item.id)}  style={{borderRadius:5, borderWidth:1, borderColor:Colors.mainGray, paddingVertical:3, paddingHorizontal:8}} >
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
@@ -405,10 +419,12 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                             <Text className='text-xs font-pbold  text-gray-400' style={{ color : alreadyDownvotedComment ? Colors.secondary : Colors.mainGray }}>{item.downvotes}</Text>
                                     </View>
                                     </TouchableOpacity>
-                                    
-                                
-                                
-                                </View>
+                                    </View>
+                                    <TouchableOpacity onPress={()=>handleThreeDots(item)}>
+                                        <ThreeDotsIcon size={20} color={Colors.mainGray} />
+                                    </TouchableOpacity>
+
+                                    </View>
                             </View>
                         ) }
 

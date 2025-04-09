@@ -27,7 +27,7 @@ const profile2 = () => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter();
-    const userId = userDB.id
+    const userId = userDB?.id
 
 
 

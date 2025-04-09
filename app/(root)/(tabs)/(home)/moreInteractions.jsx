@@ -16,17 +16,17 @@ const moreInteractions = () => {
     const { DBtvId, DBMovieId, tmdbId } = useLocalSearchParams();
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress });
-    const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
-    const alreadyWatching = ownerUser.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
+    const alreadyInterested = ownerUser?.interestedItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
+    const alreadyWatching = ownerUser?.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
     const [ message, setMessage ] = useState(null)
     const [ toastIcon, setToastIcon ] = useState(null)
 
 
     const handleInterested = async (  ) => {
         if (DBtvId){
-            await markTVInterested({ tvId : DBtvId, userId : ownerUser.id })
+            await markTVInterested({ tvId : DBtvId, userId : ownerUser?.id })
         } else if (DBMovieId){
-            await markMovieInterested({ movieId : DBMovieId, userId : ownerUser.id })
+            await markMovieInterested({ movieId : DBMovieId, userId : ownerUser?.id })
         }
         if (alreadyInterested){
             setMessage('Removed from Interested')
@@ -39,9 +39,9 @@ const moreInteractions = () => {
 
     const handleCurrentlyWatching = async () => {
         if (DBtvId){
-            await markTVCurrentlyWatching({ tvId : DBtvId, userId : ownerUser.id })
+            await markTVCurrentlyWatching({ tvId : DBtvId, userId : ownerUser?.id })
         } else if (DBMovieId){
-            await markMovieCurrentlyWatching({ movieId : DBMovieId, userId : ownerUser.id })
+            await markMovieCurrentlyWatching({ movieId : DBMovieId, userId : ownerUser?.id })
         }
         if (alreadyWatching){
             setMessage('Removed from Currently Watching')

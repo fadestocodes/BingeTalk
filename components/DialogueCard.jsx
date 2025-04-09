@@ -21,25 +21,10 @@ import { LinearGradient } from 'expo-linear-gradient'
 const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity, isReposted} ) => {
 
 
-    // const [ dialogue, setDialogue ] = useState(null)
-
-    // useEffect(()=>{
-    //     const getSingleDialogue = async () => {
-    //         const dialogue = await fetchSingleDialogue( Number(dialogueId) );
-    //         setDialogue(dialogue);
-    //     }
-    //     getSingleDialogue();
-    // }, [dialogueId])
-    // if (!dialogue) {
-
-    //     return <ActivityIndicator></ActivityIndicator>
-    // }
-
-    // const { data: userDB, refetch } = useFetchUser( {email : clerkUser.emailAddresses[0].emailAddress} )
-    const userDB = dialogue.user
+    const userDB = dialogue?.user
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
-    const tag = dialogue.tag;
+    const tag = dialogue?.tag;
     const { user: clerkUser } = useUser()
     const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
     const [ url, setUrl ] = useState({
@@ -51,52 +36,54 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
     
     
-    const alreadyUpvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
-    const alreadyDownvoted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
-    const alreadyReposted = dialogue.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
+    const alreadyUpvoted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+    const alreadyDownvoted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+    const alreadyReposted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
     
     const [ interactions, setInteractions ] = useState({
         upvotes : {
             alreadyPressed : alreadyUpvoted,
-            count : dialogue.upvotes
+            count : dialogue?.upvotes
         } ,
         downvotes :{
             alreadyPressed : alreadyDownvoted,
-            count : dialogue.downvotes
+            count : dialogue?.downvotes
         } ,
         reposts : {
             alreadyPressed : alreadyReposted,
-            count : dialogue.reposts
+            count : dialogue?.reposts
         } 
     })
 
     useEffect(() => {
-        console.log('from useeffect')
+
         const useGetLinkPreview = async () => {
 
-            const linkPreview = await getLinkPreview(dialogue.url);
+            const linkPreview = await getLinkPreview(dialogue?.url);
             setUrl({
-                link : dialogue.url,
+                link : dialogue?.url,
                 image : linkPreview.imageUrl,
                 title : linkPreview.title,
                 subtitle : linkPreview.h1
             })
         }
-        if (dialogue && dialogue.url){
+        if (dialogue && dialogue?.url){
             useGetLinkPreview()
         }
     }, [dialogue])
 
 
 
+
+
     const handleMentionPress = (mention) => {
-        if (mention.movie) {
+        if (mention?.movie) {
             if (fromHome){
                 router.push(`(home)/movie/${mention.tmdbId}`)
             } else {
                 router.push(`/movie/${mention.tmdbId}`)
             }
-        } else if (mention.tv) {
+        } else if (mention?.tv) {
             if (fromHome){
                 router.push(`(home)/tv/${mention.tmdbId}`)
             } else {
@@ -186,8 +173,13 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
     };
 
 
-    if (!dialogue) {
-        return <ActivityIndicator></ActivityIndicator>
+
+    if (!dialogue || !ownerUser){
+        return (
+            <View className='h-full bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
     }
 
 
@@ -232,7 +224,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         
                     </View>
 
-                    <Text className='text-third font-pcourier text-custom text-left w-full' numberOfLines={3}> { dialogue.content } </Text>
+                    <Text className='text-third font-pcourier  text-left w-full' numberOfLines={3}> { dialogue.content } </Text>
                     { dialogue.image && (
                         <Image 
                             source={{ uri: dialogue.image }}
@@ -277,7 +269,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         )
                         ) }
                 </View>
-                { dialogue.mentions.length > 0 && (
+                { dialogue?.mentions?.length > 0 && (
 
                 <View className='flex-row gap-3  item-center justify-center mt-3' >
                 { dialogue.mentions ? dialogue.mentions.length > 0 && dialogue.mentions.map( mention => (

@@ -101,6 +101,7 @@ const ActivityPage = () => {
             description: `commented on your activity "${input}"`,
             recipientId : activity.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
+            parentActivityId : Number(activityId)
         }
     
         const newComment = await createComment( commentData );

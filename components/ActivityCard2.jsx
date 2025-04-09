@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View , TouchableOpacity, FlatList} from 'react-native'
 import React, {act, useState} from 'react'
 import { Image } from 'expo-image'
 import { Colors } from '../constants/Colors'
@@ -20,9 +20,9 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })  
 
 
-    const alreadyUpvoted = activity.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
-    const alreadyDownvoted = activity.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
-    const alreadyReposted = activity.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
+    const alreadyUpvoted = activity.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+    const alreadyDownvoted = activity.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+    const alreadyReposted = activity.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
     // const [ interactionCounts, setInteractionCounts ] = useState(activity.likes || 0)
     // const alreadyLikedActivity = ownerUser?.activityInteractions.some( interaction => interaction.activityId === activity.id  )
 
@@ -73,6 +73,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     }
 
     const handlePosterPress = (item) => {
+        console.log('posterpress',item)
         if (item?.movie){
             router.push(`(home)/movie/${item.movie.tmdbId}`)
         } else if (item?.threads?.movie){
@@ -167,6 +168,24 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                 />
             </TouchableOpacity>
         ):null }
+
+        { activity?.currentRotation?.length > 0 && (
+            <View style={{ flexDirection:'row', gap:15, justifyContent:'center', alignItems:'center', width:'100%' }}>
+            {activity.currentRotation.map( i => (
+                <View key={i.id} >
+                <TouchableOpacity onPress={()=>handlePosterPress(i)} >
+                <Image 
+                    source={{ uri: `${posterURL}${i?.movie?.posterPath || i?.tv?.posterPath }` }}
+                    placeholder={{ uri: `${posterURLlow}${i?.movie?.posterPath || i?.tv?.posterPath }` }}
+                    placeholderContentFit='cover'
+                    contentFit='cover'
+                    style ={{ width:40, height:60, borderRadius:10}}
+                />
+                </TouchableOpacity>
+                </View>
+            ) )}
+            </View>
+        ) }
 
       
 <View className=' flex-row items-end justify-between  w-full '>

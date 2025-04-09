@@ -33,7 +33,7 @@ const UserListsPage = ( { userId } ) => {
         const data = {
             type,
             listId : item.id,
-            userId : ownerUser.id
+            userId : ownerUser?.id
         }
         const updatedDialogue = await listInteraction(data)
         refetch();
@@ -56,6 +56,15 @@ const UserListsPage = ( { userId } ) => {
     }
     const handleRecommendedPress = (userId) => {
         router.push(`/list/recommended/${userId}`)
+    }
+
+
+    if ( !ownerUser){
+        return (
+            <View className='h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
     }
 
 

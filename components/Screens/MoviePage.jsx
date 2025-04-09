@@ -60,14 +60,14 @@ const MoviePage = () => {
     const {user: clerkUser} = useUser();
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
     const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
-    const alreadyWatched = ownerUser.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
-    const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
+    const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
+    const alreadyInWatchlist = ownerUser?.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
     const [ movieRatings, setMovieRatings ] = useState([])
     
-    const alreadyRated = movieRatings?.some( item => item.movieId === Number(DBmovieId) && item.userId === ownerUser.id )
-    const ownerRating = movieRatings?.find( item => item.userId === ownerUser.id && item.movieId === Number(DBmovieId) ) || 'N/A'
-    const followersAndFollowingIds = ownerUser.followers.map(item => item.followerId ).concat(ownerUser.followers.map(f => f.followingId))
-    const friendsRatingList = movieRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser.id )
+    const alreadyRated = movieRatings?.some( item => item.movieId === Number(DBmovieId) && item.userId === ownerUser?.id )
+    const ownerRating = movieRatings?.find( item => item.userId === ownerUser?.id && item.movieId === Number(DBmovieId) ) || 'N/A'
+    const followersAndFollowingIds = ownerUser?.followers.map(item => item.followerId ).concat(ownerUser?.followers.map(f => f.followingId))
+    const friendsRatingList = movieRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser?.id )
     const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
     const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
     const totalOverallRatings = movieRatings?.reduce((sum,rating) => sum + rating.rating, 0)
@@ -208,7 +208,7 @@ const MoviePage = () => {
         } else {
             setButtonPressed('watched')
         }
-        const marked = await markMovieWatch({ movieId : DBmovieId, userId : ownerUser.id })
+        const marked = await markMovieWatch({ movieId : DBmovieId, userId : ownerUser?.id })
         if(marked){
             if ( alreadyWatched ){
                 setMessage('Removed from Watched')
@@ -235,7 +235,7 @@ const MoviePage = () => {
         } else {
             setButtonPressed('addToWatchlist')
         }
-        const addedToWatchlist = await markMovieWatchlist({ movieId : DBmovieId, userId : ownerUser.id })
+        const addedToWatchlist = await markMovieWatchlist({ movieId : DBmovieId, userId : ownerUser?.id })
         if (addedToWatchlist){
             if (alreadyInWatchlist){
                 setMessage('Removed from Watchlist')
@@ -275,6 +275,14 @@ const MoviePage = () => {
         }
     }
 
+
+    if ( !ownerUser){
+        return (
+            <View className='h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
+    }
 
   return (
     <View className='bg-primary h-full flex  pt-0 gap-10 relative  ' style={{}}>

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, {useState} from 'react'
 import { ThumbsUp, ThumbsDown, List } from 'lucide-react-native'
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons'
@@ -33,6 +33,8 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
         downvotes : item.downvotes ,
         reposts : item.reposts
     })
+
+
  
 
 
@@ -139,6 +141,15 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
         } else {
             router.push(`/user/${item.user.id}`)
         }
+    }
+
+
+    if (!item || !ownerUser){
+        return (
+            <View className='h-full bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
     }
 
 

@@ -62,7 +62,7 @@ const ListIdScreen = () => {
 
 
 
-    if (!list){
+    if (!list || !ownerUser){
         return (
             <View className='h-full bg-primary justify-center items-center'>
         <ActivityIndicator tintColor={Colors.secondary} />

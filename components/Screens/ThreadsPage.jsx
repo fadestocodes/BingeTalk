@@ -39,7 +39,7 @@ const ThreadsIdPage = () => {
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     const { user : clerkUser } = useUser();
     const { data: ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-    const userId = ownerUser.id
+    const userId = ownerUser?.id
     const queryClient = useQueryClient();
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
 
@@ -152,7 +152,7 @@ const ThreadsIdPage = () => {
         const data = {
             type,
             threadId : Number(threadsId),
-            userId : ownerUser.id
+            userId : ownerUser?.id
         }
         const updatedDialogue = await threadInteraction(data)
         refetch();
@@ -341,7 +341,7 @@ const ThreadsIdPage = () => {
         const data = {
             type,
             commentId : comment.id,
-            userId : ownerUser.id,
+            userId : ownerUser?.id,
             description,
             recipientId : comment.user.id
         }
@@ -359,10 +359,10 @@ const ThreadsIdPage = () => {
         console.log('from threedots', item)
         console.log('from reply?', fromReply)
 
-        const fromOwnPost = item.userId === ownerUser.id
+        const fromOwnPost = item.userId === ownerUser?.id
         router.push({
             pathname:'/postOptions',
-            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
         })
     }
 

@@ -40,12 +40,12 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         const posterURL = 'https://image.tmdb.org/t/p/original';
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
         const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-        const isOwnersProfilePage = user.id === ownerUser.id
+        const isOwnersProfilePage = user?.id === ownerUser?.id
         const [ isFollowing, setIsFollowing ] = useState(null)
-        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user.id, 15)
+        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user?.id, 15)
         const [ followCounts, setFollowCounts ] = useState({
-            followers : user.followers.length,
-            following : user.following.length
+            followers : user?.followers.length,
+            following : user?.following.length
         })
         const [ refreshingPage, setRefreshingPage ] = useState(false)
 
@@ -53,7 +53,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 
         useEffect(()=>{
             // const checkFollow = ownerUser.following.some( item => item.followingId === user.id );
-            const checkFollow = user.followers.some( item => item.followingId === ownerUser.id );
+            const checkFollow = user?.followers.some( item => item.followingId === ownerUser?.id );
             // console.log('check follow', checkFollow)
         if (checkFollow){
             setIsFollowing(true);
@@ -105,7 +105,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 
             const followData = {
                 followerId : Number(user.id),
-                followingId : Number(ownerUser.id)
+                followingId : Number(ownerUser?.id)
             }
             if (isFollowing){
                 const unfollow = await unfollowUser( followData )
@@ -150,7 +150,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
   return (
    
     <View className='w-full h-full bg-primary'>
-        { isFetchingUser || loading ? (
+        { isFetchingUser || loading  || !ownerUser ? (
             <View className="bg-primary w-full h-full justify-center items-center">
             <ActivityIndicator></ActivityIndicator>
         </View>

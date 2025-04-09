@@ -64,16 +64,16 @@ const TVPage = () => {
     const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
 
-    const alreadyWatched = ownerUser.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
-    const alreadyInWatchlist = ownerUser.watchlistItems.some( item => item.tvId === Number(DBtvId) )
-    // const alreadyRated = ownerUser.ratings.some( item => item.tvId === Number(DBtvId) )
-    // const tvRating = ownerUser.ratings.find( item => item.tvId === Number(DBtvId));
+    const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
+    const alreadyInWatchlist = ownerUser?.watchlistItems.some( item => item.tvId === Number(DBtvId) )
+    // const alreadyRated = ownerUser?.ratings.some( item => item.tvId === Number(DBtvId) )
+    // const tvRating = ownerUser?.ratings.find( item => item.tvId === Number(DBtvId));
 
 
-    const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) && item.userId === ownerUser.id )
-    const ownerRating = tvRatings?.find( item => item.userId === ownerUser.id && item.tvId === Number(DBtvId) ) || 'N/A'
-    const followersAndFollowingIds = ownerUser.followers.map(item => item.followerId ).concat(ownerUser.followers.map(f => f.followingId))
-    const friendsRatingList = tvRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser.id )
+    const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) && item.userId === ownerUser?.id )
+    const ownerRating = tvRatings?.find( item => item.userId === ownerUser?.id && item.tvId === Number(DBtvId) ) || 'N/A'
+    const followersAndFollowingIds = ownerUser?.followers.map(item => item.followerId ).concat(ownerUser?.followers.map(f => f.followingId))
+    const friendsRatingList = tvRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser?.id )
     const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
     const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
     const totalOverallRatings = tvRatings?.reduce((sum,rating) => sum + rating.rating, 0)
@@ -208,7 +208,7 @@ const TVPage = () => {
         } else {
             setButtonPressed('watched')
         }
-        const marked = await markTVWatch({ tvId : DBtvId, userId : ownerUser.id })
+        const marked = await markTVWatch({ tvId : DBtvId, userId : ownerUser?.id })
         if (marked){
             if ( alreadyWatched ){
                 setMessage('Removed from Watched')
@@ -233,7 +233,7 @@ const TVPage = () => {
         } else {
             setButtonPressed('addToWatchlist')
         }
-        const addedToWatchlist = await markTVWatchlist({ tvId : DBtvId, userId : ownerUser.id })
+        const addedToWatchlist = await markTVWatchlist({ tvId : DBtvId, userId : ownerUser?.id })
         if (addedToWatchlist){
             if (alreadyInWatchlist){
                 setMessage('Removed from Watchlist')
@@ -275,6 +275,16 @@ const TVPage = () => {
             <ListChecks size={30} color={Colors.secondary} />)
         }
     }
+
+
+    if ( !ownerUser){
+        return (
+            <View className='h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
+    }
+
 
 
 

@@ -16,10 +16,10 @@ import { LinearGradient } from 'expo-linear-gradient'
 
 
 const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic, fromHome, activity, isReposted}) => {
-    const userDB = thread.user
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
-    const tag = thread.tag;
+    const userDB = thread?.user
+    const tag = thread?.tag;
     const { user: clerkUser } = useUser()
     const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
     const [ url, setUrl ] = useState({
@@ -30,9 +30,9 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     })
 
 
-    const alreadyUpvoted = thread.threadInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser.id )
-    const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser.id )
-    const alreadyReposted = thread.threadInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser.id )
+    const alreadyUpvoted = thread.threadInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+    const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+    const alreadyReposted = thread.threadInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
 
 
     const [ already, setAlready ] = useState({
@@ -58,10 +58,12 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                 subtitle : linkPreview.h1
             })
         }
-        if (thread && thread.url){
+        if (thread && thread?.url){
             useGetLinkPreview()
         }
     }, [thread])
+
+
  
 
     const handleInteraction =  async (type, thread) => {
@@ -113,19 +115,19 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     }
 
     const handlePress = (item) => {
-        if (item.movie ){
+        if (item?.movie ){
             if (fromHome) {
                 router.push(`(home)/movie/${item.movie.tmdbId}`)
             } else {
                 router.push(`/movie/${item.movie.tmdbId}`)
             }
-        } else if (item.tv){
+        } else if (item?.tv){
             if (fromHome){
                 router.push(`(home)/tv/${item.tv.tmdbId}`)
             } else {
                 router.push(`/tv/${item.tv.tmdbId}`)
             }
-        } else if (item.castCrew){
+        } else if (item?.castCrew){
             if (fromHome){
                 router.push(`(home)/cast/${item.castCrew.tmdbId}`)
             }else {
@@ -177,6 +179,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     };
 
 
+
     if (!thread || !ownerUser){
         return (
             <View className='h-full bg-primary'>
@@ -184,6 +187,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
             </View>
         )
     }
+
 
 
   return (
@@ -233,7 +237,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
             { thread.caption ? (
               <View className='gap-3 mt-5'>
                 <Text className='text-secondary text-lg leading-5 font-pcourier uppercase text-center'>{thread.user.firstName}</Text>
-                <Text className="text-white  text-custom font-pcourier" numberOfLines={isBackground && 3 } >{thread.caption}</Text>
+                <Text className="text-white  font-pcourier" numberOfLines={isBackground && 3 } >{thread.caption}</Text>
               </View>
             ) : null }
 

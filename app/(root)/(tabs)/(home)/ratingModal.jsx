@@ -45,7 +45,7 @@ const ratingModal = () => {
     const handlePost = async (  ) => {
 
         const data = {
-            userId:ownerUser.id,
+            userId:ownerUser?.id,
             movieId : Number(DBmovieId),
             tvId : Number(DBtvId),
             rating : Number(rating.toFixed(1))

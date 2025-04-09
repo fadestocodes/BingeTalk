@@ -18,7 +18,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
     
 
-    const isOwnersPage = userId === ownerUser.id;
+    const isOwnersPage = userId === ownerUser?.id;
 
 
     const handleFollowBack = async (checkFollow, item) => {
@@ -30,7 +30,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
         }
         const data = {
         followerId : toUse.id,
-        followingId : ownerUser.id
+        followingId : ownerUser?.id
         }
 
         if (checkFollow) {
@@ -54,6 +54,15 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
     const handleUserPress =(item) => {
         router.push(`/user/${item.id}`)
+    }
+
+
+    if ( !ownerUser){
+        return (
+            <View className='h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
     }
 
 
@@ -116,12 +125,13 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
                                 </View>
                         </TouchableOpacity>
-                            <>
-                                <TouchableOpacity onPress={()=>handleFollowBack(  checkFollowFromFollower  , item)} style={{backgroundColor:checkFollowFromFollower  ?  'transparent' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
-                                    <Text className='   font-pbold text-sm' style={{color: checkFollowFromFollower  ? Colors.secondary : Colors.primary}}>{checkFollowFromFollower  ? 'Already following' : isOwnersPage ? 'Follow back' : 'Follow'}</Text>
-                                </TouchableOpacity>
+                        { item.following.id !== ownerUser.id && (
 
-                            </>
+                                <TouchableOpacity onPress={()=>handleFollowBack(  checkFollowFromFollower  , item)} style={{backgroundColor:checkFollowFromFollower  ?  'transparent' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
+                                    <Text className='   font-pbold text-sm' style={{color: checkFollowFromFollower  ? Colors.secondary : Colors.primary}}>{checkFollowFromFollower  ? 'Already following' : isOwnersPage ? 'Follow back' : item.following.id === ownerUser.id ? '' : 'Follow'}</Text>
+                                </TouchableOpacity>
+                        )  }
+
                     </View>
                 </TouchableOpacity>
             )}}
@@ -164,12 +174,14 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
                                 </View>
                         </TouchableOpacity>
-                            <>
-                                <TouchableOpacity onPress={()=>handleFollowBack( item.alreadyFollowing , item)} style={{backgroundColor:item.alreadyFollowing ?  'transparent' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
-                                    <Text className='   font-pbold text-sm' style={{color: item.alreadyFollowing ? Colors.secondary : Colors.primary}}>{item.alreadyFollowing ? 'Already following' : isOwnersPage ? 'Follow back' : 'Follow'}</Text>
-                                </TouchableOpacity>
 
-                            </>
+                        { item.follower.id !== ownerUser.id && (
+
+                                <TouchableOpacity onPress={()=>handleFollowBack( item.alreadyFollowing , item)} style={{backgroundColor:item.alreadyFollowing ?  'transparent' : Colors.secondary, borderWidth:1, borderColor:Colors.secondary,borderRadius:10, padding:5}}>
+                                    <Text className='   font-pbold text-sm' style={{color: item.alreadyFollowing ? Colors.secondary : Colors.primary}}>{item.alreadyFollowing ? 'Already following' : isOwnersPage ? 'Follow back' :  item.follower.id === ownerUser.id ? '' : 'Follow'}</Text>
+                                </TouchableOpacity>
+                        ) }
+
                     </View>
                 </TouchableOpacity>
             )}}

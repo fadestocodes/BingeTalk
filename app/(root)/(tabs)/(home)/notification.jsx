@@ -15,7 +15,7 @@ import { BackIcon } from '../../../../assets/icons/icons'
 const Notification = () => {
   const { user : clerkUser } = useUser();
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
-  const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds} = useGetAllNotifs(ownerUser.id, 10);
+  const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds} = useGetAllNotifs(ownerUser?.id, 10);
   const { updateNotifCount, notifCount } = useNotificationCountContext()
   
   
@@ -26,7 +26,7 @@ const Notification = () => {
     
 
   const handlePress = async (item) => {
-    console.log(item)
+    // console.log(item)
    
     setUnreadIds( prev => prev.filter( i => i !== item.id ))
     const readNotif = await markNotifRead( item.id, notifCount, updateNotifCount )
@@ -35,7 +35,7 @@ const Notification = () => {
     if (item.parentActivityId){
       router.push(`/activity/${item.parentActivityId}`)
     } else if (item.activityType === 'RECOMMENDATION'){
-      router.push(`(profile)/list/recommended/${ownerUser.id}`)
+      router.push(`list/recommended/${ownerUser?.id}`)
     } else if (item.threads  && !item.commentId){
       router.push({
         pathname:`/threads/${item.threads.id}`,
@@ -84,6 +84,10 @@ const Notification = () => {
         pathname:`/list/${item.comment.listId}`,
         params:{ replyCommentId: item.comment.id}
       })
+    } else if(item.comment.activityIdCommentedOn){
+      router.push(`activity/${item.comment.activityIdCommentedOn}`)
+    } else if (item.comment.parentComment.activityIdCommentedOn){
+      router.push(`activity/${item.comment.parentComment.activityIdCommentedOn}`)
     }
    
   }
@@ -93,7 +97,7 @@ const Notification = () => {
     
     const data = {
       followerId : item.user.id,
-      followingId : ownerUser.id
+      followingId : ownerUser?.id
     }
     if (checkFollow) {
       const unfollowed = await unfollowUser(data)

@@ -26,7 +26,7 @@ const RecommendationScreen = () => {
     const { DBmovieId, DBtvId, DBcastId } = useLocalSearchParams();
    
     const useGetAllMutuals = async () => {
-        const mutuals = await getAllMutuals(ownerUser.id);
+        const mutuals = await getAllMutuals(ownerUser?.id);
         setMutuals(mutuals)
     }
 
@@ -66,7 +66,7 @@ const RecommendationScreen = () => {
             }
             
             const data = {
-                recommenderId : ownerUser.id,
+                recommenderId : ownerUser?.id,
                 type,
                 recipientId : whichStep === 'step1' ? params.item.followingId : recipient.followingId,
                 movieId : Number(DBmovieId) || null,
@@ -101,7 +101,7 @@ const RecommendationScreen = () => {
 
   
 
-    if (loadingMutuals){
+    if (loadingMutuals || !ownerUser){
         return <ActivityIndicator />
     }
 

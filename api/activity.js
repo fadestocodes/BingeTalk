@@ -120,6 +120,7 @@ export const activityInteraction = async ( data ) => {
             body:JSON.stringify( data )
         })
         const response = await request.json();
+        console.log('activityinteract', response)
         return response
     } catch (err) {
         console.log(err)

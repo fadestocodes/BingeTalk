@@ -91,7 +91,7 @@ const CastIdPage = () => {
                 const castFromDB = await fetchPersonFromDB({castData})
                 setDBcast(castFromDB)
                 setFavLength(castFromDB.favCastCrew.length)
-                const alreadyFavCheck = ownerUser.favCastCrew.some( item => item.castId === castFromDB.id )
+                const alreadyFavCheck = ownerUser?.favCastCrew.some( item => item.castId === castFromDB.id )
                 setAlreadyFav(alreadyFavCheck)
                 // queryClient.setQueryData(['cast', castId]);
     
@@ -123,7 +123,7 @@ const CastIdPage = () => {
 
       
       const data = {
-        userId : ownerUser.id,
+        userId : ownerUser?.id,
         castId : DBcast.id
       }
       const newFav = await addCastToFav(data);
@@ -180,7 +180,7 @@ const CastIdPage = () => {
     // }
 
 
-    if (!personData) {
+    if (!personData || !ownerUser) {
 
         return (
           <View className='w-full h-full bg-primary'>

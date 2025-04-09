@@ -51,7 +51,7 @@ const homeIndex = () => {
     const getFeed = async () => {
        
         try {
-          const notifsData = await getAllNotifs( ownerUser.id, null , true, updateNotifCount )
+          const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
           const unread = notifsData.filter( item => item.isRead === false)
           setUnreadNotifs(unread)
         } catch {
@@ -59,7 +59,7 @@ const homeIndex = () => {
         }
         if (!hasMoreFeed && !hasMoreThreads &&!hasMoreRotations )return 
         try {
-            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&rotationCursor=${rotationCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}&hasMoreRotations=${hasMoreRotations}`);
+            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&rotationCursor=${rotationCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}&hasMoreRotations=${hasMoreRotations}`);
             const response = await request.json();
             setData( prev => [ ...prev, ...response.items ] );
             setFeedCursor(response.nextFeedCursorServer)
@@ -79,11 +79,11 @@ const homeIndex = () => {
 
     const refetchFeed = async () => {
       try {
-        const notifsData = await getAllNotifs( ownerUser.id, null , true, updateNotifCount )
+        const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
 
-        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser.id}&limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
+        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
         const response = await request.json();
         setData( response.items );
         setFeedCursor(response.nextFeedCursorServer)
@@ -125,7 +125,7 @@ const homeIndex = () => {
 
     const handleLike = async (item) => {
       const likeData = {
-        userId : ownerUser.id,
+        userId : ownerUser?.id,
         activityId : item.id
       }
       const likedActivity = await likeActivity(likeData)
@@ -134,6 +134,7 @@ const homeIndex = () => {
     } 
 
     const handlePress =(item) => {
+      console.log('itemfromhome', item)
       if (item.dialogue){
         router.push(`(home)/dialogue/${item.dialogue.id}`)
       } else if (item.threads){
@@ -145,11 +146,14 @@ const homeIndex = () => {
 
 
 
+
+
+
   
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' >
-      { isLoadingOwnerUser  ?  (
+      { isLoadingOwnerUser  || !ownerUser ?  (
         <View className='bg-primary h-full justify-center items-center'>
           <ActivityIndicator />
         </View>

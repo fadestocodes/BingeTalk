@@ -23,7 +23,7 @@ const editRotation = () => {
   const router = useRouter();
 
   const { data : userDB, refetch } = useFetchOwnerUser( {email : user.emailAddresses[0].emailAddress} );
-  const userId = userDB.id
+  const userId = userDB?.id
   const oldRotation = userDB?.currentRotation
   
   useEffect(() => {
@@ -185,7 +185,12 @@ return (
   >
   <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()} style={{width:'100%', height:'100%', backgroundColor:Colors.primary}}>
     <View  style={{ justifyContent:'center', alignItems:'center', height:'100%', height:'100%', paddingTop:0,  backgroundColor:Colors.primary, gap:15 , paddingHorizontal:30}} >
+    { !resultsOpen && (
+    <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', width:'100%'}}>
+        <BackIcon size={22} color={Colors.mainGray} />
+    </TouchableOpacity>
 
+    ) }
      
 
     { resultsOpen ? (
@@ -206,13 +211,13 @@ return (
                       value={searchQuery}
                   />
               </View>
-              <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:5, top:15 }}>
+              <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:15, top:15 }}>
                   <CloseIcon color={Colors.mainGray} size={24} className=' ' />
               </TouchableOpacity>
           </View>
 
               { searchQuery === '' ? (
-              <ScrollView className='pt-10 w-full h-full'  >
+              <ScrollView className=' w-full h-full'  >
                       <DraggableGrid
                       numColumns={5}
                       renderItem={renderItem}
@@ -271,7 +276,7 @@ return (
               </View>
 
       ) : (
-      <ScrollView  className='bg-primary' style={{ width:'100%', height:'100%', paddingTop:70 }}>
+      <ScrollView  className='bg-primary' style={{ width:'100%', height:'100%', paddingTop:10 }}>
 
       <View className='w-full h-full justify-center items-center gap-5 '>
         <Text className='text-white font-pbold text-2xl  text-center'>Current Rotation.</Text>
@@ -309,7 +314,7 @@ return (
 
           </View>
          
-          <TouchableOpacity onPress={handleContinue}  style={{ borderRadius:10, paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.secondary, width:100 }}  >
+          <TouchableOpacity onPress={handleContinue}  style={{ borderRadius:30, paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.secondary, width:100 }}  >
             <Text className='text-primary text-lg font-pbold text-center'>Save</Text>
           </TouchableOpacity>
           </View>

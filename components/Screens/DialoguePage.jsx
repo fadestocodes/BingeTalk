@@ -32,7 +32,7 @@ const DialogueScreen = () => {
     const { user : clerkUser } = useUser();
     const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
    
-    const userId = ownerUser.id
+    const userId = ownerUser?.id
     const { dialogueId, tvId, movieId, castId }= useLocalSearchParams();
 
     const { dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
@@ -67,7 +67,7 @@ const DialogueScreen = () => {
         
         const replyingToData = {
             user : item.user,
-            dialogueId : Number(dialogue.id),
+            dialogueId : Number(dialogue?.id),
             content : item.content,
             parentId
         }
@@ -99,7 +99,7 @@ const DialogueScreen = () => {
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
             description: `commented on your dialogue "${input}"`,
-            recipientId : dialogue.user.id,
+            recipientId : dialogue?.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
     
@@ -296,7 +296,7 @@ const DialogueScreen = () => {
         const data = {
             type,
             commentId : comment.id,
-            userId : ownerUser.id,
+            userId : ownerUser?.id,
             description,
             recipientId : comment.user.id
         }
@@ -313,10 +313,10 @@ const DialogueScreen = () => {
         console.log('from threedots', item)
         console.log('from reply?', fromReply)
 
-        const fromOwnPost = item.userId === ownerUser.id
+        const fromOwnPost = item.userId === ownerUser?.id
         router.push({
             pathname:'/postOptions',
-            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
         })
     }
 

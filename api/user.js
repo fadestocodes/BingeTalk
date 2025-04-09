@@ -131,6 +131,35 @@ export const useFetchOwnerUser = (email) => {
     });
 }
 
+// export const useFetchOwnerUser = (email) => {
+//     const [ data, setData ]  = useState(null)
+//     const [ isLoading, setIsLoading ]  = useState(true)
+
+//     const fetchOwnerUser = async () => {
+//         try {
+//             const request = await fetch(`${nodeServer.currentIP}/user`, {
+//                 method:'POST',
+//                 headers:{
+//                     'Content-type' : 'application/json'
+//                 },
+//                 body:JSON.stringify(email)
+//             })
+//             const response = await request.json();
+//             setData(response)
+//         } catch (err) {
+//             console.log('Error fetching user from db', err)
+//         }
+//         setIsLoading(false)
+//     }
+
+//     useEffect(()=>{
+//         fetchOwnerUser()
+//     },[email])
+
+//     return { data, isLoading, refetch:fetchOwnerUser }
+
+// }
+
 
 
 
