@@ -13,8 +13,8 @@ import { GetTVById, GetMovieById } from '../../../../api/tmdb'
 
 const addToListModal = () => {
     const { user :clerkUser } = useUser()
-    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-    const { data : userLists, refetch: refetchUserLists, isFetching } = useFetchUsersLists(ownerUser.id)
+    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+    const { data : userLists, refetch: refetchUserLists, isFetching } = useFetchUsersLists(ownerUser?.id)
 
     const {tmdbId, DBtvId, DBMovieId} = useLocalSearchParams();
     const [ tvObj, setTvObj ] = useState(null)
@@ -148,6 +148,14 @@ const addToListModal = () => {
 
             });
     }
+
+    if (!ownerUser){
+        return (
+          <View className='w-full h-full bg-primary justify-center items-center'>
+            <ActivityIndicator />
+          </View>
+        )
+      }
 
 
 

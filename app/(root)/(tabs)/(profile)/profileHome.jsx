@@ -91,7 +91,7 @@ import { useFetchOwnerUser } from '../../../../api/user'
 const UserIDPage = () => {
   const { user:clerkUser } = useUser();
 
-  const { data:user, refetch: refetchUser, isFetching: isFetchingUser } = useFetchOwnerUser( {email : clerkUser.emailAddresses[0].emailAddress} )
+  const { data:user, refetch: refetchUser, isFetching: isFetchingUser } = useFetchOwnerUser( {email : clerkUser?.emailAddresses[0].emailAddress} )
   
   
 

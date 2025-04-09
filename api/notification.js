@@ -16,12 +16,12 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const [ unreadIds, setUnreadIds ] = useState([])
 
     const getAllNotifs = async () => {
-        if (!hasMore) return
+        if (!hasMore || !ownerUser) return
         try {
             const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(prev => [...prev, ...response.items])
-
+            console.log('notificationshere', response.items)
 
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
@@ -44,11 +44,34 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
         getAllNotifs()
     }, [recipientId])
 
+
+    const refetch = async () => {
+        try {
+            const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
+            const response = await notifications.json();
+            setData(response.items)
+
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+
+            const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
+            setIsFollowingIds(isFollowingId)
+            const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
+            setUnreadIds( unreadIds  )
+
+            
+
+            
+        } catch (Err){
+            console.log(Err)
+        }
+        setLoading(false)
+    }
     
 
     
 
-    return { data, loading, hasMore, refetch :getAllNotifs , isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds}
+    return { data, loading, hasMore, refetch , isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds}
 }
 
 export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCount) => {

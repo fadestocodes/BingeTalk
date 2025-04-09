@@ -270,7 +270,7 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
     const { user : clerkUser }  = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []
@@ -351,7 +351,11 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     useEffect(()=>{
        
             fetchList();
-    }, [])
+    }, [ownerUser, listId])
 
-    return { list, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchList, already, setAlready, interactionCounts, setInteractionCounts}
+    const refetch = async () => {
+        await refetchOwner()
+    }
+
+    return { list, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, already, setAlready, interactionCounts, setInteractionCounts}
 }

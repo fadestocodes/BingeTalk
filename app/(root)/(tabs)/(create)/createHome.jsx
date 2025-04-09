@@ -42,8 +42,8 @@ const CreateHome = () => {
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
     const {user:clerkUser} = useUser();
-    const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
-    userId = ownerUser.id
+    const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress});
+    userId = ownerUser?.id
 
 
 
@@ -119,6 +119,14 @@ const CreateHome = () => {
             
         }
     }
+
+    if (!ownerUser){
+        return (
+          <View className='w-full h-full bg-primary justify-center items-center'>
+            <ActivityIndicator />
+          </View>
+        )
+      }
 
     const renderItem = (item) => {
         return (

@@ -44,8 +44,8 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         const [ isFollowing, setIsFollowing ] = useState(null)
         const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user?.id, 15)
         const [ followCounts, setFollowCounts ] = useState({
-            followers : user?.followers.length,
-            following : user?.following.length
+            followers : user?.followers?.length,
+            following : user?.following?.length
         })
         const [ refreshingPage, setRefreshingPage ] = useState(false)
 
@@ -150,7 +150,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
   return (
    
     <View className='w-full h-full bg-primary'>
-        { isFetchingUser || loading  || !ownerUser ? (
+        { isFetchingUser || loading ||!user  || !ownerUser ? (
             <View className="bg-primary w-full h-full justify-center items-center">
             <ActivityIndicator></ActivityIndicator>
         </View>

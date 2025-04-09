@@ -20,9 +20,9 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })  
 
 
-    const alreadyUpvoted = activity.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
-    const alreadyDownvoted = activity.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
-    const alreadyReposted = activity.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+    const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+    const alreadyDownvoted = activity?.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+    const alreadyReposted = activity?.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
     // const [ interactionCounts, setInteractionCounts ] = useState(activity.likes || 0)
     // const alreadyLikedActivity = ownerUser?.activityInteractions.some( interaction => interaction.activityId === activity.id  )
 
@@ -33,15 +33,15 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     const [ interactions, setInteractions ] = useState({
         upvotes : {
             alreadyPressed : alreadyUpvoted,
-            count : activity.upvotes
+            count : activity?.upvotes
         } ,
         downvotes :{
             alreadyPressed : alreadyDownvoted,
-            count : activity.downvotes
+            count : activity?.downvotes
         } ,
         reposts : {
             alreadyPressed : alreadyReposted,
-            count : activity.reposts
+            count : activity?.reposts
         } 
     })
 
@@ -73,7 +73,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     }
 
     const handlePosterPress = (item) => {
-        console.log('posterpress',item)
+        // console.log('posterpress',item)
         if (item?.movie){
             router.push(`(home)/movie/${item.movie.tmdbId}`)
         } else if (item?.threads?.movie){
@@ -131,6 +131,14 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
             pathname: fromHome ? '(home)/postOptions' : '/postOptions',
             params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'DIALOGUE', postId : item.id, postUserId : item.userId}
         })
+    }
+
+    if (!activity ){
+        return (
+            <View className='w-full h-full bg-primary justify-center items-center'>
+                <ActivityIndicator/>
+            </View>
+        )
     }
 
 

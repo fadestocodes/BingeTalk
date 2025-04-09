@@ -15,7 +15,7 @@ const moreInteractions = () => {
     const router = useRouter()
     const { DBtvId, DBMovieId, tmdbId } = useLocalSearchParams();
     const { user : clerkUser } = useUser()
-    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress });
+    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress });
     const alreadyInterested = ownerUser?.interestedItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
     const alreadyWatching = ownerUser?.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
     const [ message, setMessage ] = useState(null)
@@ -58,6 +58,15 @@ const moreInteractions = () => {
             params : { tmdbId, DBtvId, DBMovieId }
         })
     }
+
+
+    if (!ownerUser){
+        return (
+          <View className='w-full h-full bg-primary justify-center items-center'>
+            <ActivityIndicator />
+          </View>
+        )
+      }
 
 
 

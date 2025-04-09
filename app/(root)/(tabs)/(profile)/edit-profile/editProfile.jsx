@@ -18,7 +18,7 @@ const editProfile = () => {
 
     const { user:clerkUser } = useUser()
     const router = useRouter();
-    const { data : fetchedUser, refetch } = useFetchOwnerUser( {email:clerkUser.emailAddresses[0].emailAddress} )
+    const { data : fetchedUser, refetch } = useFetchOwnerUser( {email:clerkUser?.emailAddresses[0].emailAddress} )
     const [ image, setImage ] = useState(fetchedUser?.profilePic);
     const [ loadingImage, setLoadingImage] = useState(false) 
     const [ inputs, setInputs ] = useState({

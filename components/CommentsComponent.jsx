@@ -38,7 +38,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     const { user : clerkUser } = useUser();
-    const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
     const router = useRouter()
 
 
@@ -58,9 +58,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     }));
 
 
-    if (!dialogue && !thread && !list && !activity ){ 
-        return <ActivityIndicator/>
-    }
 
 
 
@@ -330,6 +327,13 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     }
 
 
+    if (!dialogue && !thread && !list && !activity ){ 
+        return (
+            <View className='w-full h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
+    }
 
 
   return (
@@ -399,7 +403,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                     <Text className='text-mainGrayDark '>{formatDateNotif(item.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
-                                <Text className='text-white text-custom font-pcourier'>{item.content}</Text>
+                                <Text className='text-white font-pcourier'>{item.content}</Text>
     
                                 <View className='flex-row justify-between w-full items-center'>
                                         <View  className='flex-row gap-5 items-center'>
@@ -451,7 +455,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                     <Text className='text-mainGrayDark '>{formatDateNotif(reply.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{reply.user.firstName}</Text>
-                                <Text className='text-white text-custom font-pcourier'>{reply.content}</Text>
+                                <Text className='text-white  font-pcourier'>{reply.content}</Text>
     
                                 <View className='flex-row gap-5 w-full justify-start items-center'>
                                     

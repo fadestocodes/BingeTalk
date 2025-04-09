@@ -184,7 +184,7 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
     const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
     const { user : clerkUser }  = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+    const { data : ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []
@@ -205,7 +205,6 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
                 return fetchedThread.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
             setInteractedComments(prev => ({
-                ...prev,
                 upvotes : upvotedComments,
                 downvotes : downvotedComments
             }))
@@ -236,7 +235,7 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
     useEffect(()=>{
        
             fetchThread();
-    }, [])
+    }, [ownerUser, threadId])
 
     const removeItem = (removeId, removePostType) => {
         if (removePostType === 'REPLY'){
@@ -254,5 +253,9 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
         }
     }
 
-    return { thread, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchThread, removeItem}
+    const refetch = async () => {
+        await refetchOwner()
+    }
+
+    return { thread, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, removeItem}
 }

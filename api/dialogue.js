@@ -78,7 +78,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
     const { user : clerkUser }  = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []
@@ -100,7 +100,6 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
             } )
             // setInteractedComments(interactedCommentsData)
             setInteractedComments(prev => ({
-                ...prev,
                 upvotes : upvotedComments,
                 downvotes : downvotedComments
             }))
@@ -131,7 +130,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     useEffect(()=>{
        
             fetchDialogue();
-    }, [])
+    }, [ownerUser, dialogueId])
 
     const removeItem = (removeId, removePostType) => {
         if (removePostType === 'REPLY'){
@@ -149,8 +148,12 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
         }
     }
 
+    const refetch = async () => {
+        await refetchOwner()
+    }
+
    
-    return { dialogue, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch: fetchDialogue, removeItem}
+    return { dialogue, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, removeItem}
 }
 
 export const dialogueInteraction = async ( data ) => {

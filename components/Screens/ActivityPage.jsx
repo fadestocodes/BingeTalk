@@ -99,12 +99,14 @@ const ActivityPage = () => {
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
             description: `commented on your activity "${input}"`,
-            recipientId : activity.user.id,
+            recipientId : replyingTo?.user?.id || activity?.user?.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
-            parentActivityId : Number(activityId)
+            parentActivityId : Number(activityId),
+            activityIdCommentedOn : Number(activityId)
         }
     
         const newComment = await createComment( commentData );
+        console.log('postednewcomment',newComment)
         setInput('');
         setReplyingTo(null)
         setReplying(false)
@@ -119,11 +121,13 @@ const ActivityPage = () => {
     const handleCommentInteraction =  async (type, comment, isAlready, parentId) => {
 
         let description
+        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === comment.id )
+        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === comment.id )
 
         
         if ( type === 'upvotes' ){
             description = `upvoted your comment "${comment.content}"`
-            if (isAlready){
+            if (alreadyUpvotedComment){
              
                 setInteractedComments(prev => {
                     const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
@@ -214,7 +218,7 @@ const ActivityPage = () => {
             
         } else if (type === 'downvotes'){
             description = `downvoted your comment "${comment.content}"`
-            if (isAlready){
+            if (alreadyDownvotedComment){
                 setInteractedComments(prev => ({
                     ...prev,
                     downvotes : prev.downvotes.filter( i => i.commentId !== comment.id )
@@ -299,7 +303,8 @@ const ActivityPage = () => {
             commentId : comment.id,
             userId : ownerUser.id,
             description,
-            recipientId : comment.user.id
+            recipientId : comment.user.id,
+            activityId : Number(activityId)
         }
         const updatedComment = await commentInteraction(data)
         // refetch();
@@ -321,10 +326,12 @@ const ActivityPage = () => {
 
 
 
+
+
   return (
     <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
        
-       { isLoading || !ownerUser ? (
+       { isLoading || !ownerUser || !activity ? (
             <View className='h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>
             </View>
@@ -386,7 +393,7 @@ const ActivityPage = () => {
                                     <Text className='text-mainGrayDark '>{formatDate(item.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
-                                <Text className='text-white text-custom font-pcourier'>{item.content}</Text>
+                                <Text className='text-white font-pcourier'>{item.content}</Text>
     
                                     <View className='flex-row justify-between w-full items-center'>
                                         <View  className='flex-row gap-5 items-center'>
@@ -423,6 +430,7 @@ const ActivityPage = () => {
 { item.replies.length > 0 && (
                             <>
                             { item.replies.slice(0, shownReplies).map((reply) => {
+                                console.log('interactedcomments',interactedComments)
                                 const alreadyUpvotedReply = interactedComments.upvotes.some( i => i.commentId === reply.id )
                                 const alreadyDownvotedReply = interactedComments.downvotes.some( i => i.commentId === reply.id )
                                 return (
@@ -442,7 +450,7 @@ const ActivityPage = () => {
                                     <Text className='text-mainGrayDark '>{formatDate(reply.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{reply.user.firstName}</Text>
-                                <Text className='text-white text-custom font-pcourier'>{reply.content}</Text>
+                                <Text className='text-white font-pcourier'>{reply.content}</Text>
                                 
                                 <View className='w-full justify-between flex-row'>
 

@@ -14,7 +14,7 @@ import { BackIcon } from '../../../../assets/icons/icons'
 
 const Notification = () => {
   const { user : clerkUser } = useUser();
-  const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
+  const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress})
   const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds} = useGetAllNotifs(ownerUser?.id, 10);
   const { updateNotifCount, notifCount } = useNotificationCountContext()
   
@@ -109,10 +109,12 @@ const Notification = () => {
     // await   refetch()
   }
 
+  
+
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' style={{}}>
-      { loading ? (
+      {  loading || !ownerUser  ? (
         <View className='h-full justify-center items-center'>
           <ActivityIndicator />
         </View>

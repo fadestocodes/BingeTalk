@@ -19,7 +19,7 @@ const ratingModal = () => {
     const [rating, setRating] = useState(5.0); // Starting at 5.0 rating
     // const [ prevRating, setPrevRating ] = useState(null)
     const { user: clerkUser } = useUser()
-    const { data: ownerUser } = useFetchOwnerUser({ email :clerkUser.emailAddresses[0].emailAddress })
+    const { data: ownerUser } = useFetchOwnerUser({ email :clerkUser?.emailAddresses[0].emailAddress })
     const [ message, setMessage ] = useState(null)
     const [imageLoading, setImageLoading] = useState(true); // Track loading state
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -63,6 +63,14 @@ const ratingModal = () => {
 
 
     }
+
+    if (!ownerUser){
+        return (
+          <View className='w-full h-full bg-primary justify-center items-center'>
+            <ActivityIndicator />
+          </View>
+        )
+      }
 
 
 

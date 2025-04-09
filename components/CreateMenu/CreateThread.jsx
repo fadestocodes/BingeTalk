@@ -344,7 +344,7 @@ import { LinearGradient } from 'expo-linear-gradient'
                     placeholder='Caption for your thread (optional)'
                     placeholderTextColor={Colors.mainGray}
                     style={{paddingTop:60, paddingHorizontal:25,backgroundColor:Colors.mainGrayDark, color:'white', paddingBottom:70, minHeight:100, textAlignVertical:'top'}}
-                    className='w-full relative min-h-50 bg-white rounded-3xl  items-start justify-start font-pcourier text-custom'
+                    className='w-full relative min-h-50 bg-white rounded-3xl  items-start justify-start font-pcourier '
                 />
               
                     <View style={{position:"absolute", top:30, alignItems:'center', justifyContent:'center', width:'100%', zIndex:20}}>

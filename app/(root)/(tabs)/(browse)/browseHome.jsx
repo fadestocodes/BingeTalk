@@ -18,7 +18,7 @@ import ListCard from '../../../../components/ListCard'
 const browseHome = () => {
     const router = useRouter()
     const { user: clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
     const [ selected, setSelected ] = useState('Trending')
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
@@ -30,7 +30,7 @@ const browseHome = () => {
       const data = {
           type,
           listId : item.id,
-          userId : ownerUser.id
+          userId : ownerUser?.id
       }
       const updatedDialogue = await listInteraction(data)
       refetch();
@@ -39,6 +39,14 @@ const browseHome = () => {
 
     const handlePress = (item) => {
       router.push(`/list/${item.id}`)
+    }
+
+    if (!ownerUser){
+      return (
+        <View className='w-full h-full bg-primary justify-center items-center'>
+          <ActivityIndicator />
+        </View>
+      )
     }
 
   return (

@@ -41,7 +41,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
     const [ data, setData ] = useState(null)
     const [ loading, setLoading ] = useState(true);
     const { user : clerkUser }  = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+    const { data : ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []
@@ -53,8 +53,9 @@ export const useFetchActivityId = (id, replyCommentId) => {
             setLoading(true)
             const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
             const activity = await request.json();
-            console.log('activity', activity)
             setData(activity);
+            console.log('activityhere', activity)
+            console.log('ownercommentinteractinos', ownerUser.commentInteractions)
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
                 return activity.commentsOnActivity.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
             } )
@@ -62,11 +63,10 @@ export const useFetchActivityId = (id, replyCommentId) => {
                 return activity.commentsOnActivity.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
             // setInteractedComments(interactedCommentsData)
-            setInteractedComments(prev => ({
-                ...prev,
+            setInteractedComments( {
                 upvotes : upvotedComments,
                 downvotes : downvotedComments
-            }))
+            })
             if (replyCommentId){
                 const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
@@ -87,8 +87,8 @@ export const useFetchActivityId = (id, replyCommentId) => {
     } 
 
     useEffect(()=>{
-        fetchActivityId()
-    }, [id])
+            fetchActivityId()
+    }, [id, ownerUser])
 
     const removeItem = (removeId, removePostType) => {
         if (removePostType === 'REPLY'){
@@ -106,7 +106,14 @@ export const useFetchActivityId = (id, replyCommentId) => {
         }
     }
 
-    return { data, loading, refetch : fetchActivityId, removeItem, commentsData, interactedComments, setInteractedComments, setCommentsData }
+    const refetch = async () => {
+       
+        await refetchOwner()
+        // fetchActivityId()
+    }
+
+
+    return { data, loading, refetch, removeItem, commentsData, interactedComments, setInteractedComments, setCommentsData }
 }
 
 

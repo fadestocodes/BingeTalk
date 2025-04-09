@@ -430,7 +430,7 @@ const TVPage = () => {
             </View>
             <View className=' gap-5'>
                 <Text className='text-mainGray font-pcourier text-lg uppercase  text-center underline '>Logline</Text>
-                <Text className='text-mainGray font-pcourier text-custom  '>{movie.overview}</Text>
+                <Text className='text-mainGray font-pcourier   '>{movie.overview}</Text>
                 {videoId && (
                     <YoutubePlayer
                     style={{}}

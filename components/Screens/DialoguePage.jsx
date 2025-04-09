@@ -387,7 +387,7 @@ const DialogueScreen = () => {
                                     <Text className='text-mainGrayDark '>{formatDate(item.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>
-                                <Text className='text-white text-custom font-pcourier'>{item.content}</Text>
+                                <Text className='text-white font-pcourier'>{item.content}</Text>
     
                                     <View className='flex-row justify-between w-full items-center'>
                                         <View  className='flex-row gap-5 items-center'>
@@ -443,7 +443,7 @@ const DialogueScreen = () => {
                                     <Text className='text-mainGrayDark '>{formatDate(reply.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{reply.user.firstName}</Text>
-                                <Text className='text-white text-custom font-pcourier'>{reply.content}</Text>
+                                <Text className='text-white  font-pcourier'>{reply.content}</Text>
                                 
                                 <View className='w-full justify-between flex-row'>
 

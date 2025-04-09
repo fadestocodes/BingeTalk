@@ -29,7 +29,7 @@ const homeIndex = () => {
     const [selected, setSelected] = useState('All');
     const { user: clerkUser } = useUser();
     const { data: ownerUser, isLoading: isLoadingOwnerUser, refetch:refetchOwner } = useFetchOwnerUser({
-      email: clerkUser.emailAddresses[0].emailAddress,
+      email: clerkUser?.emailAddresses[0].emailAddress,
     });
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -134,7 +134,6 @@ const homeIndex = () => {
     } 
 
     const handlePress =(item) => {
-      console.log('itemfromhome', item)
       if (item.dialogue){
         router.push(`(home)/dialogue/${item.dialogue.id}`)
       } else if (item.threads){
@@ -248,7 +247,7 @@ const homeIndex = () => {
                           </TouchableOpacity>
           
                         ) : (
-                          <TouchableOpacity onPress={()=>{console.log('item',item);router.push(`(home)/activity/${item.id}`)}}>
+                          <TouchableOpacity onPress={()=>{router.push(`(home)/activity/${item.id}`)}}>
                             <ActivityCard2 activity={item} fromHome={true} isBackground={true}/>
                           </TouchableOpacity>
                         ) }
