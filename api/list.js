@@ -359,3 +359,20 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
 
     return { list, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, already, setAlready, interactionCounts, setInteractionCounts}
 }
+
+
+export const updateList = async (params) => {
+    try {
+        const response = await fetch (`${nodeServer.currentIP}/list/update`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body:JSON.stringify(params)
+        })
+        const data = await response.json()
+        return data
+    } catch (err){
+        console.log(err)
+    }
+}

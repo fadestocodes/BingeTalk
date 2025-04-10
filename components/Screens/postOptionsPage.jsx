@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity} from 'react-nativ
 import { Colors } from '../../constants/Colors'
 import React, {useState} from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Delete, Shield, ShieldAlert } from 'lucide-react-native'
+import { Delete, Pencil, Shield, ShieldAlert } from 'lucide-react-native'
 import { BackIcon } from '../../assets/icons/icons'
 import { deleteDialogue } from '../../api/dialogue'
 import { reportPost } from '../../api/report'
@@ -26,6 +26,9 @@ const PostOptions = () => {
 
 
     const handleButton = (type) => {
+        if (type === 'edit'){
+            router.replace(`list/edit/${postId}`)
+        }
         setIsPressedButton(type);
         setIsStep1(false);
     }
@@ -103,11 +106,21 @@ const PostOptions = () => {
 
             <View className='gap-5' >
 
+
+
                 { fromOwnPost === 'true' && (
+                    <>
+                {postType === 'LIST' && (
+                    <TouchableOpacity onPress={()=>{handleButton('edit')}} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10 }} >
+                    <Pencil size={24} color={Colors.secondary} />
+                    <Text className='text-secondary text-center font-pbold'>Edit</Text>
+                </TouchableOpacity>
+                )}
                     <TouchableOpacity onPress={()=>{handleButton('delete')}} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10 }} >
                     <Delete size={24} color={Colors.secondary} />
                     <Text className='text-secondary text-center font-pbold'>Delete post</Text>
                 </TouchableOpacity>
+                </>
                 ) }
 
                 <TouchableOpacity  onPress={()=>{handleButton('report')}} style={{ backgroundColor:'transparent', paddingHorizontal:50, paddingVertical:10, borderRadius:15, borderWidth:1, borderColor:Colors.secondary, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:10 }}>

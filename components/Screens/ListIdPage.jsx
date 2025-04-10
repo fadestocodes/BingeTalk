@@ -122,6 +122,7 @@ const ListIdScreen = () => {
     
 
     const handlePress = (item) => {
+        console.log('listitempressed', item)
         
         if ( item.movie ){
             router.push(`/movie/${item.movie.tmdbId}`)
