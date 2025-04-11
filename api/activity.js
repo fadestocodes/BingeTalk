@@ -54,15 +54,12 @@ export const useFetchActivityId = (id, replyCommentId) => {
             const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
             const activity = await request.json();
             setData(activity);
-            console.log('activityhere', activity)
-            console.log('ownercommentinteractinos', ownerUser.commentInteractions)
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
                 return activity.commentsOnActivity.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
             } )
             const downvotedComments = ownerUser.commentInteractions.filter( i => {
                 return activity.commentsOnActivity.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
-            // setInteractedComments(interactedCommentsData)
             setInteractedComments( {
                 upvotes : upvotedComments,
                 downvotes : downvotedComments

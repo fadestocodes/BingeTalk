@@ -28,7 +28,7 @@ const ListIdScreen = () => {
 
     const { replyCommentId } = useLocalSearchParams();
     const [ input, setInput ] = useState('')
-    const inputRef = useRef(null);  // Create a ref for the input
+    const inputRef = useRef(null);  
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
@@ -41,20 +41,20 @@ const ListIdScreen = () => {
 
 
 
-    const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
-    const translateY = useSharedValue(0); // Tracks modal position
-    const atTop = useSharedValue(true); // Track if at top of FlatList
+    const keyboard = useAnimatedKeyboard(); 
+    const translateY = useSharedValue(0); 
+    const atTop = useSharedValue(true); 
   
-    // Move input with keyboard automatically
+    
     const animatedStyle = useAnimatedStyle(() => ({
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
 
-    // useEffect(()=>{
-    //     console.log('triggeredf from useeffect')
-    //     removeItem( postToRemove.id, postToRemove.postType )
-    //     // refetch()
-    // },[postToRemove])
+    
+    
+    
+    
+    
    
 
 
@@ -136,7 +136,7 @@ const ListIdScreen = () => {
 
 
     const handleReply= (item, parentId) => {
-        inputRef.current?.focus();  // Focus the input
+        inputRef.current?.focus();  
         setReplying(true);
         setInput(`@${item.user.username} `)
         
@@ -186,8 +186,8 @@ const ListIdScreen = () => {
         setReplyingTo(null)
         setReplying(false)
         inputRef.current?.blur();
-        // await refetch();
-        // await getThread()
+        
+        
         refetch();
 
     }   
@@ -212,22 +212,22 @@ const ListIdScreen = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, upvotes: reply.upvotes - 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, upvotes: reply.upvotes - 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -236,8 +236,8 @@ const ListIdScreen = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, upvotes: i.upvotes - 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -255,22 +255,22 @@ const ListIdScreen = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, upvotes: reply.upvotes + 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, upvotes: reply.upvotes + 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -279,8 +279,8 @@ const ListIdScreen = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, upvotes: i.upvotes + 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -299,22 +299,22 @@ const ListIdScreen = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, downvotes: reply.downvotes - 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, downvotes: reply.downvotes - 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -323,8 +323,8 @@ const ListIdScreen = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, downvotes: i.downvotes - 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -339,22 +339,22 @@ const ListIdScreen = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, downvotes: reply.downvotes + 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, downvotes: reply.downvotes + 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -363,8 +363,8 @@ const ListIdScreen = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, downvotes: i.downvotes + 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -379,8 +379,8 @@ const ListIdScreen = () => {
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
-        // refetch();
-        // refetchOwnerUser()
+        
+        
     }
 
 
@@ -415,11 +415,10 @@ const ListIdScreen = () => {
       <View className="gap-3 px-3">
           <View className='flex-row gap-2 justify-start items-center'>
 
-            {/* <TVIcon size={30} color='white' /> */}
             <Text className='text-white font-pbold text-3xl'>{list.title}</Text>
           </View>
           { list.caption && (
-              <Text className='text-mainGray text-lg font-psemibold'>{list.caption}</Text>
+              <Text className='text-mainGray  font-pregular'>{list.caption}</Text>
           ) }
       </View>
       
@@ -458,7 +457,6 @@ const ListIdScreen = () => {
             numColumns={4}
             contentContainerStyle={{ paddingTop:30, marginLeft:12, rowGap:20, paddingBottom:50}}
             renderItem={({item}) => {
-                // console.log('item from flatlist', item)
                 return (
                 <TouchableOpacity onPress={()=>handlePress(item)}  >
                     <Image 

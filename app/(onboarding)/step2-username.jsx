@@ -8,18 +8,15 @@ import { useLocalSearchParams } from 'expo-router'
 import { checkUsername } from '../../api/user'
 import debounce from 'lodash.debounce'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 
 const step2 = () => {
 
-const { firstName, lastName } = useLocalSearchParams();
+const { signUpData, updateSignUpData } = useSignUpContext()
 const [ errors, setErrors ] = useState({});
 const [ usernameTakenError, setUsernameTakenError ] = useState('')
-const [ username, setUsername ] = useState('');
-
-
 const router = useRouter();
-
 const textOpacity = useSharedValue(0);
 const textTranslateY = useSharedValue(60);
 
@@ -50,9 +47,11 @@ const checkUsernameAvailability = debounce(async ( value ) => {
 }, 300)
 
 const handleInputs = ( name, value ) => {
-  setUsername(value);
-
-  const results = usernameSchema.safeParse( { username } )
+  updateSignUpData(prev => ({
+    ...prev,
+    [name]: value
+  }))
+  const results = usernameSchema.safeParse( { username: signUpData.username } )
   if (!results.success) {
     const errorObj = results.error.format();
     setErrors( prev => ({
@@ -75,10 +74,7 @@ const handleInputs = ( name, value ) => {
 
 
 const onSetup2Press = () => {
-  router.push({
-      pathname : '/step3-email',
-      params : { firstName, lastName, username  }
-  });
+  router.push('/step3-email');
 }
 
 
@@ -98,7 +94,7 @@ const onSetup2Press = () => {
                   
                   <View className='justify-center items-center gap-3 ' >
                       <Text className='text-xl text-secondary font-pcourier  uppercase'>Bingeable</Text>
-                      <Text className='font-pcourier text-white ' >Alright {firstName}, let's create your unique username</Text>
+                      <Text className='font-pcourier text-white ' >Alright {signUpData.firstName}, let's create your unique username</Text>
                   </View>
                   </Animated.View>
 
@@ -121,7 +117,7 @@ const onSetup2Press = () => {
         ) }
         </View>
             <TextInput
-              value={username}
+              value={signUpData.username}
               autoCapitalize='none'
               autoCorrect={false}
               placeholder="Enter username"
@@ -130,7 +126,7 @@ const onSetup2Press = () => {
               onChangeText={(text) => handleInputs('username', text)}
             />
 
-              <TouchableOpacity onPress={onSetup2Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !username   } >
+              <TouchableOpacity onPress={onSetup2Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.username   } >
                 <Text className='text-secondary text-lg font-psemibold self-center'>Next</Text>
               </TouchableOpacity>
               </Animated.View>

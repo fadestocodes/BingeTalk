@@ -99,10 +99,10 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
                 return fetchedDialogue.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
             // setInteractedComments(interactedCommentsData)
-            setInteractedComments(prev => ({
+            setInteractedComments({
                 upvotes : upvotedComments,
                 downvotes : downvotedComments
-            }))
+            })
 
             setDialogue(fetchedDialogue)
 

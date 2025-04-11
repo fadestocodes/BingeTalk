@@ -204,10 +204,10 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
             const downvotedComments = ownerUser.commentInteractions.filter( i => {
                 return fetchedThread.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
-            setInteractedComments(prev => ({
+            setInteractedComments({
                 upvotes : upvotedComments,
                 downvotes : downvotedComments
-            }))
+            })
 
             setThread(fetchedThread)
 

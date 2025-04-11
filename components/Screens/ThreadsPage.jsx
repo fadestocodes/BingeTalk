@@ -33,7 +33,7 @@ const ThreadsIdPage = () => {
     const { replyCommentId } = useLocalSearchParams();
    
     const [ input, setInput ] = useState('')
-    const inputRef = useRef(null);  // Create a ref for the input
+    const inputRef = useRef(null);  
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
@@ -45,26 +45,20 @@ const ThreadsIdPage = () => {
 
 
 
-    // console.log('threads array', threads)
     const [replyTracker, setReplyTracker] = useState({});
 
 
     const { threadsId, tvId, movieId, castId }= useLocalSearchParams();
-    // const queryClient = useQueryClient();    
-
-    // const [ thread, setThread ] = useState(null)
-
-    // const { data: thread , refetch, isFetching} = useFetchSingleThread(Number(threadsId))
     const { thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleThread(Number(threadsId), Number(replyCommentId))
 
 
 
     
-    const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
-    const translateY = useSharedValue(0); // Tracks modal position
-    const atTop = useSharedValue(true); // Track if at top of FlatList
+    const keyboard = useAnimatedKeyboard(); 
+    const translateY = useSharedValue(0); 
+    const atTop = useSharedValue(true); 
   
-    // Move input with keyboard automatically
+    
     const animatedStyle = useAnimatedStyle(() => ({
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
@@ -73,7 +67,7 @@ const ThreadsIdPage = () => {
     useEffect(()=>{
         console.log('triggeredf from useeffect')
         removeItem( postToRemove.id, postToRemove.postType )
-        // refetch()
+        
     },[postToRemove])
    
 
@@ -94,7 +88,7 @@ const ThreadsIdPage = () => {
 
 
     const handleReply= (item, parentId) => {
-        inputRef.current?.focus();  // Focus the input
+        inputRef.current?.focus();  
         setReplying(true);
         setInput(`@${item.user.username} `)
         
@@ -141,8 +135,8 @@ const ThreadsIdPage = () => {
         setReplyingTo(null)
         setReplying(false)
         inputRef.current?.blur();
-        // await refetch();
-        // await getThread()
+        
+        
         refetch();
 
     }   
@@ -178,22 +172,22 @@ const ThreadsIdPage = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, upvotes: reply.upvotes - 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, upvotes: reply.upvotes - 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -202,8 +196,8 @@ const ThreadsIdPage = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, upvotes: i.upvotes - 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -221,22 +215,22 @@ const ThreadsIdPage = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, upvotes: reply.upvotes + 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, upvotes: reply.upvotes + 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -245,8 +239,8 @@ const ThreadsIdPage = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, upvotes: i.upvotes + 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -265,22 +259,22 @@ const ThreadsIdPage = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, downvotes: reply.downvotes - 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, downvotes: reply.downvotes - 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -289,8 +283,8 @@ const ThreadsIdPage = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, downvotes: i.downvotes - 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -305,22 +299,22 @@ const ThreadsIdPage = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, downvotes: reply.downvotes + 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, downvotes: reply.downvotes + 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -329,8 +323,8 @@ const ThreadsIdPage = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, downvotes: i.downvotes + 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -346,8 +340,8 @@ const ThreadsIdPage = () => {
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
-        // refetch();
-        // refetchOwnerUser()
+        
+        
     }
 
     const handleUserPress = (item) => {
@@ -390,8 +384,6 @@ const ThreadsIdPage = () => {
 
           <ThreadCard thread={thread} refetch={refetch} showThreadTopic={true} />
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-
-          {/* <CommentsComponent commentsData={commentsData} interactedComments={interactedComments} setInteractedComments={setInteractedComments}  input={input} setInput={setInput}  inputRef={inputRef}/> */}
 
                 { commentsData.length > 0 && (
                     <>

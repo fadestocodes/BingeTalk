@@ -26,7 +26,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
     const router = useRouter();
     const tag = dialogue?.tag;
     const { user: clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
+    const { data : ownerUser, refetch: refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
     const [ url, setUrl ] = useState({
         image : '',
         title : '',
@@ -100,6 +100,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
 
     const handleComment = (dialogue) => {
+        refetchOwner()
         if (fromHome){
 
             router.push({

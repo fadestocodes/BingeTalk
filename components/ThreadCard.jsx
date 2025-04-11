@@ -21,7 +21,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     const userDB = thread?.user
     const tag = thread?.tag;
     const { user: clerkUser } = useUser()
-    const { data : ownerUser  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
+    const { data : ownerUser, refetch:refetchOwner  } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
     const [ url, setUrl ] = useState({
         image : '',
         title : '',
@@ -157,6 +157,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
 
 
     const handleComment = (thread) => {
+        refetchOwner()
         if (fromHome){
             router.push({
                 pathname:`(home)/commentsModal`,

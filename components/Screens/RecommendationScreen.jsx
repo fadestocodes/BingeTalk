@@ -20,7 +20,7 @@ const RecommendationScreen = () => {
     const [ message , setMessage ] = useState(null)
     const [ whichStep, setWhichStep ] = useState('step1')
     const [ input, setInput ] = useState('')
-    const inputRef = useRef(null);  // Create a ref for the input
+    const inputRef = useRef(null);  
     const [ recipient, setRecipient ] = useState(null)
 
     const { DBmovieId, DBtvId, DBcastId } = useLocalSearchParams();
@@ -42,11 +42,11 @@ const RecommendationScreen = () => {
     },[])
 
 
-    const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
-    const translateY = useSharedValue(0); // Tracks modal position
-    const atTop = useSharedValue(true); // Track if at top of FlatList
+    const keyboard = useAnimatedKeyboard(); 
+    const translateY = useSharedValue(0); 
+    const atTop = useSharedValue(true); 
   
-    // Move input with keyboard automatically
+    
     const animatedStyle = useAnimatedStyle(() => ({
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));

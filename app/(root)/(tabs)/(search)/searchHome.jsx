@@ -159,9 +159,6 @@ const SearchPage = () => {
     router.push(`/cast/${item.id}`)
   }
 
-  const exploreRoute = () => {
-    router.push(`/explore/explorePage`)
-  }
 
   const handleDialoguePress = (item) => {
     router.push(`/dialogue/${item.id}`)

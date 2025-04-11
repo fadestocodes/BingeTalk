@@ -95,6 +95,10 @@ export const fetchUser = async ( emailOrId ) => {
             body:JSON.stringify(emailOrId)
         })
         const response = await request.json();
+
+        if (!response) {
+            throw new Error('User not found or invalid response');
+        }
         return response
     } catch (err) {
         console.log('Error fetching user from db', err)
@@ -209,7 +213,7 @@ export const useRecentlyWatched = (userId, limit=5) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
@@ -237,7 +241,20 @@ export const useRecentlyWatched = (userId, limit=5) => {
         setData( prev => prev.filter( element => element.id !== item.id ) )
     }
 
-    return { data, hasMore, loading, refetch : getRecentlyWatched , removeItem }
+    const refetch = async () => {
+        try {
+            const response = await fetch (`${nodeServer.currentIP}/user/recently-watched?userId=${userId}&cursor=null&limit=${limit}`)
+            const result = await response.json();
+            setData(result.items);
+            setCursor(result.nextCursor)
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+    return { data, hasMore, loading, refetch, fetchMore : getRecentlyWatched , removeItem }
 
 }
 
@@ -264,25 +281,20 @@ export const useFetchRecentlyWatched = (userId) => {
         const [ data, setData  ]= useState([])
         const [ cursor, setCursor ] = useState(null)
         // const cursorRef = useRef(null); 
-        const [ loading, setLoading ] = useState(false)
+        const [ loading, setLoading ] = useState(true)
         const [ hasMore, setHasMore ] = useState(true)
         const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
-        const getWatchlistItems =  async ( reset = false ) => {
+        const getWatchlistItems =  async (  ) => {
             // if ( !hasMore  ) return
             if (!hasMore && !reset) return;
 
 
-            setLoading(true)
-            // if (cursor){
-            //     set
-            // }
             try {
                 const response = await fetch (`${nodeServer.currentIP}/user/watchlist?userId=${userId}&cursor=${cursor}&limit=${limit}`)
                 const result = await response.json();
-                setData(reset ?  result.items  : prev => [...prev, ...result.items]);
+                setData(prev => [...prev, ...result.items]);
                 setCursor(result.nextCursor)
-                // cursorRef.current = result.nextCursor;
                 setHasMore( !!result.nextCursor )
             } catch (err) {
                 console.log(err)
@@ -295,9 +307,16 @@ export const useFetchRecentlyWatched = (userId) => {
         }, [ ]);
         
         const refetch =  async () => {
-            setCursor(null)
-            setHasMore(true)
-            await getWatchlistItems(true)
+            try {
+                const response = await fetch (`${nodeServer.currentIP}/user/watchlist?userId=${userId}&cursor=null&limit=${limit}`)
+                const result = await response.json();
+                setData(result.items);
+                setCursor(result.nextCursor)
+                setHasMore( !!result.nextCursor )
+            } catch (err) {
+                console.log(err)
+            }
+            setLoading(false)
         }
 
         const removeItem = (item) => {
@@ -462,17 +481,13 @@ export const useGetInterestedItems = (userId, limit=5) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
     const getInterestedItems =  async () => {
         if ( !hasMore  ) return
 
-        setLoading(true)
-        // if (cursor){
-        //     set
-        // }
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/interested?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
@@ -494,7 +509,20 @@ export const useGetInterestedItems = (userId, limit=5) => {
         setData(prev => prev.filter( element => element.id !== item.id ))
     }
 
-    return { data, hasMore, loading, refetch : getInterestedItems, removeItem }
+    const refetch = async () => {
+        try {
+            const response = await fetch (`${nodeServer.currentIP}/user/interested?userId=${userId}&cursor=null&limit=${limit}`)
+            const result = await response.json();
+            setData(result.items);
+            setCursor(result.nextCursor)
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+    return { data, hasMore, loading, refetch, fetchMore:getInterestedItems, removeItem }
 
 }
 
@@ -502,23 +530,20 @@ export const useGetCurrentlyWatchingItems = (userId, limit=5) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
     const getCurrentlyWatchingItems =  async () => {
         if ( !hasMore  ) return
 
-        setLoading(true)
-        // if (cursor){
-        //     set
-        // }
+      
         try {
             const response = await fetch (`${nodeServer.currentIP}/user/currently-watching?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
             setData(prev => [...prev, ...result.items]);
             setCursor(result.nextCursor)
-            // cursorRef.current = result.nextCursor;
+
             setHasMore( !!result.nextCursor )
         } catch (err) {
             console.log(err)
@@ -533,7 +558,22 @@ export const useGetCurrentlyWatchingItems = (userId, limit=5) => {
     const removeItem = (item) => {
         setData(prev => prev.filter( element => element.id !== item.id ))
     }
-    return { data, hasMore, loading, refetch : getCurrentlyWatchingItems, removeItem }
+
+    const refetch = async () => {
+        try {
+            const response = await fetch (`${nodeServer.currentIP}/user/currently-watching?userId=${userId}&cursor=null&limit=${limit}`)
+            const result = await response.json();
+            setData(result.items);
+            setCursor(result.nextCursor)
+
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+    return { data, hasMore, loading, refetch ,fetchMore : getCurrentlyWatchingItems, removeItem }
 
 }
 

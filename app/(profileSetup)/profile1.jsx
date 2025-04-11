@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient'
 import { useUserDB } from '../../lib/UserDBContext'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 
 
@@ -18,13 +19,21 @@ import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-n
 const profile1 = () => {
 
     const { user } = useUser();
+    const { signUpData, updateSignUpData } = useSignUpContext()
+
     const router = useRouter()
-    const [ image, setImage ] = useState('');
+    // const [ image, setImage ] = useState('');
     const [ loadingImage, setLoadingImage ] = useState(false);
-    const [ inputs, setInputs] = useState({
-        bio : '',
-        bioLink : ''
-    })
+    // const [ inputs, setInputs] = useState({
+    //     bio : '',
+    //     bioLink : ''
+    // })
+    const setImageCallback = (imageLocation) => {
+      if (imageLocation) {
+          // After the image is uploaded, update the context with the image location
+          updateSignUpData(prev => ({ ...prev, image: imageLocation }));
+      }
+  };
 
 
     const textOpacity = useSharedValue(0);
@@ -51,41 +60,38 @@ const profile1 = () => {
     const navigation = useNavigation();
 
     const handleUpload = () => {
-      pickSingleImage( setImage, setLoadingImage );
+      pickSingleImage( setImageCallback, setLoadingImage );
     }
 
     const handleContinue = () => {
 
       let normalizedURL = ''
-      if (inputs.bioLink !== ''){
+      if (signUpData.bioLink !== ''){
 
-        let bioLink = inputs.bioLink.trim(); // Trim any leading/trailing spaces
-  
-        // Step 1: Check if URL has a protocol (http:// or https://)
+        let bioLink = signUpData.bioLink.trim(); 
         if (!/^https?:\/\//i.test(bioLink)) {
-            // Step 2: Check if the URL has 'www.' prefix
             if (/^www\./i.test(bioLink)) {
-                // If 'www.' is present, prepend 'https://'
                 bioLink = 'https://' + bioLink;
             } else {
-                // Otherwise, prepend 'https://'
                 bioLink = 'https://www.' + bioLink;
             }
         }
         normalizedURL = new URL(bioLink).toString();
+        updateSignUpData(prev => ({
+          ...prev,
+          bioLink : normalizedURL
+        }))
       }
         
-        router.push({
-            pathname:'/profile2',
-            params : {  bio:inputs.bio, bioLink:normalizedURL , image }
-          })
+        router.push('/profile2')
         }
 
     const handleInputs = (name, value) => {
-        setInputs( prev => ({
-            ...prev,
-            [name] : value
-        }) )
+        
+        updateSignUpData(prev => ({
+          ...prev,
+          [name] : value
+        }))
 
     }
 
@@ -99,12 +105,12 @@ const profile1 = () => {
    <ScrollView  className='bg-primary ' style={{ width:'100%', height:'100%' }}>
    <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()} style={{width:'100%', height:'100%'}}>
     <View>
-    { image ? (
+    { signUpData.image ? (
       <View className='justify-center items-center flex gap-3 relative'>
        <ImageBackground
           className='top-0'
           style={{width : '100%', height: 400, position:'absolute', top:0}}
-          source={{ uri:image }}
+          source={{ uri:signUpData.image }}
           resizeMethod='cover'
           
           >
@@ -117,19 +123,14 @@ const profile1 = () => {
         <Text className='text-mainGray font-psemibold '>Change picture</Text>
       </TouchableOpacity>
       <View className='px-4 items-center ' style={{marginTop:245, gap:15, marginBottom:50}}>
-                    {/* <Image
-                        source={require('../assets/images/drewcamera.jpg')}
-                        style={{ width:100, height:100, borderRadius:50, marginBottom:18 }}
-                        resizeMethod='cover'
-                        className='w-full mt-20'
-                        /> */}
+                    
                     <View className='items-center' style={{gap:15}}>
                         <View className='items-center justify-center gap-0'>
                             <Text className='text-secondary font-pblack text-2xl'>{user.firstName} {user.lastName}</Text>
                         <Text className='text-white font-pbold '>@{user.username}</Text>
                         </View>
                         <TextInput
-                            value={inputs.bio}
+                            value={signUpData.bio}
                             onChangeText={(text) => handleInputs('bio', text)}
                             placeholder='Tap to edit your bio'
                             placeholderTextColor={Colors.mainGray}
@@ -140,7 +141,7 @@ const profile1 = () => {
                        
                     </View>
                     <TextInput
-                            value={inputs.bioLink}
+                            value={signUpData.bioLink}
                             onChangeText={(text) => handleInputs('bioLink', text)}
                             placeholder='Add a link (optional)'
                             inputMode='url'
@@ -188,7 +189,6 @@ const profile1 = () => {
                     
 
                       <TouchableOpacity onPress={handleUpload}  style={{ paddingHorizontal:20, paddingVertical:10, backgroundColor:Colors.secondary, borderRadius:30 }} >
-                        {/* <PlusIcon color={Colors.secondary} size={50} ></PlusIcon> */}
                         <Text className='text-primary font-pbold '>Add profile picture</Text>
                       </TouchableOpacity>
                   ) }

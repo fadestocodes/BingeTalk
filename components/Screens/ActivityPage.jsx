@@ -26,7 +26,7 @@ const ActivityPage = () => {
 
     const { replyCommentId } = useLocalSearchParams();
     const [ input, setInput ] = useState('')
-    const inputRef = useRef(null);  // Create a ref for the input
+    const inputRef = useRef(null); 
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
@@ -41,18 +41,16 @@ const ActivityPage = () => {
 
 
 
-    const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
-    const translateY = useSharedValue(0); // Tracks modal position
-    const atTop = useSharedValue(true); // Track if at top of FlatList
+    const keyboard = useAnimatedKeyboard(); 
+    const translateY = useSharedValue(0); 
+    const atTop = useSharedValue(true); 
   
-    // Move input with keyboard automatically
     const animatedStyle = useAnimatedStyle(() => ({
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
 
     useEffect(()=>{
         removeItem( postToRemove.id, postToRemove.postType )
-        // refetch()
     },[postToRemove])
    
 
@@ -61,7 +59,7 @@ const ActivityPage = () => {
 
 
     const handleReply= (item, parentId) => {
-        inputRef.current?.focus();  // Focus the input
+        inputRef.current?.focus(); 
         setReplying(true);
         setInput(`@${item.user.username} `)
         
@@ -111,8 +109,6 @@ const ActivityPage = () => {
         setReplyingTo(null)
         setReplying(false)
         inputRef.current?.blur();
-        // await refetch();
-        // await getThread()
         refetch();
 
     }   
@@ -139,22 +135,17 @@ const ActivityPage = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
                                     if (reply.id === comment.id) {
-                                        return { ...reply, upvotes: reply.upvotes - 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, upvotes: reply.upvotes - 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
-                
-                                // Return the updated comment with updated replies
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -163,8 +154,8 @@ const ActivityPage = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, upvotes: i.upvotes - 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -182,22 +173,18 @@ const ActivityPage = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
                                     if (reply.id === comment.id) {
-                                        return { ...reply, upvotes: reply.upvotes + 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, upvotes: reply.upvotes + 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -206,8 +193,8 @@ const ActivityPage = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, upvotes: i.upvotes + 1 } 
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -226,22 +213,18 @@ const ActivityPage = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
                                     if (reply.id === comment.id) {
-                                        return { ...reply, downvotes: reply.downvotes - 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, downvotes: reply.downvotes - 1 }; 
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -250,8 +233,8 @@ const ActivityPage = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, downvotes: i.downvotes - 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -266,22 +249,17 @@ const ActivityPage = () => {
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
                                     if (reply.id === comment.id) {
-                                        return { ...reply, downvotes: reply.downvotes + 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, downvotes: reply.downvotes + 1 }; 
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
-                
-                                // Return the updated comment with updated replies
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -290,8 +268,8 @@ const ActivityPage = () => {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, downvotes: i.downvotes + 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -307,8 +285,6 @@ const ActivityPage = () => {
             activityId : Number(activityId)
         }
         const updatedComment = await commentInteraction(data)
-        // refetch();
-        // refetchOwnerUser()
     }
 
     const handleUserPress = (item) => {

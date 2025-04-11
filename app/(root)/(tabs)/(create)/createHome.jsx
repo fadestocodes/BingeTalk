@@ -129,13 +129,14 @@ const CreateHome = () => {
       }
 
     const renderItem = (item) => {
+        console.log('RENDERINGITEM', item)
         return (
           <View className=' justify-start items-center relative '
             style={{ width:'auto', height:170,  marginHorizontal:0, marginVertical:0, overflow:'hidden' }}
             key={item.key}  // Set key here based on the item key
           >
            <Image 
-            source={ item.media_type === 'person' ? {uri:`${posterURL}${item.item.profile_path}`}  : {uri:`${posterURL}${item.item.poster_path}`}}
+            source={ item.item.media_type === 'person' ? {uri:`${posterURL}${item.item.profile_path}`}  : {uri:`${posterURL}${item.item.poster_path}`}}
             contentFit='cover'
             style={{ width:70, height:100, borderRadius:10, overflow:'hidden' }}
             />

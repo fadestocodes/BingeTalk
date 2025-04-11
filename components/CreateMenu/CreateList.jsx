@@ -144,7 +144,8 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
                         onChangeText={(text) => handleInput('listDescription', text)}
                         value={inputs.listDescription}
                         multiline
-                        maxLength={250}
+                        autoCapitalize='sentences'
+                        maxLength={500}
                         placeholder='Description of your list'
                         placeholderTextColor={Colors.mainGray}
                         style={{paddingTop:20, paddingHorizontal:25, backgroundColor:Colors.mainGrayDark,paddingBottom:70, minHeight:130, borderRadius:15}}
@@ -158,7 +159,7 @@ const CreateList = ( {handleChange, inputs, setInputs, userId, setResults, setRe
                         />
                         <View className='flex-row justify-end items-center  gap-3' style={{width:'100%',  justifyContent:'flex-end'}}>
                         
-                            <Text className='text-mainGray text-right '>{inputs.listDescription.length}/250</Text>
+                            <Text className='text-mainGray text-right '>{inputs.listDescription.length}/500</Text>
                         </View>
                     </View>
                     

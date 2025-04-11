@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import CommentsModalPage from '../../../../components/Screens/CommentsModalPage'
 import CommentsComponent from '../../../../components/CommentsComponent'
 import { useLocalSearchParams } from 'expo-router'
 

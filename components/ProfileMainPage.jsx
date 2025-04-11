@@ -28,9 +28,6 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 
     
 
-        // useEffect(()=> {
-        //     refetchUser();
-        // }, [ user ])
         console.log('hello from profilemainpage')
 
         const { signOut } = useClerk();
@@ -52,9 +49,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         const { postToRemove, updatePostToRemove } = usePostRemoveContext()
 
         useEffect(()=>{
-            // const checkFollow = ownerUser.following.some( item => item.followingId === user.id );
             const checkFollow = user?.followers.some( item => item.followingId === ownerUser?.id );
-            // console.log('check follow', checkFollow)
         if (checkFollow){
             setIsFollowing(true);
 

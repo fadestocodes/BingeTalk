@@ -13,7 +13,7 @@ import { listInteraction } from '../api/list'
 const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDisabled}) => {
 
     const { user:clerkUser } = useUser();
-    const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
+    const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
 
@@ -119,7 +119,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
 
 
     const handleComment = (item) => {
-
+        refetchOwner()
       
         if (fromHome){
             router.push({

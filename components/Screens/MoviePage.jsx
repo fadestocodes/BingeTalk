@@ -11,7 +11,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { ImageBackground } from 'react-native'
 import YoutubePlayer from 'react-native-youtube-iframe';
 import CastCrewHorizontal from '../CastCrewHorizontal'
-import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
 import { getMovieMentions, useFetchMovieMentions, markMovieWatch, markMovieWatchlist } from '../../api/movie'
 import DialogueCard from '../DialogueCard'
@@ -52,7 +51,6 @@ const MoviePage = () => {
     })
     const [whichCredits, setWhichCredits] = useState('Cast');
     const [dropdownMenu, setDropdownMenu] = useState(false);
-    // const [ mentions, setMentions ] = useState([])
     const [ threads, setThreads ] = useState([])
     const [ buttonPressed , setButtonPressed ] = useState('')
     const [ message ,setMessage ] = useState(null)
@@ -80,7 +78,7 @@ const MoviePage = () => {
     const fetchData = async () => {
         setLoading(true);    
         try {
-            const res = await GetMovieById(movieId);  // Pass movieId here
+            const res = await GetMovieById(movieId);  
             setMovie(res);
             try {
                 const trailer = res?.videos?.results.find(item => (item.type === 'Trailer' || item.type === 'Teaser') && item.site === 'YouTube').key ;
@@ -92,7 +90,6 @@ const MoviePage = () => {
             }
             const credits = res.credits;
             if (credits) {
-                // console.log('found a trailer', credits)
                 setCreditsList(credits);
                 const castCredits = credits.cast;
                 const crewCredits = credits.crew;
@@ -120,16 +117,12 @@ const MoviePage = () => {
                 const movieFromDB = await fetchMovieFromDB({movieData})
                 queryClient.setQueryData(['movie', movieId]);
     
-                // console.log('tvfromdb', movieFromDB)
                 setMovieRatings(movieFromDB.ratings)
                 setThreads( movieFromDB.threads );
                 setDBmovieId( movieFromDB.id )
                 queryClient.setQueryData(['threads', movieId], movieFromDB.threads);
             }
 
-            // const fetchedMentions = await getMovieMentions(movieId);
-            // setMentions(fetchedMentions);
-          
         } catch (err) {
             Alert.alert("Error", err.message);
         } finally {
@@ -151,7 +144,7 @@ const MoviePage = () => {
    
     
     useEffect(() => {
-        if (movieId) {  // Only fetch if movieId is available
+        if (movieId) {  
             fetchData();
         }
     }, [movieId]); 
@@ -197,7 +190,6 @@ const MoviePage = () => {
     const refetchMentionsThreads =  () => {
         queryClient.invalidateQueries(['mentions']);
         queryClient.invalidateQueries(['threads']);
-        // fetchData()
     };
 
 
@@ -225,7 +217,7 @@ const MoviePage = () => {
     const handleMore = () => {
         router.push({
             pathname: "/moreInteractions",
-            params: { DBMovieId: String(DBmovieId), tmdbId : movieId }, // Convert to string
+            params: { DBMovieId: String(DBmovieId), tmdbId : movieId }, 
         });
     }
 
@@ -495,7 +487,6 @@ const MoviePage = () => {
 
 
             <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            {/* <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread> */}
             <FlatList
                         scrollEnabled={false}
                         data={threads}
@@ -524,8 +515,8 @@ const MoviePage = () => {
 }
 
     MoviePage.options = {
-        tabBarStyle: { display: 'flex' }, // Makes the tab bar visible
-        headerShown: false,  // Optional: Hide header if not needed
+        tabBarStyle: { display: 'flex' }, 
+        headerShown: false,
     }
 
 export default MoviePage

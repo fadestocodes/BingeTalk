@@ -49,7 +49,6 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                 setIsFollowingIdsFromFollowing(prev => [...prev, toUse.id])
             }
         }
-        // await   refetch()
     }
 
     const handleUserPress =(item) => {
@@ -72,7 +71,6 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
 
-            {/* <FilmIcon size={30} color='white' /> */}
             <Text className='text-white font-pbold text-3xl'>Your friends</Text>
           </View>
           <Text className='text-mainGray font-pmedium'>View your followers and who you're following.</Text>
@@ -109,7 +107,6 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
             contentContainerStyle={{gap:15}}
             renderItem={({item}) => {
                 const checkFollowFromFollower = isFollowingIds.includes( item?.following?.id ) 
-                // const checkFollowFromFollowing = isFollowingIdsFromFollowing.includes( item?.follower?.id ) 
                 return (
                 <TouchableOpacity onPress={()=>{console.log('presseditem', item)}}>
                    <View className="flex-row justify-between items-center gap-2">

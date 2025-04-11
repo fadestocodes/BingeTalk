@@ -5,20 +5,16 @@ import { Colors } from '../../constants/Colors'
 import { signupNameSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 
 
 const step1 = () => {
     const router = useRouter();
+    const { signUpData, updateSignUpData } = useSignUpContext()
     const [ errors, setErrors ] = useState({})
-    const [ inputs, setInputs ]   = useState({
-      firstName: '',
-      lastName : ''
-    })
-
     const textOpacity = useSharedValue(0);
     const textTranslateY = useSharedValue(60);
-  
     const inputOpacity = useSharedValue(0);
     const inputTranslateY = useSharedValue(60);
 
@@ -34,13 +30,13 @@ const step1 = () => {
 
 
     const handleInputs = (name, value) => {
-        // setPassword( value) 
-        setInputs( prev => ({
+      
+        updateSignUpData(prev => ({
           ...prev,
           [name] : value
-        }) )
+        }))
 
-        const results = signupNameSchema.safeParse( { ...inputs, [name] : value } )
+        const results = signupNameSchema.safeParse( { ...signUpData, [name] : value } )
         if (!results.success) {
             const errorObj = results.error.format();
             console.log(errorObj)
@@ -60,10 +56,7 @@ const step1 = () => {
 
 
     const onSetup1Press = () => {
-        router.push({
-            pathname : '/step2-username',
-            params : { firstName : inputs.firstName, lastName : inputs.lastName  }
-        });
+        router.push('/step2-username');
     }
         
   
@@ -98,7 +91,7 @@ const step1 = () => {
         }
         </View>
             <TextInput
-              value={inputs.firstName}
+              value={signUpData.firstName}
               placeholder="First name"
               autoCorrect={false}
               placeholderTextColor={Colors.mainGray}
@@ -114,7 +107,7 @@ const step1 = () => {
         }
         </View>
             <TextInput
-              value={inputs.lastName}
+              value={signUpData.lastName}
               placeholder="Last name"
               autoCorrect={false}
               placeholderTextColor={Colors.mainGray}
@@ -122,7 +115,7 @@ const step1 = () => {
               onChangeText={(text) => handleInputs('lastName', text)}
             />
        
-            <TouchableOpacity onPress={onSetup1Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !inputs.firstName || !inputs.lastName  } >
+            <TouchableOpacity onPress={onSetup1Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.firstName || !signUpData.lastName  } >
               <Text className='text-secondary text-lg font-psemibold self-center'>Next</Text>
             </TouchableOpacity>
             </Animated.View>

@@ -6,18 +6,14 @@ import { signupSchema, signupPasswordSchema, signupEmailSchema } from '../../lib
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { checkEmail } from '../../api/user'
 import debounce from 'lodash.debounce'
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 
 const step3 = () => {
-  const { firstName, lastName, username } = useLocalSearchParams();
-  
+  const { signUpData, updateSignUpData } = useSignUpContext()
   const router = useRouter()
-    const [ inputs, setInputs ] = React.useState({
-      email:'',
-    })
     const [ errors, setErrors ] = React.useState({});
     const [ emailTakenError, setEmailTakenError ] = useState('')
-
     const checkEmail = debounce( async (email) => {
       const response = checkEmail(email);
       if (!response.available) {
@@ -29,13 +25,12 @@ const step3 = () => {
 
     const handleInputs = ( name, value ) => {
 
-
-      setInputs(prev => ({
+      updateSignUpData(prev => ({
         ...prev,
         [name] : value
       }))
   
-      const results = signupEmailSchema.safeParse( {...inputs, [name]: value })
+      const results = signupEmailSchema.safeParse( {...signUpData, [name]: value })
       if (!results.success) {
         const errorObj = results.error.format();
         setErrors( prev => ({
@@ -52,10 +47,7 @@ const step3 = () => {
     }
   
     const handleContinue = () => {
-      router.push({
-        pathname:'/(onboarding)/step4-password',
-        params : {  firstName, lastName, email:inputs.email, username }
-      })
+      router.push('/(onboarding)/step4-password')
     }
         
   
@@ -87,13 +79,13 @@ const step3 = () => {
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType='email-address'
-              value={inputs.email}
+              value={signUpData.email}
               placeholder="Enter email"
               placeholderTextColor={Colors.mainGray}
               style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
               onChangeText={(text) => handleInputs('email', text)}
             />
-            <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0) || !inputs.email || emailTakenError} >
+            <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.email || emailTakenError} >
               <Text className='text-secondary text-lg font-psemibold'>Continue</Text>
             </TouchableOpacity>
             </View>

@@ -12,7 +12,6 @@ const NowPlayingItem = ({ item}) => {
     const router = useRouter();
 
     const handlePress = () => {
-        // console.log('Navigating to movie with ID:', item.id)
         router.push(`/(root)/(tabs)/(home)/(movie)/${item.id.toString()}`)
     }
     
@@ -31,19 +30,13 @@ const NowPlayingItem = ({ item}) => {
                 style={{ width: 80, height: 170, marginRight:12, borderRadius:10 , overflow : 'hidden'}} // Ensure image fills the container
             />
         </TouchableOpacity>
-        {/* <View className='w-8' style={{width : 80}}>
-            <Text 
-            className="text-third text-xs"
-            numberOfLines={1} // Limit to one line
-            ellipsizeMode="tail" >{item.title}</Text>
-        </View> */}
+       
     </View>
     )
 }
 
 
 const NowPlayingHorizontal = ({movies}) => {
-    // const {data:nowPlaying} = useTMDB(GetNowPlaying);
     const [activeItem, setActiveItem] = useState(movies[0])
 
 

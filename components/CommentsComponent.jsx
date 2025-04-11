@@ -22,18 +22,16 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     let dialogue, thread, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData;
 
     if (postType === 'dialogue') {
-        // Destructure the values from useCustomFetchSingleDialogue hook
         ({ dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleDialogue(Number(dialogueId)));
     } else if (postType === 'thread') {
-        // Destructure the values from useCustomFetchSingleThread hook
         ({ thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleThread(Number(threadId)));
     } else if (postType === 'list'){
         ({ list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleList(Number(listId)));
     } else if (postType === 'activity'){
-        ({ data:activity, interactedComments, commentsData, refetch, setInteractedComments, setCommentsData } = useFetchActivityId(Number(activityId)))
+        ({ data:activity, interactedComments, commentsData, loading : isLoading, refetch, setInteractedComments, setCommentsData } = useFetchActivityId(Number(activityId)))
     }
     const [ input, setInput ] = useState('')
-    const inputRef = useRef(null);  // Create a ref for the input
+    const inputRef = useRef(null);  
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
@@ -48,11 +46,11 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
 
 
 
-    const keyboard = useAnimatedKeyboard(); // Auto tracks keyboard height
-    const translateY = useSharedValue(0); // Tracks modal position
-    const atTop = useSharedValue(true); // Track if at top of FlatList
+    const keyboard = useAnimatedKeyboard(); 
+    const translateY = useSharedValue(0); 
+    const atTop = useSharedValue(true); 
   
-    // Move input with keyboard automatically
+    
     const animatedStyle = useAnimatedStyle(() => ({
       bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
@@ -62,7 +60,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
 
 
     const handleReply= (item, parentId) => {
-        inputRef.current?.focus();  // Focus the input
+        inputRef.current?.focus();  
         setReplying(true);
         setInput(`@${item.user.username} `)
         
@@ -117,8 +115,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
         setReplyingTo(null)
         setReplying(false)
         inputRef.current?.blur();
-        // await refetch();
-        // await getThread()
+        
+        
         refetch();
 
     }   
@@ -143,22 +141,22 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, upvotes: reply.upvotes - 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, upvotes: reply.upvotes - 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -167,8 +165,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, upvotes: i.upvotes - 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, upvotes: i.upvotes - 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -186,22 +184,22 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, upvotes: reply.upvotes + 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, upvotes: reply.upvotes + 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -210,8 +208,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, upvotes: i.upvotes + 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, upvotes: i.upvotes + 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -230,22 +228,22 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, downvotes: reply.downvotes - 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, downvotes: reply.downvotes - 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -254,8 +252,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, downvotes: i.downvotes - 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, downvotes: i.downvotes - 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -270,22 +268,22 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                 if (parentId) {
                     setCommentsData(prev => {
                         const updatedComments = prev.map(c => {
-                            // Check if the comment is the one we're interested in (with the parentId)
+                            
                             if (c.id === parentId) {
-                                // Update the specific reply's upvotes or downvotes
+                                
                                 const updatedReplies = c.replies.map(reply => {
-                                    // Check if the reply id matches the comment we want to update
+                                    
                                     if (reply.id === comment.id) {
-                                        return { ...reply, downvotes: reply.downvotes + 1 };  // Example: Decrement the upvotes
+                                        return { ...reply, downvotes: reply.downvotes + 1 };  
                                     }
-                                    return reply;  // Keep other replies the same
+                                    return reply;  
                                 });
                 
-                                // Return the updated comment with updated replies
+                                
                                 return { ...c, replies: updatedReplies };
                             }
                 
-                            return c; // Return the comment unchanged if it's not the one we want
+                            return c; 
                         });
                 
                         return updatedComments;
@@ -294,8 +292,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                     setCommentsData(prev => {
                         const updatedComments = prev.map(i => 
                             i.id === comment.id 
-                                ? { ...i, downvotes: i.downvotes + 1 }  // Update the upvotes of the matching comment
-                                : i  // Leave other comments unchanged
+                                ? { ...i, downvotes: i.downvotes + 1 }  
+                                : i  
                         );
                         return updatedComments;
                     });
@@ -310,8 +308,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
-        // refetch();
-        // refetchOwnerUser()
+        
+        
     }
 
 
@@ -327,7 +325,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     }
 
 
-    if (!dialogue && !thread && !list && !activity ){ 
+    if ((!dialogue && !thread && !list && !activity ) || !ownerUser){ 
         return (
             <View className='w-full h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>
@@ -560,7 +558,7 @@ export default CommentsComponent
 
 
 CommentsComponent.options = {
-    headerShown: false,  // Optional: Hide header if not needed
+    headerShown: false,  
   }
 
 

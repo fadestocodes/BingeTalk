@@ -18,8 +18,6 @@ import ListCard from '../../../../components/ListCard';
 import { toPascalCase } from '../../../../lib/ToPascalCase';
 import { getAllNotifs, useGetAllNotifs } from '../../../../api/notification';
 import { likeActivity } from '../../../../api/activity';
-import ThreadActivityCard from '../../../../components/ThreadActivityCard';
-import ActivityCard from '../../../../components/ActivityCard';
 import ActivityCard2 from '../../../../components/ActivityCard2';
 import { useNotificationCountContext } from '../../../../lib/NotificationCountContext';
 
@@ -233,27 +231,27 @@ const homeIndex = () => {
                     { item.feedFrom === 'activity' ? (
                       <View>
                         { item.postType === 'dialogue' ? (
-                          <TouchableOpacity onPress={()=>handlePress(item)}>
+                          <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
                            <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                           </TouchableOpacity>
                         ) : item.postType === 'thread' ? (
-                          <TouchableOpacity onPress={()=>handlePress(item)}>
+                          <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
                             <ThreadCard thread={item.threads} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                           </TouchableOpacity>
           
                         ) : item.postType === 'list' ? (
-                          <TouchableOpacity onPress={()=>handlePress(item)}>
+                          <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
                             <ListCard list={item.list} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                           </TouchableOpacity>
           
                         ) : (
-                          <TouchableOpacity onPress={()=>{router.push(`(home)/activity/${item.id}`)}}>
+                          <TouchableOpacity onPress={ ()=>{  refetchOwner() ;router.push(`(home)/activity/${item.id}`)}}>
                             <ActivityCard2 activity={item} fromHome={true} isBackground={true}/>
                           </TouchableOpacity>
                         ) }
                       </View>
                     ) : (
-                      <TouchableOpacity onPress={()=>handlePress(item)}>
+                      <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
                         <ThreadCard thread={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                       </TouchableOpacity>
                     ) }

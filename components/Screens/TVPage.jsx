@@ -11,7 +11,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { ImageBackground } from 'react-native'
 import YoutubePlayer from 'react-native-youtube-iframe';
 import CastCrewHorizontal from '../CastCrewHorizontal'
-import DiscussionThread from '../DiscussionThread'
 import { capitalize } from '../../lib/capitalize'
 import DiscoverHorizontal from '../DiscoverHorizontal'
 import { markTVWatchlist, useFetchTVMentions } from '../../api/tv'
@@ -42,7 +41,6 @@ const TVPage = () => {
     const queryClient = useQueryClient();
 
 
-    // const { data: movie, refetch } = useTMDB(()=>GetMovieById(tvId));
     const [movie, setMovie] = useState('');
     const [loading, setLoading] = useState(false);
     const [videoId, setVideoId] = useState(null)
@@ -66,9 +64,6 @@ const TVPage = () => {
 
     const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
     const alreadyInWatchlist = ownerUser?.watchlistItems.some( item => item.tvId === Number(DBtvId) )
-    // const alreadyRated = ownerUser?.ratings.some( item => item.tvId === Number(DBtvId) )
-    // const tvRating = ownerUser?.ratings.find( item => item.tvId === Number(DBtvId));
-
 
     const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) && item.userId === ownerUser?.id )
     const ownerRating = tvRatings?.find( item => item.userId === ownerUser?.id && item.tvId === Number(DBtvId) ) || 'N/A'
@@ -88,7 +83,7 @@ const TVPage = () => {
     const fetchData = async () => {
         setLoading(true);  
         try {
-            const res = await GetTVById(tvId);  // Pass movieId here
+            const res = await GetTVById(tvId);  
             setMovie(res);
             if (res.videos.results){
                 try {
@@ -124,17 +119,7 @@ const TVPage = () => {
             setDBtvId(tvFromDB.id)
             setTVRatings(tvFromDB.ratings)
 
-            // const cachedTVShowFromDB = queryClient.getQueryData(['tv', tvId]);
-            // if (cachedTVShowFromDB){
-            //     setThreads(cachedTVShowFromDB.threads)
-            // } else {
-            //     const tvFromDB = await fetchTVFromDB({tvData})
-            //     queryClient.setQueryData(['tv', tvId], tvFromDB);
-    
-            //     console.log('tvfromdb', tvFromDB)
-            //     setThreads( tvFromDB.threads );
-            //     queryClient.setQueryData(['threads', tvId], tvFromDB.threads);
-            // }
+            
 
 
           
@@ -149,7 +134,6 @@ const TVPage = () => {
     const refetchMentionsThreads =  () => {
         queryClient.invalidateQueries(['mentions']);
         queryClient.invalidateQueries(['threads']);
-        // fetchData()
     };
     
    
@@ -223,7 +207,7 @@ const TVPage = () => {
     const handleMore = () => {
         router.push({
             pathname: "/moreInteractions",
-            params: { DBtvId: String(DBtvId), tmdbId : tvId }, // Convert to string
+            params: { DBtvId: String(DBtvId), tmdbId : tvId }, 
         });
     }
 
@@ -388,7 +372,6 @@ const TVPage = () => {
                     <TouchableOpacity onPress={handleMore} >
                         <View    className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center'>
                             <Ellipsis  color={Colors.primary} size={20} />
-                            {/* <Text className='text-primary font-pbold text-sm'>...</Text> */}
                         </View>
                     </TouchableOpacity>
         </View>
@@ -519,11 +502,7 @@ const TVPage = () => {
                     />
                     <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
                     
-            {/* <DiscussionThread threadsPress={threadsPress} threads={threads} refetch={refetchMentionsThreads}></DiscussionThread> */}
-            {/* <Text className='text-mainGray font-pbold text-lg'>Similar Shows</Text>
-            <View className="mb-10 h-96">
-                <DiscoverHorizontal data={similarTitles} handlePress={handlePress}/>
-            </View> */}
+           
 
      
         </View>
@@ -533,8 +512,8 @@ const TVPage = () => {
 }
 
     TVPage.options = {
-        tabBarStyle: { display: 'flex' }, // Makes the tab bar visible
-        headerShown: false,  // Optional: Hide header if not needed
+        tabBarStyle: { display: 'flex' }, 
+        headerShown: false,  
     }
 
 export default TVPage

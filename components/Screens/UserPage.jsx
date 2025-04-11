@@ -12,15 +12,6 @@ import UserListsPage from './UserListsPage';
 
 
 const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
-
-    // if (!user || isFetchingUser) {
-            
-    //     refetchUser();
-
-    //     return <View className='bg-primary justify-center items-center h-full'>
-    //       <ActivityIndicator></ActivityIndicator>  
-    //     </View> 
-    // } 
   const router = useRouter();
   const [active, setActive] = useState(0);
   const pagerRef = useRef(null)

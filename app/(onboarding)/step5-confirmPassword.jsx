@@ -7,27 +7,31 @@ import { signupSchema, signupConfirmPasswordSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams } from 'expo-router'
 import { addUser } from '../../api/user'
 import { useUserDB } from '../../lib/UserDBContext'
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 const step5 = () => {
     const { isLoaded, signUp, setActive } = useSignUp()
+    const { signUpData, updateSignUpData } = useSignUpContext()
     const { userDB, updateUserDB } = useUserDB();
     const length = 6;
-    const { firstName, lastName, username, email, password } = useLocalSearchParams() // Get email from params
-    const [pendingVerification, setPendingVerification] = React.useState(false)
+    const [pendingVerification, setPendingVerification] = useState(false)
     const [ errors, setErrors ] = useState({})
-    const [ confirmPassword, setConfirmPassword ] = useState('')
     const router = useRouter();
     const [code, setCode] = useState(Array(length).fill(''));
     const verificationInputs = useRef([]);
 
-    if (!isLoaded){
+
+    if (!isLoaded ){
         return null
     }
 
     const handleInputs = (name, value) => {
-        setConfirmPassword( value) 
+        updateSignUpData(prev => ({
+            ...prev,
+            confirmPassword : value
+        }))
 
-        const results = signupConfirmPasswordSchema(password).safeParse( {confirmPassword:value} )
+        const results = signupConfirmPasswordSchema(signUpData.password).safeParse( {confirmPassword:value} )
         if (!results.success) {
             const errorObj = results.error.format();
             setErrors( prev => ({
@@ -44,47 +48,36 @@ const step5 = () => {
     }
 
     const onSignUpPress = async () => {
-        // if (!isLoaded) return
+        if (!isLoaded) return
     
-        // Start sign-up process using email and password provided
         try {
              await signUp.create({
-            emailAddress : email,
-            password,
-            firstName,
-            lastName,
-            username : username.toLocaleLowerCase()
+            emailAddress : signUpData.email,
+            password : signUpData.password,
+            firstName : signUpData.firstName,
+            lastName : signUpData.lastName,
+            username : signUpData.username.toLocaleLowerCase()
             })
-            // Send user an email with verification code
             await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
-    
-            // Set 'pendingVerification' to true to display second form
-            // and capture OTP code
             setPendingVerification(true)
             
         } catch (err) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
             console.error(JSON.stringify(err, null, 2))
         }
     }
     
-        // Handle submission of verification form
     const onVerifyPress = async ( finalCode ) => {
-        // if (!isLoaded) return
+        if (!isLoaded) return
     
         try {
-            // Use the code the user provided to attempt verificatione
             const signUpAttempt = await signUp.attemptEmailAddressVerification({
             code : finalCode,
             })
     
-            // If verification was completed, set the session to active
-            // and redirect the user
             if (signUpAttempt.status === 'complete') {
             await setActive({ session: signUpAttempt.createdSessionId })
-            const response = await addUser( { firstName, lastName, email, username : username.toLocaleLowerCase() } );
-            console.log('new user', response)
+            const response = await addUser( { firstName:signUpData.firstName, lastName:signUpData.lastName, email:signUpData.email, username : signUpData.username.toLocaleLowerCase() } );
+
             updateUserDB(response)
 
             if (!response) {
@@ -96,13 +89,9 @@ const step5 = () => {
             })
 
             } else {
-            // If the status is not complete, check why. User may need to
-            // complete further steps.
             console.error(JSON.stringify(signUpAttempt, null, 2))
             }
         } catch (err) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
             console.error(JSON.stringify(err, null, 2))
         }
     }
@@ -114,7 +103,6 @@ const step5 = () => {
         const newCode = [...code];
     
         if (text.length > 1) {
-            // Handle paste: distribute characters
             const pastedText = text.slice(0, length);
             for (let i = 0; i < pastedText.length; i++) {
             newCode[i] = pastedText[i];
@@ -122,19 +110,14 @@ const step5 = () => {
             setCode(newCode);
             verificationInputs.current[Math.min(pastedText.length - 1, length - 1)].focus();
         } else {
-            // Normal single-character input
             newCode[index] = text;
             setCode(newCode);
-    
-            // Move to next input if current has a value
             if (text && index < length - 1) {
             verificationInputs.current[index + 1].focus();
             }
         }
     
-        // Trigger onComplete if filled
         if (newCode.every((char) => char !== '')) {
-            // setFinalCode(Number(newCode.join('')))
             const finalCode = newCode.join('');
             onVerifyPress( finalCode );
             
@@ -148,12 +131,13 @@ const step5 = () => {
         };
 
     const handleFocus = (index) => {
-        // Ensure the cursor goes to the end when focusing an input field
         const refInput = verificationInputs.current[index];
         if (refInput) {
-        refInput.setSelection(code[index].length, code[index].length); // Move cursor to the end
+        refInput.setSelection(code[index].length, code[index].length);
         }
     };
+
+
 
         
   
@@ -185,7 +169,6 @@ const step5 = () => {
                     returnKeyType="done"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    // Enable paste support by making all inputs handle the entire code
                     contextMenuHidden={false} 
                 />
             ))}
@@ -204,14 +187,14 @@ const step5 = () => {
         }
         </View>
             <TextInput
-              value={confirmPassword}
+              value={signUpData.confirmPassword}
               placeholder="Confirm password"
               secureTextEntry={true}
               placeholderTextColor={Colors.mainGray}
               style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
               onChangeText={(text) => handleInputs('confirmPassword', text)}
             />
-            <TouchableOpacity onPress={onSignUpPress}   disabled={Object.values(errors).some((error) => error?.length > 0) || !confirmPassword  } >
+            <TouchableOpacity onPress={onSignUpPress}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.confirmPassword  } >
               <Text className='text-secondary text-lg font-psemibold'>Continue</Text>
             </TouchableOpacity>
             </>

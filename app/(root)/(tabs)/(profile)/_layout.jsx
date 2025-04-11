@@ -7,7 +7,6 @@ const ProfileLayout = () => {
   return (
     <Stack  >
         <Stack.Screen name='profileHome' options={{headerShown : false}} />
-        <Stack.Screen name='settings' options={{headerShown : false}} />
         <Stack.Screen name='movie' options={{headerShown : false}} />
         <Stack.Screen name='tv' options={{headerShown : false}} />
         <Stack.Screen name='cast' options={{headerShown : false}} />

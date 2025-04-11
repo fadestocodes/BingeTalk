@@ -4,20 +4,19 @@ import { useUser, useSignUp } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
 import { signupSchema, signupPasswordSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 
 const step4 = () => {
     const length = 6;
+    const { signUpData, updateSignUpData } = useSignUpContext()
     const router = useRouter();
-    const { firstName, lastName, username, email } = useLocalSearchParams() // Get email from params
-    // const { isLoaded, signUp, setActive } = useSignUp()
     const [ errors, setErrors ] = useState({})
-    const [ password, setPassword ] = useState('')
-   
-
-
     const handleInputs = (name, value) => {
-        setPassword( value) 
+        updateSignUpData(prev => ({
+          ...prev,
+          [name] : value
+        }))
 
         const results = signupPasswordSchema.safeParse( {password : value} )
         if (!results.success) {
@@ -38,10 +37,7 @@ const step4 = () => {
 
 
     const handleContinue = () => {
-        router.push({
-            pathname : '/step5-confirmPassword',
-            params : { firstName, lastName, username, email, password  }
-        });
+        router.push('/step5-confirmPassword')
     }
         
   
@@ -68,7 +64,7 @@ const step4 = () => {
         }
         </View>
             <TextInput
-              value={password}
+              value={signUpData.password}
               placeholder="Enter password"
               secureTextEntry={true}
               placeholderTextColor={Colors.mainGray}
@@ -76,7 +72,7 @@ const step4 = () => {
               onChangeText={(text) => handleInputs('password', text)}
             />
        
-            <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0) || !password  } >
+            <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.password  } >
               <Text className='text-secondary text-lg font-psemibold'>Continue</Text>
             </TouchableOpacity>
             </>

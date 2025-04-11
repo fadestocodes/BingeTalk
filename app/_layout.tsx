@@ -23,6 +23,7 @@ import {postPushToken} from '../api/notification'
 import { useFetchOwnerUser } from '@/api/user';
 import {NotificationProvider} from '../lib/NotificationCountContext'
 import {CreateProvider} from '../lib/CreateContext'
+import {SignUpProvider} from '../lib/SignUpContext'
 
 
 
@@ -84,6 +85,7 @@ export default function RootLayout() {
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey} >
       <ClerkLoaded>
         <QueryClientProvider client={queryClient}>
+          <SignUpProvider>
         <UserDBProvider>
           <NotificationProvider>
           <DialogueProvider>
@@ -107,6 +109,7 @@ export default function RootLayout() {
           </DialogueProvider>
           </NotificationProvider>
           </UserDBProvider>
+          </SignUpProvider>
         </QueryClientProvider>
       </ ClerkLoaded >
     </ClerkProvider >

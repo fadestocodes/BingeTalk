@@ -23,10 +23,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
     const alreadyDownvoted = activity?.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
     const alreadyReposted = activity?.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
-    // const [ interactionCounts, setInteractionCounts ] = useState(activity.likes || 0)
-    // const alreadyLikedActivity = ownerUser?.activityInteractions.some( interaction => interaction.activityId === activity.id  )
-
-    // const [ already, setAlready ] = useState(alreadyLikedActivity)
+    
 
     const imagePaths =  activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.rating?.movie?.backdropPath || activity?.rating?.tv?.backdropPath 
     
@@ -56,7 +53,8 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
 
 
 
-    const handleComment = (activity) => {
+    const handleComment =  (activity) => {
+         refetchOwner()
         if (fromHome){
 
             router.push({
@@ -73,7 +71,6 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     }
 
     const handlePosterPress = (item) => {
-        // console.log('posterpress',item)
         if (item?.movie){
             router.push(`(home)/movie/${item.movie.tmdbId}`)
         } else if (item?.threads?.movie){
@@ -133,7 +130,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
         })
     }
 
-    if (!activity ){
+    if (!activity  ){
         return (
             <View className='w-full h-full bg-primary justify-center items-center'>
                 <ActivityIndicator/>
@@ -217,13 +214,13 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                             <Text className='text-xs font-pbold text-gray-400  '> {activity?.commentsOnActivity?.length}</Text>
                         </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=> handleInteraction('reposts',activity) } >
+                        {/* <TouchableOpacity onPress={()=> handleInteraction('reposts',activity) } >
                         <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
                             <RepostIcon className='' size={20}  color={ interactions.reposts.alreadyPressed ? Colors.secondary :  Colors.mainGray}/>
                             <Text className='text-xs font-pbold text-gray-400  'style={{ color: interactions.reposts.alreadyPressed ? Colors.secondary : Colors.mainGray }}> {interactions.reposts.count}</Text>
                         </View>
 
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                             
                     </View>
                     

@@ -12,18 +12,19 @@ import { getYear } from '../../lib/formatDate'
 import { updateUser, useFetchOwnerUser } from '../../api/user'
 import { useUserDB } from '../../lib/UserDBContext'
 import { updateRotation } from '../../api/user'
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 
 const profile2 = () => {
 
-    const {  bio, bioLink, image, userFromDB } = useLocalSearchParams();
+    const { signUpData, updateSignUpData } = useSignUpContext()
+    const { bio, bioLink, image } = signUpData
     const { userDB, updateUserDB } = useUserDB();
     const [ resultsOpen, setResultsOpen ] = useState(false);
     const [ results, setResults ] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [ listItems, setListItems ]  = useState([])
     const {user} = useUser();
-    // const { data:ownerUser } = useFetchOwnerUser({email : user.emailAddresses[0].emailAddress})
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter();
@@ -51,18 +52,13 @@ const profile2 = () => {
      
     const toPascalCase = (str) => {
         return str
-            .replace(/[^a-zA-Z0-9 ]/g, '') // Remove non-alphanumeric characters except spaces
-            .split(' ') // Split words
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize first letter
-            .join(''); // Join words without spaces
+            .replace(/[^a-zA-Z0-9 ]/g, '')
+            .split(' ') 
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1)) 
+            .join(''); 
     };
     
     const handlePress = (item) => {
-        // setInputs(prev => ({
-        //     ...prev,
-        //     query: `/${toPascalCase(item.name || item.title)}` // Convert to PascalCase
-        // }));
-
         setSearchQuery(  `/${toPascalCase(item.name || item.title)}` )
         setResultsOpen(false);
     };
@@ -74,8 +70,8 @@ const profile2 = () => {
            setListItems((prev) => [
                ...prev,
                {
-                   item,  // Store the full item object
-                   key: item.id?.toString() || Date.now().toString(), // Ensure a unique key
+                   item,  
+                   key: item.id?.toString() || Date.now().toString(), 
                },
                ]);
                setResults([]);
@@ -96,7 +92,7 @@ const profile2 = () => {
         return (
           <View className=' justify-start items-center relative '
             style={{ width:'auto', height:100,  marginHorizontal:0, marginVertical:0, overflow:'hidden' }}
-            key={item.key}  // Set key here based on the item key
+            key={item.key}  
           >
            <Image 
             source={ item.media_type === 'person' ? {uri:`${posterURL}${item.item.profile_path}`}  : {uri:`${posterURL}${item.item.poster_path}`}}
@@ -137,6 +133,18 @@ const profile2 = () => {
 
             await updateRotation( userId, rotationItems, listItemObj )
             updateUserDB(response)
+            updateSignUpData({
+                firstName : '',
+                lastName : '',
+                username : '',
+                email : '',
+                password:'',
+                confirmPassword : '',
+                bio:'',
+                bioLink:'',
+                image:''
+            })
+
             
         } catch (err) {
             console.log(err)
@@ -144,6 +152,14 @@ const profile2 = () => {
             router.replace('/')
         }
 
+    }
+
+    if (!userDB || !user) {
+        return (
+            <View className='w-full h-full justify-center items-center bg-primary'>
+                <ActivityIndicator/>
+            </View>
+        )
     }
 
 
@@ -189,7 +205,7 @@ const profile2 = () => {
                         data={listItems}
                         itemHeight={170}
                         onDragRelease={(data) => {
-                           setListItems(data);// need reset the props data sort after drag release
+                           setListItems(data);
                         }}
                         />
                     </ScrollView>
@@ -274,7 +290,7 @@ const profile2 = () => {
                     data={listItems}
                     itemHeight={100}
                     onDragRelease={(data) => {
-                        setListItems(data);// need reset the props data sort after drag release
+                        setListItems(data);
                     }}
                 />
 

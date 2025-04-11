@@ -8,7 +8,6 @@ import { Colors } from '../../constants/Colors'
 import { getPerson } from '../../api/tmdb'
 import { useTMDB } from '../../lib/useTMDB'
 import { LinearGradient } from 'expo-linear-gradient'
-import DiscussionThread from '../DiscussionThread'
 import CastCrewHorizontal from '../CastCrewHorizontal'
 import { capitalize } from '../../lib/capitalize'
 import DialogueCard from '../DialogueCard'
@@ -37,7 +36,6 @@ const CastIdPage = () => {
     const [whichCredits, setWhichCredits] = useState('')
     const [readMore, setReadMore] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    // const {data:personData, loading, refetch} = useTMDB(()=>getPerson(castId));
     const [ loadingDB, setLoading] = useState(false)
     const queryClient = useQueryClient();
     const [personData, setPersonData] = useState(null)
@@ -55,9 +53,8 @@ const CastIdPage = () => {
     const fetchData = async () => {
         setLoading(true);    
         try {
-            const fetchedPerson = await getPerson(castId);  // Pass movieId here
+            const fetchedPerson = await getPerson(castId); 
             setPersonData(fetchedPerson)
-            // setMovie(personData);
             const credits = fetchedPerson.credits;
             if (fetchedPerson.combined_credits) {
                 const dropdownOptions = Object.keys(fetchedPerson.combined_credits)
@@ -66,8 +63,6 @@ const CastIdPage = () => {
                   return (key === 'cast' && credits.length > 0) || (key === 'crew' && credits.length > 0)});
           
                 setCreditOptions(dropdownOptions);
-          
-                // Safely set the initial value for whichCredits
                 if (dropdownOptions.length > 0) {
                   setWhichCredits(dropdownOptions[0]);
                 }
@@ -80,28 +75,13 @@ const CastIdPage = () => {
                 posterPath  : fetchedPerson.profile_path,
             }
 
-            // const cachedCastFromDB = queryClient.getQueryData(['cast', castId]);
-            // if (cachedCastFromDB){
-            //     setThreads(cachedCastFromDB.threads)
-            //     setMentions(cachedCastFromDB.mentions)
-            //     const alreadyFavCheck = ownerUser.favCastCrew.some( item => item.castId === cachedCastFromDB.id )
-            //     setAlreadyFav(alreadyFavCheck)
-            // } else {
-                // console.log('fetchedPerson', fetchedPerson)
                 const castFromDB = await fetchPersonFromDB({castData})
                 setDBcast(castFromDB)
                 setFavLength(castFromDB.favCastCrew.length)
                 const alreadyFavCheck = ownerUser?.favCastCrew.some( item => item.castId === castFromDB.id )
                 setAlreadyFav(alreadyFavCheck)
-                // queryClient.setQueryData(['cast', castId]);
-    
                 setThreads( castFromDB.threads );
                 setMentions(castFromDB.mentions)
-                // queryClient.setQueryData(['threads', castId], castFromDB.threads);
-            // }
-
-            // const fetchedMentions = await getMovieMentions(movieId);
-            // setMentions(fetchedMentions);
           
         } catch (err) {
             Alert.alert("Error", err.message);
@@ -111,7 +91,7 @@ const CastIdPage = () => {
     };
 
     useEffect(() => {
-        if (castId) {  // Only fetch if castId is available
+        if (castId) { 
             fetchData();
         }
     }, [castId]); 
@@ -129,7 +109,6 @@ const CastIdPage = () => {
       const newFav = await addCastToFav(data);
       setAlreadyFav(prev => !prev)
       setToastMessage(newFav.message)
-      // fetchData()
     }
 
     const refreshData = () => {
@@ -172,12 +151,6 @@ const CastIdPage = () => {
       })
   }
 
-
-    // const dynamicIcon = (button) => {
-    //   if (button === 'addToFav'){
-    //     return <CastCrewIcon size ={30} color={Colors.secondary} />
-    //   }
-    // }
 
 
     if (!personData || !ownerUser) {
@@ -336,7 +309,6 @@ const CastIdPage = () => {
 
 
             <View className='w-full border-t-[1px] border-mainGrayDark my-5 items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            {/* <DiscussionThread threadsPress={threadsPress} threads={threads} ></DiscussionThread> */}
             <FlatList
                         scrollEnabled={false}
                         data={threads}
@@ -365,5 +337,5 @@ export default CastIdPage
 
 
 CastIdPage.options = {
-    headerShown: false,  // Optional: Hide header if not needed
+    headerShown: false,  
   };

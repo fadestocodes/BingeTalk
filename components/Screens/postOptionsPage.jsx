@@ -70,7 +70,6 @@ const PostOptions = () => {
     }
 
     const handleReportSubmit = async (reportType,postId) => {
-        // setReportType(reportType)
 
         const data = {
             reporterId : Number(ownerId),

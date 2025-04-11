@@ -8,42 +8,19 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Colors } from '../../constants/Colors'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical} from 'lucide-react-native';
 import { formatDate, getYear } from '../../lib/formatDate'
-import { FilmIcon, TVIcon } from '../../assets/icons/icons'
+import { FilmIcon, TVIcon , BackIcon} from '../../assets/icons/icons'
 import { deleteRecommendation } from '../../api/recommendation'
-// import InfiniteScroll from '../../../components/InfiniteScroll'
 
 
 const RecommendationListScreen = () => {
     const {userId} = useLocalSearchParams();
-    // const { data:recommendationsSent, refetch, isFetching  } = useFetchrecommendations(userId);
-    // const {
-    //     data,
-    //     fetchNextPage,
-    //     hasNextPage,
-    //     isFetching,
-    //     isFetchingNextPage,
-    //     isLoading,
-    //     refetch
-    // } = useFetchrecommendations(userId);
-    // console.log('DATAAA', data)
-
-    // const recommendationsSent = data?.pages.flatMap(page => page.items) || [];
     const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(userId)
     const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(userId)
-
     const [ tab, setTab ] = useState('received')
-
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
 
 
-  // const flattenData = data?.pages.flatMap((page) => page.items) || [];
-  // console.log(flattenData)
-
-
-
-
-    // console.log('recently watched ARRAY', recommendationsSent)
     const router = useRouter()
 
 
@@ -57,12 +34,6 @@ const RecommendationListScreen = () => {
         }
     }
     
-
-        // const reachedEnd = () => {
-        //     if ( hasMore  && !loading  ) {
-        //         refetch();
-        //     }
-        // }
         const ITEM_HEIGHT = 50
 
         const handleOptions = () => {
@@ -99,19 +70,23 @@ const RecommendationListScreen = () => {
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
        <View 
            
-            style={{ paddingTop:30, gap:10, paddingHorizontal:15, paddingBottom:200,alignItems:'center', width:'100%' }}>
-            <View className="flex-row justify-center items-center gap-2">
+            style={{ paddingTop:0, gap:10, paddingHorizontal:15, paddingBottom:200,alignItems:'center', width:'100%' }}>
+        
+            <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
+         <BackIcon size={22} color={Colors.mainGray} />
+     </TouchableOpacity>
+            <View className="flex-row w-full justify-start items-center gap-2 py-1">
                 <Handshake color='white'  />
-                <Text className='text-white text-2xl font-pbold'>Recommendations</Text>
+                <Text className='text-white text-3xl  font-pbold'>Recommendations</Text>
             </View>
-            <View className='flex-row gap-3 justify-center items-center mb-3' style={{ borderRadius:10, paddingHorizontal:5, paddingVertical:8, backgroundColor:Colors.mainGrayDark, width:150 }}>
-                <TouchableOpacity onPress={()=>setTab('received')}  style={{ padding:5, borderRadius:5, backgroundColor: tab === 'received' ? 'white' : null }} >
-                  <Text className=' font-pbold text-sm' style={{ color : tab === 'received' ? Colors.primary : Colors.mainGray }}>Received</Text>
+            <View className='flex-row gap-2 w-full justify-start items-center'>
+            <TouchableOpacity onPress={()=>{setTab('received') }} style={{ borderRadius:15, backgroundColor:tab==='received' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+                    <Text className=' font-pmedium' style={{ color : tab==='received' ? Colors.primary : 'white' }}>Received</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>setTab('sent')} style={{ padding:5, borderRadius:5, backgroundColor: tab === 'sent' ? 'white' : null }} >
-                <Text className='font-pbold text-sm' style={{ color : tab === 'sent' ? Colors.primary : Colors.mainGray }} >Sent</Text>
+            <TouchableOpacity onPress={()=>{setTab('sent') }} style={{ borderRadius:15, backgroundColor:tab==='sent' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+                    <Text className=' font-pmedium' style={{ color : tab==='sent' ? Colors.primary : 'white' }}>Sent</Text>
                 </TouchableOpacity>
-            </View>
+                </View>
 
 
             {  tab === 'received' ? (
@@ -140,7 +115,6 @@ const RecommendationListScreen = () => {
                     }}
                         
                         onEndReachedThreshold={0.1}
-                        // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:180 ,overflow:'hidden'}}>
@@ -197,7 +171,6 @@ const RecommendationListScreen = () => {
                                            
                                         </View>
                                     </View>
-                                {/* <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/> */}
                                 </TouchableOpacity>
                         )}}
                     />
@@ -233,7 +206,6 @@ const RecommendationListScreen = () => {
                     }}
                         
                         onEndReachedThreshold={0.1}
-                        // ListFooterComponent={ loading ? <ActivityIndicator /> : <></>}
                         renderItem={({item})=>{
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:180, overflow:'hidden', width:'100%' }}>
@@ -246,8 +218,8 @@ const RecommendationListScreen = () => {
                                     source={{ uri: `${posterURL}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }` }}
                                     placeholder={{ uri: `${posterURLlow}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }`  }}
                                     placeholderContentFit="cover"
-                                    contentFit="cover" // Same as resizeMode='cover'
-                                    transition={300} // Optional: Adds a fade-in effect
+                                    contentFit="cover" 
+                                    transition={300} 
                                 />
                                 <LinearGradient
                                     colors={['transparent', 'black']}
@@ -290,7 +262,6 @@ const RecommendationListScreen = () => {
                                                    
                                         </View>
                                     </View>
-                                {/* <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/> */}
                                 </TouchableOpacity>
                         )}}
                     />
