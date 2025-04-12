@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity,Dimensions,  Keyboard, FlatList, TouchableWithoutFeedback,  KeyboardAvoidingView, Platform } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity,Dimensions,  Keyboard, FlatList, TouchableWithoutFeedback,  KeyboardAvoidingView, ActivityIndicator, Platform } from 'react-native'
 import { Image } from 'expo-image'
 import React, {useState, useEffect, useRef} from 'react'
 import { PeopleIcon, SlateIcon, ThreadsIcon, DownIcon, FilmIcon, TVIcon, PersonIcon, CloseIcon, BackIcon } from '../../../../assets/icons/icons'
@@ -53,7 +53,7 @@ const CreateHome = () => {
 
     const handleSearch = debounce( async (text) => {
         setResultsOpen(true)
-        if (text.length > 2) {
+        if (text.length > 1) {
             try {
                 const response = await searchAll(text);
                 setResults(response.results);

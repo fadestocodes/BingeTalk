@@ -64,7 +64,7 @@ const EditListScreen = () => {
 
     const handleSearch = debounce( async (text) => {
         setResultsOpen(true)
-        if (text.length > 2) {
+        if (text.length > 1) {
             try {
                 const response = await searchAll(text);
                 setResults(response.results);

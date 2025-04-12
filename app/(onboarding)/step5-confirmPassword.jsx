@@ -21,9 +21,6 @@ const step5 = () => {
     const verificationInputs = useRef([]);
 
 
-    if (!isLoaded ){
-        return null
-    }
 
     const handleInputs = (name, value) => {
         updateSignUpData(prev => ({
@@ -52,11 +49,11 @@ const step5 = () => {
     
         try {
              await signUp.create({
-            emailAddress : signUpData.email,
-            password : signUpData.password,
-            firstName : signUpData.firstName,
-            lastName : signUpData.lastName,
-            username : signUpData.username.toLocaleLowerCase()
+            emailAddress : signUpData?.email,
+            password : signUpData?.password,
+            firstName : signUpData?.firstName,
+            lastName : signUpData?.lastName,
+            username : signUpData?.username.toLocaleLowerCase()
             })
             await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
             setPendingVerification(true)

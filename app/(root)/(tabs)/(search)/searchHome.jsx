@@ -51,7 +51,7 @@ const SearchPage = () => {
   }
 
   const handleSearch = debounce( async (text) => {
-    if (text.length > 2) {
+    if (text.length > 1) {
       try {
         if ( searchingFor === 'users' ) {
           const response = await searchUsers(text);

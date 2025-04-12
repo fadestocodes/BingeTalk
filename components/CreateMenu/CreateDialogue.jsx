@@ -90,7 +90,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
    
 
     const handleSearch = debounce( async (query) => {
-        if (query.length > 2) {
+        if (query.length > 1) {
             try {
                 setResultsOpen(true)
                 setSuggestionOpen(true)

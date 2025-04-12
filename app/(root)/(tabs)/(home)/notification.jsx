@@ -15,7 +15,7 @@ import { BackIcon } from '../../../../assets/icons/icons'
 const Notification = () => {
   const { user : clerkUser } = useUser();
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress})
-  const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds} = useGetAllNotifs(ownerUser?.id, 10);
+  const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds, fetchMore} = useGetAllNotifs(ownerUser?.id, 10);
   const { updateNotifCount, notifCount } = useNotificationCountContext()
   
   
@@ -153,7 +153,7 @@ const Notification = () => {
           keyExtractor={(item, index) => item.id}
           onEndReached={()=>{
             if (hasMore){
-              refetch()
+              fetchMore()
             }
           }}
           onEndReachedThreshold={0}

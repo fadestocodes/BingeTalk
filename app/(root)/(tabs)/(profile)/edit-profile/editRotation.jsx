@@ -47,13 +47,11 @@ const editRotation = () => {
     }
   
     const handleSearch = debounce( async (text) => {
-      if (text.length > 2) {
+      if (text.length > 1) {
         try {
           const response = await searchTitles(text);
-          // console.log('response is ', response)
   
           setResults(response);
-          // console.log('results are ', response.results)
         } catch (err) {
           console.log(err)
         }
@@ -70,10 +68,7 @@ const editRotation = () => {
   };
   
   const handlePress = (item) => {
-      // setInputs(prev => ({
-      //     ...prev,
-      //     query: `/${toPascalCase(item.name || item.title)}` // Convert to PascalCase
-      // }));
+   
 
       setSearchQuery(  `/${toPascalCase(item.name || item.title)}` )
       setResultsOpen(false);

@@ -38,7 +38,7 @@ const profile2 = () => {
       }
     
       const handleSearch = debounce( async (text) => {
-        if (text.length > 2) {
+        if (text.length > 1) {
           try {
             const response = await searchTitles(text);
     

@@ -12,7 +12,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Colors } from '@/constants/Colors';
 import { ClerkProvider, ClerkLoaded, useUser, useClerk } from '@clerk/clerk-expo'
 import {tokenCache} from '@/cache'
-// import { tokenCache } from '@clerk/clerk-expo/token-cache'
 import { UserDBProvider } from '../lib/UserDBContext'
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '../lib/tanStackClient'; // Import the query client

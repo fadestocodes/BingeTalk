@@ -71,7 +71,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
 
     
 
-    return { data, loading, hasMore, refetch , isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds}
+    return { data, loading, hasMore, refetch , fetchMore:getAllNotifs, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds}
 }
 
 export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCount) => {
