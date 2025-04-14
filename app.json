@@ -42,8 +42,8 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash.png",
-          "resizeMode": "contain",  
-          "imageWidth" : 200,
+          "resizeMode": "contain",
+          "imageWidth": 200,
           "backgroundColor": "#171717"
         }
       ],
@@ -54,6 +54,14 @@
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photo library to choose a picture.",
           "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera to take a picture."
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "bingeable",
+          "organization": "bingeable-as"
         }
       ]
     ],

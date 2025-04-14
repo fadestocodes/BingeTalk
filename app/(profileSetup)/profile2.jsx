@@ -296,7 +296,7 @@ const profile2 = () => {
 
             </View>
            
-            <TouchableOpacity onPress={handleContinue}  style={{ borderRadius:30, paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.secondary, width:100 }}  >
+            <TouchableOpacity onPress={handleContinue}  style={{ borderRadius:30, paddingHorizontal:15, paddingVertical:5, backgroundColor:Colors.secondary, width:130 }}  >
               <Text className='text-primary text-lg font-pbold text-center'>Continue</Text>
             </TouchableOpacity>
             </View>

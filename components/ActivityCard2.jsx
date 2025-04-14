@@ -9,7 +9,7 @@ import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { toPascalCase } from '../lib/ToPascalCase'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
-import { likeActivity, activityInteraction } from '../api/activity'
+import { likeActivity, activityInteraction, useFetchActivityId } from '../api/activity'
 
 const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground}) => {
 
@@ -17,7 +17,9 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const { user : clerkUser } = useUser()
-    const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })  
+    const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress }) 
+    const { refetch } = useFetchActivityId(activity?.id)
+
 
 
     const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )

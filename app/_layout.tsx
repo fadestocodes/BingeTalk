@@ -23,20 +23,28 @@ import { useFetchOwnerUser } from '@/api/user';
 import {NotificationProvider} from '../lib/NotificationCountContext'
 import {CreateProvider} from '../lib/CreateContext'
 import {SignUpProvider} from '../lib/SignUpContext'
+import * as Sentry from '@sentry/react-native';
 
 
 
 SplashScreen.preventAutoHideAsync();
 
-SplashScreen.setOptions({
-  duration: 1000,
-  fade: true,
+Sentry.init({
+  dsn: 'https://888eaec7d31a00bfb53c76ad74337462@o4509142159327232.ingest.us.sentry.io/4509142210445312',
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
 });
 
+// SplashScreen.setOptions({
+//   duration: 1000,
+//   fade: true,
+// });
 
 
 
-export default function RootLayout() {
+
+export default Sentry.wrap(function RootLayout() {
 
   
 
@@ -113,4 +121,4 @@ export default function RootLayout() {
       </ ClerkLoaded >
     </ClerkProvider >
   );
-}
+});

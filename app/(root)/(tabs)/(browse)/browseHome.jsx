@@ -75,7 +75,7 @@ const browseHome = () => {
 
         <View className='w-full ' style={{ paddingBottom:200 }} >
 
-          { selected === 'Trending' && loading  || selected === 'Most Recent' &&  loadingRecents ? (
+          {loading && loadingRecents ? (
             <ActivityIndicator/>
           ) : (
 
@@ -90,9 +90,7 @@ const browseHome = () => {
                   />
                 }
                   onEndReached={() => {
-                      if ( hasMoreTrending  ){
                           fetchMore(3)
-                      } 
                   }}
                   onEndReachedThreshold={0.1}
                 data={  trendingList }
@@ -114,9 +112,7 @@ const browseHome = () => {
                   />
                 }
                   onEndReached={() => {
-                      if (hasMoreRecents ){
                         fetchMoreRecents(3)
-                      }
                   }}
                   onEndReachedThreshold={0.1}
                 data={  recentLists }

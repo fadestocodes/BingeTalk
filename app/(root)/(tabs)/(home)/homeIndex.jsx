@@ -160,7 +160,7 @@ const homeIndex = () => {
     <View className='w-full  px-4 gap-5' style={{paddingBottom:130}}>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
-
+        
             <Text className='text-white font-pbold text-3xl'>Home</Text>
           </View>
           <Text className='text-mainGray font-pmedium'>See what your friends are up to.</Text>

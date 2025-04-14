@@ -55,7 +55,6 @@ const SearchPage = () => {
       try {
         if ( searchingFor === 'users' ) {
           const response = await searchUsers(text);
-          console.log('response', response)
           setResults(response.users);
         } else if (searchingFor==='titles') {
           const response = await searchAll(text);
@@ -69,6 +68,22 @@ const SearchPage = () => {
       }
     }
   }, 300)
+
+  const handleTabChange = async (type) => {
+    setResults([])
+    setSearchingFor(type)
+    try {
+      if ( type === 'users' ) {
+        const response = await searchUsers(query);
+        setResults(response.users);
+      } else if (type==='titles') {
+        const response = await searchAll(query);
+        setResults(response.results);
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   // useEffect(()=>{
   //   if (query){
@@ -201,10 +216,10 @@ const SearchPage = () => {
       </View>
       { inFocus && (
               <View className='flex-row gap-3 justify-center items-center mb-3' style={{ borderRadius:10, paddingHorizontal:15, paddingVertical:10, backgroundColor:Colors.mainGrayDark, width:'auto' }}>
-                <TouchableOpacity onPress={()=>{setSearchingFor('users'); setResults([]); }}  style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'users' ? 'white' : null }} >
+                <TouchableOpacity onPress={()=>handleTabChange('users')}  style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'users' ? 'white' : null }} >
                   <Text className=' font-pbold' style={{ color : searchingFor === 'users' ? Colors.primary : Colors.mainGray }}>Users</Text>
                 </TouchableOpacity>
-                <TouchableOpacity  onPress={()=>{setSearchingFor('titles'); setResults([]); }} style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'titles' ? 'white' : null }} >
+                <TouchableOpacity  onPress={()=>handleTabChange('titles')} style={{ padding:5, borderRadius:5, backgroundColor: searchingFor === 'titles' ? 'white' : null }} >
                 <Text className='font-pbold' style={{ color : searchingFor === 'titles' ? Colors.primary : Colors.mainGray }} >Title/Cast/Crew</Text>
                 </TouchableOpacity>
               </View>
