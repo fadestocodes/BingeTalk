@@ -89,7 +89,6 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
 
     const fetchDialogue = async () => {
         try {
-            setIsLoading(true)
             const response = await fetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
             const fetchedDialogue = await response.json();
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
@@ -149,7 +148,43 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     }
 
     const refetch = async () => {
-        await refetchOwner()
+        // await refetchOwner()
+        try {
+            const response = await fetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
+            const fetchedDialogue = await response.json();
+            const upvotedComments = ownerUser.commentInteractions.filter( i => {
+                return fetchedDialogue.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
+            } )
+            const downvotedComments = ownerUser.commentInteractions.filter( i => {
+                return fetchedDialogue.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
+            } )
+            // setInteractedComments(interactedCommentsData)
+            setInteractedComments({
+                upvotes : upvotedComments,
+                downvotes : downvotedComments
+            })
+
+            setDialogue(fetchedDialogue)
+
+            if (replyCommentId){
+                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const replyCommentFromNotif = await request.json();
+
+                const reorderedCommentsData = [
+                    ...fetchedDialogue?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id === replyCommentFromNotif.id) ,
+                    ...fetchedDialogue?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId && comment.id !== replyCommentFromNotif?.id) 
+                ]
+                setCommentsData(reorderedCommentsData)
+            }else {
+                setCommentsData(fetchedDialogue.comments)
+            }
+          
+        } catch (err) {
+            console.log(err)
+            setEror(err)
+        } finally {
+            setIsLoading(false)
+        }
     }
 
    

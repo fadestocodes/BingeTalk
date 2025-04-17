@@ -25,6 +25,7 @@ export const checkEmail = async (email) => {
             body : JSON.stringify({ email })
         })
         const data = await response.json()
+        console.log("checkemaildata",data)
         return data
     } catch (err) {
         console.log(err)
@@ -287,7 +288,7 @@ export const useFetchRecentlyWatched = (userId) => {
 
         const getWatchlistItems =  async (  ) => {
             // if ( !hasMore  ) return
-            if (!hasMore && !reset) return;
+            if (!hasMore) return;
 
 
             try {

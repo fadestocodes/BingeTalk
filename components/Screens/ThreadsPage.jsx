@@ -122,7 +122,7 @@ const ThreadsIdPage = () => {
         const commentData = {
             userId : Number(userId),
             threadId : Number(thread.id),
-            content : input,
+            content : input.trim(),
             parentId : replyingTo ? replyingTo?.parentId : null,
             replyingToUserId : replyingTo?.user?.id || null,
             description: `commented on your thread "${input}"`,

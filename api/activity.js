@@ -105,8 +105,40 @@ export const useFetchActivityId = (id, replyCommentId) => {
 
     const refetch = async () => {
        
-        await refetchOwner()
+        // await refetchOwner()
         // fetchActivityId()
+        try {   
+            const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
+            const activity = await request.json();
+            setData(activity);
+            const upvotedComments = ownerUser.commentInteractions.filter( i => {
+                return activity.commentsOnActivity.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
+            } )
+            const downvotedComments = ownerUser.commentInteractions.filter( i => {
+                return activity.commentsOnActivity.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
+            } )
+            setInteractedComments( {
+                upvotes : upvotedComments,
+                downvotes : downvotedComments
+            })
+            if (replyCommentId){
+                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const replyCommentFromNotif = await request.json();
+
+                const reorderedCommentsData = [
+                    ...activity?.commentsOnActivity.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id === replyCommentFromNotif.id) ,
+                    ...activity?.commentsOnActivity.filter( comment => comment.id !== replyCommentFromNotif?.parentId && comment.id !== replyCommentFromNotif?.id) 
+                ]
+                setCommentsData(reorderedCommentsData)
+            }else {
+                setCommentsData(activity.commentsOnActivity)
+            }
+
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+
     }
 
 

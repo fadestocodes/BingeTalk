@@ -14,6 +14,7 @@ export const findOrCreateEntity = async (type, movieData, castData) => {
                 body:JSON.stringify({movieData})
             })
             const response = await entity.json();
+            console.log("CREATINGMOVIEENTITY", response)
             return response
         } catch (err) {
             console.log(err)

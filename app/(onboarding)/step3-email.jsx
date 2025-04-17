@@ -12,10 +12,13 @@ import { useSignUpContext } from '../../lib/SignUpContext'
 const step3 = () => {
   const { signUpData, updateSignUpData } = useSignUpContext()
   const router = useRouter()
-    const [ errors, setErrors ] = React.useState({});
+    const [ errors, setErrors ] = React.useState({
+      email:[]
+    });
     const [ emailTakenError, setEmailTakenError ] = useState('')
-    const checkEmail = debounce( async (email) => {
-      const response = checkEmail(email);
+
+    const handleEmailCheck = debounce( async (email) => {
+      const response = await checkEmail(email);
       if (!response.available) {
         setEmailTakenError(response.message)
       } else {
@@ -35,15 +38,15 @@ const step3 = () => {
         const errorObj = results.error.format();
         setErrors( prev => ({
           ...prev,
-          email: errorObj.email ? errorObj.email._errors : undefined,
+          email: errorObj.email ? errorObj.email._errors : [],
         }) )
       } else {
         setErrors( prev => ({
           ...prev,
-          [name] : undefined
+          [name] : []
         }) )
       }
-      checkEmail(value);
+      handleEmailCheck(value);
     }
   
     const handleContinue = () => {
@@ -85,7 +88,7 @@ const step3 = () => {
               style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
               onChangeText={(text) => handleInputs('email', text)}
             />
-            <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.email || emailTakenError} >
+            <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0)|| !signUpData.email || !!emailTakenError} >
               <Text className='text-secondary text-lg font-psemibold'>Continue</Text>
             </TouchableOpacity>
             </View>

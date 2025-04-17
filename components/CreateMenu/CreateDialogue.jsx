@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Keyboard, SectionList, Pressable, Linking } from 'react-native'
+import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, ActivityIndicator, Keyboard, SectionList, Pressable, Linking, Touchable } from 'react-native'
 import { Image } from 'expo-image'
 import React, { useState, useEffect, useRef } from 'react'
 import { Colors } from '../../constants/Colors'
@@ -34,13 +34,13 @@ const toPascalCase = (str) => {
             .join(''); // Join words without spaces
     };
 
-const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
+const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,dialogueItems, setDialogueMaxError, setDialogueItems ,handleSearch, results, setResults, resultsOpen, setResultsOpen, searchQuery, setSearchQuery} ) => {
 
     const [ input, setInput ] = useState('')
     const [image, setImage] = useState(null);
     const [ loadingImage, setLoadingImage ] = useState(false);
-    const [ results, setResults ] = useState([]);
-    const [ resultsOpen, setResultsOpen ] = useState(false);
+    // const [ results, setResults ] = useState([]);
+    // const [ resultsOpen, setResultsOpen ] = useState(false);
     const [ textParts, setTextParts ] = useState([])
     const [ mentions, setMentions ] = useState([])
     const [ suggestionOpen, setSuggestionOpen ] = useState(true)
@@ -53,6 +53,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
     const [errors, setErrors] = useState(null)
     const [ message, setMessage ] = useState(null)
     const { url, updateUrl } = useCreateContext()
+    const [topicError, setTopicError] = useState(false)
+
 
 
    
@@ -87,28 +89,35 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         setMentions(prev => prev.filter( item => input.includes(item.pascalName) ) )
         // console.log('Mentions after filtering', filteredMentions);
     }, [input]);  // Watching both input and mentions
-   
 
-    const handleSearch = debounce( async (query) => {
-        if (query.length > 1) {
-            try {
-                setResultsOpen(true)
-                setSuggestionOpen(true)
-                const response = await searchAll(query);
-                setResults(response.results);
-                // setResults( [{ title : 'Results', data : response.results }] )
-                // console.log('results are ', results)
-            } catch (err) {
-                console.log(err)
-            }
-        } 
-    }, 300)
+    useEffect(() => {
+        if (dialogueItems.length < 4 ){
+            setDialogueMaxError(null)
+        } else if (dialogueItems.length === 3){
+            setDialogueMaxError(true)
+        }
+    },[dialogueItems])
+
+    // const handleSearch = debounce( async (query) => {
+    //     if (query.length > 1) {
+    //         try {
+    //             setResultsOpen(true)
+    //             setSuggestionOpen(true)
+    //             const response = await searchAll(query);
+    //             setResults(response.results);
+    //             // setResults( [{ title : 'Results', data : response.results }] )
+    //             // console.log('results are ', results)
+    //         } catch (err) {
+    //             console.log(err)
+    //         }
+    //     } 
+    // }, 300)
 
     const handleURLPreview = debounce( async (param) => {
 
         const linkPreview = await getLinkPreview(param);
         const previewImage = linkPreview.imageUrl
-        console.log('linkpreview', linkPreview)
+        // console.log('linkpreview', linkPreview)
 
     } , 1200)
 
@@ -149,89 +158,9 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         }
     }
 
-    // useEffect(( ) => {
-    //     console.log('mentions array ', mentions)
-    // }, [mentions])
 
-
-//-----------------
-    const renderSuggestions = ( { keyword, onSuggestionPress } ) => {
-
-        
-        if (keyword === null || mentions.some( mention => mention.pascalName === keyword ) || keyword === undefined ) {
-            return null
-        }
-        handleSearch(keyword)
-        return (
-            <View style={{  }} >
-              
-                { results.length > 0 && results.map( item => (
-                     <TouchableOpacity  
-                        key={item.id}
-                        disabled={mentions.some((mention) => mention.pascalName === toPascalCase(item.name || item.title))}
-
-                        onPress={() => {
-                            setResults([]);
-                            setSuggestionOpen(false)
-                            const mentionText = `${toPascalCase(item.name || item.title)}`;
-                            setMentions((prev) => {
-                                const exists = prev.some((mention) => mention.pascalName === mentionText);
-                              
-                                if (!exists) {
-                                  return [...prev, { mentionObj: item.name || item.title, pascalName: mentionText, mediaType : item.media_type, title : item.title || item.original_name || null, name : item.name || null,
-                                    releaseDate : item.release_date || item.first_air_date, posterPath : item.poster_path || item.profile_path, backdropPath : item.backdrop_path || null, dob : item.birthday || null,
-                                    tmdbId : item.id, movieId : item.mediaType==='movie' ? item.id : null, userId, mentionType : item.media_type === 'movie' ? 'MOVIE' : item.media_type === 'tv' ? 'TV' : 'CASTCREW',
-                                    tvId : item.media_type === 'tv' ? item.id : null, castId : item.media_type === 'person' ? item.id : null,
-
-                                
-                                }];
-                                }
-                              
-                                return prev; // If it exists, return the same array without adding a duplicate
-                              });
-                            onSuggestionPress({
-                                id: item.id,
-                                name: mentionText, // This inserts the mention into input
-                            });
-                           
-                        }} 
-                        style={{ width:'100%', padding:10, paddingHorizontal:10, borderBottomWidth:.5, borderColor:Colors.mainGray, flexDirection:'row',gap:10, justifyContent:'flex-start', alignItems:'center' }}
-                    >
-                    <Image
-                        source = {{ uri: `${posterURL}${item.poster_path || item.profile_path}` }}
-                        contentFit='cover'
-                        style= {{ width:30, height: 50, borderRadius:10, overflow:'hidden' }}
-                    />
-                    <View className='gap-1' >
-                        <View className='flex-row gap-1 justify-start items-center'>
-                            {  item.media_type === 'movie' ? <FilmIcon size={14} color={Colors.secondary}  /> : item.media_type === 'tv' ? <TVIcon size={14} color={Colors.secondary} /> : <PersonIcon size={14} color={Colors.secondary} /> }
-                            <Text style={{ opacity : mentions.some((mention) => mention.pascalName === toPascalCase(item.name || item.title)) ? .2 : 1 }}  className='text-mainGray text-sm font-pbold'>{item.name || item.title}</Text>
-                        </View>
-                        <Text className='text-mainGray text-xs' >{ item.media_type === 'movie' ? `Released: ${item.release_date}` : item.media_type === 'tv' ? `First episode: ${item.first_air_date}` : item.birthday }</Text>
-
-                    </View>
-                 </TouchableOpacity>
-                ) ) }
-            </View>
-        )
-    }
-//------------------
-
-    const parseMentions = (text, mentions) => {
-        // Create the mention string to search for, like /[MovieTitle](ID)
-        mentions.forEach(mention => {
-            // Create the mention string to search for, like /[MovieTitle](ID)
-            const mentionString = `/\\[${mention.pascalName}\\]\\(${mention.tmdbId}\\)`; // escape square brackets and parentheses
-            
-            // Replace the mention in the text with the desired format (/MovieTitle)
-            const regex = new RegExp(mentionString, 'g'); // 'g' for global search
-            text = text.replace(regex, `/${mention.pascalName}`);
-        });
-        return text;
-    }
 
     const handlePost = async () => {
-        const formattedString = parseMentions(input, mentions)
 
         const validationResults = createDialogueSchema.safeParse( {content:input} )
         if (!validationResults.success) {
@@ -244,31 +173,35 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
 
         setUploadingPost(true);
         const mentionsForPrisma = await Promise.all(
-            mentions.map(async (mention) => {
-                const type = mention.mediaType;
-                const tmdbId = mention.tmdbId;
+            dialogueItems.map(async (mention) => {
+                // console.log('MENTIONWHILECREATING', mention)
+                const type = mention.media_type;
+                const mentionType = mention.media_type === 'movie' ? 'MOVIE' : mention.media_type === 'tv' ? 'TV' : 'CASTCREW'
+                const tmdbId = mention.id;
                 const movieData = {
-                    tmdbId : mention.tmdbId,
-                    title : mention.title,
-                    releaseDate : mention.releaseDate,
-                    posterPath : mention.posterPath,
-                    backdropPath : mention.backdropPath,
+                    tmdbId : mention.id,
+                    title : mention.title || mention.name,
+                    releaseDate : mention.release_date || mention.first_air_date,
+                    posterPath : mention.poster_path,
+                    backdropPath : mention.backdrop_path,
                 };
                 const castData = {
-                    tmdbId : mention.tmdbId,
+                    tmdbId : mention.id,
                     name : mention.name,
-                    dob : mention.dob,
-                    posterPath : mention.posterPath
+                    dob : mention.birthday,
+                    posterPath : mention.profile_path
                 }
+
                 try {
                     const entity = await findOrCreateEntity(type, movieData, castData);
+                    console.log("EACHENTITY", entity)
                     return {
                       userId,
                       tmdbId,
-                      mentionType : mention.mentionType,
-                      movieId: mention.mentionType === 'MOVIE' ? entity.id : null,
-                      tvId: mention.mentionType === 'TV' ? entity.id : null,
-                      castId: mention.mentionType === 'CASTCREW' ? entity.id : null,
+                      mentionType : mentionType,
+                      movieId: mentionType === 'MOVIE' ? entity.id : null,
+                      tvId: mentionType === 'TV' ? entity.id : null,
+                      castId: mentionType === 'CASTCREW' ? entity.id : null,
                     };
 
                 } catch(err){
@@ -281,7 +214,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         // console.log('tag name', tags[0].name)
         const postData = {
             userId,
-            content : formattedString.trim(),
+            content : input.trim(),
             mentions : mentionsForPrisma,
             tags,
             image,
@@ -300,6 +233,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             subtitle  :''
         })
         setTags([])
+        setDialogueItems([])
         refetch();
     }
 
@@ -325,6 +259,12 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
         })
     }
 
+    const removeItem = (item) => {
+        setDialogueItems(prev => (
+            prev.filter( i => i.id !== item.id)
+        ))
+    }
+
     
  
 
@@ -332,13 +272,36 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
   return (
     <>
     <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<MessageSquare size={30} color={Colors.secondary}/>}   />
-    <View onPress={()=>{setResultsOpen(false); setFlatlistVisible(false)}} className=' px-6 relative items-center justify-center' style={{ width:'100%'}} >
+    <View onPress={()=>{setResultsOpen(false); setFlatlistVisible(false)}} className=' px-6 relative items-center justify-center' style={{ width:'100%', gap:15}} >
+
         { uploadingPost && (
             <View style={{ position:'absolute', inset:0, justifyContent:'center', alignItems:'center', zIndex:30 }} >
                 <ActivityIndicator />
             </View>
         ) }
-
+        <View className='w-full'>
+    
+    { topicError && (
+        <Text className='text-red-400 text-left self-start my-2'>*Thread needs a topic</Text>
+    ) }
+    
+<View className='thread-topic w-full relative justify-center items-center '>
+    <TextInput
+        placeholder='Dialogue mentions (max. 4)'
+        placeholderTextColor={Colors.mainGray}
+        multiline
+        autoCorrect={false}
+        onChangeText={(text)=> { setSearchQuery(text);  handleSearch(text)  }}
+        className='w-full bg-white rounded-3xl  font-pregular '
+        style={{ minHeight:50, paddingHorizontal:25, paddingTop:15, justifyContent:'center', alignItems:'center', textAlignVertical:'center', backgroundColor:Colors.mainGrayDark, color:'white' }}
+        value={searchQuery}
+        onFocus={()=>setResultsOpen(true)}
+    />
+    <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); setResultsOpen(false)}}  style={{ position:'absolute', right:20, top:15 }}>
+        <CloseIcon color={Colors.mainGray} size={24} className=' ' />
+    </TouchableOpacity>
+</View>
+</View>
        
                 { errors && (
                         <View className='w-full my-2 justify-center'>
@@ -381,7 +344,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                 <Text className='font-pcourier uppercase text-lg text-secondary ' >{userDB.firstName}</Text>
             </View>
         
-           <MentionInput
+           {/* <MentionInput
             value = {input}
             multiline={true}
             onChange={handleInput}
@@ -402,9 +365,20 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
             // containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18,minHeight:250, paddingTop: Object.keys(tags).length > 0 ? 110 :  Object.keys(tags) <1 && 60, paddingHorizontal:20, paddingBottom:image || url.image ? 20 : 70, minHeight: Object.keys(tags).length > 0 && !image && !url.image ? 250  : Object.keys(tags).length > 0 && image  ? 180 :  image || url.image ? 130  : 180 , borderTopLeftRadius:15, borderTopRightRadius:15} }
             containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18, paddingTop:0, paddingHorizontal:20, paddingBottom: 0 , borderTopLeftRadius:15, borderTopRightRadius:15} }
            
-           />
+           /> */}
 
-       
+            <TextInput
+                value={input}
+                multiline={true}
+                onChangeText={setInput}
+                placeholderTextColor={Colors.mainGray}
+                autoCorrect={true}
+                placeholder="What's on your mind?"
+                autoCapitalize='sentences'
+                className='font-pcourier'
+                style={{ color:'white', width:'100%', paddingHorizontal:15 }}
+            />
+
 
          
 
@@ -476,11 +450,31 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible} ) => {
                         )
                     ) }
 
+        { dialogueItems.length > 0 && (
+
+        <View className='flex-row gap-3 w-full item-center justify-start mt-3' style={{paddingHorizontal:15}} >
+        { dialogueItems.map( mention => (
+            <View  key={mention.id}   >
+            <TouchableOpacity className=' items-center z-10'>
+                <Image
+                    source={{ uri: `${posterURL}${mention.poster_path || mention.profile_path}` }}
+                    contentFit='cover'
+                    style={{ width:35, height:40, borderRadius:10, overflow:'hidden' }}
+                />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>removeItem(mention)} style={{position:'absolute', top:0, right:0, backgroundColor:Colors.primary, borderRadius:50, zIndex:20}}>
+                <CloseIcon size={22} color={Colors.mainGray} />
+            </TouchableOpacity>
+            </View>
+        ) ) 
+        }
+        </View>
+        ) }
         </View>
 
         
      
-            <View className='w-full justify-center items-center gap-3 ' style={{width:'100%', position:'absolute',bottom:0, backgroundColor:Colors.mainGrayDark, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , paddingHorizontal:25, paddingBottom:20}}>
+            <View className='w-full justify-center items-center gap-3 ' style={{width:'100%', position:'absolute',bottom:0, backgroundColor:Colors.mainGrayDark, borderBottomRightRadius: 15, borderBottomLeftRadius:15 , paddingHorizontal:15, paddingBottom:20}}>
                     
                     <View className='border-t-[1px] w-full' style={{borderColor:Colors.mainGray, borderTopWidth:1}}
                     />

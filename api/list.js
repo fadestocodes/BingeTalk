@@ -293,7 +293,6 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
 
     const fetchList = async () => {
         try {
-            setIsLoading(true)
             const response = await fetch(`${nodeServer.currentIP}/list?listId=${listId}`);
             const fetchedList = await response.json();
 
@@ -354,7 +353,61 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     }, [ownerUser, listId])
 
     const refetch = async () => {
-        await refetchOwner()
+        // await refetchOwner()
+        try {
+            const response = await fetch(`${nodeServer.currentIP}/list?listId=${listId}`);
+            const fetchedList = await response.json();
+
+            const upvotedComments = ownerUser.commentInteractions.filter( i => {
+                return fetchedList.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
+            } )
+            const downvotedComments = ownerUser.commentInteractions.filter( i => {
+                return fetchedList.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
+            } )
+            setInteractedComments({
+                upvotes : upvotedComments,
+                downvotes : downvotedComments
+            })
+
+
+
+            const alreadyUpvoted = fetchedList.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
+            const alreadyDownvoted = fetchedList.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser.id )
+            const alreadyReposted = fetchedList.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
+            setAlready({
+                upvoted : alreadyUpvoted,
+                downvoted: alreadyDownvoted,
+                reposted : alreadyReposted
+            })
+            setInteractionCounts({
+                upvotes: fetchedList.upvotes,
+                downvotes : fetchedList.downvotes,
+                reposts : fetchedList.reposts
+            })
+
+
+            setList(fetchedList)
+
+            if (replyCommentId){
+                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const replyCommentFromNotif = await request.json();
+
+                const reorderedCommentsData = [
+                    ...fetchedList?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId) ,
+                    ...fetchedList?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId) 
+                ]
+                setCommentsData(reorderedCommentsData)
+            }else {
+                setCommentsData(fetchedList.comments)
+            }
+          
+        } catch (err) {
+            console.log(err)
+            setEror(err)
+        } finally {
+            setIsLoading(false)
+        }
+
     }
 
     return { list, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, already, setAlready, interactionCounts, setInteractionCounts}

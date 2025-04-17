@@ -54,7 +54,6 @@ const RecommendationScreen = () => {
 
     const handleRecommendation = async (params) => {
 
-        console.log('hello')
         if (params.alreadySent && whichStep === 'step1' || whichStep === 'step2' ){
             let type
             if (DBmovieId){
@@ -166,6 +165,10 @@ const RecommendationScreen = () => {
                         <BackIcon size={22} color={Colors.mainGray} />
                     </TouchableOpacity>
                     <Text className='text-white font-pbold text-2xl self-center pt-14'>Send a message with your recommendation!</Text>
+                    <TouchableOpacity onPress={handleRecommendation} style={{ backgroundColor:Colors.secondary, paddingHorizontal:0, borderRadius:30, width:250, alignSelf:'center', marginTop:40 , paddingVertical:15}}>
+                        <Text className='text-primary text-center font-pbold'>Send without a message</Text>
+                    </TouchableOpacity>
+
                     <Animated.View style={[styles.inputContainer, animatedStyle]}>
                     <ToastMessage message={message} onComplete={() => setMessage('')} icon={ <Handshake  color={Colors.secondary} size={30} />} />
 

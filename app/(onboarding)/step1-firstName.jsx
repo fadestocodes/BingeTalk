@@ -12,7 +12,10 @@ import { useSignUpContext } from '../../lib/SignUpContext'
 const step1 = () => {
     const router = useRouter();
     const { signUpData, updateSignUpData } = useSignUpContext()
-    const [ errors, setErrors ] = useState({})
+    const [ errors, setErrors ] = useState({
+      firstName : [],
+      lastName : []
+    })
     const textOpacity = useSharedValue(0);
     const textTranslateY = useSharedValue(60);
     const inputOpacity = useSharedValue(0);
@@ -42,14 +45,14 @@ const step1 = () => {
             console.log(errorObj)
             setErrors( prev => ({
                 ...prev,
-                firstName: errorObj.firstName ? errorObj.firstName._errors : undefined,
-                lastName: errorObj.lastName ? errorObj.lastName._errors : undefined,
+                firstName: errorObj.firstName ? errorObj.firstName._errors : [],
+                lastName: errorObj.lastName ? errorObj.lastName._errors : [],
               }) )
               
             } else {
               setErrors( prev => ({
                 ...prev,
-                [name] : undefined
+                [name] : []
               }) )
             }
     }

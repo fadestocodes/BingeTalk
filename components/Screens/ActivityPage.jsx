@@ -33,7 +33,7 @@ const ActivityPage = () => {
     const { user : clerkUser } = useUser();
     const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
    
-    const userId = ownerUser.id
+    const userId = ownerUser?.id
     const { activityId, tvId, movieId, castId }= useLocalSearchParams();
 
     const { data:activity, interactedComments, commentsData, loading:isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useFetchActivityId(Number(activityId), Number(replyCommentId))
@@ -93,7 +93,7 @@ const ActivityPage = () => {
         const commentData = {
             userId : Number(userId),
             activityId : Number(activityId),
-            content : input,
+            content : input.trim(),
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
             description: `commented on your activity "${input}"`,
@@ -104,7 +104,6 @@ const ActivityPage = () => {
         }
     
         const newComment = await createComment( commentData );
-        console.log('postednewcomment',newComment)
         setInput('');
         setReplyingTo(null)
         setReplying(false)
@@ -406,7 +405,6 @@ const ActivityPage = () => {
 { item.replies.length > 0 && (
                             <>
                             { item.replies.slice(0, shownReplies).map((reply) => {
-                                console.log('interactedcomments',interactedComments)
                                 const alreadyUpvotedReply = interactedComments.upvotes.some( i => i.commentId === reply.id )
                                 const alreadyDownvotedReply = interactedComments.downvotes.some( i => i.commentId === reply.id )
                                 return (

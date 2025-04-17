@@ -126,7 +126,7 @@ const onSetup2Press = () => {
               onChangeText={(text) => handleInputs('username', text)}
             />
 
-              <TouchableOpacity onPress={onSetup2Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.username   } >
+              <TouchableOpacity onPress={onSetup2Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.username || !!usernameTakenError } >
                 <Text className='text-secondary text-lg font-psemibold self-center'>Next</Text>
               </TouchableOpacity>
               </Animated.View>

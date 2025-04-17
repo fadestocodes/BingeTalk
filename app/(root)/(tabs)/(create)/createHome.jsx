@@ -28,8 +28,10 @@ const CreateHome = () => {
     const [ listItems, setListItems ]  = useState([])
     const [ flatlistVisible, setFlatlistVisible ] = useState(false);
     const [ threadObject, setThreadObject ] = useState(null)
+    const [dialogueItems, setDialogueItems] = useState([])
     const [ selected, setSelected ] = useState('Dialogue')
     const { url, updateUrl } = useCreateContext()
+    const [ dialogueMaxError, setDialogueMaxError ] = useState(null)
 
     const [ inputs, setInputs ] = useState({
         threadTitle : '',
@@ -43,6 +45,15 @@ const CreateHome = () => {
 
     const {user:clerkUser} = useUser();
     const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress});
+    useEffect(() => {
+        if (dialogueItems.length < 4 ){
+            setDialogueMaxError(null)
+        } else if (dialogueItems.length === 3){
+            setDialogueMaxError(true)
+        }
+    },[dialogueItems])
+   
+    
     userId = ownerUser?.id
 
 
@@ -102,7 +113,12 @@ const CreateHome = () => {
                 ]);
                 setResults([]);
                 setSearchQuery('');
+        } else if (createType === 'Dialogue'){
+            if ( dialogueItems.length === 3 ){
+                setDialogueMaxError(true)
             }
+            setDialogueItems(prev => [...prev, item])
+        }
 
     }
 
@@ -184,6 +200,9 @@ const CreateHome = () => {
       </View>
       { resultsOpen ? (
         <View className='w-full h-full justify-center items-center' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary}} >
+                    { dialogueMaxError && (
+         <Text className='text-red-400 text-left self-start my-2'>*Maximum of 4 mentions per dialogue post</Text>
+     ) }
             <View className='thread-topic w-full h-full relative  gap-3' style={{paddingBottom:100}}>
                 <View className="flex-row justify-center items-center gap-3 px-4">
                     <TouchableOpacity onPress={()=> setResultsOpen(false)}>
@@ -216,8 +235,8 @@ const CreateHome = () => {
 
                             <View className=''>
                                 <TouchableOpacity onPress={()=>handleSearchPress(item)} className='w-full gap-5 flex-row my-3 justify-start items-center'
-                                        disabled={ listItems.some( element => element.item.id === item.id) ? true : false}
-                                        style={{ opacity: listItems.some( element => element.item.id === item.id) ? 0.5 : 1    }}
+                                        disabled={ listItems.some( element => element.item.id === item.id) || dialogueItems.some(e => e.id === item.id) || dialogueMaxError ? true : false}
+                                        style={{ opacity: listItems.some( element => element.item.id === item.id) || dialogueItems.some(e=> e.id === item.id) || dialogueMaxError ? 0.5 : 1    }}
                                          
                                     >
                                     <Image 
@@ -271,7 +290,10 @@ const CreateHome = () => {
        
 
         { createType === 'Dialogue' ? (
-            <CreateDialogue flatlistVisible={flatlistVisible} setFlatlistVisible={setFlatlistVisible} />
+            <CreateDialogue flatlistVisible={flatlistVisible} setFlatlistVisible={setFlatlistVisible}  resutls={results} setResults={setResults} resultsOpen={resultsOpen}
+                setResultsOpen={setResultsOpen} handleSearch={handleSearch} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleChange={handleChange} dialogueItems={dialogueItems}
+                dialogueMaxError={dialogueMaxError} setDialogueItems={setDialogueItems} setDialogueMaxError={setDialogueMaxError}
+            />
         ) : createType === 'Thread' ? (
             <CreateThread threadObject={threadObject}  handleChange={handleChange} inputs={inputs} setInputs={setInputs}
                 results={results} setResults={setResults} resultsOpen={resultsOpen} setResultsOpen={setResultsOpen}

@@ -171,7 +171,7 @@ const ListIdScreen = () => {
         const commentData = {
             userId : Number(ownerUser.id),
             listId : Number(list.id),
-            content : input,
+            content : input.trim(),
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
             description: `commented on your list "${input}"`,

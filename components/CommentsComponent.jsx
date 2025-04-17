@@ -100,7 +100,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
             threadId : Number(threadId) || null,
             listId : Number(listId) || null,
             activityIdCommentedOn : Number(activityId) || null,
-            content : input,
+            content : input.trim(),
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
             description: dialogue ? `commented on your dialogue "${input}"` : thread ?  `commented on your thread "${input}"` : list ? `commented on your list "${input}"` : activity && `commented on your activity "${input}"` ,

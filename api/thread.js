@@ -195,7 +195,6 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
 
     const fetchThread = async () => {
         try {
-            setIsLoading(true)
             const response = await fetch(`${nodeServer.currentIP}/thread?threadId=${threadId}`);
             const fetchedThread = await response.json();
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
@@ -254,7 +253,42 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
     }
 
     const refetch = async () => {
-        await refetchOwner()
+        // await refetchOwner()
+        try {
+            const response = await fetch(`${nodeServer.currentIP}/thread?threadId=${threadId}`);
+            const fetchedThread = await response.json();
+            const upvotedComments = ownerUser.commentInteractions.filter( i => {
+                return fetchedThread.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
+            } )
+            const downvotedComments = ownerUser.commentInteractions.filter( i => {
+                return fetchedThread.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
+            } )
+            setInteractedComments({
+                upvotes : upvotedComments,
+                downvotes : downvotedComments
+            })
+
+            setThread(fetchedThread)
+
+            if (replyCommentId){
+                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const replyCommentFromNotif = await request.json();
+
+                const reorderedCommentsData = [
+                    ...fetchedThread?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id ===replyCommentFromNotif.id) ,
+                    ...fetchedThread?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId && comment.id !== replyCommentFromNotif?.id) 
+                ]
+                setCommentsData(reorderedCommentsData)
+            }else {
+                setCommentsData(fetchedThread.comments)
+            }
+          
+        } catch (err) {
+            console.log(err)
+            setEror(err)
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return { thread, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, removeItem}

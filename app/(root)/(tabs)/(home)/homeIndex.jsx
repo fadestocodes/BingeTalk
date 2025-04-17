@@ -77,10 +77,10 @@ const homeIndex = () => {
 
     const refetchFeed = async () => {
       try {
+        // await refetchOwner();
         const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
-
         const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
         const response = await request.json();
         setData( response.items );
@@ -132,6 +132,7 @@ const homeIndex = () => {
     } 
 
     const handlePress =(item) => {
+
       if (item.dialogue){
         router.push(`(home)/dialogue/${item.dialogue.id}`)
       } else if (item.threads){
@@ -245,7 +246,7 @@ const homeIndex = () => {
                           </TouchableOpacity>
           
                         ) : (
-                          <TouchableOpacity onPress={ ()=>{  refetchOwner() ;router.push(`(home)/activity/${item.id}`)}}>
+                          <TouchableOpacity onPress={ ()=>{  refetchOwner(); console.log('activitypress',item) ;router.push(`(home)/activity/${item.id}`)}}>
                             <ActivityCard2 activity={item} fromHome={true} isBackground={true}/>
                           </TouchableOpacity>
                         ) }
