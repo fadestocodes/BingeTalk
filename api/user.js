@@ -2,6 +2,7 @@ import * as nodeServer from '../lib/ipaddresses'
 import { useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { SignOutButton, useAuth, useUser } from '@clerk/clerk-react'
 import React, {useState, useCallback, useEffect, useRef} from 'react'
+import { node } from '@sentry/core';
 
 
 export const checkUsername = async ( username ) => {
@@ -777,4 +778,55 @@ export const useGetFollowingListInfinite = (userId, limit) => {
     }
 
     return { data, loading, hasMore, refetch , isFollowingIds, setIsFollowingIds, fetchMore : getFollowingListInfinite }
+}
+
+export const deleteUser = async (data) => {
+    try {
+        const response = await fetch(`${nodeServer.currentIP}/user/delete-account`, {
+            method : 'POST',
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+    } catch (err){
+        console.log(err)
+    }
+}
+
+export const blockUser = async (data) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/user/block-user`, {
+            method : "POST",
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body:JSON.stringify(data)
+        })
+        const response = await request.json()
+        return response
+    } catch (err){
+        console.log(err)
+    }
+}
+
+export const useCheckBlock = (params) => {
+    const [ data , setData ] = useState([])
+    const [ loading, setLoading ] = useState(true)
+
+
+    const checkBlock = async () => {
+        try {
+            const user = await fetch(`${nodeServer.currentIP}/user`, {
+                method:'POST',
+                headers:{
+                    'Content-type' : 'application/json'
+                },
+                body: JSON.stringify(params)
+            })
+            
+        } catch (err){
+            console.log(err)
+        }
+    }
 }

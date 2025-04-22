@@ -273,7 +273,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                 { dialogue?.mentions?.length > 0 && (
 
                 <View className='flex-row gap-3  item-center justify-center mt-3' >
-                { dialogue.mentions ? dialogue.mentions.length > 0 && dialogue.mentions.map( mention => {console.log('mentinohere',mention); return (
+                { dialogue.mentions ? dialogue.mentions.length > 0 && dialogue.mentions.map( mention => {; return (
                     <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
                         <Image
                             source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}

@@ -2,14 +2,14 @@
   "expo": {
     "name": "Bingeable",
     "slug": "bingeable-app",
-    "version": "0.9.3",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "bingeable",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.bingeableapp",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app uses the photo library to allow you to upload images.",

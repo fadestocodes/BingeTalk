@@ -31,6 +31,7 @@ SplashScreen.preventAutoHideAsync();
 
 Sentry.init({
   dsn: 'https://888eaec7d31a00bfb53c76ad74337462@o4509142159327232.ingest.us.sentry.io/4509142210445312',
+  enabled: !__DEV__
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,

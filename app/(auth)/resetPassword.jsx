@@ -78,9 +78,10 @@ const resetPassword = () => {
       })
       .catch((err) => {
         // setMessage(err.error[0].longMessage)
-        console.error('error', err.errors[0].longMessage)
-        setMessage( err.errors[0].longMessage)
-        setError(err.errors[0].longMessage)
+        const message = err?.errors?.[0]?.longMessage || 'An unexpected error occurred.';
+        console.error('error', message);
+        setError(message);
+        setError(message)
       })
 
   }

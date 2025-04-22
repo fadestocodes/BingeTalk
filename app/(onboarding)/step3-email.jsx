@@ -19,10 +19,11 @@ const step3 = () => {
 
     const handleEmailCheck = debounce( async (email) => {
       const response = await checkEmail(email);
-      if (!response.available) {
-        setEmailTakenError(response.message)
-      } else {
+
+      if (response.available) {
         setEmailTakenError('')
+      } else {
+        setEmailTakenError(response.message || "Unexpected error")
       }
     }, 500)
 
@@ -51,6 +52,13 @@ const step3 = () => {
   
     const handleContinue = () => {
       router.push('/(onboarding)/step4-password')
+    }
+
+    const handleTermsPress = () => {
+      router.push('/(onboarding)/termsPage')
+    }
+    const handlePrivacyPress = () => {
+      router.push('/(onboarding)/privacyPage')
     }
         
   
@@ -88,6 +96,28 @@ const step3 = () => {
               style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
               onChangeText={(text) => handleInputs('email', text)}
             />
+          <View className='gap-0 justify-start items-start '>
+            <View style={{ flexDirection: 'row', alignItems: 'center', width:'100%', justifyContent:'flex-start',  }}>
+      <Text className='text-sm' style={{ color: 'white' }}>
+        By proceeding, you accept our{' '}
+      </Text>
+      
+      <TouchableOpacity onPress={handleTermsPress}>
+        <Text className='text-sm' style={{ color: 'white', fontWeight: 'bold' }}>Terms of Service</Text>
+      </TouchableOpacity>
+    </View>
+    <View style={{ flexDirection: 'row', alignItems: 'center', width:'100%', justifyContent:'flex-start' }}>
+
+
+      <Text style={{ color: 'white' }}> and </Text>
+
+      <TouchableOpacity onPress={handlePrivacyPress}>
+        <Text className='text-sm' style={{ color: 'white', fontWeight: 'bold' }}>Privacy Policy</Text>
+      </TouchableOpacity>
+      <Text style={{ color: 'white' }}>.</Text>
+      </View>
+      </View>
+
             <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0)|| !signUpData.email || !!emailTakenError} >
               <Text className='text-secondary text-lg font-psemibold'>Continue</Text>
             </TouchableOpacity>

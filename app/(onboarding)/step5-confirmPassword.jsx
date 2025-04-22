@@ -8,6 +8,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { addUser } from '../../api/user'
 import { useUserDB } from '../../lib/UserDBContext'
 import { useSignUpContext } from '../../lib/SignUpContext'
+import * as Sentry from '@sentry/react-native'
 
 const step5 = () => {
     const { isLoaded, signUp, setActive } = useSignUp()
@@ -51,15 +52,16 @@ const step5 = () => {
              await signUp.create({
             emailAddress : signUpData?.email,
             password : signUpData?.password,
-            firstName : signUpData?.firstName,
-            lastName : signUpData?.lastName,
-            username : signUpData?.username.toLocaleLowerCase()
+            firstName : signUpData?.firstName?.trim(),
+            lastName : signUpData?.lastName?.trim(),
+            username : signUpData?.username?.trim().toLocaleLowerCase()
             })
             await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
             setPendingVerification(true)
             
         } catch (err) {
             console.error(JSON.stringify(err, null, 2))
+            Sentry.captureException(err)
         }
     }
     
@@ -73,12 +75,14 @@ const step5 = () => {
     
             if (signUpAttempt.status === 'complete') {
             await setActive({ session: signUpAttempt.createdSessionId })
-            const response = await addUser( { firstName:signUpData.firstName, lastName:signUpData.lastName, email:signUpData.email, username : signUpData.username.toLocaleLowerCase() } );
-
-            updateUserDB(response)
-
-            if (!response) {
-                console.log('Error trying to add user')
+            try {
+                const response = await addUser( { firstName:signUpData.firstName.trim(), lastName:signUpData.lastName.trim(), email:signUpData.email, username : signUpData.username.trim().toLocaleLowerCase() } );
+                if (!response){
+                    Sentry.captureException(err)
+                }
+                updateUserDB(response)
+            } catch (err){
+                Sentry.captureException(err)
             }
 
             router.replace({
@@ -86,10 +90,15 @@ const step5 = () => {
             })
 
             } else {
-            console.error(JSON.stringify(signUpAttempt, null, 2))
+                const error = new Error(`Email verification failed. Status: ${signUpAttempt.status}`);
+                Sentry.captureException(error, {
+                  extra: { signUpAttempt },
+                });
+                console.error(JSON.stringify(signUpAttempt, null, 2))
             }
-        } catch (err) {
+    } catch (err) {
             console.error(JSON.stringify(err, null, 2))
+            Sentry.captureException(err)
         }
     }
     

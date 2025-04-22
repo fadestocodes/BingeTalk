@@ -151,7 +151,7 @@ const homeIndex = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' >
-      { isLoadingOwnerUser  || !ownerUser ?  (
+      {  !ownerUser ?  (
         <View className='bg-primary h-full justify-center items-center'>
           <ActivityIndicator />
         </View>

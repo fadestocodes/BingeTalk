@@ -4,7 +4,7 @@ import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import React, {useEffect, useState} from 'react'
 import {feed} from '../lib/fakeData'
-import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon } from '../assets/icons/icons'
+import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
 import { useClerk, useUser } from '@clerk/clerk-expo'
 import { Redirect } from 'expo-router'
@@ -17,7 +17,7 @@ import DialogueCard from './DialogueCard'
 import { useFetchDialogues } from '../api/dialogue'
 import { useFetchUser } from '../api/user'
 import { followUser, unfollowUser } from '../api/user'
-import { UserCheck, UserPlus,Send, UserPen,  LogOut } from 'lucide-react-native'; // Example icons
+import { UserCheck, UserPlus,Send, UserPen,  LogOut, CircleUserRound } from 'lucide-react-native'; // Example icons
 import { useGetProfileFeed } from '../api/feed'
 import ThreadCard from './ThreadCard'
 import ListCard from './ListCard'
@@ -47,16 +47,20 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         const [ refreshingPage, setRefreshingPage ] = useState(false)
 
         const { postToRemove, updatePostToRemove } = usePostRemoveContext()
+        const [ isBlocking, setIsBlocking ] = useState([])
 
         useEffect(()=>{
             const checkFollow = user?.followers.some( item => item.followingId === ownerUser?.id );
+            const userBlockList = ownerUser?.blockedUsers
+            const alreadyBlocking = userBlockList?.some( item => item?.userBeingBlocked === user?.id  )
+            setIsBlocking(alreadyBlocking)
         if (checkFollow){
             setIsFollowing(true);
 
         } else {
             setIsFollowing(false)
         }
-        }, [])
+        }, [user, ownerUser])
 
 
         useEffect(()=>{
@@ -64,14 +68,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         },[postToRemove])
        
 
-        const handleSignOut = async () => {
-            try {
-                await signOut();
-                router.replace('/')
-            } catch (err) {
-                console.log(err)
-            } 
-        }
+       
         const handleRotationPress = (item) => {
             if (item.movie) {
                 router.push(`/movie/${item.movieTMDBId}`)
@@ -134,11 +131,25 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             })
         }
 
+        const handleAccount = () => {
+            router.push({
+                pathname:`/user/account/accountHome`,
+                params:{ userId : user.id  }
+            })
+        }
+
         const handleRefresh = async () => {
             setRefreshingPage(true)
             await refetchUser()
             await refetchProfileFeed()
             setRefreshingPage(false)
+        }
+
+        const handleThreeDots = () => {
+            router.push({
+                pathname:'/user/account/blockUserModal',
+                params:{blockedBy : ownerUser.id, userBeingBlocked:user.id, isBlocking}
+            })
         }
 
 
@@ -255,14 +266,15 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                             <UserPen color={Colors.mainGray} size={16}/>
                             <Text style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray  }}>Edit profile</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={handleSignOut}  style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }} >
-                        <LogOut color={Colors.mainGray} size={16}/>
-                                <Text className='' style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray}}>Sign Out</Text>
+                        <TouchableOpacity onPress={handleAccount}  style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }} >
+                        <CircleUserRound color={Colors.mainGray} size={16}/>
+                                <Text className='' style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray}}>Account</Text>
                         </TouchableOpacity>
 
                     </View>
                     ) :(
-                        <View className='flex-row gap-2 mb-10'>
+                        <View className='flex-row gap-2 mb-10 items-center'>
+
                             <TouchableOpacity onPress={handleFollow} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, backgroundColor:isFollowing ? Colors.secondary : null , borderColor:Colors.secondary, borderRadius:10,  flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
 
                                  { isFollowing ? (
@@ -280,6 +292,10 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                             {/* <TouchableOpacity style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.secondary, borderRadius:10, flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
                                 <Send color={Colors.secondary} size={18} ></Send><Text style={{ fontWeight:'bold', fontFamily:'Geist-Medium', color:Colors.secondary  }}>Message</Text>
                             </TouchableOpacity> */}
+                            <TouchableOpacity onPress={handleThreeDots} style={{paddingLeft:10}}>
+                                <ThreeDotsIcon size={22} color={Colors.mainGray} />
+                            </TouchableOpacity>
+
                         </View>
                     )}
     

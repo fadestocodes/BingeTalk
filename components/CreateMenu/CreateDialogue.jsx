@@ -67,17 +67,14 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
     // const { userDB, updateUserDB } = useUserDB();
     const { user } = useUser();
     const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchOwnerUser({email: user.emailAddresses[0].emailAddress} )
-    const { data : dialogues, refetch, isFetching } = useFetchDialogues(userDB.id);
+    const { data : dialogues, refetch, isFetching } = useFetchDialogues(userDB?.id);
     const urlPattern = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}(?:\/[^\s]*)?/;
 
 
-    const userId = userDB.id
+    const userId = userDB?.id
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
-    // if (!userDB || isFetchingUser) {
-            
-    //     return <ActivityIndicator></ActivityIndicator>  
-    // } 
+   
 
     useEffect(() => {
       
@@ -98,26 +95,11 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
         }
     },[dialogueItems])
 
-    // const handleSearch = debounce( async (query) => {
-    //     if (query.length > 1) {
-    //         try {
-    //             setResultsOpen(true)
-    //             setSuggestionOpen(true)
-    //             const response = await searchAll(query);
-    //             setResults(response.results);
-    //             // setResults( [{ title : 'Results', data : response.results }] )
-    //             // console.log('results are ', results)
-    //         } catch (err) {
-    //             console.log(err)
-    //         }
-    //     } 
-    // }, 300)
 
     const handleURLPreview = debounce( async (param) => {
 
         const linkPreview = await getLinkPreview(param);
         const previewImage = linkPreview.imageUrl
-        // console.log('linkpreview', linkPreview)
 
     } , 1200)
 
@@ -265,7 +247,10 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
         ))
     }
 
-    
+     if (!userDB) {
+            
+        return <ActivityIndicator></ActivityIndicator>  
+    } 
  
 
 
@@ -333,39 +318,12 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                     <TouchableOpacity onPress={()=>setTags({})} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={16} color={Colors.mainGray} /></TouchableOpacity>
                     </View>
                 ) }
-                    {/* { tags.map( (tag, index) => (
-                        <View  key={index} className='flex-row gap-1 justify-between items-center' style={{ backgroundColor: tag.color , padding:5, borderRadius:10}}>
-                            <Text className= 'font-pbold text-primary  uppercase text-xs'  >{tag.name}</Text>
-                        <TouchableOpacity onPress={()=>setTags([])} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={18} color={Colors.mainGray} /></TouchableOpacity>
-                        </View>
-                    ) ) } */}
+                 
             </View>
             <View style={{position:"relative", alignItems:'center', justifyContent:'center', width:'100%', zIndex:10}}>
                 <Text className='font-pcourier uppercase text-lg text-secondary ' >{userDB.firstName}</Text>
             </View>
-        
-           {/* <MentionInput
-            value = {input}
-            multiline={true}
-            onChange={handleInput}
-            style={{ fontFamily:'Courier', fontSize:15, lineHeight:18, color:'white' }}
-            maxLength={800}
-            placeholder="Use '/' to mention a movie, show, cast, or crew. "
-            placeholderTextColor={Colors.mainGray}
-            autoCorrect={true}
-            partTypes={ [
-                {
-                    trigger : '/',
-                    textStyle : { fontWeight: 'bold', color:Colors.secondary },
-                    renderSuggestions,
-                    isBottomMentionSuggestionsRender:true,
-                    isInsertSpaceAfterMention:true
-                }
-            ] }
-            // containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18,minHeight:250, paddingTop: Object.keys(tags).length > 0 ? 110 :  Object.keys(tags) <1 && 60, paddingHorizontal:20, paddingBottom:image || url.image ? 20 : 70, minHeight: Object.keys(tags).length > 0 && !image && !url.image ? 250  : Object.keys(tags).length > 0 && image  ? 180 :  image || url.image ? 130  : 180 , borderTopLeftRadius:15, borderTopRightRadius:15} }
-            containerStyle = { {backgroundColor:Colors.mainGrayDark, width:'100%', fontFamily : 'Courier', fontSize:18, paddingTop:0, paddingHorizontal:20, paddingBottom: 0 , borderTopLeftRadius:15, borderTopRightRadius:15} }
-           
-           /> */}
+       
 
             <TextInput
                 value={input}
@@ -378,32 +336,21 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                 className='font-pcourier'
                 style={{ color:'white', width:'100%', paddingHorizontal:15 }}
             />
-
-
-         
-
-
-
         {   loadingImage ? (
             <View className='bg-transparent justify-center items-center' style={{ width:'100%', backgroundColor:Colors.mainGrayDark,height : 200 }}>
                 <ActivityIndicator></ActivityIndicator>
             </View>
         ) 
-        
         : image && (
             <View className='bg-mainGrayDark w-full  justify-center items-center  ' style={{ paddingBottom:0, backgroundColor:Colors.mainGrayDark,  }}>
-                    <View className="relative">
-
-                        
-
-
+                    <View className="relative w-full" style={{paddingHorizontal:15}}>
 
                         <Image
                             source={{ uri: image }}
-                            style={{ width:300, height:200 , zIndex:30, borderRadius:15, overflow:'hidden'}}
+                            style={{ width:'100%', paddingHorizontal:15,height:200 , zIndex:30, borderRadius:15, overflow:'hidden'}}
                             contentFit='cover'
                         />
-                        <TouchableOpacity onPress={()=> setImage(null)} className='rounded-full bg-primary ' style={{  position:'absolute', zIndex:30, padding:3, top:6, right:10 }}>
+                        <TouchableOpacity onPress={()=> setImage(null)} className='rounded-full bg-primary ' style={{  position:'absolute', zIndex:30, padding:3, top:5, right:20 }}>
                             <CloseIcon color={Colors.mainGray} size={20} className='' style={{  }} />
                         </TouchableOpacity>
                     </View>
