@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 
 
 
-const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity, isReposted} ) => {
+const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
 
 
     const userDB = dialogue?.user
@@ -225,12 +225,12 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                         
                     </View>
 
-                    <Text className='text-third font-pcourier  text-left w-full' numberOfLines={3}> { dialogue.content } </Text>
+                    <Text className='text-third font-pcourier  text-left w-full' numberOfLines={ fromSearchHome && 3 }> { dialogue.content } </Text>
                     { dialogue.image && (
                         <Image 
                             source={{ uri: dialogue.image }}
                             contentFit='cover'
-                            style={{ width:'100%', height:300, borderRadius:15 }}
+                            style={{ width:'100%', height: fromSearchHome ? 100 : 300, borderRadius:15 }}
                         />
                     ) }
                     { url.image && (

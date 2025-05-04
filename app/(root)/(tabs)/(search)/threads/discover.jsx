@@ -33,7 +33,7 @@ const DiscoverDialogues = () => {
             <Text className='text-mainGray font-pmedium'>Discover conversations about your fav titles, cast, or crew!</Text>
         </View>
 
-        <View className='w-full  gap-3' style={{paddingBottom:120}}>
+        <View className='w-full  gap-3' style={{paddingBottom:250}}>
             <FlatList
            
             horizontal

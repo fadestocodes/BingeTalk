@@ -31,7 +31,7 @@ const DiscoverDialogues = () => {
             <Text className='text-mainGray font-pmedium'>See what people are saying!</Text>
         </View>
 
-        <View className='w-full  gap-3' style={{paddingBottom:100}}>
+        <View className='w-full  gap-3' style={{paddingBottom:200}}>
             <FlatList
             horizontal
             data={dialogueCategories}

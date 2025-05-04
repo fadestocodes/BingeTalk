@@ -99,14 +99,12 @@ const SearchPage = () => {
       const [trendingData, upcomingData, trendingPeopleData, trendingTVData, trendingMovieData] = await Promise.all([
         getTrending(),
         getUpcoming(),
-        getTrendingPeople(),
         getTrendingTV(),
         getTrendingMovie()
       ]);
       setFlatListCategories({
         trending : trendingData.results,
         upcomingMovies : upcomingData.results,
-        trendingPeople : trendingPeopleData.results,
         trendingTV : trendingTVData.results,
         trendingMovie : trendingMovieData.results
 
@@ -121,17 +119,15 @@ const SearchPage = () => {
   useEffect(()=>{
     const fetchCategories = async () => {
       try {
-        const [trendingData, upcomingData, trendingPeopleData, trendingTVData, trendingMovieData] = await Promise.all([
+        const [trendingData, upcomingData, trendingTVData, trendingMovieData] = await Promise.all([
           getTrending(),
           getUpcoming(),
-          getTrendingPeople(),
           getTrendingTV(),
           getTrendingMovie()
         ]);
         setFlatListCategories({
           trending : trendingData.results,
           upcomingMovies : upcomingData.results,
-          trendingPeople : trendingPeopleData.results,
           trendingTV: trendingTVData.results,
           trendingMovie : trendingMovieData.results
 
@@ -311,7 +307,7 @@ const SearchPage = () => {
                       // console.log('trending dialogue', item)
                     return (
                       <TouchableOpacity onPress={()=>handleDialoguePress(item)} style={{width:300}}>
-                        <DialogueCard  dialogue={item} isBackground={true} />
+                        <DialogueCard  dialogue={item} isBackground={true} fromSearchHome={true} />
                       </TouchableOpacity>
                   )}}
                 

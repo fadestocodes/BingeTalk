@@ -84,7 +84,8 @@ const CastIdPage = () => {
                 setMentions(castFromDB.mentions)
           
         } catch (err) {
-            Alert.alert("Error", err.message);
+            // Alert.alert("Error", err.message);
+            console.log(err)
         } finally {
             setLoading(false);
         }

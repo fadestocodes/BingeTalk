@@ -133,6 +133,10 @@ const ListIdScreen = () => {
         }
     }
 
+    const handleUserPress = (user) => {
+        router.push(`/user/${user.id}`)
+    }
+
 
 
     const handleReply= (item, parentId) => {
@@ -511,7 +515,7 @@ const ListIdScreen = () => {
     
                             <View className='w-full  justify-center items-center gap-3 my-3'>
                             <View className='flex-row w-full justify-between items-center'>
-                                    <TouchableOpacity onPress={()=>handleUserPress(item)} className="flex-row items-center gap-2">
+                                    <TouchableOpacity onPress={()=>{handleUserPress(item.user)}} className="flex-row items-center gap-2">
                                         <Image
                                             source={{ uri: item.user.profilePic }}
                                             contentFit='cover'
@@ -567,7 +571,7 @@ const ListIdScreen = () => {
                                 
                                <View key={reply.id}  className=' ml-10 pr-5 justify-center items-center gap-3 my-3' style={{ borderLeftWidth:1, borderColor:Colors.secondary, borderBottomLeftRadius:10, paddingHorizontal:15, paddingBottom:10 }}>
                             <View className='flex-row w-full justify-between items-center'>
-                                    <TouchableOpacity onPress={()=>handleUserPress(reply)} className="flex-row  items-center gap-2 ">
+                                    <TouchableOpacity onPress={()=>{handleUserPress(reply.user)}} className="flex-row  items-center gap-2 ">
                                         <Image
                                             source={{ uri: reply.user.profilePic }}
                                             contentFit='cover'

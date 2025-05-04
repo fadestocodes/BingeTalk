@@ -124,7 +124,8 @@ const MoviePage = () => {
             }
 
         } catch (err) {
-            Alert.alert("Error", err.message);
+            // Alert.alert("Error", err.message);
+            console.log(err)
         } finally {
             setLoading(false);
         }

@@ -125,7 +125,7 @@ const TVPage = () => {
           
         } catch (err) {
             console.log('Problem fetching data', err);
-            Alert.alert("Error", err.message);
+            // Alert.alert("Error", err.message);
         } finally {
             setLoading(false);
         }
