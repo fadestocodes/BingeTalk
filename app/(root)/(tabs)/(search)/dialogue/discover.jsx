@@ -20,7 +20,7 @@ const DiscoverDialogues = () => {
     <SafeAreaView className='w-full h-full bg-primary'>
       <View className='w-full   px-4 gap-5' style={{paddingBottom:200}}>
       <TouchableOpacity onPress={()=>router.back()}>
-              <BackIcon size={22} color={Colors.mainGray}/>
+              <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
         <View className="gap-3">
             <View className='flex-row gap-2 justify-start items-center'>

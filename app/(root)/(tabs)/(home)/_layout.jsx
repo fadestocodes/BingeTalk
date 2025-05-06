@@ -17,6 +17,7 @@ const HomeLayout = () => {
       <Stack.Screen name='list' options={{headerShown : false}} />
       <Stack.Screen name='user' options={{headerShown : false}} />
       <Stack.Screen name='notification' options={{headerShown : false}} />
+      <Stack.Screen name='markNotifReadModal'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:400  , borderRadius:30, backgroundColor:Colors.primary }}} />
       <Stack.Screen name='postOptions'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:400  , borderRadius:30, backgroundColor:Colors.primary }}} />
       <Stack.Screen name='moreInteractions'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:400  , borderRadius:30, backgroundColor:Colors.primary }}} />
       <Stack.Screen name='commentsModal'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:100  , borderRadius:30, backgroundColor:Colors.primary }}} />

@@ -7,6 +7,7 @@ import { followersListCategories } from '../../lib/CategoryOptions'
 import { Colors } from '../../constants/Colors'
 import { useUser } from '@clerk/clerk-expo'
 import { router } from 'expo-router'
+import { BackIcon } from '../../assets/icons/icons'
 
 
 const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
@@ -67,9 +68,12 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
-    <View className='w-full  pt-10 px-6 gap-5' style={{paddingBottom:200}}>
+    <View className='w-full   px-6 gap-5' style={{paddingBottom:200}}>
       <View className="gap-3">
-          <View className='flex-row gap-2 justify-start items-center'>
+      <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:10}}>
+              <BackIcon size={26} color={Colors.mainGray}/>
+            </TouchableOpacity>
+          <View className='flex-row  justify-start items-center'>
 
             <Text className='text-white font-pbold text-3xl'>Your friends</Text>
           </View>
@@ -79,10 +83,11 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
      
 
 
-      <View className='w-full my-5 gap-8' style={{paddingBottom:150}}>
+      <View className='w-full  gap-8' style={{paddingBottom:230}}>
         <FlatList
           horizontal
           data={followersListCategories}
+          showsHorizontalScrollIndicator={false}
           keyExtractor={(item,index) => index}
           contentContainerStyle={{ gap:10 }}
           renderItem={({item}) => (

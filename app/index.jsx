@@ -67,7 +67,6 @@ const Welcome = () => {
   initializeNotification()
 
   const {user} = useUser();
-
   
   const router = useRouter(); 
   const [expoPushToken, setExpoPushToken] = useState(null);

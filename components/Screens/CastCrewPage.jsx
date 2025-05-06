@@ -175,11 +175,12 @@ const CastIdPage = () => {
           onRefresh={fetchData}
         />
          }
+         
 
     
     className=' h-full  flex  ' style={{backgroundColor:Colors.primary}}>
       <TouchableOpacity className='border-white rounded-md w-16 flex items-center left-2 py-1 absolute   ' style={{}}   onPress={backPress}>
-                      <BackIcon className='' color={Colors.mainGray}  size={22}/>
+                      <BackIcon className='' color={Colors.mainGray}  size={26}/>
       </TouchableOpacity>
       <View className='gap-8 w-full px-6'>
         <View className='image-and-name items-center justify-center gap-5  w-full pt-20 '>

@@ -11,13 +11,14 @@ import { ProgressCheckIcon, RepostIcon , MessageIcon} from '../../../../assets/i
 import { useRouter } from 'expo-router'
 import { useNotificationCountContext } from '../../../../lib/NotificationCountContext'
 import { BackIcon } from '../../../../assets/icons/icons'
+import { notificationFilterCategories } from '../../../../lib/CategoryOptions'
 
 const Notification = () => {
   const { user : clerkUser } = useUser();
   const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress})
-  const { data : notifications, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds, fetchMore} = useGetAllNotifs(ownerUser?.id, 10);
+  const { data : notifications, readNotifs, unreadNotifs, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds, fetchMore} = useGetAllNotifs(ownerUser?.id, 10);
   const { updateNotifCount, notifCount } = useNotificationCountContext()
-  
+  const [selected, setSelected] = useState('All')
   
   
   const router = useRouter()
@@ -108,8 +109,19 @@ const Notification = () => {
     }
     // await   refetch()
   }
+  const filteredData =
+  selected === 'Read'
+    ? notifications.filter(n => n.isRead)
+    : selected === 'Unread'
+    ? notifications.filter(n => !n.isRead)
+    : notifications;
 
-  
+  const handleMarkRead = () => {
+    router.push({
+      pathname:'markNotifReadModal',
+      params:{ userId : ownerUser?.id}
+    })
+  }
 
 
   return (
@@ -122,7 +134,7 @@ const Notification = () => {
 
     <View className='w-full   px-4 gap-5' style={{paddingBottom:200}}>
             <TouchableOpacity onPress={()=>router.back()}>
-              <BackIcon size={22} color={Colors.mainGray}/>
+              <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
@@ -131,6 +143,24 @@ const Notification = () => {
             <Text className='text-white font-pbold text-3xl'>Notifications</Text>
           </View>
           <Text className='text-mainGray font-pmedium'>See what you missed.</Text>
+          <View className='w-full justify-between flex-row items-center'>
+            <FlatList
+              data = {notificationFilterCategories}
+              horizontal={true}
+              keyExtractor={(item, index) => index}
+              contentContainerStyle={{ gap:10, width:'70%' }}
+              renderItem={({item}) => (
+                <TouchableOpacity onPress={()=>setSelected(item)} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+                  <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <TouchableOpacity onPress={handleMarkRead} style={{ backgroundColor:Colors.secondary, borderWidth:1.5, borderRadius:12, paddingHorizontal:7, paddingVertical:5 }}>
+              <Text className='text-primary font-pbold text-sm '>Mark all as read</Text>
+              </TouchableOpacity>
+
+
+          </View>
       </View>
       {/* <TouchableOpacity  style={{ position:'absolute', top:0, right:30 }}>
         <Image
@@ -140,7 +170,8 @@ const Notification = () => {
         />
       </TouchableOpacity> */}
 
-      <View className='w-full my-2 gap-3' style={{paddingBottom:100}}>
+      <View className='w-full my-2 gap-3' style={{paddingBottom:200}}>
+
         <FlatList
           refreshControl={
             <RefreshControl
@@ -149,7 +180,7 @@ const Notification = () => {
               tintColor={Colors.secondary}
             />
           }
-          data={notifications }
+          data={filteredData }
           keyExtractor={(item, index) => item.id}
           onEndReached={()=>{
             if (hasMore){

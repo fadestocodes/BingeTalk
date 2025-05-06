@@ -179,7 +179,7 @@ const profile2 = () => {
             <View className='thread-topic w-full  relative   '>
                 <View className="flex-row justify-center items-center gap-3 px-4">
                     <TouchableOpacity onPress={()=> setResultsOpen(false)}>
-                        <BackIcon size={20} color={Colors.mainGray}/>
+                        <BackIcon size={26} color={Colors.mainGray}/>
                     </TouchableOpacity>
                     <TextInput
                         autoFocus={true}

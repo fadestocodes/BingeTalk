@@ -15,3 +15,19 @@ export const createRating = async (data) => {
         console.log(err)
     }
 }
+
+export const deleteRating = async (data) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/rating/delete`, {
+            method : "POST",
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        const response = await request.json()
+        return response
+    } catch (err){
+        console.log(err)
+    }
+}

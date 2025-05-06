@@ -145,7 +145,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
             recipientId : dialogue.user.id
         }
         const updatedDialogue = await dialogueInteraction(data)
-        refetch();
+        refetchOwner();
     }
 
     const handleUserPress = () => {

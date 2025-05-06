@@ -4,17 +4,33 @@
     "appVersionSource": "remote"
   },
   "build": {
+    "simulatorBuild": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      },
+      "env":{
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_live_Y2xlcmsuYmluZ2VhYmxlLmFwcCQ",
+        "APP_VARIANT": "development"
+      }
+    },
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+    
       "env":{
-        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_test_c3RpbGwtZmFsY29uLTM2LmNsZXJrLmFjY291bnRzLmRldiQ"
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_test_c3RpbGwtZmFsY29uLTM2LmNsZXJrLmFjY291bnRzLmRldiQ",
+        "APP_VARIANT": "development"
       }
     },
     "preview": {
       "distribution": "internal",
+     
       "env":{
-        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_test_c3RpbGwtZmFsY29uLTM2LmNsZXJrLmFjY291bnRzLmRldiQ"
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY":"pk_test_c3RpbGwtZmFsY29uLTM2LmNsZXJrLmFjY291bnRzLmRldiQ",
+        "APP_VARIANT": "development"
       }
     },
     "production": {
@@ -24,6 +40,7 @@
       }
     }
   },
+  
   "submit": {
     "production": {}
   }

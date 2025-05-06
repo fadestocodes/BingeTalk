@@ -77,7 +77,7 @@ const BlockModalPage = () => {
 
         <View style={{paddingHorizontal:30, paddingTop:70, paddingBottom:150, gap:12, borderRadius:30}}>
         <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:20}}>
-              <BackIcon size={22} color={Colors.mainGray}/>
+              <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
             <View className='gap-5 pt-10'>
                 <TouchableOpacity onPress={handleReport} style={{backgroundColor:Colors.secondary, borderRadius:30, width:250, alignSelf:'center', paddingHorizontal:30, paddingVertical:15}}>

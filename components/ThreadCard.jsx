@@ -15,7 +15,8 @@ import { LinearGradient } from 'expo-linear-gradient'
 
 
 
-const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic, fromHome, activity, isReposted}) => {
+const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic, fromHome, activity, isReposted, fromSearchHome}) => {
+    console.log('threadhere',thread)
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
     const userDB = thread?.user
@@ -111,7 +112,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
 
         const updatedDialogue = await threadInteraction(data)
 
-        refetch();
+        refetchOwner();
     }
 
     const handlePress = (item) => {
@@ -238,7 +239,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
             { thread.caption ? (
               <View className='gap-3 mt-5'>
                 <Text className='text-secondary text-lg leading-5 font-pcourier uppercase text-center'>{thread.user.firstName}</Text>
-                <Text className="text-white  font-pcourier" numberOfLines={isBackground && 3 } >{thread.caption}</Text>
+                <Text className="text-white  font-pcourier" numberOfLines={isBackground || fromSearchHome && 3 } >{thread.caption}</Text>
               </View>
             ) : null }
 
@@ -247,7 +248,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                         <Image 
                             source={{ uri: thread.image }}
                             contentFit='cover'
-                            style={{ width:'100%', height:300, borderRadius:15 }}
+                            style={{ width:'100%', height: fromSearchHome ? 100 : 300, borderRadius:15 }}
                         />
                     ) }
                     { url.image && (
@@ -266,7 +267,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                             <Image
                                 source ={{ uri :url.image }}
                                 contentFit='cover'
-                                style={{ width:'100%', height:'100%', borderRadius:15 , position:'absolute'}}
+                                style={{ width:'100%', height: fromSearchHome ? 100 : '100%', borderRadius:15 , position:'absolute'}}
                             />
                             <LinearGradient
                                 colors={['transparent', isBackground ?  Colors.mainGrayDark : Colors.primary]}

@@ -76,8 +76,9 @@ const homeIndex = () => {
     }
 
     const refetchFeed = async () => {
+      setLoading(true)
       try {
-        // await refetchOwner();
+        await refetchOwner();
         const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
@@ -151,7 +152,7 @@ const homeIndex = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' >
-      {  !ownerUser ?  (
+      {  !ownerUser || loading?  (
         <View className='bg-primary h-full justify-center items-center'>
           <ActivityIndicator />
         </View>
@@ -193,7 +194,8 @@ const homeIndex = () => {
       /> */}
 
       { loading ? (
-        <ActivityIndicator />
+        // <ActivityIndicator />
+        <></>
       ) : (
 
          data.length < 1 ? (

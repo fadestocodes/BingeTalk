@@ -278,7 +278,7 @@ useEffect(() => {
           
                   <Animated.View className="justify-center items-center gap-5 flex-1" style={translateStyle}>
                     <TouchableOpacity onPress={()=>{ router.back() }} style={{ position:'absolute', top:70, left: 10 }} >
-                      <BackIcon size={20} color={Colors.mainGray}  />
+                      <BackIcon size={26} color={Colors.mainGray}  />
                     </TouchableOpacity>
                     
                       <View className="justify-center items-center gap-3 mb-8">

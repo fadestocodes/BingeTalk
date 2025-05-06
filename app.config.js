@@ -1,6 +1,7 @@
-{
+const IS_DEV = process.env.APP_VARIANT === 'development';
+export default {
   "expo": {
-    "name": "Bingeable",
+    "name": IS_DEV ? "Bingeable (dev)" :  "Bingeable",
     "slug": "bingeable-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,11 +11,18 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.bingeableapp",
+      "associatedDomains": [
+        "webcredentials:bingeable.app"
+      ],
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "bundleIdentifier": IS_DEV ? "com.bingeableapp.dev" : "com.bingeableapp",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "This app uses the photo library to allow you to upload images.",
         "NSCameraUsageDescription": "This app uses the camera to allow you to take pictures.",
         "ITSAppUsesNonExemptEncryption": false,
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID for secure authentication.",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
         },
@@ -48,6 +56,12 @@
         }
       ],
       "expo-font",
+      [
+        'expo-dev-client',
+        {
+          addGeneratedScheme: !!IS_DEV,
+        },
+      ],
       "expo-video",
       [
         "expo-image-picker",
@@ -62,6 +76,13 @@
           "url": "https://sentry.io/",
           "project": "bingeable",
           "organization": "bingeable-as"
+        }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true,
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ]
     ],

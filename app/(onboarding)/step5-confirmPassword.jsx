@@ -195,6 +195,7 @@ const step5 = () => {
             <TextInput
               value={signUpData.confirmPassword}
               placeholder="Confirm password"
+              textContentType='newPassword'
               secureTextEntry={true}
               placeholderTextColor={Colors.mainGray}
               style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}

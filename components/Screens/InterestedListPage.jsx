@@ -55,7 +55,7 @@ const InterestedListScreen = () => {
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:0, paddingHorizontal:15 }}>
        <View  style={{ paddingTop:10, gap:10, width:'100%', paddingHorizontal:15, paddingBottom:150 }}>
         <TouchableOpacity onPress={()=>router.back()}>
-            <BackIcon size={22} color={Colors.mainGray} />
+            <BackIcon size={26} color={Colors.mainGray} />
         </TouchableOpacity>
             <View className='justify-center items-center'>
             <View className="flex-row justify-start w-full items-center gap-2">

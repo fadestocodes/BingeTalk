@@ -182,7 +182,7 @@ return (
     <View  style={{ justifyContent:'center', alignItems:'center', height:'100%', height:'100%', paddingTop:0,  backgroundColor:Colors.primary, gap:15 , paddingHorizontal:30}} >
     { !resultsOpen && (
     <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', width:'100%'}}>
-        <BackIcon size={22} color={Colors.mainGray} />
+        <BackIcon size={26} color={Colors.mainGray} />
     </TouchableOpacity>
 
     ) }

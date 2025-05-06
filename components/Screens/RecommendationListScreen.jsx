@@ -73,7 +73,7 @@ const RecommendationListScreen = () => {
             style={{ paddingTop:0, gap:10, paddingHorizontal:15, paddingBottom:200,alignItems:'center', width:'100%' }}>
         
             <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
-         <BackIcon size={22} color={Colors.mainGray} />
+         <BackIcon size={26} color={Colors.mainGray} />
      </TouchableOpacity>
             <View className="flex-row w-full justify-start items-center gap-2 py-1">
                 <Handshake color='white'  />

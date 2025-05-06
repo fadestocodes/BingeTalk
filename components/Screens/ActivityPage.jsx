@@ -326,7 +326,7 @@ const ActivityPage = () => {
 
         <View style={{gap:10, marginVertical:0, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
         <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:20}}>
-              <BackIcon size={22} color={Colors.mainGray}/>
+              <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
           <View className='gap-3' >
           <ActivityCard2 activity={activity} disableCommentsModal={true} />

@@ -103,7 +103,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
             recipientId : item.user.id
         }
         const updatedDialogue = await listInteraction(data)
-        refetch();
+        refetchOwner();
     }
 
 
@@ -158,14 +158,14 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
   return (
     <View className='w-full' >
                     <TouchableOpacity disabled={pressDisabled}  onPress={()=>handleListPress(item)}  style={{  borderRadius:10, backgroundColor:Colors.mainGrayDark,paddingVertical:15, paddingHorizontal:15, gap:15 }} >
-                        <View className='gap-3'>
+                        <View className='gap-3 '>
                       
                             <View className='flex-row w-full gap-2 justify-between items-center mb-0'>
                                 <View className='flex-row gap-2 justify-center items-center'>
                                 { isReposted ? (
                                      <RepostIcon size={20} color={Colors.mainGray} style={{marginRight:10}}/>
                                 ) : null}
-                                    <TouchableOpacity style={{flexDirection:'row', gap:5}} onPress={()=>handleUserPress(item)}>
+                                    <TouchableOpacity style={{flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5}} onPress={()=>handleUserPress(item)}>
                                     <Image
                                     source ={{ uri :item.user.profilePic }}
                                     contentFit='cover'
@@ -185,7 +185,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             <View className=' gap-0 justify-center items-start' >
                                         <Text className='text-white font-pbold text-xl' >{ item.title }</Text>
                                         <Text className='text-white text-sm '>{`(${item.listItem.length} ${item.listItem.length > 1 ? `items` : 'item'})`}</Text>
-                                    </View>
+                            </View>
                             <Text className='text-mainGray  font-pregular' numberOfLines={2}>{ item.caption }</Text>
                         </View>
 

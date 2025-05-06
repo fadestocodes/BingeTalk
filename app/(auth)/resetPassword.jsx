@@ -40,8 +40,10 @@ const resetPassword = () => {
       setError('')
     })
     .catch((err) => {
-      console.error('error', err.errors[0].longMessage)
-      setError(err.errors[0].longMessage)
+      const longMessage =
+      err?.errors?.[0]?.longMessage || err?.message || 'Unknown error';
+    console.error('error:', longMessage);
+      setError(longMessage)
     })
   }
 
@@ -311,6 +313,7 @@ const handleVerificationChange = (text, index) => {
                autoCapitalize="none"
                secureTextEntry={true}
                value={newPasswordConfirm}
+               textContentType='newPassword'
                placeholder="Confirm password"
                placeholderTextColor={Colors.mainGray}
                style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}

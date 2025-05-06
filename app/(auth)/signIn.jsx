@@ -61,7 +61,7 @@ export default function Page() {
           <TextInput
             autoCapitalize="none"
             value={emailAddress}
-            placeholder="Enter email"
+            placeholder="Enter email/username"
             placeholderTextColor={Colors.mainGray}
           
             style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
@@ -70,6 +70,8 @@ export default function Page() {
           <TextInput
             value={password}
             placeholder="Enter password"
+            textContentType="password"   
+            autoComplete='password'
             secureTextEntry={true}
             placeholderTextColor={Colors.mainGray}
             style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}

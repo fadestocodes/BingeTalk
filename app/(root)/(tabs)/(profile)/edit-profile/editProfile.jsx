@@ -163,7 +163,7 @@ const editProfile = () => {
                     }}
                 />
                 <TouchableOpacity onPress={()=>router.back()} style={{position:'absolute', top:60, left:20}}>
-              <BackIcon size={22} color={Colors.mainGray}/>
+              <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
                 <TouchableOpacity onPress={handleImageUpload} style={{backgroundColor:Colors.mainGrayDark, position:'absolute', borderRadius:15, paddingHorizontal:10, paddingVertical:5, opacity:.7, top:60, right:20}}>
                     <Text className='text-mainGray font-pbold text-xs'>Change profile pic</Text>

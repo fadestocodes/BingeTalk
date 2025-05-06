@@ -51,7 +51,7 @@ const AccountPage = () => {
     <View className='w-full   px-4 gap-5' style={{paddingBottom:200}}>
 
           <TouchableOpacity onPress={()=>router.back()}>
-            <BackIcon size={22} color={Colors.mainGray} />
+            <BackIcon size={26} color={Colors.mainGray} />
         </TouchableOpacity>
         <View className="gap-5">
             <View className='flex-row gap-2 justify-start items-center'>

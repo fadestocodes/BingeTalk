@@ -96,7 +96,7 @@ const SearchPage = () => {
   const refreshData = async () => {
     setRefreshing(true)
     try {
-      const [trendingData, upcomingData, trendingPeopleData, trendingTVData, trendingMovieData] = await Promise.all([
+      const [trendingData, upcomingData, trendingTVData, trendingMovieData] = await Promise.all([
         getTrending(),
         getUpcoming(),
         getTrendingTV(),
@@ -109,6 +109,10 @@ const SearchPage = () => {
         trendingMovie : trendingMovieData.results
 
       }) 
+      const trendingDialoguesResponse = await getTrendingDialogues(5);
+      setTrendingDialogues(trendingDialoguesResponse);
+      const trendingThreadsResponse = await getTrendingThreads(5)
+      setTrendingThreads(trendingThreadsResponse)
     } catch (err) {
       console.log('Error fetching all categories',err)
     } finally{
@@ -119,15 +123,13 @@ const SearchPage = () => {
   useEffect(()=>{
     const fetchCategories = async () => {
       try {
-        const [trendingData, upcomingData, trendingTVData, trendingMovieData] = await Promise.all([
-          getTrending(),
-          getUpcoming(),
+        const [trendingTVData, trendingMovieData] = await Promise.all([
+        
           getTrendingTV(),
           getTrendingMovie()
         ]);
         setFlatListCategories({
-          trending : trendingData.results,
-          upcomingMovies : upcomingData.results,
+         
           trendingTV: trendingTVData.results,
           trendingMovie : trendingMovieData.results
 
@@ -269,7 +271,7 @@ const SearchPage = () => {
               onRefresh={refreshData}
             />
           }
-  
+          showsVerticalScrollIndicator={false}
           scrollEnabled={ !discoverPage ? false : true }
           style={{ height:'100%'}}
         >
@@ -329,7 +331,7 @@ const SearchPage = () => {
                       // console.log('trending thread', item)
                     return (
                       <TouchableOpacity onPress={()=> handleThreadPress(item)} style={{width:300}} >
-                        <ThreadCard  thread={item} isBackground={true} isShortened={true} showThreadTopic={true} />
+                        <ThreadCard  thread={item} isBackground={true} isShortened={true} showThreadTopic={true} fromSearchHome={true} />
                       </TouchableOpacity>
                   )}}
                 

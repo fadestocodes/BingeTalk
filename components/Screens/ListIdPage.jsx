@@ -387,6 +387,17 @@ const ListIdScreen = () => {
         
     }
 
+    const handleThreeDots = (item, fromReply) => {
+        console.log('from threedots', item)
+        console.log('from reply?', fromReply)
+
+        const fromOwnPost = item.userId === ownerUser?.id
+        router.push({
+            pathname:'/postOptions',
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
+        })
+    }
+
 
   return (
     <SafeAreaView style={{ backgroundColor : Colors.primary, width:'100%', height : '100%'}} >
@@ -401,7 +412,7 @@ const ListIdScreen = () => {
             <View className='w-full h-full  px-4 gap-3' style={{paddingBottom:120}}>
 
             <TouchableOpacity onPress={()=>router.back()}>
-              <BackIcon size={22} color={Colors.mainGray}/>
+              <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
             <View className='w-full flex-row justify-between items-center'>
         <TouchableOpacity onPress={()=>router.push(`user/${list.user.id}`)} className='flex-row justify-start items-center gap-3 '>

@@ -286,6 +286,9 @@ const TVPage = () => {
         />
          }
     >
+         <TouchableOpacity onPress={()=>router.back()} style={{position:"absolute", top:50, zIndex:20, left:30}}>
+              <BackIcon size={26} color={Colors.mainGray}/>
+            </TouchableOpacity>
 
         <View className="flex ">
         <Image

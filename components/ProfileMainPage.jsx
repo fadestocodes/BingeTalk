@@ -28,7 +28,6 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 
     
 
-        console.log('hello from profilemainpage')
 
         const { signOut } = useClerk();
         const { user:clerkUser } = useUser();
@@ -36,7 +35,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
         const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
-        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
         const isOwnersProfilePage = user?.id === ownerUser?.id
         const [ isFollowing, setIsFollowing ] = useState(null)
         const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user?.id, 15)
@@ -48,12 +47,15 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 
         const { postToRemove, updatePostToRemove } = usePostRemoveContext()
         const [ isBlocking, setIsBlocking ] = useState([])
+        const [ ratingsLength, setRatingsLength ] = useState(0)
 
         useEffect(()=>{
             const checkFollow = user?.followers.some( item => item.followingId === ownerUser?.id );
             const userBlockList = ownerUser?.blockedUsers
             const alreadyBlocking = userBlockList?.some( item => item?.userBeingBlocked === user?.id  )
             setIsBlocking(alreadyBlocking)
+            const ratingsLengthData = ownerUser?.ratings?.length
+            setRatingsLength(ratingsLengthData)
         if (checkFollow){
             setIsFollowing(true);
 
@@ -152,6 +154,13 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             })
         }
 
+        const handleUserRatings = () => {
+            router.push({
+                pathname:'/user/userRatings',
+                params:{userId:user.id, firstName : user.firstName}
+            })
+        }
+
 
   return (
    
@@ -227,6 +236,10 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                                 <Text className='text-gray-400 text-lg font-pblack'>{followCounts.following}</Text>
                                 <Text className='text-gray-400 text-lg font-psemibold'>Following</Text>
                             </TouchableOpacity >
+                            <TouchableOpacity onPress={handleUserRatings}  className='flex-row gap-2 justify-center items-center'>
+                            <Text className='text-gray-400 text-lg font-pblack'>{ratingsLength}</Text>
+                            <Text className='text-gray-400 text-lg font-psemibold'>Ratings</Text>
+                            </TouchableOpacity>
                            
                         </View>
                         <View className='w-full justify-center items-center mt-4' >

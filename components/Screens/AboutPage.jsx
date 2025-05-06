@@ -12,7 +12,7 @@ const AboutPage = () => {
 <View style={{paddingHorizontal:15, paddingBottom:150, gap:12}}>
 <View className='gap-3 '>
      <TouchableOpacity onPress={()=>router.back()} style={{}}>
-        <BackIcon size={22} color={Colors.mainGray} />
+        <BackIcon size={26} color={Colors.mainGray} />
     </TouchableOpacity>
     <View className='flex w-full gap-2 justify-start items-start'>
 

@@ -43,7 +43,7 @@ const RatingUI = ({ setRating, rating , handlePost, prevRating}) => {
           : offset.value;
   
       // Correct the calculation for rating scale (5 to 10)
-      const newRating = 4 + (offset.value / MAX_VALUE) * 6; // Scale to 5-10
+      const newRating = 1 + (offset.value / MAX_VALUE) * 9; // Scale to 5-10
       const roundedRating = parseFloat(newRating.toFixed(1)); // Round to 1 decimal place
   
       // Only update the state if the rating has changed
@@ -56,7 +56,7 @@ const RatingUI = ({ setRating, rating , handlePost, prevRating}) => {
       }
     }).onEnd(() => {
       // Snap to the nearest whole or decimal number after release
-      const snappedRating = 4 + (offset.value / MAX_VALUE) * 6; // Round to one decimal place
+      const snappedRating = 1 + (offset.value / MAX_VALUE) * 9; // Round to one decimal place
       runOnJS(setRating)(snappedRating);
   
       // Optional: Add a smooth "settling" effect after releasing the slider
@@ -118,7 +118,7 @@ const RatingUI = ({ setRating, rating , handlePost, prevRating}) => {
           </GestureDetector>
         </View>
 
-        <TouchableOpacity onPress={()=>handlePost()} style={{ backgroundColor:Colors.secondary, paddingHorizontal:30, paddingVertical:15, borderRadius:20, marginTop:50 }}>
+        <TouchableOpacity onPress={()=>handlePost()} style={{ backgroundColor:Colors.secondary, paddingHorizontal:30, paddingVertical:15, borderRadius:30, marginTop:50 }}>
             <Text className='text-primary font-pbold'>Post rating</Text>
         </TouchableOpacity>
       </GestureHandlerRootView>

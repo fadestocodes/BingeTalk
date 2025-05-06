@@ -7,6 +7,8 @@ import { useNotificationCountContext } from '@/lib/NotificationCountContext';
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const [ data, setData ] = useState([])
+    const [ readNotifs, setReadNotifs ] = useState([])
+    const [ unreadNotifs, setUnreadNotifs ] = useState([])
     const [ loading, setLoading ] = useState(true);
     const [ hasMore , setHasMore ] = useState(true);
     const [ cursor, setCursor ] = useState(null)
@@ -21,7 +23,10 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(prev => [...prev, ...response.items])
-            console.log('notificationshere', response.items)
+
+         
+            // setReadNotifs(prev => [...prev, ...response.readNotifs])
+            // setUnreadNotifs(prev => [...prev, ...response.unreadNotifs])
 
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
@@ -30,7 +35,6 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             setIsFollowingIds(prev=> [...prev, ...isFollowingId])
             const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
             setUnreadIds( prev => [ ...prev, ...unreadIds ] )
-
             
 
             
@@ -58,7 +62,11 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             setIsFollowingIds(isFollowingId)
             const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
             setUnreadIds( unreadIds  )
-
+            // const readNotifData = response.items.filter( i => i.isRead === true )
+            // setReadNotifs(readNotifData)
+            // const unreadNotifData = response.item.filter( i => i.isRead === false)
+            // setUnreadIds(unreadNotifData)
+            
             
 
             
@@ -71,7 +79,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
 
     
 
-    return { data, loading, hasMore, refetch , fetchMore:getAllNotifs, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds}
+    return { data ,loading, hasMore, refetch , fetchMore:getAllNotifs, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds}
 }
 
 export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCount) => {
@@ -104,6 +112,22 @@ export const markNotifRead = async (data, notifCount, updateNotifCount) => {
     }
 }
 
+export const markAllRead = async (data) => {
+    try {
+        const response = await fetch(`${nodeServer.currentIP}/notifications/mark-all-read`, {
+            method : "POST",
+            headers:{
+                'Content-type' : 'application/json'
+            },
+            body:JSON.stringify(data)
+        })
+        const result = await response.json()
+        return result
+    } catch (err){
+        console.log(err)
+    }
+}
+
 export const postPushToken = async (token) => {
     try {
         const response = await fetch(`${nodeServer.currentIP}/notifications/save-push-token`,{
@@ -118,5 +142,15 @@ export const postPushToken = async (token) => {
         return result
     } catch (err){
         console.log(err)
+    }
+}
+
+export const useGetAllNotifRead = async (limit) => {
+    const [ data, setData ] = useState([])
+    const [ loading, setLoading ] = useState(true)
+    const [ cursor, setCursor ] = useState('null')
+
+    const getAllNotifRead = async () => {
+        const response = await fetch(`${nodeServer.currentIP}/notifications/read`)
     }
 }

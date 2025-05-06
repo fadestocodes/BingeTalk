@@ -63,7 +63,7 @@ const WatchlistScreen = () => {
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
        <View style={{ paddingTop:0, gap:10, width:'100%', paddingHorizontal:15, paddingBottom:150 }}>
             <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
-         <BackIcon size={22} color={Colors.mainGray} />
+         <BackIcon size={26} color={Colors.mainGray} />
      </TouchableOpacity>
             <View className="flex-row w-full justify-start items-center gap-2 py-1">
                 <ListChecks color='white'  />

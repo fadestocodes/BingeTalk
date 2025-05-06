@@ -66,10 +66,10 @@ const MoviePage = () => {
     const ownerRating = movieRatings?.find( item => item.userId === ownerUser?.id && item.movieId === Number(DBmovieId) ) || 'N/A'
     const followersAndFollowingIds = ownerUser?.followers.map(item => item.followerId ).concat(ownerUser?.followers.map(f => f.followingId))
     const friendsRatingList = movieRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser?.id )
-    const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
-    const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
+    const totalFriendsRatings = friendsRatingList?.reduce((sum, rating) => sum + rating.rating, 0);
+    const averageFriendsRating = friendsRatingList?.length > 0 ? (totalFriendsRatings / friendsRatingList?.length ).toFixed(1): 'N/A';
     const totalOverallRatings = movieRatings?.reduce((sum,rating) => sum + rating.rating, 0)
-    const overallRatings = movieRatings.length > 0 ? (totalOverallRatings / movieRatings.length).toFixed(1) : 'N/A'
+    const overallRatings = movieRatings?.length > 0 ? (totalOverallRatings / movieRatings.length).toFixed(1) : 'N/A'
 
 
 
@@ -291,6 +291,9 @@ const MoviePage = () => {
                  }
         
     >
+         <TouchableOpacity onPress={()=>router.back()} style={{position:"absolute", top:50, zIndex:20, left:30}}>
+              <BackIcon size={26} color={Colors.mainGray}/>
+            </TouchableOpacity>
         
         <View className="flex ">
            
@@ -499,8 +502,8 @@ const MoviePage = () => {
                         renderItem={({item}) => {
                             
                             return (
-                            <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >
-                                <ThreadCard thread={item} refetch={ refreshData} ></ThreadCard>
+                            <TouchableOpacity onPress={()=>threadsPress(item.id)}  >
+                                <ThreadCard thread={item} refetch={ refreshData} isShortened={true} showThreadTopic={true} fromSearchHome={true} isBackground={true} ></ThreadCard>
                             </TouchableOpacity>
                         )}}
                     />

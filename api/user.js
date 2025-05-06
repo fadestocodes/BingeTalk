@@ -824,9 +824,50 @@ export const useCheckBlock = (params) => {
                 },
                 body: JSON.stringify(params)
             })
-            
+
         } catch (err){
             console.log(err)
         }
     }
+}
+
+export const useGetUserRatings = (userId, limit) => {
+    const [ data, setData ] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [ cursor, setCursor ] = useState(null)
+    const [ hasMore, setHasMore ] = useState(true)
+
+    const getUserRatings = async () => {
+        if (!hasMore) return
+        try {
+            const request = await fetch(`${nodeServer.currentIP}/user/ratings?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+            const response = await request.json()
+            setData(prev => [...prev, ...response.items])
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (Err){
+            console.log(Err)
+        }
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        getUserRatings()
+    }, [userId])
+
+    const refetch = async () => {
+        try {
+            const request = await fetch(`${nodeServer.currentIP}/user/ratings?userId=${userId}&cursor=null&limit=${limit}`)
+            const response = await request.json()
+            setData(response.items)
+            setCursor(response.nextCursor)
+            setHasMore(!!response.nextCursor)
+        } catch (Err){
+            console.log(Err)
+        }
+        setLoading(false)
+    }
+
+    return { data, loading, hasMore, refetch , getMore : getUserRatings }
+
 }
