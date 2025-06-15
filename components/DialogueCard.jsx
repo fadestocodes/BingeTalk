@@ -244,8 +244,8 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                                 </TouchableOpacity>
                             </>
                         ) : (
-                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height:150, width:'100%', position:'relative'}}>
-                          
+                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height: fromSearchHome ? 100 : 150, width:'100%', position:'relative'}}>
+                            
                             <Image
                                 source ={{ uri :url.image }}
                                 contentFit='cover'

@@ -53,7 +53,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
     const [errors, setErrors] = useState(null)
     const [ message, setMessage ] = useState(null)
     const { url, updateUrl } = useCreateContext()
-    const [topicError, setTopicError] = useState(false)
 
 
 
@@ -143,6 +142,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
 
     const handlePost = async () => {
+        console.log('trying to post...')
+        console.log('tagsss', tags)
 
         const validationResults = createDialogueSchema.safeParse( {content:input} )
         if (!validationResults.success) {
@@ -202,7 +203,9 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             image,
             url : url.link || null
         }
+        console.log('POSTDATA', postData)
         const newPost = await createDialogue(postData); 
+        console.log("POSTRESPONSE", newPost)
 
         setMessage(newPost.message)
         setUploadingPost(false);
@@ -214,7 +217,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             image : '',
             subtitle  :''
         })
-        setTags([])
+        setTags({})
         setDialogueItems([])
         refetch();
     }
@@ -266,10 +269,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
         ) }
         <View className='w-full'>
     
-    { topicError && (
-        <Text className='text-red-400 text-left self-start my-2'>*Thread needs a topic</Text>
-    ) }
-    
+
 <View className='thread-topic w-full relative justify-center items-center '>
     <TextInput
         placeholder='Dialogue mentions (max. 4)'
