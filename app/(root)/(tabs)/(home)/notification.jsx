@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, FlatList, ActivityIndicator, ScrollView, RefreshControl } from 'react-native'
 import { Image } from 'expo-image'
-import React, {useState, useEffect} from 'react'
+import { useFocusEffect } from '@react-navigation/native';
+
+import React, {useState, useEffect, useCallback} from 'react'
 import { useUser } from '@clerk/clerk-expo'
 import { followUser, unfollowUser, useFetchOwnerUser } from '../../../../api/user'
 import { useGetAllNotifs, markNotifRead } from '../../../../api/notification'
@@ -20,6 +22,12 @@ const Notification = () => {
   const { updateNotifCount, notifCount } = useNotificationCountContext()
   const [selected, setSelected] = useState('All')
   
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch() // refetch from server
+    }, [])
+  )
   
   const router = useRouter()
   
