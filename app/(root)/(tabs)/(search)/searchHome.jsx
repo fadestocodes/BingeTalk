@@ -13,7 +13,7 @@ import DiscoverHorizontal from '../../../../components/DiscoverHorizontal'
 import { searchUsers } from '../../../../api/user'
 import { useQueryClient } from '@tanstack/react-query';
 import { ChevronRight, MessagesSquare, MessageSquare } from 'lucide-react-native'
-import { getTrendingDialogues } from '../../../../api/dialogue'
+import { getTrendingDialogues, useGetRecentDialoguesInfinite } from '../../../../api/dialogue'
 import DialogueCard from '../../../../components/DialogueCard'
 import ThreadCard from '../../../../components/ThreadCard'
 import { getTrendingThreads } from '../../../../api/thread'
@@ -296,7 +296,7 @@ const SearchPage = () => {
             <View className='gap-3 flex items-start w-full'  >
               <TouchableOpacity  onPress={()=>{router.push('/dialogue/discover')}}  style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <MessageSquare   size={20} color={Colors.mainGray}/>
-                  <Text className='text-mainGray font-pbold text-xl '>Top Dialogues</Text>
+                  <Text className='text-mainGray font-pbold text-xl '>Recent Dialogues</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
               </TouchableOpacity>
                 <FlatList
@@ -318,7 +318,7 @@ const SearchPage = () => {
             <View className='gap-3 flex items-start w-full'  >
               <TouchableOpacity onPress={()=>router.push('/threads/discover')} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <MessagesSquare   size={20} color={Colors.mainGray}/>
-                  <Text className='text-mainGray font-pbold text-xl '>Top Threads</Text>
+                  <Text className='text-mainGray font-pbold text-xl '>Recent Threads</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
               </TouchableOpacity>
                 <FlatList

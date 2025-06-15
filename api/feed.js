@@ -36,6 +36,7 @@ export const useGetFeed = ( userId, limit ) => {
 export const useGetProfileFeed = (userId, limit) => {
     const [ data, setData ] = useState([])
     const [ loading, setLoading  ] = useState(true)
+    const [ isFetching, setIsFetching ] = useState(false)
     const [ hasMore, setHasMore] = useState({
         dialogue : true,
         thread : true,
@@ -49,7 +50,9 @@ export const useGetProfileFeed = (userId, limit) => {
 
     const getProfileFeed = async () => {
         if (!hasMore.dialogue && !hasMore.thread && !hasMore.list) return
+        if (isFetching) return 
         try {
+            setIsFetching(true)
             const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&threadCursor=${cursors.thread}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreThreads=${hasMore.thread}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
             setData(prev => ([...prev, ...results.items]))
@@ -68,6 +71,7 @@ export const useGetProfileFeed = (userId, limit) => {
         } catch (err){
             console.log(err)
         } finally {
+            setIsFetching(false)
             setLoading(false)
         }
     }
@@ -81,7 +85,9 @@ export const useGetProfileFeed = (userId, limit) => {
     }
 
     const refetch = async () => {
+        if (isFetching) return
         try {
+            setIsFetching(true)
             const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&threadCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreThreads=true&hasMoreLists=true`)
             const results = await response.json()
             setData(results.items)
@@ -100,7 +106,9 @@ export const useGetProfileFeed = (userId, limit) => {
         } catch (err){
             console.log(err)
         } finally {
+            setIsFetching(false)
             setLoading(false)
+
         }
     }
 

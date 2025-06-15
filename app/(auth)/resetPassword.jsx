@@ -25,6 +25,7 @@ const resetPassword = () => {
   const [newPassword, setNewPassword] = useState(null)
   const [ newPasswordConfirm, setNewPasswordConfirm ] = useState(null)
   const [ validationErrors, setValidationErrors ] = useState({})
+  const [successfulCreation, setSuccessfulCreation] = useState(false)
 
 
 
@@ -210,6 +211,7 @@ const handleVerificationChange = (text, index) => {
           <View className="items-start gap-5">
             <TextInput
               autoCapitalize="none"
+              textContentType='username'
               value={emailAddress}
               placeholder="Enter email"
               placeholderTextColor={Colors.mainGray}
@@ -280,6 +282,7 @@ const handleVerificationChange = (text, index) => {
            <TextInput
              autoCapitalize="none"
              secureTextEntry={true}
+             textContentType='newPassword'
              value={newPassword}
              placeholder="New password"
              placeholderTextColor={Colors.mainGray}

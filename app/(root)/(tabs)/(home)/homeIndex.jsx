@@ -20,7 +20,7 @@ import { getAllNotifs, useGetAllNotifs } from '../../../../api/notification';
 import { likeActivity } from '../../../../api/activity';
 import ActivityCard2 from '../../../../components/ActivityCard2';
 import { useNotificationCountContext } from '../../../../lib/NotificationCountContext';
-
+import debounce from 'lodash.debounce';
 
 const homeIndex = () => {
   const { notifCount, updateNotifCount } = useNotificationCountContext()
@@ -33,7 +33,7 @@ const homeIndex = () => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const [ data, setData ] = useState([]);
-    const [ loading, setLoading ] = useState(true);
+    const [ loading, setLoading ] = useState(false);
     // const [ hasMore, setHasMore ] = useState(true);
     const [ hasMoreFeed, setHasMoreFeed ] = useState(true)
     const [ hasMoreThreads, setHasMoreThreads ] = useState(true)
@@ -47,8 +47,9 @@ const homeIndex = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
 
     const getFeed = async () => {
-       
+        if (loading) return
         try {
+          setLoading(true)
           const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
           const unread = notifsData.filter( item => item.isRead === false)
           setUnreadNotifs(unread)
@@ -71,8 +72,9 @@ const homeIndex = () => {
 
         } catch (err) {
             console.log(err)
+        } finally {
+          setLoading(false);
         }
-        setLoading(false);
     }
 
     const refetchFeed = async () => {
@@ -143,6 +145,12 @@ const homeIndex = () => {
       }
     }
 
+    const debouncedGetFeed = debounce(async () => {
+      if (!loading) {
+        await getFeed();
+      }
+    }, 500); 
+
 
 
 
@@ -152,7 +160,7 @@ const homeIndex = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' >
-      {  !ownerUser || loading?  (
+      {  !ownerUser  ? (
         <View className='bg-primary h-full justify-center items-center'>
           <ActivityIndicator />
         </View>
@@ -193,12 +201,9 @@ const homeIndex = () => {
         )}
       /> */}
 
-      { loading ? (
-        // <ActivityIndicator />
-        <></>
-      ) : (
+     
 
-         data.length < 1 ? (
+         {data.length < 1 ? (
           <ScrollView style={{height:'100%'}} refreshControl={
             <RefreshControl
               tintColor={Colors.secondary}
@@ -219,17 +224,16 @@ const homeIndex = () => {
                       onRefresh={refetchFeed}
                     />
                   }
+                  removeClippedSubviews
                   showsVerticalScrollIndicator={false}
-                  keyExtractor={(item,index) => index}
+                  keyExtractor={(item) => item.id.toString()}
                   contentContainerStyle={{gap:10}}
-                  onEndReached={()=>{
-                      getFeed()
-                  }}
-                  onEndReachedThreshold={0.3}
-                
+                  onEndReached={debouncedGetFeed}
+                  onEndReachedThreshold={0}
+                  windowSize={21}
           
-                  renderItem={({item}) => {
-                    return (
+                  renderItem={({item}) => 
+                    (
                       <>
                     { item.feedFrom === 'activity' ? (
                       <View>
@@ -259,11 +263,10 @@ const homeIndex = () => {
                       </TouchableOpacity>
                     ) }
                   </>
-                  )}}
+                  )}
                   />
                   </View>
 
-        ) 
       ) }
 
       </View>

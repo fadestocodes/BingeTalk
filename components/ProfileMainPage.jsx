@@ -54,7 +54,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             const userBlockList = ownerUser?.blockedUsers
             const alreadyBlocking = userBlockList?.some( item => item?.userBeingBlocked === user?.id  )
             setIsBlocking(alreadyBlocking)
-            const ratingsLengthData = ownerUser?.ratings?.length
+            const ratingsLengthData = user?.ratings?.length
             setRatingsLength(ratingsLengthData)
         if (checkFollow){
             setIsFollowing(true);

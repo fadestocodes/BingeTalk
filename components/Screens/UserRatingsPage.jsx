@@ -12,11 +12,13 @@ import { ThreeDotsIcon } from '../../assets/icons/icons'
 
 const UserRatingsPage = () => {
     const {userId, firstName} = useLocalSearchParams()
-    const {clerkUser} = useUser()
+    const {user : clerkUser} = useUser()
     const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
     const { data, refetch, loading, getMore } = useGetUserRatings(userId, 10)
+
     const [ selected, setSelected ] = useState('All')
     const router = useRouter()
+    const isOwnersPage = ownerUser?.id === Number(userId)
 
    
     const posterURL = 'https://image.tmdb.org/t/p/w500';
@@ -40,12 +42,12 @@ const UserRatingsPage = () => {
     const handleThreeDots = (item) => {
         router.push({
             pathname:`/ratingModal`,
-            params : { DBmovieId : item?.movie?.id, DBtvId: item?.tv?.id , prevRating : item.rating}
+            params : { DBmovieId : item?.movie?.id, DBtvId: item?.tv?.id , prevRating : isOwnersPage ?  item.rating : null}
         })
     }
       
 
-    if (loading || !ownerUser){
+    if (loading){
         return (
             <View className='w-full h-full bg-primary justify-center items-center'>
             <ActivityIndicator />
@@ -100,7 +102,7 @@ const UserRatingsPage = () => {
             renderItem={({item}) => {
                 console.log('flatlistitem', item)
                 return(
-                <TouchableOpacity>
+                <View>
                    <View className="flex-row justify-between items-center gap-2">
                         <TouchableOpacity  onPress={()=>handlePress(item)} className='flex-row gap-2 justify-center items-center'>
                             <View className='flex-row gap-3 justify-center items-center'>
@@ -123,13 +125,17 @@ const UserRatingsPage = () => {
                         </TouchableOpacity>
                         <View className='flex-row gap-5 justify-center items-center'>
                             <Text className='text-mainGray text-xl font-pbold'>{item.rating}</Text>
+                            { isOwnersPage ? (
                             <TouchableOpacity onPress={()=>handleThreeDots(item)}>
                                 <ThreeDotsIcon size={18} color={Colors.mainGray} />
                             </TouchableOpacity>
+                            ) : (
+                                <View />
+                            ) }
                         </View>
 
                     </View>
-                </TouchableOpacity>
+                </View>
             )}}
 
         />

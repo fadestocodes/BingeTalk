@@ -16,7 +16,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 
 
 const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic, fromHome, activity, isReposted, fromSearchHome}) => {
-    console.log('threadhere',thread)
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
     const userDB = thread?.user

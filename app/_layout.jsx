@@ -50,7 +50,6 @@ export default Sentry.wrap(function RootLayout() {
   
 
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
-  console.log('publisahblekey', publishableKey)
   
   
 
