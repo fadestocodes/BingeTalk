@@ -13,10 +13,10 @@ import DiscoverHorizontal from '../../../../components/DiscoverHorizontal'
 import { searchUsers } from '../../../../api/user'
 import { useQueryClient } from '@tanstack/react-query';
 import { ChevronRight, MessagesSquare, MessageSquare } from 'lucide-react-native'
-import { getTrendingDialogues, useGetRecentDialoguesInfinite } from '../../../../api/dialogue'
+import { getRecentDialogues, getTrendingDialogues, useGetRecentDialoguesInfinite } from '../../../../api/dialogue'
 import DialogueCard from '../../../../components/DialogueCard'
 import ThreadCard from '../../../../components/ThreadCard'
-import { getTrendingThreads } from '../../../../api/thread'
+import { getRecentThreads, getTrendingThreads } from '../../../../api/thread'
 
 
 
@@ -109,9 +109,9 @@ const SearchPage = () => {
         trendingMovie : trendingMovieData.results
 
       }) 
-      const trendingDialoguesResponse = await getTrendingDialogues(5);
+      const trendingDialoguesResponse = await getRecentDialogues(5);
       setTrendingDialogues(trendingDialoguesResponse);
-      const trendingThreadsResponse = await getTrendingThreads(5)
+      const trendingThreadsResponse = await getRecentThreads(5)
       setTrendingThreads(trendingThreadsResponse)
     } catch (err) {
       console.log('Error fetching all categories',err)
@@ -134,9 +134,9 @@ const SearchPage = () => {
           trendingMovie : trendingMovieData.results
 
         }) 
-        const trendingDialoguesResponse = await getTrendingDialogues(5);
+        const trendingDialoguesResponse = await getRecentDialogues(5);
         setTrendingDialogues(trendingDialoguesResponse);
-        const trendingThreadsResponse = await getTrendingThreads(5)
+        const trendingThreadsResponse = await getRecentThreads(5)
         setTrendingThreads(trendingThreadsResponse)
         
 
