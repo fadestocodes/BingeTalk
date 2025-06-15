@@ -216,6 +216,15 @@ export const getTrendingDialogues = async (limit) => {
         console.log(err)
     }
 }
+export const getRecentDialogues = async (limit) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=null`)
+        const response = await request.json();
+        return response.items
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 export const useGetTrendingDialoguesInfinite = (limit, popular) => {
     const [ data, setData ] = useState([])

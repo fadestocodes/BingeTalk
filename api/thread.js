@@ -71,6 +71,16 @@ export const getTrendingThreads = async (limit) => {
     }
 }
 
+export const getRecentThreads = async (limit) => {
+    try {
+        const request = await fetch(`${nodeServer.currentIP}/thread/recent/infinite?limit=${limit}&cursor=null`)
+        const response = await request.json();
+        return response.items
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 
 export const useGetTrendingThreadsInfinite = (limit, popular) => {
     const [ data, setData ] = useState([])
