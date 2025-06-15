@@ -70,7 +70,7 @@ const RecommendationListScreen = () => {
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
        <View 
            
-            style={{ paddingTop:0, gap:10, paddingHorizontal:15, paddingBottom:200,alignItems:'center', width:'100%' }}>
+            style={{ paddingTop:0, gap:10, paddingHorizontal:15, paddingBottom:270,alignItems:'center', width:'100%' }}>
         
             <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
          <BackIcon size={26} color={Colors.mainGray} />
