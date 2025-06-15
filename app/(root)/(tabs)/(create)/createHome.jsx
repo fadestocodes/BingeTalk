@@ -117,6 +117,7 @@ const CreateHome = () => {
             if ( dialogueItems.length === 3 ){
                 setDialogueMaxError(true)
             }
+            setSearchQuery('')
             setDialogueItems(prev => [...prev, item])
         }
 
@@ -190,7 +191,7 @@ const CreateHome = () => {
           keyExtractor={(item,index) => index}
           contentContainerStyle={{ gap:10 }}
           renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setListItems([]); updateUrl({link:'',image:'',titel:'',subtitle:''}); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setDialogueItems([]); setListItems([]); updateUrl({link:'',image:'',titel:'',subtitle:''}); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
               <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
             </TouchableOpacity>
           )}
