@@ -32,7 +32,7 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
 
   return (
     
-    <View className='flex flex-1 justify-center items-center w-full h-full bg-primary pb-20 relative' >
+    <View className='flex flex-1 justify-center items-center w-full h-full bg-primary  relative' style={{paddingBottom:50}}>
       { !user || isFetchingUser ? (
       <View className='bg-primary justify-center items-center h-full'>
         <ActivityIndicator></ActivityIndicator>  
