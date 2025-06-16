@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View , TouchableOpacity, FlatList} from 'react-native'
-import React, {act, useState} from 'react'
+import React, {act, useEffect, useState} from 'react'
 import { Image } from 'expo-image'
 import { Colors } from '../constants/Colors'
 import { MessageIcon, ThreeDotsIcon, RepostIcon, ProgressCheckIcon } from '../assets/icons/icons'
@@ -22,27 +22,50 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
 
 
 
-    const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
-    const alreadyDownvoted = activity?.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
-    const alreadyReposted = activity?.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+    // const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+    // const alreadyDownvoted = activity?.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+    // const alreadyReposted = activity?.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
     
 
     const imagePaths =  activity?.movie?.backdropPath || activity?.tv?.backdropPath || activity?.rating?.movie?.backdropPath || activity?.rating?.tv?.backdropPath 
     
     const [ interactions, setInteractions ] = useState({
         upvotes : {
-            alreadyPressed : alreadyUpvoted,
+            alreadyPressed : false,
             count : activity?.upvotes
         } ,
         downvotes :{
-            alreadyPressed : alreadyDownvoted,
+            alreadyPressed : false,
             count : activity?.downvotes
         } ,
         reposts : {
-            alreadyPressed : alreadyReposted,
+            alreadyPressed : false,
             count : activity?.reposts
         } 
     })
+
+    useEffect(() => {
+
+        const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+        const alreadyDownvoted = activity?.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+        const alreadyReposted = activity?.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+        
+        setInteractions({
+            upvotes : {
+                alreadyPressed : alreadyUpvoted,
+                count : activity?.upvotes
+            } ,
+            downvotes :{
+                alreadyPressed : alreadyDownvoted,
+                count : activity?.downvotes
+            } ,
+            reposts : {
+                alreadyPressed : alreadyReposted,
+                count : activity?.reposts
+            } 
+        })
+
+    }, [activity, ownerUser])
 
 
     const handleUserPress = (item) => {

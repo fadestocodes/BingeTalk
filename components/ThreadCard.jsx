@@ -30,15 +30,15 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     })
 
 
-    const alreadyUpvoted = thread.threadInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
-    const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
-    const alreadyReposted = thread.threadInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+    // const alreadyUpvoted = thread.threadInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+    // const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+    // const alreadyReposted = thread.threadInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
 
 
     const [ already, setAlready ] = useState({
-        upvoted : alreadyUpvoted,
-        downvoted : alreadyDownvoted,
-        reposted : alreadyReposted
+        upvoted : false,
+        downvoted : false,
+        reposted : false
     })
 
     const [ interactionCounts, setInteractionCounts ] = useState({
@@ -48,6 +48,25 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
     })
 
     useEffect(() => {
+
+
+        
+    const alreadyUpvoted = thread.threadInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+    const alreadyDownvoted = thread.threadInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+    const alreadyReposted = thread.threadInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+
+        setAlready({
+            upvoted : alreadyUpvoted,
+            downvoted : alreadyDownvoted,
+            reposted : alreadyReposted
+        })
+
+        setInteractionCounts({
+            upvotes : thread.upvotes ,
+            downvotes : thread.downvotes ,
+            reposts : thread.reposts
+        })
+
         const useGetLinkPreview = async () => {
 
             const linkPreview = await getLinkPreview(thread.url);
@@ -61,7 +80,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
         if (thread && thread?.url){
             useGetLinkPreview()
         }
-    }, [thread])
+    }, [thread, ownerUser])
 
 
  

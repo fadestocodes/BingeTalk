@@ -36,26 +36,62 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
 
     
     
-    const alreadyUpvoted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
-    const alreadyDownvoted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
-    const alreadyReposted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+    // const alreadyUpvoted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+    // const alreadyDownvoted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+    // const alreadyReposted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+    
+    // const [ interactions, setInteractions ] = useState({
+    //     upvotes : {
+    //         alreadyPressed : alreadyUpvoted,
+    //         count : dialogue?.upvotes
+    //     } ,
+    //     downvotes :{
+    //         alreadyPressed : alreadyDownvoted,
+    //         count : dialogue?.downvotes
+    //     } ,
+    //     reposts : {
+    //         alreadyPressed : alreadyReposted,
+    //         count : dialogue?.reposts
+    //     } 
+    // })
     
     const [ interactions, setInteractions ] = useState({
         upvotes : {
-            alreadyPressed : alreadyUpvoted,
-            count : dialogue?.upvotes
+            alreadyPressed : false,
+            count : dialogue?.upvotes || 0
         } ,
         downvotes :{
-            alreadyPressed : alreadyDownvoted,
-            count : dialogue?.downvotes
+            alreadyPressed : false,
+            count : dialogue?.downvotes || 0
         } ,
         reposts : {
-            alreadyPressed : alreadyReposted,
-            count : dialogue?.reposts
+            alreadyPressed : false,
+            count : dialogue?.reposts || 0
         } 
     })
 
     useEffect(() => {
+
+
+        
+        const alreadyUpvoted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+        const alreadyDownvoted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+        const alreadyReposted = dialogue?.dialogueInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+
+        setInteractions({
+            upvotes : {
+                alreadyPressed : alreadyUpvoted,
+                count : dialogue?.upvotes
+            } ,
+            downvotes :{
+                alreadyPressed : alreadyDownvoted,
+                count : dialogue?.downvotes
+            } ,
+            reposts : {
+                alreadyPressed : alreadyReposted,
+                count : dialogue?.reposts
+            } 
+        })
 
         const useGetLinkPreview = async () => {
 
