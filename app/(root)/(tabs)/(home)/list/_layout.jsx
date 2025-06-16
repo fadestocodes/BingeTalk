@@ -10,6 +10,7 @@ const ListLayout = () => {
       <Stack.Screen name='interested' options={{headerShown : false}} />
       <Stack.Screen name='watchlist' options={{headerShown : false}} />
       <Stack.Screen name='recommended' options={{headerShown : false}} />
+      <Stack.Screen name='edit' options={{headerShown : false}} />
     </Stack>
   )
 }

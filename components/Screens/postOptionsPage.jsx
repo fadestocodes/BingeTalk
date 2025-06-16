@@ -27,7 +27,7 @@ const PostOptions = () => {
 
     const handleButton = (type) => {
         if (type === 'edit'){
-            router.replace(`list/edit/${postId}`)
+            router.replace(`/list/edit/${postId}`)
         }
         setIsPressedButton(type);
         setIsStep1(false);

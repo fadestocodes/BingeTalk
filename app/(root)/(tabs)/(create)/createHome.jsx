@@ -146,7 +146,7 @@ const CreateHome = () => {
       }
 
     const renderItem = (item) => {
-        console.log('RENDERINGITEM', item)
+        // console.log('RENDERINGITEM', item)
         return (
           <View className=' justify-start items-center relative '
             style={{ width:'auto', height:170,  marginHorizontal:0, marginVertical:0, overflow:'hidden' }}

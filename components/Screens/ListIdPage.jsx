@@ -391,10 +391,11 @@ const ListIdScreen = () => {
         console.log('from threedots', item)
         console.log('from reply?', fromReply)
 
-        const fromOwnPost = item.userId === ownerUser?.id
+        const fromOwnPost = list?.user?.id === ownerUser?.id
+        console.log('fromOwnPOSTTT', fromOwnPost)
         router.push({
             pathname:'/postOptions',
-            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : list?.id, postUserId : item.userId, postType : 'LIST'}
         })
     }
 
@@ -458,7 +459,9 @@ const ListIdScreen = () => {
                             </TouchableOpacity >
                            
                         </View>
-                        <ThreeDotsIcon  size={20} color={Colors.mainGray}/>
+                        <TouchableOpacity onPress={handleThreeDots}>
+                            <ThreeDotsIcon  size={20} color={Colors.mainGray}/>
+                        </TouchableOpacity>
         </View>
 
         <View className='w-full justify-center ' style={{paddingBottom:120}} >
