@@ -183,6 +183,9 @@ const EditListScreen = () => {
 <ToastMessage message ={message} onComplete={()=> setMessage(null)} icon={<List size={30} color={Colors.secondary}/>}   />
 
     <View className='w-full h-full bg-primary ' style={{gap:15, paddingHorizontal:30}}>
+        <TouchableOpacity onPress={()=>router.back()} style={{ position:'absolute', top:50, left :25 }}>
+            <BackIcon color={Colors.mainGray} size={26} ></BackIcon>
+        </TouchableOpacity>
 <View style={{ width:55, height:7, borderRadius:10, backgroundColor:Colors.mainGray, position:'absolute', top:40 , alignSelf:'center', }} />
         <View style={{paddingTop:100, gap:15}}>
         <View className="flex-row relative justify-center items-center gap-3 ">
@@ -199,7 +202,7 @@ const EditListScreen = () => {
                         placeholderTextColor={Colors.mainGray}
                         onChangeText={(text)=> {setSearchQuery(text);  handleSearch(text)  }}
                         className=' text-white rounded-3xl '
-                        style={{ minHeight:50, width:'100%', backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingTop:0, textAlignVertical:'center' }}
+                        style={{ minHeight:50, width:'100%', backgroundColor:Colors.mainGrayDark, paddingHorizontal:25, paddingBottom:10, textAlignVertical:'center' }}
                         value={searchQuery}
                     />
                 <TouchableOpacity onPress={()=> { setSearchQuery('') ; setResults([]); }}  style={{ position:'absolute', right:10, top:15 }}>
@@ -252,7 +255,7 @@ const EditListScreen = () => {
                 />
                 </>
             ) : (
-                <ScrollView className='h-full' >
+                <ScrollView showsVerticalScrollIndicator={false} className='h-full' >
                     <View style={{width:'100%', paddingTop:30, paddingBottom:150, gap:15}}>
                     <View className='gap-3'>
                     { errors && (

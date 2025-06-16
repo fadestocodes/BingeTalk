@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { ThumbsUp, ThumbsDown, List } from 'lucide-react-native'
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
@@ -13,19 +13,13 @@ import { listInteraction } from '../api/list'
 const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDisabled}) => {
 
     const { user:clerkUser } = useUser();
-    const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress});
+    const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0]?.emailAddress});
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
-
-
-    const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser.id )
-    const alreadyDownvoted = item.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser.id )
-    const alreadyReposted = item.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser.id )
-
-    const [ already, setAlready ] = useState({
-        upvoted : alreadyUpvoted,
-        downvoted : alreadyDownvoted,
-        reposted : alreadyReposted
+    const [ alreadyInteractions, setAlreadyInteractions ] = useState({
+        upvoted : false,
+        downvoted : false,
+        reposted : false
     })
 
     const [ interactionCounts, setInteractionCounts ] = useState({
@@ -34,6 +28,35 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
         reposts : item.reposts
     })
 
+
+    useEffect(()=>{
+
+        const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
+        const alreadyDownvoted = item.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
+        const alreadyReposted = item.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
+        setAlreadyInteractions({
+            upvoted: alreadyUpvoted,
+            downvoted:alreadyDownvoted,
+            reposted : alreadyReposted
+        })
+        setInteractionCounts({
+            upvotes: item.upvotes,
+            downvotes : item.downvotes,
+            reposts : item.reposts
+        })
+    }, [item, ownerUser?.id])
+
+    // const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
+    // const alreadyDownvoted = item.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
+    // const alreadyReposted = item.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
+
+    // const [ already, setAlready ] = useState({
+    //     upvoted : alreadyUpvoted,
+    //     downvoted : alreadyDownvoted,
+    //     reposted : alreadyReposted
+    // })
+
+    
 
  
 
@@ -63,22 +86,22 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
 
     const handleInteraction =  async (type, item) => {
         if (type === 'upvotes'){
-            setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
-            if (already.upvoted){
+            setAlreadyInteractions(prev => ({...prev, upvoted : !prev.upvoted}))
+            if (alreadyInteractions.upvoted){
                 setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes - 1}))
             } else {
                 setInteractionCounts(prev => ({...prev, upvotes : prev.upvotes + 1}))
             }
         } else if (type === 'downvotes'){
-            setAlready(prev => ({...prev, downvoted : !prev.downvoted}))
-            if (already.downvoted){
+            setAlreadyInteractions(prev => ({...prev, downvoted : !prev.downvoted}))
+            if (alreadyInteractions.downvoted){
                 setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes - 1}))
             } else {
                 setInteractionCounts(prev => ({...prev, downvotes : prev.downvotes + 1}))
             }
         } else if (type === 'reposts'){
-            setAlready(prev => ({...prev, reposted : !prev.reposted}))
-            if (already.reposted){
+            setAlreadyInteractions(prev => ({...prev, reposted : !prev.reposted}))
+            if (alreadyInteractions.reposted){
                 setInteractionCounts(prev => ({...prev, reposts : prev.reposts - 1}))
             } else {
                 setInteractionCounts(prev => ({...prev, reposts : prev.reposts + 1}))
@@ -110,10 +133,10 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
     
     const handleThreeDots = (list) => {
 
-        const fromOwnPost = list.userId === ownerUser.id
+        const fromOwnPost = list.userId === ownerUser?.id
         router.push({
             pathname:'/postOptions',
-            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser.id, postType : 'LIST', postId : list.id, postUserId : list.userId}
+            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : 'LIST', postId : list.id, postUserId : list.userId}
         })
     }
 
@@ -124,12 +147,12 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
         if (fromHome){
             router.push({
                 pathname:`(home)/commentsModal`,
-                params : { userId : ownerUser.id, listId : item.id }
+                params : { userId : ownerUser?.id, listId : item.id }
             })
         } else {
             router.push({
                 pathname:`/commentsModal`,
-                params : { userId : ownerUser.id, listId : item.id }
+                params : { userId : ownerUser?.id, listId : item.id }
             })
         }
     }
@@ -215,14 +238,14 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                             <View className='flex-row gap-5 justify-center items-center'>
                                 <TouchableOpacity onPress={()=> handleInteraction('upvotes',item) } >
                                     <View className='flex-row gap-1 justify-center items-center'>
-                                        <ThumbsUp size={20} color={ already.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
-                                        <Text className='text-xs font-pbold ' style={{ color: already.upvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
+                                        <ThumbsUp size={20} color={ alreadyInteractions.upvoted ? Colors.secondary :  Colors.mainGray} ></ThumbsUp>
+                                        <Text className='text-xs font-pbold ' style={{ color: alreadyInteractions.upvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.upvotes }</Text>
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity  onPress={()=> handleInteraction('downvotes',item) } >
                                 <View className='flex-row gap-1 justify-center items-center'>
-                                    <ThumbsDown size={20}  color={ already.downvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
-                                    <Text  className='text-xs font-pbold text-mainGray' style={{ color: already.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
+                                    <ThumbsDown size={20}  color={ alreadyInteractions.downvoted ? Colors.secondary :  Colors.mainGray}></ThumbsDown>
+                                    <Text  className='text-xs font-pbold text-mainGray' style={{ color: alreadyInteractions.downvoted ? Colors.secondary : Colors.mainGray }}>{ interactionCounts.downvotes }</Text>
                                 </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={()=>handleComment(item)}>
@@ -235,8 +258,8 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 
                                 <TouchableOpacity onPress={()=> handleInteraction('reposts',item) } >
                                 <View className='flex-row gap-1 justify-center items-center  ' style={{height:32, borderColor:Colors.mainGray}}>
-                                    <RepostIcon className='' size={20}  color={ already.reposted ? Colors.secondary :  Colors.mainGray}/>
-                                    <Text className='text-xs font-pbold text-mainGray  'style={{ color: already.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
+                                    <RepostIcon className='' size={20}  color={ alreadyInteractions.reposted ? Colors.secondary :  Colors.mainGray}/>
+                                    <Text className='text-xs font-pbold text-mainGray  'style={{ color: alreadyInteractions.reposted ? Colors.secondary : Colors.mainGray }}> {interactionCounts.reposts}</Text>
                                 </View>
 
                                 </TouchableOpacity>
