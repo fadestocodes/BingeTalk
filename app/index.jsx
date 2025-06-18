@@ -48,7 +48,6 @@ const initializeNotification = () => {
 
           
           if (route) {
-
             router.push(route); // Navigates to the given route
           } 
     });
@@ -96,6 +95,7 @@ useEffect(() => {
     
     
     if (route) {
+      console.log('pushnotif route', route)
 
       router.push(route); // Navigates to the given route
     }

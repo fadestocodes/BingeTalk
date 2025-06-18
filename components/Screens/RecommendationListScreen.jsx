@@ -1,8 +1,10 @@
 
 import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, ActivityIndicator, ImageBackground } from 'react-native'
-import React, {useRef, useState} from 'react'
+import React, {useRef, useState, useCallback} from 'react'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
+import { useFocusEffect } from '@react-navigation/native';
+
 import { useFetchrecommendations, userecommendations, useGetRecommendationsSent, useGetRecommendationsReceived } from '../../api/user'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Colors } from '../../constants/Colors'
@@ -23,14 +25,29 @@ const RecommendationListScreen = () => {
 
     const router = useRouter()
 
+    useFocusEffect(
+        useCallback(() => {
+          refetch() // refetch from server
+          refetchReceived()
+        }, [])
+      )
+
 
     
     const handlePress = (item) => {
         if (item.movie){
-          router.push(`/movie/${item.movie.tmdbId}`)
+        //   router.push(`/movie/${item.movie.tmdbId}`)
+        router.push({
+            pathname: `/user/recommendations/${item.id}`,
+            params:{ type : 'MOVIE', userId }
+        })
         }
         if (item.tv){
-          router.push(`/tv/${item.tv.tmdbId}`)
+        //   router.push(`/tv/${item.tv.tmdbId}`)
+        router.push({
+            pathname: `/user/recommendations/${item.id}`,
+            params:{ type : 'TV', userId }
+        })
         }
     }
     

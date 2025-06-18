@@ -9,6 +9,7 @@ const UserLayoutHome = () => {
       <Stack.Screen name='followersPage' options={{headerShown : false}} />
       <Stack.Screen name='account' options={{headerShown : false}} />
       <Stack.Screen name='userRatings' options={{headerShown : false}} />
+      <Stack.Screen name='recommendations' options={{headerShown : false}} />
     </Stack>
   )
 }

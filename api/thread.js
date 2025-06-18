@@ -263,7 +263,7 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
     }
 
     const refetch = async () => {
-        // await refetchOwner()
+        await refetchOwner()
         try {
             const response = await fetch(`${nodeServer.currentIP}/thread?threadId=${threadId}`);
             const fetchedThread = await response.json();
@@ -301,5 +301,5 @@ export const useCustomFetchSingleThread = ( threadId, replyCommentId ) => {
         }
     }
 
-    return { thread, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, removeItem}
+    return { thread, ownerUser, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, removeItem}
 }

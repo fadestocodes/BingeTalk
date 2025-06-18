@@ -338,7 +338,7 @@ const MoviePage = () => {
                     <Text className='text-mainGray text-sm font-pmedium'>Released {movie.release_date}</Text>
                     { movie.original_language && (
                     <View className='flex gap-2 justify-center items-start '>
-                            <Text className='text-mainGray text-sm '>Original language:</Text>
+                            <Text className='text-mainGray text-sm font-pmedium '>Original language:</Text>
                             <TouchableOpacity>
                                 <Text className='text-mainGray text-xs border-[1px] rounded-md p-1' style={{borderColor:Colors.mainGray}}>{movie.original_language.toLocaleUpperCase()}</Text>
                             </TouchableOpacity>
