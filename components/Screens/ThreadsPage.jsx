@@ -37,9 +37,9 @@ const ThreadsIdPage = () => {
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
-    const { user : clerkUser } = useUser();
-    const { data: ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-    const userId = ownerUser?.id
+    // const { user : clerkUser } = useUser();
+    // const { data: ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    // const userId = ownerUser?.id
     const queryClient = useQueryClient();
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
 
@@ -49,7 +49,7 @@ const ThreadsIdPage = () => {
 
 
     const { threadsId, tvId, movieId, castId }= useLocalSearchParams();
-    const { thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleThread(Number(threadsId), Number(replyCommentId))
+    const { thread, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleThread(Number(threadsId), Number(replyCommentId))
 
 
 
@@ -360,6 +360,9 @@ const ThreadsIdPage = () => {
         })
     }
 
+    // if (!thread || !ownerUser){
+
+    // }
 
 
 

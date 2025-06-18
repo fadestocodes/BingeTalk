@@ -20,9 +20,9 @@ import { listInteraction } from '../../api/list'
 const ListIdScreen = () => {
 
     const { listId } = useLocalSearchParams();
-    const { list, refetch,isLoading, commentsData, setCommentsData, interactedComments, setInteractedComments, already, setAlready, interactionCounts, setInteractionCounts} = useCustomFetchSingleList(listId);
-    const { user:clerkUser } = useUser()
-    const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
+    const { list, refetch,isLoading, ownerUser, commentsData, setCommentsData, interactedComments, setInteractedComments, already, setAlready, interactionCounts, setInteractionCounts} = useCustomFetchSingleList(listId);
+    // const { user:clerkUser } = useUser()
+    // const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
 
 
 
@@ -61,14 +61,6 @@ const ListIdScreen = () => {
 
 
 
-
-    if (!list || !ownerUser){
-        return (
-            <View className='h-full bg-primary justify-center items-center'>
-        <ActivityIndicator tintColor={Colors.secondary} />
-        </View>
-    )
-    }
 
 
     const handleInteraction =  async (type, item) => {
@@ -205,9 +197,10 @@ const ListIdScreen = () => {
         if ( type === 'upvotes' ){
             description = `upvoted your comment "${comment.content}"`
             if (isAlready){
-             
+                console.log("CURRENTINTERACTEDCOMMENTS", interactedComments)
                 setInteractedComments(prev => {
                     const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
+                    console.log('NEWINTERCTEDCOMMENTS',updatedUpvotes )
                     return {
                         ...prev,
                         upvotes: updatedUpvotes
@@ -383,6 +376,7 @@ const ListIdScreen = () => {
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
+        console.log("INTERACTED COMMENT DATA", updatedComment)
         
         
     }
@@ -397,6 +391,16 @@ const ListIdScreen = () => {
             pathname:'/postOptions',
             params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : list?.id, postUserId : item.userId, postType : 'LIST'}
         })
+    }
+
+
+
+    if (!list || !ownerUser){
+        return (
+            <View className='h-full bg-primary justify-center items-center'>
+        <ActivityIndicator tintColor={Colors.secondary} />
+        </View>
+    )
     }
 
 

@@ -148,7 +148,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     }
 
     const refetch = async () => {
-        // await refetchOwner()
+        await refetchOwner()
         try {
             const response = await fetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
             const fetchedDialogue = await response.json();
@@ -188,7 +188,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     }
 
    
-    return { dialogue, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, removeItem}
+    return { dialogue, ownerUser, isLoading, error, commentsData, setCommentsData, interactedComments, setInteractedComments, refetch, removeItem}
 }
 
 export const dialogueInteraction = async ( data ) => {

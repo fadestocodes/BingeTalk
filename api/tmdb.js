@@ -314,3 +314,21 @@ export const useGetUpcomingMovies = () => {
 
   return { upcomingMovies, refetch : getUpcomingMovies }
 }
+
+export const findDirector = async (params) => {
+  const { type, tmdbId } = params
+  try {
+    const response = await fetch(`${nodeServer.currentIP}/tmdb/find-director`, {
+      method : "POST",
+      headers : {
+        'Content-type' : 'application/json'
+      },
+      body : JSON.stringify( params )
+    })
+    const data = await response.json()
+    console.log("FOUNDDIRECTOR". data)
+    return data
+  } catch (err){
+    console.log(err)
+  }
+}

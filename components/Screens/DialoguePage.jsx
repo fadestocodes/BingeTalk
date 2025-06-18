@@ -29,13 +29,13 @@ const DialogueScreen = () => {
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
-    const { user : clerkUser } = useUser();
-    const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    // const { user : clerkUser } = useUser();
+    // const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
    
     const userId = ownerUser?.id
     const { dialogueId, tvId, movieId, castId }= useLocalSearchParams();
 
-    const { dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
+    const { dialogue, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
 
 
