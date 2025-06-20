@@ -271,7 +271,7 @@ const MoviePage = () => {
     const handleRatingsPage = (tab) => {
         router.push({
             pathname : `/movie/ratings/${DBmovieId}`,
-            params : { type : 'MOVIE', tab }
+            params : { type : 'movie', tab }
         })
     }
 

@@ -263,8 +263,8 @@ const TVPage = () => {
 
     const handleRatingsPage = (tab) => {
         router.push({
-            pathname : `/movie/ratings/${DBtvId}`,
-            params : { type : 'MOVIE', tab }
+            pathname : `/tv/ratings/${DBtvId}`,
+            params : { type : 'tv', tab }
         })
     }
 

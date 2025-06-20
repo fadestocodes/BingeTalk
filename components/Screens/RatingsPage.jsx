@@ -1,4 +1,4 @@
-import {  StyleSheet, Text, View, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator, RefreshControl } from 'react-native'
+import {  StyleSheet, Text, View, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator, RefreshControl, ScrollView } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { useUser } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
@@ -7,10 +7,31 @@ import { useLocalSearchParams } from 'expo-router'
 import { getYear } from '../../lib/formatDate'
 import { userRatingsCategories } from '../../lib/CategoryOptions'
 import { ThreeDotsIcon, BackIcon, FilmIcon, TVIcon } from '../../assets/icons/icons'
+import { useGetTitleRatings } from '../../api/rating'
+
 
 const RatingsPage = () => {
     const { type, tab, ratingsId }  = useLocalSearchParams()
     console.log('testinghere', type, tab,  ratingsId)
+    const data = {
+        type,
+        ratingsId,
+        limit : 10
+    }
+
+    const { ratings, ownerUser, isLoading, refetch, fetchMore, hasMore } = useGetTitleRatings(data)
+
+    const posterURL = 'https://image.tmdb.org/t/p/original';
+    const posterURLlow = 'https://image.tmdb.org/t/p/w500';
+
+    if (!ownerUser  ){
+        return (
+            <View>
+                <ActivityIndicator />
+            </View>
+        )
+    }
+    
 
   return (
     <SafeAreaView className="w-full h-full bg-primary">
@@ -18,13 +39,13 @@ const RatingsPage = () => {
 
         
       
-        <View className="gap-0">
+        {/* <View className="gap-0">
       <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:10}}>
               <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
           <View className='flex-row  justify-start items-center'>
 
-            <Text className='text-white font-pbold text-3xl'>{firstName}'s ratings</Text>
+            <Text className='text-white font-pbold text-3xl'>ratings</Text>
           </View>
           <Text className='text-mainGray font-pmedium'>A look at their taste in films & shows</Text>
           <FlatList
@@ -40,24 +61,25 @@ const RatingsPage = () => {
           )}
         />
 
-      </View>
+      </View> */}
 
         <FlatList
             refreshControl={
                 <RefreshControl
-                    refreshing={loading}
                     onRefresh={refetch}
+                    refreshing={isLoading}
                     tintColor={Colors.secondary}
                 />
             }
             showsVerticalScrollIndicator={false}
-            data={filteredData}
+            // scrollEnabled={false}
+            data={ratings}
             keyExtractor={item => item.id}
-            contentContainerStyle={{gap:15, paddingTop:30}}
-            onEndReached={getMore}
+            contentContainerStyle={{gap:15, paddingTop:30, height : '100%'}}
+            onEndReached={fetchMore}
             onEndReachedThreshold={0}
             renderItem={({item}) => {
-                console.log('flatlistitem', item)
+                // console.log('flatlistitem', item)
                 return(
                 <View>
                    <View className="flex-row justify-between items-center gap-2">
@@ -80,7 +102,7 @@ const RatingsPage = () => {
                             </View>
                                
                         </TouchableOpacity>
-                        <View className='flex-row gap-5 justify-center items-center'>
+                        {/* <View className='flex-row gap-5 justify-center items-center'>
                             <Text className='text-mainGray text-xl font-pbold'>{item.rating}</Text>
                             { isOwnersPage ? (
                             <TouchableOpacity onPress={()=>handleThreeDots(item)}>
@@ -89,7 +111,7 @@ const RatingsPage = () => {
                             ) : (
                                 <View />
                             ) }
-                        </View>
+                        </View> */}
 
                     </View>
                 </View>
