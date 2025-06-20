@@ -1,4 +1,6 @@
+import { useUser } from '@clerk/clerk-expo'
 import * as nodeServer from '../lib/ipaddresses'
+import { useState, useEffect } from 'react'
 
 export const createRating = async (data) => {
     try {
@@ -30,4 +32,20 @@ export const deleteRating = async (data) => {
     } catch (err){
         console.log(err)
     }
+}
+
+export const useGetTitleRatings = (data) => {
+    const [ratings, setRatings] = useState('')
+    const [ isLoading, setIsLoading ] = useState(false)
+    const { user : clerkUser } = useUser()
+    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser?.emailAddresses[0]?.emailAddress})
+    const { ratingsId } = data
+
+    useEffect(() => {
+
+    }, [ownerUser, ratingsId])
+
+
+    return { ratings, isLoading, ownerUser }
+
 }
