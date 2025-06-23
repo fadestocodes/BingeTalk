@@ -6,6 +6,7 @@ const CastLayout = () => {
   return (
     <Stack>
       <Stack.Screen name='[movieId]' options={{headerShown : false}} />
+      <Stack.Screen name='ratings' options={{headerShown : false}} />
     </Stack>
   )
 }

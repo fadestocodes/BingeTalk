@@ -268,6 +268,13 @@ const MoviePage = () => {
         }
     }
 
+    const handleRatingsPage = (tab) => {
+        router.push({
+            pathname : `/movie/ratings/${DBmovieId}`,
+            params : { type : 'movie', tab , title : movie.title, release : movie.release_date}
+        })
+    }
+
 
     if ( !ownerUser){
         return (
@@ -403,22 +410,22 @@ const MoviePage = () => {
         </View>
         <View className='main-wrapper px-6 flex pt-220 gap-6 ' style={{marginTop:20, marginBottom:200}}>
             <View className='ratings flex-row justify-center items-center flex-wrap gap-8'>
-                <View className='gap-0 items-center'>
+                <TouchableOpacity onPress={()=> handleRatingsPage('All')}  className='gap-0 items-center'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
                     <Text className='text-mainGray text-3xl font-pbold'>{ownerRating?.rating?.toFixed(1) || 'N/A'}</Text>
-                </View>
-                <View className='gap-0'>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> handleRatingsPage('Your friends')}  className='gap-0'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your friends</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
                         <Text className='text-mainGray text-3xl font-pbold'>{averageFriendsRating}</Text>
                     </View>
-                </View>
-                <View className='gap-0'>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> handleRatingsPage('All')} className='gap-0'>
                     <Text className='text-mainGray text-sm font-psemibold'>Overall rating</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
                         <Text className='text-mainGray text-3xl font-pbold'>{overallRatings}</Text>
                     </View>
-                </View>
+                </TouchableOpacity>
                 
             </View>
             <View className=' gap-5'>
