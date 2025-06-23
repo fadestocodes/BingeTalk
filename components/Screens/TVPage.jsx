@@ -264,7 +264,7 @@ const TVPage = () => {
     const handleRatingsPage = (tab) => {
         router.push({
             pathname : `/tv/ratings/${DBtvId}`,
-            params : { type : 'tv', tab }
+            params : { type : 'tv', tab , title : movie.name, release : movie.first_air_date}
         })
     }
 
@@ -408,13 +408,13 @@ const TVPage = () => {
                     <Text className='text-mainGray text-sm font-psemibold'>Your rating</Text>
                     <Text className='text-mainGray text-3xl font-pbold'>{ownerRating?.rating?.toFixed(1) || 'N/A'}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=> handleRatingsPage('friends')}  className='gap-0'>
+                <TouchableOpacity onPress={()=> handleRatingsPage('Your friends')}  className='gap-0'>
                     <Text className='text-mainGray text-sm font-psemibold'>Your friends</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
                         <Text className='text-mainGray text-3xl font-pbold'>{averageFriendsRating}</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=> handleRatingsPage('overall')} className='gap-0'>
+                <TouchableOpacity onPress={()=> handleRatingsPage('Overall')} className='gap-0'>
                     <Text className='text-mainGray text-sm font-psemibold'>Overall rating</Text>
                     <View className='flex-row items-center gap-2 justify-center'>
                         <Text className='text-mainGray text-3xl font-pbold'>{overallRatings}</Text>

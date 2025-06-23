@@ -3,26 +3,35 @@ import React, {useState, useEffect} from 'react'
 import { useUser } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
 import { Image } from 'expo-image'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { getYear } from '../../lib/formatDate'
-import { userRatingsCategories } from '../../lib/CategoryOptions'
+import { titleRatingsCategories } from '../../lib/CategoryOptions'
 import { ThreeDotsIcon, BackIcon, FilmIcon, TVIcon } from '../../assets/icons/icons'
 import { useGetTitleRatings } from '../../api/rating'
+import { Star } from 'lucide-react-native'
+
 
 
 const RatingsPage = () => {
-    const { type, tab, ratingsId }  = useLocalSearchParams()
-    console.log('testinghere', type, tab,  ratingsId)
+    const { type, tab, ratingsId , title, release}  = useLocalSearchParams()
+    console.log('TABBB', tab)
+
     const data = {
         type,
         ratingsId,
-        limit : 10
+        limit : 10,
     }
 
     const { ratings, ownerUser, isLoading, refetch, fetchMore, hasMore } = useGetTitleRatings(data)
+    const [ selected, setSelected  ] = useState(tab)
+    const router = useRouter()
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
+
+    const handlePress = (item) => {
+        router.push(`/user/${item.user.id}`)
+    }
 
     if (!ownerUser  ){
         return (
@@ -39,19 +48,19 @@ const RatingsPage = () => {
 
         
       
-        {/* <View className="gap-0">
+        <View className="gap-0">
       <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:10}}>
               <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
           <View className='flex-row  justify-start items-center'>
 
-            <Text className='text-white font-pbold text-3xl'>ratings</Text>
+            <Text className='text-white font-pbold text-3xl'>Ratings for {title} ({getYear(release)})</Text>
           </View>
-          <Text className='text-mainGray font-pmedium'>A look at their taste in films & shows</Text>
+          {/* <Text className='text-mainGray font-pmedium'>Ratings for {title}</Text> */}
           <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={userRatingsCategories}
+          data={titleRatingsCategories}
           keyExtractor={(item,index) => index}
           contentContainerStyle={{ gap:10 , paddingTop:15}}
           renderItem={({item}) => (
@@ -61,7 +70,7 @@ const RatingsPage = () => {
           )}
         />
 
-      </View> */}
+      </View>
 
         <FlatList
             refreshControl={
@@ -84,20 +93,18 @@ const RatingsPage = () => {
                 <View>
                    <View className="flex-row justify-between items-center gap-2">
                         <TouchableOpacity  onPress={()=>handlePress(item)} className='flex-row gap-2 justify-center items-center'>
-                            <View className='flex-row gap-3 justify-center items-center'>
-                                <Image
-                                source={{ uri: `${posterURL}${item.movie ? item.movie.posterPath : item.tv && item.tv.posterPath }` }}
-                                contentFit='cover'
-                                style={{ width:40, height:55, borderRadius:8 }}
-                                />
-                                <View className='flex-row gap-2' style={{width:180}}>
-                                    { item.movie ? (
-                                        <FilmIcon size={16} color={Colors.secondary} />
-                                    ) : item.tv && (
-                                        <TVIcon size={16} color={Colors.secondary} />
-                                    ) }
-                                    <Text className='text-mainGray text-sm font-pbold'>{item?.movie?.title || item?.tv?.title} ({ getYear(item?.movie?.releaseDate || item?.tv?.releaseDate)})</Text>
-                                    <Text></Text>
+                            <View className='flex-row gap-3 justify-between items-center w-full '>
+                                <View className='flex-row gap-2 justify-center items-center' style={{}}>
+                                    <Image
+                                    source={{ uri: item.user.profilePic }}
+                                    contentFit='cover'
+                                    style={{ width:35, height:35, borderRadius:50 }}
+                                    />
+                                    <Text className='text-mainGray font-pregular'>@{item.user.username}</Text>
+                                </View>
+                                <View className='flex-row justify-center items-center gap-2'>
+                                    <Star size={20} color={Colors.secondary}/>
+                                    <Text className='text-mainGray text-3xl font-pbold'>{item.rating}</Text>
                                 </View>
                             </View>
                                
