@@ -14,7 +14,6 @@ import { Star } from 'lucide-react-native'
 
 const RatingsPage = () => {
     const { type, tab, ratingsId , title, release}  = useLocalSearchParams()
-    console.log('TABBB', tab)
 
     const data = {
         type,
@@ -22,7 +21,7 @@ const RatingsPage = () => {
         limit : 10,
     }
 
-    const { ratings, ownerUser, isLoading, refetch, fetchMore, hasMore } = useGetTitleRatings(data)
+    const { ratings, ownerUser, isLoading, refetch, fetchMore, hasMore, friendsRatings } = useGetTitleRatings(data)
     const [ selected, setSelected  ] = useState(tab)
     const router = useRouter()
 
@@ -60,11 +59,11 @@ const RatingsPage = () => {
           <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={titleRatingsCategories}
+          data={ titleRatingsCategories }
           keyExtractor={(item,index) => index}
           contentContainerStyle={{ gap:10 , paddingTop:15}}
           renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>{setSelected(item) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+            <TouchableOpacity onPress={()=>{setSelected(item);console.log('SELECTED', item) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
               <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
             </TouchableOpacity>
           )}
@@ -81,16 +80,17 @@ const RatingsPage = () => {
                 />
             }
             showsVerticalScrollIndicator={false}
-            // scrollEnabled={false}
-            data={ratings}
+            data={selected === 'All' ? ratings : selected === 'Your friends' && friendsRatings }
             keyExtractor={item => item.id}
             contentContainerStyle={{gap:15, paddingTop:30, height : '100%'}}
-            onEndReached={fetchMore}
+            onEndReached={()=> {if (hasMore){fetchMore}}}
             onEndReachedThreshold={0}
             renderItem={({item}) => {
-                // console.log('flatlistitem', item)
+                console.log('flatlistitem', item)
                 return(
+                    
                 <View>
+                
                    <View className="flex-row justify-between items-center gap-2">
                         <TouchableOpacity  onPress={()=>handlePress(item)} className='flex-row gap-2 justify-center items-center'>
                             <View className='flex-row gap-3 justify-between items-center w-full '>
