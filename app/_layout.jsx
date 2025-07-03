@@ -32,7 +32,7 @@ SplashScreen.preventAutoHideAsync();
 Sentry.init({
   dsn: 'https://888eaec7d31a00bfb53c76ad74337462@o4509142159327232.ingest.us.sentry.io/4509142210445312',
   enabled: !__DEV__,
-  replaysSessionSampleRate: 0.1,
+  replaysSessionSampleRate: 1.0,
   replaysOnErrorSampleRate: 1.0,
   integrations: [
     Sentry.mobileReplayIntegration(),
