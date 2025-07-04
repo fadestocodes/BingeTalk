@@ -120,7 +120,7 @@ const ThreadsIdPage = () => {
     const handlePostComment =  async ({ parentId = null }) => {
        
         const commentData = {
-            userId : Number(userId),
+            userId : Number(ownerUser?.id),
             threadId : Number(thread.id),
             content : input.trim(),
             parentId : replyingTo ? replyingTo?.parentId : null,
