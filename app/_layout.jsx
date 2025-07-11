@@ -27,6 +27,7 @@ import * as Sentry from '@sentry/react-native';
 
 
 
+
 SplashScreen.preventAutoHideAsync();
 
 Sentry.init({

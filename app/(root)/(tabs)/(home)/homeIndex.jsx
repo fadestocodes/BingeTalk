@@ -225,12 +225,13 @@ const homeIndex = () => {
                     />
                   }
                   removeClippedSubviews
+                  initialNumToRender={10}
+                  windowSize={8}
                   showsVerticalScrollIndicator={false}
                   keyExtractor={(item) => item.id.toString()}
                   contentContainerStyle={{gap:10}}
                   onEndReached={debouncedGetFeed}
                   onEndReachedThreshold={0}
-                  windowSize={21}
           
                   renderItem={({item}) => 
                     (

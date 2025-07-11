@@ -183,6 +183,8 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
             onEndReached={()=> {
                     refetchProfileFeed()
             }}
+            initialNumToRender={10}
+            windowSize={8}
             onEndReachedThreshold={0.3}
             keyboardShouldPersistTaps="handled" 
             keyExtractor={ (item,index) => `${item.id}-${index}` }

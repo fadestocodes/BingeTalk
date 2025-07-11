@@ -91,7 +91,6 @@ const DialogueScreen = () => {
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log(`TESTING:${Number(userId)} ${ Number(dialogueId)} ${input} ${replyingTo?.parentId || null} ${replyingTo?.user?.id || null} ${ dialogue?.user.id}`)
         const commentData = {
             userId : Number(ownerUser?.id),
             dialogueId : Number(dialogueId),
@@ -103,7 +102,6 @@ const DialogueScreen = () => {
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
 
-        console.log('COMMENTDATA'), commentData
     
         const newComment = await createComment( commentData );
         setInput('');

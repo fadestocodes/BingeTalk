@@ -95,6 +95,8 @@ const browseHome = () => {
                   onEndReachedThreshold={0.1}
                 data={  trendingList }
                 keyExtractor = {item => item.id }
+                initialNumToRender={10}
+                windowSize={8}
                 contentContainerStyle={{ gap:15 , width:'100%'}}
                 renderItem = {({item}) => {
                   return (
@@ -109,6 +111,9 @@ const browseHome = () => {
                     tintColor={Colors.secondary}
                     onRefresh={refetchRecents}
                     refreshing={loadingRecents}
+                    initialNumToRender={10}
+                    windowSize={8}
+
                   />
                 }
                   onEndReached={() => {
