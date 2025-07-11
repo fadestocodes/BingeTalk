@@ -18,7 +18,34 @@ import { postPushToken } from "../api/notification";
 import { Platform } from "react-native";
 import  Constants  from 'expo-constants';
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
+import * as StoreReview from 'expo-store-review';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+
+const REVIEW_KEY = 'last_review_prompt';
+const REVIEWED_KEY = 'user_reviewed';
+const DAYS_BEFORE_NEXT_PROMPT = 7;
+
+async function maybeAskForReview() {
+  const alreadyReviewed = await AsyncStorage.getItem(REVIEWED_KEY);
+  console.log('ASYNCSTORAGE', alreadyReviewed)
+  if (alreadyReviewed) return; // ✅ user has already been asked
+
+  const lastPrompt = await AsyncStorage.getItem(REVIEW_KEY);
+  const now = Date.now();
+
+  if (!lastPrompt || now - parseInt(lastPrompt, 10) > DAYS_BEFORE_NEXT_PROMPT * 24 * 60 * 60 * 1000) {
+    const canShow = await StoreReview.hasAction();
+    if (canShow) {
+      StoreReview.requestReview();
+
+      // Store both the prompt time AND that user was asked
+      await AsyncStorage.setItem(REVIEW_KEY, now.toString());
+      await AsyncStorage.setItem(REVIEWED_KEY, 'true');
+    }
+  }
+}
 
 
 const initializeNotification = () => {
@@ -132,6 +159,7 @@ useEffect(() => {
     };
   
     getPushNotificationPermissions();
+    maybeAskForReview()
   }
 }, [user ]);
 

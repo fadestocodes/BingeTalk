@@ -162,7 +162,6 @@ const ListIdScreen = () => {
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log('hello')
 
         const commentData = {
             userId : Number(ownerUser.id),

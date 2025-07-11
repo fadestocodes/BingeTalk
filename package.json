@@ -40,6 +40,7 @@
     "expo-secure-store": "~14.0.1",
     "expo-splash-screen": "~0.29.18",
     "expo-status-bar": "~2.0.0",
+    "expo-store-review": "~8.0.1",
     "expo-symbols": "~0.2.0",
     "expo-system-ui": "~4.0.6",
     "expo-video": "~2.0.3",
