@@ -9,6 +9,7 @@ const HomeLayout = () => {
     <Stack>
       <Stack.Screen name='homeIndex' options={{headerShown : false}} />
       <Stack.Screen name='movie' options={{headerShown : false}} />
+      <Stack.Screen name='review' options={{headerShown : false}} />
       <Stack.Screen name='tv' options={{headerShown : false}} />
       <Stack.Screen name='cast' options={{headerShown : false}} />
       <Stack.Screen name='threads' options={{headerShown : false}} />

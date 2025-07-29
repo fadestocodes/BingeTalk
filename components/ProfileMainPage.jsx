@@ -255,6 +255,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                                 scrollEnabled={false}
                                 keyExtractor={item => item.id}
                                 renderItem={ ({item}) => {
+                                    console.log('ROTATIONITEM', item)
                                     return (
     
                                     <TouchableOpacity onPress={() => handleRotationPress(item)} style={{ marginRight:10 }}>

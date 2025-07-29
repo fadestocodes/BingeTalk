@@ -9,6 +9,7 @@ import { BackIcon, FilmIcon, TVIcon } from '../../assets/icons/icons'
 import { getYear } from '../../lib/formatDate'
 import { userRatingsCategories } from '../../lib/CategoryOptions'
 import { ThreeDotsIcon } from '../../assets/icons/icons'
+import { Star } from 'lucide-react-native'
 
 const UserRatingsPage = () => {
     const {userId, firstName} = useLocalSearchParams()
@@ -100,11 +101,11 @@ const UserRatingsPage = () => {
             onEndReached={getMore}
             onEndReachedThreshold={0}
             renderItem={({item}) => {
-                console.log('flatlistitem', item)
+                console.log('RATINGITEMS', item)
                 return(
                 <View>
                    <View className="flex-row justify-between items-center gap-2">
-                        <TouchableOpacity  onPress={()=>handlePress(item)} className='flex-row gap-2 justify-center items-center'>
+                        <TouchableOpacity  onPress={()=>{console.log("PRESSEDRATING",item);handlePress(item)}} className='flex-row gap-2 justify-center items-center'>
                             <View className='flex-row gap-3 justify-center items-center'>
                                 <Image
                                 source={{ uri: `${posterURL}${item.movie ? item.movie.posterPath : item.tv && item.tv.posterPath }` }}
@@ -118,14 +119,16 @@ const UserRatingsPage = () => {
                                         <TVIcon size={16} color={Colors.secondary} />
                                     ) }
                                     <Text className='text-mainGray text-sm font-pbold'>{item?.movie?.title || item?.tv?.title} ({ getYear(item?.movie?.releaseDate || item?.tv?.releaseDate)})</Text>
-                                    <Text></Text>
                                 </View>
                             </View>
                                
                         </TouchableOpacity>
                         <View className='flex-row gap-5 justify-center items-center'>
-                            <Text className='text-mainGray text-xl font-pbold'>{item.rating}</Text>
-                            { isOwnersPage ? (
+                        <View className='flex-row justify-center items-center gap-2'>
+                                    <Star size={20} color={Colors.secondary}/>
+                                    <Text className='text-mainGray text-3xl font-pbold'>{item.rating}</Text>
+                                </View>                            
+                                { isOwnersPage ? (
                             <TouchableOpacity onPress={()=>handleThreeDots(item)}>
                                 <ThreeDotsIcon size={18} color={Colors.mainGray} />
                             </TouchableOpacity>
@@ -135,6 +138,11 @@ const UserRatingsPage = () => {
                         </View>
 
                     </View>
+                        { item.review && (
+                        <TouchableOpacity>
+                            <Text className='text-white font-pcourier py-2 px-4' numberOfLines={5}>{item.review}</Text>
+                        </TouchableOpacity>
+                    ) }
                 </View>
             )}}
 

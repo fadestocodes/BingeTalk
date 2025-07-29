@@ -9,6 +9,8 @@ import { titleRatingsCategories } from '../../lib/CategoryOptions'
 import { ThreeDotsIcon, BackIcon, FilmIcon, TVIcon } from '../../assets/icons/icons'
 import { useGetTitleRatings } from '../../api/rating'
 import { Star } from 'lucide-react-native'
+import { LinearGradient } from 'expo-linear-gradient'
+
 
 
 
@@ -21,7 +23,7 @@ const RatingsPage = () => {
         limit : 10,
     }
 
-    const { ratings, ownerUser, isLoading, refetch, fetchMore, hasMore, friendsRatings } = useGetTitleRatings(data)
+    const { ratings, ownerUser, isLoading, refetch, fetchMore, hasMore, friendsRatings, director } = useGetTitleRatings(data)
     const [ selected, setSelected  ] = useState(tab)
     const router = useRouter()
 
@@ -42,18 +44,48 @@ const RatingsPage = () => {
     
 
   return (
-    <SafeAreaView className="w-full h-full bg-primary">
-        <View style={{paddingHorizontal:15, paddingBottom:220}}>
+    <View className="w-full h-full bg-primary">
+        <View style={{paddingHorizontal:0, paddingBottom:220}}>
 
         
       
-        <View className="gap-0">
-      <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:10}}>
+        <View className="gap-0 relative">
+        <View className=" w-full ">
+           
+           <Image
+               style={{
+               width: '100%',
+               top:0,
+               height: 300,
+               position: 'absolute',
+               borderRadius:30,
+               }}
+               source={{uri : `${posterURL}${ratings[0]?.movie?.backdropPath || ratings[0]?.tv?.backdropPath}`}}
+               placeholder={{uri : `${posterURLlow}${ratings[0]?.movie?.backdropPath || ratings[0]?.tv?.backdropPath}`}}
+               placeholderContentFit='cover'
+               contentFit="cover" 
+               transition={300} 
+           />
+           <LinearGradient
+               colors={['transparent', Colors.primary]}
+               style={{
+               height: 300,
+               width: '100%',
+               position: 'absolute',
+               top:0,
+               }}
+           />
+       </View>
+       <View className='px-4 relative pt-40'>
+            <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:10}}>
               <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
-          <View className='flex-row  justify-start items-center'>
+          <View className='flex  justify-start items-center pt-[0px] gap-3'>
 
             <Text className='text-white font-pbold text-3xl'>Ratings for {title} ({getYear(release)})</Text>
+            { director && (
+                <Text className='text-white ' style={{fontStyle:'italic'}}>Directed by {director.name}</Text>
+            ) }
           </View>
           {/* <Text className='text-mainGray font-pmedium'>Ratings for {title}</Text> */}
           <FlatList
@@ -82,14 +114,14 @@ const RatingsPage = () => {
             showsVerticalScrollIndicator={false}
             data={selected === 'All' ? ratings : selected === 'Your friends' && friendsRatings }
             keyExtractor={item => item.id}
-            contentContainerStyle={{gap:15, paddingTop:30, height : '100%'}}
+            contentContainerStyle={{gap:15, paddingTop:30, height : '100%', paddingHorizontal:10}}
             onEndReached={()=> {if (hasMore){fetchMore}}}
             onEndReachedThreshold={0}
             renderItem={({item}) => {
-                console.log('flatlistitem', item)
+                // console.log('flatlistitem', item)
                 return(
                     
-                <View>
+                <View className='gap-3'>
                 
                    <View className="flex-row justify-between items-center gap-2">
                         <TouchableOpacity  onPress={()=>handlePress(item)} className='flex-row gap-2 justify-center items-center'>
@@ -98,7 +130,7 @@ const RatingsPage = () => {
                                     <Image
                                     source={{ uri: item.user.profilePic }}
                                     contentFit='cover'
-                                    style={{ width:35, height:35, borderRadius:50 }}
+                                    style={{ width:30, height:30, borderRadius:50 }}
                                     />
                                     <Text className='text-mainGray font-pregular'>@{item.user.username}</Text>
                                 </View>
@@ -121,12 +153,18 @@ const RatingsPage = () => {
                         </View> */}
 
                     </View>
+                    { item.review && (
+                        <TouchableOpacity>
+                            <Text className='text-white font-pcourier py-2 px-4' numberOfLines={5}>{item.review}</Text>
+                        </TouchableOpacity>
+                    ) }
                 </View>
             )}}
 
         />
         </View>
-    </SafeAreaView>
+        </View>
+    </View>
   )
 }
 

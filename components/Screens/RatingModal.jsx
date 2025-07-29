@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , ImageBackground, ScrollView, ActivityIndicator, TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View , ImageBackground, ScrollView, ActivityIndicator, TouchableOpacity, TextInput} from 'react-native'
 import { Image } from 'expo-image'
 import React, {useState, useEffect} from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -13,21 +13,31 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import ToastMessage from '../../components/ui/ToastMessage'
 import { Star } from 'lucide-react-native'
-import { CloseIcon } from '../../assets/icons/icons'
+import { CloseIcon, BackIcon} from '../../assets/icons/icons'
 import { deleteRating } from '../../api/rating'
+import Animated, {
+    useAnimatedKeyboard,
+    useAnimatedStyle,
+  } from 'react-native-reanimated';
 
 const RatingModalPage = () => {
     const { DBmovieId, DBtvId,  DBcastId, prevRating } = useLocalSearchParams();
     const [ previousRating, setPreviousRating ] = useState(prevRating)
     const [rating, setRating] = useState(1.0); // Starting at 5.0 rating
+    const [ isStepOne, setIsStepOne ] = useState(true)
     // const [ prevRating, setPrevRating ] = useState(null)
+    const [ review, setReview ] = useState('')
     const { user: clerkUser } = useUser()
     const { data: ownerUser } = useFetchOwnerUser({ email :clerkUser?.emailAddresses[0].emailAddress })
     const [ message, setMessage ] = useState(null)
     const [imageLoading, setImageLoading] = useState(true); // Track loading state
     const router = useRouter()
     const [ isConfirmPage, setIsConfirmPage  ] = useState(false)
+    const keyboard = useAnimatedKeyboard();
     
+    const animatedStyles = useAnimatedStyle(() => ({
+        transform: [{ translateY: -keyboard.height.value / 3 }],
+    }));
     
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
@@ -36,6 +46,7 @@ const RatingModalPage = () => {
     const tvData  = DBtvId && useGetTVFromDB(DBtvId);
     const movie = movieData?.movie;
     const tv = tvData?.tv;
+    
 
 
 
@@ -52,7 +63,8 @@ const RatingModalPage = () => {
             userId:ownerUser?.id,
             movieId : Number(DBmovieId),
             tvId : Number(DBtvId),
-            rating : Number(rating.toFixed(1))
+            rating : Number(rating.toFixed(1)),
+            review : review.trim()
 
         }
         const postedRating = await createRating(data)
@@ -65,6 +77,10 @@ const RatingModalPage = () => {
         }, 1700)
 
 
+    }
+
+    const stepTwo = () =>{
+        setIsStepOne(false)
     }
 
     const handleDelete = async () => {
@@ -104,6 +120,9 @@ const RatingModalPage = () => {
             </View>
         ) : (
             <>
+            { isStepOne ? (
+
+                <>
         { !DBcastId && (
         <View style={{width:'100%', height:120,justifyContent:'center', alignItems:'center'}}>
             
@@ -128,10 +147,49 @@ const RatingModalPage = () => {
             </View>
         </View>
 
-        ) }
+            ) }
         <View className='' style={{paddingTop:30}}>
-            <RatingUI rating={rating} setRating={setRating}  handlePost={handlePost} prevRating={previousRating}/>
+            <RatingUI rating={rating} setRating={setRating}  handlePost={stepTwo} prevRating={previousRating}/>
         </View>
+            </>
+            ) : (
+                <Animated.View
+                style={[
+                  animatedStyles,
+                ]}>
+                <View className='w-full h-full px-6 pt-10 gap-5'>
+                    <TouchableOpacity onPress={()=>setIsStepOne(true)}>
+                        <BackIcon color={Colors.mainGray} size={26}></BackIcon>
+                    </TouchableOpacity>
+                    <Text className='text-white font-pbold text-2xl text-center'>Turn your rating into a Review!</Text>
+                    <View className='relative'>
+
+                    <TextInput 
+                        value={review}
+                        onChangeText={(text)=>setReview(text)}
+                        maxLength={5000}
+                        multiline
+                        placeholder='Write your review (optional)'
+                        placeholderTextColor={Colors.mainGray}
+                        scrollEnabled
+                        className='text-white font-pcourier relative'
+                        style={{ borderWidth:0, paddingBottom:100, minHeight:130, backgroundColor:Colors.mainGrayDark, borderRadius:10, borderColor:Colors.mainGray, paddingHorizontal:20, paddingTop:25, maxHeight:400}}
+
+                    />
+                        <View className='absolute bottom-0 justify-between items-end w-full flex-row px-[20px] ' style={{borderRadius:10, paddingBottom:20,backgroundColor:Colors.mainGrayDark}}>
+                            <TouchableOpacity onPress={()=>setIsStepOne(true)} className='flex-row justify-center items-center gap-2'>
+                                <Star size={20} color={Colors.secondary}/>
+                                <Text className='text-mainGray font-pbold text-2xl'>{rating.toFixed(1)}/10</Text>
+                            </TouchableOpacity>
+                            <Text className='text-mainGray'>{review.length}/5000</Text>
+                        </View>
+                    </View>
+                    <TouchableOpacity onPress={handlePost} className='justify-center items-center self-center ' style={{backgroundColor:Colors.secondary, borderRadius:30, width:150, height:40}}>
+                        <Text className='font-pbold text-lg' >Post</Text>
+                    </TouchableOpacity>
+                </View>
+                </Animated.View>
+            )}
         </>
         ) }
 
@@ -142,4 +200,6 @@ const RatingModalPage = () => {
 
 export default RatingModalPage
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+   
+})

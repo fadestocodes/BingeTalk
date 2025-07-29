@@ -2,6 +2,7 @@ import { useUser } from '@clerk/clerk-expo'
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user'
+import { findDirector } from './tmdb'
 
 export const createRating = async (data) => {
     try {
@@ -42,8 +43,10 @@ export const useGetTitleRatings = (data) => {
     const [ isLoading, setIsLoading ] = useState(false)
     const { user : clerkUser } = useUser()
     const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser?.emailAddresses[0]?.emailAddress})
-    const { ratingsId, type, limit} = data
+    const { ratingsId, limit} = data
+    let { type } = data
     const [ friendsRatings, setFriendsRatings ] = useState([])
+    const [ director, setDirector ] = useState('')
     
     const getTitleRatings = async () => {
         if (!hasMore) return 
@@ -51,6 +54,7 @@ export const useGetTitleRatings = (data) => {
         try {
             const response = await fetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=${cursor}&take=${limit}`)
             const ratingsData = await response.json()
+            console.log("RATINGSSSDATA", ratingsData.data)
             setRatings( prev => [...prev, ...ratingsData.data] )
             setRatings(ratingsData.data)
             setCursor(ratingsData.nextCursor)
@@ -61,6 +65,26 @@ export const useGetTitleRatings = (data) => {
 
             setFriendsRatings(prev => [...prev, ...filteredData])
 
+            if (!director){
+                if( type === 'movie'){
+                    type = 'MOVIE'
+                } else if (type === 'tv'){
+                    type = 'TV'
+                }
+                
+                const tmdbId = type === 'MOVIE' ? ratingsData.data[0].movie.tmdbId : type === 'TV' ? ratingsData.data[0].tv.tmdbId : null
+                console.log('TMDBIDDDD', tmdbId)
+                const directorParams = {
+                    type,
+                    tmdbId 
+                }
+                const foundDirector = await findDirector(directorParams)
+                console.log("FOUNDDIRECTORRR", foundDirector)
+                setDirector(foundDirector)
+            }
+
+
+
         } catch (err){
             console.log(err)
         } finally {
@@ -68,6 +92,8 @@ export const useGetTitleRatings = (data) => {
         }
 
     }
+
+
 
     useEffect(() => {
         getTitleRatings()
@@ -79,6 +105,7 @@ export const useGetTitleRatings = (data) => {
         try {
             const response = await fetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=null&take=${limit}`)
             const ratingsData = await response.json()
+
             setRatings(ratingsData.data )
             setRatings(ratingsData.data)
             const followingIds =  ownerUser.following.map( i => i.followerId ) 
@@ -101,6 +128,6 @@ export const useGetTitleRatings = (data) => {
 
 
 
-    return { ratings, isLoading, ownerUser, refetch , fetchMore : getTitleRatings, hasMore, friendsRatings}
+    return { ratings, isLoading, ownerUser, refetch , fetchMore : getTitleRatings, hasMore, friendsRatings, director}
 
 }

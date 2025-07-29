@@ -21,7 +21,6 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     const { refetch } = useFetchActivityId(activity?.id)
 
 
-
     // const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
     // const alreadyDownvoted = activity?.activityInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
     // const alreadyReposted = activity?.activityInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
@@ -187,6 +186,12 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                 activity.activityType === 'DOWNVOTE' ? <ThumbsDown size={20} color={Colors.secondary}  /> : activity.activityType === 'WATCHED' && <Eye size={20} color={Colors.secondary} /> }
             <Text className='text-mainGray'>{activity.user.firstName} {activity.description}</Text>
         </View>
+        {/* { activity?.review?.review && (
+            <>
+            <Text className='text-secondary uppercase font-pcourier text-center text-lg' >{activity.user.firstName}</Text>
+            <Text className='text-white font-pcourier text-lg' style={{lineHeight:18}} numberOfLines={fromHome && 3}>{activity.review.review}</Text>
+            </>
+        ) } */}
         {!!imagePaths ? (
             <TouchableOpacity onPress={()=>handlePosterPress(activity)}>
                 <Image

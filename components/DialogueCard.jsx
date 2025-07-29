@@ -232,7 +232,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                 <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
                         { isReposted ? (
-                    <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>
+                    <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>    
                 ) : null}
                             <TouchableOpacity onPress={handleUserPress} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                             <Image

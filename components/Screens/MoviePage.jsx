@@ -107,6 +107,7 @@ const MoviePage = () => {
                 posterPath  : res.poster_path,
                 backdropPath : res.backdrop_path
             }
+            // console.log("MOVIEPAGE", res)
 
             const cachedMovieFromDB = queryClient.getQueryData(['movie', movieId]);
             if (cachedMovieFromDB){

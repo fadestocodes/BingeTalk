@@ -21,6 +21,7 @@ import { likeActivity } from '../../../../api/activity';
 import ActivityCard2 from '../../../../components/ActivityCard2';
 import { useNotificationCountContext } from '../../../../lib/NotificationCountContext';
 import debounce from 'lodash.debounce';
+import ReviewCard from '../../../../components/Screens/ReviewCard';
 
 const homeIndex = () => {
   const { notifCount, updateNotifCount } = useNotificationCountContext()
@@ -135,6 +136,7 @@ const homeIndex = () => {
     } 
 
     const handlePress =(item) => {
+      console.log("ITEMMMM", item)
 
       if (item.dialogue){
         router.push(`(home)/dialogue/${item.dialogue.id}`)
@@ -142,8 +144,11 @@ const homeIndex = () => {
         router.push(`(home)/threads/${item.threads.id}`)
       } else if (item.feedFrom === 'threadFromWatched' || item.feedFrom === 'threadFromRotations'){
         router.push(`(home)/threads/${item.id}`)
+      } else if (item.review){
+        console.log('tryingtorouterpush')
+        router.push(`(home)/review/${item.id}`)
       }
-    }
+    } 
 
     const debouncedGetFeed = debounce(async () => {
       if (!loading) {
@@ -252,7 +257,11 @@ const homeIndex = () => {
                             <ListCard list={item.list} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                           </TouchableOpacity>
           
-                        ) : (
+                        ) : item.postType === 'review' ? (
+                          <TouchableOpacity onPress={()=>{refetchOwner();router.push(`(home)/review/${item.id}`)}} isReposted={item.activityType === 'REPOST'}>
+                            <ReviewCard review={item.review} fromHome={true}  isBackground={true} />
+                          </TouchableOpacity>
+                        ):(
                           <TouchableOpacity onPress={ ()=>{  refetchOwner(); console.log('activitypress',item) ;router.push(`(home)/activity/${item.id}`)}}>
                             <ActivityCard2 activity={item} fromHome={true} isBackground={true}/>
                           </TouchableOpacity>
