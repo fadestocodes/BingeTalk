@@ -5,7 +5,6 @@ import * as nodeServer from '../lib/ipaddresses'
 
 
 export const useFetchReview = (reviewId, replyCommentId) => {
-    console.log("FROMUSEFETCHREVIEW")
     const [ review, setReview ] = useState('')
     const { user : clerkUser }  = useUser()
     const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
@@ -19,11 +18,9 @@ export const useFetchReview = (reviewId, replyCommentId) => {
     const [ interactedCount, setInteractedCount ] = useState(null)
 
     const fetchReview = async () => {
-        console.log('fetching single review')
         try {
              const response = await fetch(`${nodeServer.currentIP}/review?id=${reviewId}`)
              const fetchedReview = await response.json()
-             console.log('FETCHEDREVIEW', fetchedReview)
              const upvotedComments = ownerUser.commentInteractions.filter( i => {
                 return fetchedReview.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
             } )

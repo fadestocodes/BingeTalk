@@ -249,7 +249,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
               
                 { tag ? (
                         <View className=' my-3'>
-                            <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:10}} >{tag.tagName}</Text>
+                            <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:15}} >{tag.tagName}</Text>
                         </View>
                     ) : null}
                 <View className='my-0 justify-center items-center w-full gap-3  '>

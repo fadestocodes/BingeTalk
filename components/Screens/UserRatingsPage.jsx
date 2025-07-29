@@ -46,6 +46,10 @@ const UserRatingsPage = () => {
             params : { DBmovieId : item?.movie?.id, DBtvId: item?.tv?.id , prevRating : isOwnersPage ?  item.rating : null}
         })
     }
+
+    const handleReviewPress = (item) => {
+        router.push(`/review/${item.review.id}`)
+    }
       
 
     if (loading){
@@ -101,7 +105,6 @@ const UserRatingsPage = () => {
             onEndReached={getMore}
             onEndReachedThreshold={0}
             renderItem={({item}) => {
-                console.log('RATINGITEMS', item)
                 return(
                 <View>
                    <View className="flex-row justify-between items-center gap-2">
@@ -138,9 +141,9 @@ const UserRatingsPage = () => {
                         </View>
 
                     </View>
-                        { item.review && (
-                        <TouchableOpacity>
-                            <Text className='text-white font-pcourier py-2 px-4' numberOfLines={5}>{item.review}</Text>
+                        { item.review.review && (
+                        <TouchableOpacity onPress={()=>handleReviewPress(item)}>
+                            <Text className='text-white font-pcourier py-2 px-4' numberOfLines={5}>{item.review.review}</Text>
                         </TouchableOpacity>
                     ) }
                 </View>

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , ImageBackground, ScrollView, ActivityIndicator, TouchableOpacity, TextInput} from 'react-native'
+import { StyleSheet, Text, View , ImageBackground, ScrollView, ActivityIndicator, TouchableOpacity,FlatList, TextInput} from 'react-native'
 import { Image } from 'expo-image'
 import React, {useState, useEffect} from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -19,6 +19,7 @@ import Animated, {
     useAnimatedKeyboard,
     useAnimatedStyle,
   } from 'react-native-reanimated';
+import { reviewTraits } from '../../lib/tagOptions'
 
 const RatingModalPage = () => {
     const { DBmovieId, DBtvId,  DBcastId, prevRating } = useLocalSearchParams();
@@ -34,6 +35,7 @@ const RatingModalPage = () => {
     const router = useRouter()
     const [ isConfirmPage, setIsConfirmPage  ] = useState(false)
     const keyboard = useAnimatedKeyboard();
+    const [ traits, setTraits ] = useState([])
     
     const animatedStyles = useAnimatedStyle(() => ({
         transform: [{ translateY: -keyboard.height.value / 3 }],
@@ -64,9 +66,11 @@ const RatingModalPage = () => {
             movieId : Number(DBmovieId),
             tvId : Number(DBtvId),
             rating : Number(rating.toFixed(1)),
-            review : review.trim()
+            review : review.trim(),
+            traits 
 
         }
+        console.log('REVIEW DATAAA', data)
         const postedRating = await createRating(data)
         // router.back()
         if (postedRating){
@@ -98,11 +102,26 @@ const RatingModalPage = () => {
     }
 
 
+    const handleTraitPress = (item) => {
+      
+        const alreadySelected = traits.some( i => i === item)
+        if (alreadySelected) {
+            setTraits( prev => prev.filter( i => i !== item))
+        } else {
+            if (traits.length >= 3){
+                return
+            }
+            setTraits( prev => [...prev, item])
+
+        }
+    }
+
+
 
   return (
     <ScrollView className='w-full h-full bg-primary' style={{borderRadius:30}}>
 
-        <View style={{gap:80, paddingTop:30, justifyContent:'center' , width:'100%'}}>
+        <View style={{gap:80, paddingTop:30, paddingBottom:150,justifyContent:'center' , width:'100%'}}>
                 <View style={{ width:55, height:7, borderRadius:10, backgroundColor:Colors.mainGray, position:'absolute', top:20 , alignSelf:'center'}} />
         <ToastMessage message={message} onComplete={() => setMessage('')} icon={<Star size={30} color={Colors.secondary} />} />
 
@@ -162,6 +181,9 @@ const RatingModalPage = () => {
                         <BackIcon color={Colors.mainGray} size={26}></BackIcon>
                     </TouchableOpacity>
                     <Text className='text-white font-pbold text-2xl text-center'>Turn your rating into a Review!</Text>
+                    <View>
+                    
+                    </View>
                     <View className='relative'>
 
                     <TextInput 
@@ -177,23 +199,55 @@ const RatingModalPage = () => {
 
                     />
                         <View className='absolute bottom-0 justify-between items-end w-full flex-row px-[20px] ' style={{borderRadius:10, paddingBottom:20,backgroundColor:Colors.mainGrayDark}}>
-                            <TouchableOpacity onPress={()=>setIsStepOne(true)} className='flex-row justify-center items-center gap-2'>
+                            <TouchableOpacity style={{backgroundColor: Colors.primary, padding:7, borderRadius:15}} onPress={()=>setIsStepOne(true)} className='flex-row justify-center items-center gap-2'>
                                 <Star size={20} color={Colors.secondary}/>
                                 <Text className='text-mainGray font-pbold text-2xl'>{rating.toFixed(1)}/10</Text>
                             </TouchableOpacity>
                             <Text className='text-mainGray'>{review.length}/5000</Text>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={handlePost} className='justify-center items-center self-center ' style={{backgroundColor:Colors.secondary, borderRadius:30, width:150, height:40}}>
+
+                    <Text className='text-white font-psemibold text-lg'>Choose up to 3 to give praise for:</Text>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 1 }}>
+
+                        {reviewTraits.map((item, index) => {
+                            const alreadySelected = traits.includes(item);
+
+                            return (
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => handleTraitPress(item)}
+                                style={{
+                                borderRadius: 15,
+                                backgroundColor: alreadySelected ? 'white' : 'transparent',
+                                paddingHorizontal: 8,
+                                paddingVertical: 3,
+                                borderWidth: 1,
+                                borderColor: 'white',
+                                marginRight: 8,
+                                marginBottom: 8,
+                                }}
+                            >
+                                <Text className="font-pmedium" style={{ color: alreadySelected ? Colors.primary : 'white' }}>{item} </Text>
+                            </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                          <TouchableOpacity onPress={handlePost} className='justify-center items-center self-center ' style={{backgroundColor:Colors.secondary, borderRadius:30, width:150, height:40}}>
                         <Text className='font-pbold text-lg' >Post</Text>
                     </TouchableOpacity>
                 </View>
+                
                 </Animated.View>
             )}
+            
         </>
+        
         ) }
+        
 
         </View>
+        
     </ScrollView>
   )
 }

@@ -36,6 +36,7 @@ const ReviewScreen = () => {
 
     const { review, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useFetchReview(Number(reviewId), Number(replyCommentId))
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
+    console.log('THEREVIEW', review)
 
 
 

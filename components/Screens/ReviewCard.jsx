@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , TouchableOpacity, FlatList} from 'react-native'
+import { StyleSheet, Text, View , TouchableOpacity, FlatList, ActivityIndicator} from 'react-native'
 import React, {act, useEffect, useState} from 'react'
 import { Image } from 'expo-image'
 import { Colors } from '../../constants/Colors'
@@ -137,6 +137,7 @@ const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, 
     
         const handleComment = (item) => {
             refetchOwner()
+            console.log('COMMENT ON REVIEW', item)
           
             if (fromHome){
                 router.push({
@@ -201,6 +202,15 @@ const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, 
                                         </View>
                                         <Text className='text-mainGrayDark'>{formatDate(item.createdAt)}</Text>
                                     </View>
+                                    { !fromHome && (
+                                        <View className='flex-row justify-center items-center gap-2'>
+                                            <NotebookPen size={24} color={Colors.secondary}  />
+                                            <View className='justify-center items-center'>
+                                                <Text className='text-white font-pbold text-2xl'>{item?.movie?.title || item?.tv?.title} ({getYear(item?.movie?.releaseDate || item?.tv?.releaseDate)})</Text>
+                                            </View>
+                                        </View>
+
+                                    ) }
                                     { fromHome && (
                                         <View className='flex-row gap-2 justify-center items-center px-4 '>
                                             <NotebookPen size={20} color={Colors.secondary} />
@@ -226,8 +236,23 @@ const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, 
                                         <Text className='text-mainGrayLight text-2xl font-pbold '>{item.rating.rating}</Text>
                                     </View>
 
+                        </View>
+                        { item?.reviewTraits?.length > 0 && (
 
-                                </View>
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 1 }}>
+                            
+                                {item.reviewTraits.map((item, index) => {
+
+                                return (
+                                    <View key={index}   style={{ borderRadius: 15,backgroundColor: 'white' ,paddingHorizontal: 8,paddingVertical: 3,borderWidth: 1,borderColor: 'white',marginRight: 8,marginBottom: 8,}}> 
+                                    <Text className="font-pmedium " style={{ color: Colors.primary }}>{item.traitName} </Text>
+                                    </View>
+                                        
+                                    )})
+                                }
+                            
+                            </View>
+                        )  }
                                 <Text className='  font-pcourier text-lg text-white ' style={{lineHeight:18, paddingTop:10}} numberOfLines={fromHome ? 3 : undefined}>{ item.review }</Text>
                             </View>
     

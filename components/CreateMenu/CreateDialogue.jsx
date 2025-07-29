@@ -313,7 +313,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
            
                 
                 { Object.keys(tags).length > 0 && (
-                    <View   className='flex-row  justify-between items-center' style={{ backgroundColor: tags.color , padding:5, borderRadius:10}}>
+                    <View   className='flex-row  justify-between items-center' style={{ backgroundColor: tags.color , padding:5, borderRadius:15}}>
                         <Text className= 'font-pbold text-primary  text-xs'  >{tags.name}</Text>
                     <TouchableOpacity onPress={()=>setTags({})} style={{ backgroundColor:Colors.primary, borderRadius:'50%' }} ><CloseIcon size={16} color={Colors.mainGray} /></TouchableOpacity>
                     </View>

@@ -840,7 +840,6 @@ export const useGetUserRatings = (userId, limit) => {
     const getUserRatings = async () => {
         if (!hasMore) return
         try {
-            console.log('trying to get user ratings', userId, limit)
             const request = await fetch(`${nodeServer.currentIP}/user/ratings?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const response = await request.json()
             console.log('responsehere', response)

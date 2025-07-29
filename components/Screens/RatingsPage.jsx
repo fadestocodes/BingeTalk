@@ -34,6 +34,10 @@ const RatingsPage = () => {
         router.push(`/user/${item.user.id}`)
     }
 
+    const handleReviewPress = (item) => {
+        router.push(`/review/${item.id}`)
+    }
+
     if (!ownerUser  ){
         return (
             <View>
@@ -118,7 +122,7 @@ const RatingsPage = () => {
             onEndReached={()=> {if (hasMore){fetchMore}}}
             onEndReachedThreshold={0}
             renderItem={({item}) => {
-                // console.log('flatlistitem', item)
+                console.log('flatlistitem', item)
                 return(
                     
                 <View className='gap-3'>
@@ -153,9 +157,9 @@ const RatingsPage = () => {
                         </View> */}
 
                     </View>
-                    { item.review && (
-                        <TouchableOpacity>
-                            <Text className='text-white font-pcourier py-2 px-4' numberOfLines={5}>{item.review}</Text>
+                    { item?.review?.review && (
+                        <TouchableOpacity onPress={()=>handleReviewPress(item.review)}>
+                            <Text className='text-white font-pcourier py-2 px-4' numberOfLines={5}>{item.review.review}</Text>
                         </TouchableOpacity>
                     ) }
                 </View>
