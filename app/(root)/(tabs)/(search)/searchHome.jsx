@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable, Animated, Dimensions , useWindowDimensions} from 'react-native'
 import { Image } from 'expo-image'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { feed } from '../../../../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PersonIcon, FilmIcon, TVIcon, ArrowLeftIcon, CloseIcon, BackIcon, LayersIcon } from '../../../../assets/icons/icons'
@@ -15,8 +15,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ChevronRight, MessagesSquare, MessageSquare } from 'lucide-react-native'
 import { getRecentDialogues, getTrendingDialogues, useGetRecentDialoguesInfinite } from '../../../../api/dialogue'
 import DialogueCard from '../../../../components/DialogueCard'
-import ThreadCard from '../../../../components/ThreadCard'
-import { getRecentThreads, getTrendingThreads } from '../../../../api/thread'
+import { useFetchTrailers } from '../../../../api/trailer'
+import YoutubeCard from '../../../../components/YoutubeCard'
+import {  IOScrollView, IOScrollViewController,InView, } from 'react-native-intersection-observer';
+
 
 
 
@@ -42,7 +44,32 @@ const SearchPage = () => {
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
   const [ trendingDialogues, setTrendingDialogues ] = useState(null)
-  const [ trendingThreads, setTrendingThreads ] = useState(null)
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  const [ videosInView, setVideosInView ] = useState(false)
+
+  const { trailers, isLoading: isLoadingTrailers} = useFetchTrailers()
+
+  const scrollX = useRef(new Animated.Value(0)).current;
+
+
+  const { width } = Dimensions.get("window");
+  const ITEM_WIDTH = width * 0.9; // 90% width for card
+  const SPACING = 15; // Gap between cards
+  const onScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+    {
+      useNativeDriver: false,
+      listener: (event) => {
+        const offsetX = event.nativeEvent.contentOffset.x;
+        const index = Math.round(offsetX / (ITEM_WIDTH + SPACING));
+        console.log('INDEXRIGHTNOW', index)
+        setCurrentIndex(index);
+      },
+    }
+  );
 
 
   const handleChange = (text) => {
@@ -111,8 +138,6 @@ const SearchPage = () => {
       }) 
       const trendingDialoguesResponse = await getRecentDialogues(5);
       setTrendingDialogues(trendingDialoguesResponse);
-      const trendingThreadsResponse = await getRecentThreads(5)
-      setTrendingThreads(trendingThreadsResponse)
     } catch (err) {
       console.log('Error fetching all categories',err)
     } finally{
@@ -136,8 +161,6 @@ const SearchPage = () => {
         }) 
         const trendingDialoguesResponse = await getRecentDialogues(5);
         setTrendingDialogues(trendingDialoguesResponse);
-        const trendingThreadsResponse = await getRecentThreads(5)
-        setTrendingThreads(trendingThreadsResponse)
         
 
       } catch (err) {
@@ -185,6 +208,7 @@ const SearchPage = () => {
 
 
   return (
+
     <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary pb-24 pt-3 px-5 relative' >
       
       <View className='justify-center items-center'>
@@ -225,7 +249,7 @@ const SearchPage = () => {
       ) }
       </View>
         { !discoverPage ? (
-
+          
       <FlatList
         data = {results}
         scrollEnabled={ !discoverPage ? true : false }
@@ -262,8 +286,8 @@ const SearchPage = () => {
 
       </FlatList>
         ) : (
-         
-          <ScrollView
+          
+          <IOScrollView
           refreshControl={
             <RefreshControl
               tintColor={Colors.secondary}
@@ -274,6 +298,10 @@ const SearchPage = () => {
           showsVerticalScrollIndicator={false}
           scrollEnabled={ !discoverPage ? false : true }
           style={{ height:'100%'}}
+
+         
+          scrollEventThrottle={16}
+
         >
           <View className='flex gap-6 w-full h-full'>
             
@@ -315,31 +343,39 @@ const SearchPage = () => {
                 
                 />
             </View>
-            <View className='gap-3 flex items-start w-full'  >
+            <InView className='gap-3 flex items-start w-full'  
+              
+              onChange={(inView) => {console.log('Inview:', inView); setVideosInView(inView)}}
+            >
               <TouchableOpacity onPress={()=>router.push('/threads/discover')} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <MessagesSquare   size={20} color={Colors.mainGray}/>
-                  <Text className='text-mainGray font-pbold text-xl '>Recent Threads</Text>
+                  <Text className='text-mainGray font-pbold text-xl '>Recent Trailers</Text>
                   <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
               </TouchableOpacity>
                 <FlatList
-                  data={trendingThreads}
+                  data={trailers}
                   horizontal
+                  // pagingEnabled
+                  onScrollBeginDrag={() => setIsScrolling(true)}
+                  onScrollEndDrag={() => setIsScrolling(false)}
                   showsHorizontalScrollIndicator={false}
-                  keyExtractor={item => item.id}
-                  contentContainerStyle={{gap:15}}
-                  renderItem={({item}) => {
+                  keyExtractor={(item) => item.id.videoId}
+                  nestedScrollEnabled={false}  // Optional: prevent nested scrolls
+                  style={{height:400}}
+                  contentContainerStyle={{gap:15, overflow:"hidden", height:400}}
+                  renderItem={({item, index}) => {
                       // console.log('trending thread', item)
                     return (
-                      <TouchableOpacity onPress={()=> handleThreadPress(item)} style={{width:300}} >
-                        <ThreadCard  thread={item} isBackground={true} isShortened={true} showThreadTopic={true} fromSearchHome={true} />
-                      </TouchableOpacity>
+                      <YoutubeCard item={item} index={index} currentIndex={currentIndex} isScrolling={isScrolling} videosInView={videosInView} />
                   )}}
-                
+
+                  onScroll={onScroll}
+                  scrollEventThrottle={16}
                 />
-            </View>
+            </InView>
            
           </View>
-        </ScrollView>
+        </IOScrollView>
         ) }
     </SafeAreaView>
   )

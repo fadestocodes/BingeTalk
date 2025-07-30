@@ -122,7 +122,7 @@ const RatingsPage = () => {
             onEndReached={()=> {if (hasMore){fetchMore}}}
             onEndReachedThreshold={0}
             renderItem={({item}) => {
-                console.log('flatlistitem', item)
+                // console.log('flatlistitem', item)
                 return(
                     
                 <View className='gap-3'>
