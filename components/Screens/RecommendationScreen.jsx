@@ -10,6 +10,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { Handshake } from 'lucide-react-native'
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import ToastMessage from '../ui/ToastMessage'
+import { avatarFallback } from '../../lib/fallbackImages'
 
 const RecommendationScreen = () => {
 
@@ -137,7 +138,7 @@ const RecommendationScreen = () => {
                                 <View className='flex-row w-full justify-between items-center gap-3'>
                                     <View className='flex-row gap-3 justify-center items-center'>
                                         <Image
-                                            source = {{ uri : item.following.profilePic }}
+                                            source = {{ uri : item.following.profilePic || avatarFallback }}
                                             contentFit='cover'
                                             transition={300}
                                             style = {{ width:45, height : 45, borderRadius:'50%' }}

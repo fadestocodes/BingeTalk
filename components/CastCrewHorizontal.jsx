@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, FlatList , TouchableOpacity} from 'react-native'
 import { Image } from 'expo-image';
 import React from 'react'
+import { avatarFallback } from '../lib/fallbackImages';
 
 const CastCrewHorizontal = ({param, handlePress}) => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -15,11 +16,11 @@ const CastCrewHorizontal = ({param, handlePress}) => {
             <View className='flex-wrap flex justify-start  items-start ' style={{width:100}}>
                 <TouchableOpacity onPress={()=>handlePress(item)}>
                     <Image
-                        source={{uri : item.profile_path ?  `${posterURL}${item.profile_path}` : `${posterURL}${item.poster_path} `}}
-                        placeholder={{uri : item.profile_path ?  `${posterURLlow}${item.profile_path}` : `${posterURLlow}${item.poster_path} `}}
+                        source={{uri : item.profile_path ?  (`${posterURL}${item.profile_path}` || avatarFallback) : (`${posterURL}${item.poster_path} ` || avatarFallback)}}
+                        placeholder={{uri : avatarFallback}}
                         placeholderContentFit='cover'
                         contentFit='cover'
-                        transition={300}
+                        transition={100}
                         style={{ width:  75, height: item.poster_path ? 120 : 75, borderRadius : item.poster_path ? 10 :  50, overflow:'hidden', marginBottom:5 }}
                     />
                     <View className='flex gap-0 items-start justify-start  '>

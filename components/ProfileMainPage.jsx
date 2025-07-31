@@ -22,6 +22,7 @@ import { useGetProfileFeed } from '../api/feed'
 import ThreadCard from './ThreadCard'
 import ListCard from './ListCard'
 import { usePostRemoveContext } from '../lib/PostToRemoveContext'
+import { avatarFallback } from '../lib/fallbackImages'
  
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
@@ -199,7 +200,7 @@ import { usePostRemoveContext } from '../lib/PostToRemoveContext'
                         position: 'absolute',
                         borderRadius:30
                         }}
-                        source={{ uri: user.profilePic }}
+                        source={{ uri: user?.profilePic  || avatarFallback}}
                         contentFit="cover" // Same as resizeMode='cover'
                         transition={300} // Optional: Adds a fade-in effect
                     />

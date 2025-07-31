@@ -8,6 +8,7 @@ import { Colors } from '../../constants/Colors'
 import { useUser } from '@clerk/clerk-expo'
 import { router } from 'expo-router'
 import { BackIcon } from '../../assets/icons/icons'
+import { avatarFallback } from '../../lib/fallbackImages'
 
 
 const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
@@ -117,7 +118,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                    <View className="flex-row justify-between items-center gap-2">
                         <TouchableOpacity onPress={()=>handleUserPress(item?.follower || item?.following)} className='flex-row gap-2 justify-center items-center'>
                                 <Image
-                                source={{ uri : item?.follower?.profilePic || item?.following?.profilePic }}
+                                source={{ uri : item?.follower?.profilePic || item?.following?.profilePic || avatarFallback }}
                                 contentFit='cover'
                                 style={{ width:40, height:40, borderRadius:50 }}
                                 />
@@ -166,7 +167,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
                    <View className="flex-row justify-between items-center gap-2">
                         <TouchableOpacity onPress={()=>handleUserPress(item?.follower || item?.following)} className='flex-row gap-2 justify-center items-center'>
                                 <Image
-                                source={{ uri : item?.follower?.profilePic || item?.following?.profilePic }}
+                                source={{ uri : item?.follower?.profilePic || item?.following?.profilePic || avatarFallback}}
                                 contentFit='cover'
                                 style={{ width:40, height:40, borderRadius:50 }}
                                 />

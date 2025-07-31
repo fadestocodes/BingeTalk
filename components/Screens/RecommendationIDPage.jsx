@@ -13,6 +13,7 @@ import { getYear, formatDate } from '../../lib/formatDate'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical} from 'lucide-react-native';
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
+import { avatarFallback } from '../../lib/fallbackImages'
 
 
 const RecommendationPage = () => {
@@ -430,7 +431,7 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                 <TouchableOpacity onPress={()=>router.push(`user/${recommendation.recommender.id}`)} className="w-full justify-center items-start">
                   <View className='flex-row justify-start items-center w-full gap-2 '>
                       <Image
-                              source={{ uri: didOwnerSend ? recommendation.recipient.profilePic :  recommendation.recommender.profilePic }}
+                              source={{ uri: didOwnerSend ? (recommendation.recipient.profilePic || avatarFallback ):  (recommendation.recommender.profilePic || avatarFallback)}}
                               resizeMethod = 'cover'
                               style={{ width:25, height : 25, borderRadius : '50%' }}
                           />
@@ -482,7 +483,7 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                             <View className='flex-row w-full justify-between items-center'>
                                     <TouchableOpacity onPress={()=>handleUserPress(item)} className="flex-row items-center gap-2">
                                         <Image
-                                            source={{ uri: item.user.profilePic }}
+                                            source={{ uri: item.user.profilePic  || avatarFallback}}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
@@ -538,7 +539,7 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                             <View className='flex-row w-full justify-between items-center'>
                                     <TouchableOpacity onPress={()=>handleUserPress(reply)} className="flex-row  items-center gap-2 ">
                                         <Image
-                                            source={{ uri: reply.user.profilePic }}
+                                            source={{ uri: reply.user.profilePic || avatarFallback }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />

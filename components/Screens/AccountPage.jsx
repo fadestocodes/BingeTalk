@@ -3,7 +3,7 @@ import React from 'react'
 import { BackIcon, ForwardIcon } from '../../assets/icons/icons'
 import { Colors } from '../../constants/Colors'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { ShieldX, ChevronRight, LogOut, UserMinus, FileUser, Info, LifeBuoy } from 'lucide-react-native'
+import { ShieldX, ChevronRight, LogOut, UserMinus, FileUser, Info, LifeBuoy, NotepadText } from 'lucide-react-native'
 import { useClerk, useUser } from '@clerk/clerk-expo'
 
 
@@ -45,6 +45,13 @@ const AccountPage = () => {
         router.push('/user/account/blockedUsers')
     }
 
+    const handleFeedback = () => {
+        router.push({
+            pathname:'/user/account/submitFeedback',
+            params : {userId}
+        })
+    }
+
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
     <ScrollView   style={{paddingHorizontal:15}}>
@@ -71,6 +78,16 @@ const AccountPage = () => {
                 </TouchableOpacity>
             </View>
            
+            <View className='w-full justify-between flex-row'>
+
+                <View className='flex-row gap-2 justify-start items-center'>
+                    <NotepadText size={26} color={Colors.mainGray} />
+                    <Text className='text-white font-pregular text-lg'>Send Us Your Feedback</Text>
+                </View>
+                <TouchableOpacity onPress={handleFeedback}>
+                    <ChevronRight size={28} color={Colors.mainGray} />
+                </TouchableOpacity>
+            </View>
             <View className='w-full justify-between flex-row'>
 
                 <View className='flex-row gap-2 justify-start items-center'>

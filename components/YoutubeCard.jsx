@@ -7,7 +7,7 @@ import { Dimensions, View } from 'react-native';
 const YoutubeCard = ({ item, index, currentIndex, isScrolling, videosInView }) => {
 
     const isPlaying = index === currentIndex && !isScrolling && videosInView;
-    console.log('INDEXINVIEW', index)
+    // console.log('INDEXINVIEW', index)
 
   return (
     <View style={{ width: Dimensions.get("window").width - 45, overflow:'hidden', height:200, borderRadius:25}}>

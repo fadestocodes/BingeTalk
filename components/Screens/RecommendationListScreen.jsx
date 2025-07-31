@@ -12,6 +12,7 @@ import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellips
 import { formatDate, getYear } from '../../lib/formatDate'
 import { FilmIcon, TVIcon , BackIcon} from '../../assets/icons/icons'
 import { deleteRecommendation } from '../../api/recommendation'
+import { avatarFallback } from '../../lib/fallbackImages';
 
 
 const RecommendationListScreen = () => {
@@ -169,7 +170,7 @@ const RecommendationListScreen = () => {
                                                             <Text className='text-mainGray font-pregular text-sm '>Recommended by</Text>
                                                             <View className='flex-row justify-start items-center gap-2'>
                                                             <Image
-                                                                source={{ uri: item.recommender.profilePic }}
+                                                                source={{ uri: item.recommender.profilePic || avatarFallback }}
                                                                 resizeMethod = 'cover'
                                                                 style={{ width:25, height : 25, borderRadius : '50%' }}
                                                             />
@@ -260,7 +261,7 @@ const RecommendationListScreen = () => {
                                                             <Text className='text-mainGray font-pregular text-sm '>Recommended to</Text>
                                                             <View className='flex-row justify-start items-center gap-2'>
                                                             <Image
-                                                                source={{ uri: item.recipient.profilePic }}
+                                                                source={{ uri: item.recipient.profilePic || avatarFallback }}
                                                                 resizeMethod = 'cover'
                                                                 style={{ width:25, height : 25, borderRadius : '50%' }}
                                                             />

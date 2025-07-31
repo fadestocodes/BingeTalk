@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router'
 import { useNotificationCountContext } from '../../../../lib/NotificationCountContext'
 import { BackIcon } from '../../../../assets/icons/icons'
 import { notificationFilterCategories } from '../../../../lib/CategoryOptions'
+import { avatarFallback } from '../../../../lib/fallbackImages';
 
 const Notification = () => {
   const { user : clerkUser } = useUser();
@@ -272,7 +273,7 @@ const Notification = () => {
                 <TouchableOpacity onPress={()=>router.push(`user/${item.user.id}`)} className='flex-row gap-2 justify-center items-center'>
 
                   <Image 
-                    source={{ uri : item.user.profilePic }}
+                    source={{ uri : item.user.profilePic || avatarFallback}}
                     style={{ width:30, height:30, borderRadius:50 }}
                     contentFit='cover'
                   />

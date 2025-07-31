@@ -15,6 +15,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, use
 import { commentInteraction } from '../../api/comments'
 import { createComment } from '../../api/comments'
 import { listInteraction } from '../../api/list'
+import { avatarFallback } from '../../lib/fallbackImages'
 
 
 const ListIdScreen = () => {
@@ -421,7 +422,7 @@ const ListIdScreen = () => {
             <View className='w-full flex-row justify-between items-center'>
         <TouchableOpacity onPress={()=>router.push(`user/${list.user.id}`)} className='flex-row justify-start items-center gap-3 '>
         <Image
-            source={{ uri: list.user.profilePic }}
+            source={{ uri: list.user.profilePic || avatarFallback }}
             contentFit='cover'
             style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
         />
@@ -534,7 +535,7 @@ const ListIdScreen = () => {
                             <View className='flex-row w-full justify-between items-center'>
                                     <TouchableOpacity onPress={()=>{handleUserPress(item.user)}} className="flex-row items-center gap-2">
                                         <Image
-                                            source={{ uri: item.user.profilePic }}
+                                            source={{ uri: item.user.profilePic || avatarFallback }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
@@ -590,7 +591,7 @@ const ListIdScreen = () => {
                             <View className='flex-row w-full justify-between items-center'>
                                     <TouchableOpacity onPress={()=>{handleUserPress(reply.user)}} className="flex-row  items-center gap-2 ">
                                         <Image
-                                            source={{ uri: reply.user.profilePic }}
+                                            source={{ uri: reply.user.profilePic || avatarFallback }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />

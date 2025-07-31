@@ -10,6 +10,7 @@ import { ThreeDotsIcon, BackIcon, FilmIcon, TVIcon } from '../../assets/icons/ic
 import { useGetTitleRatings } from '../../api/rating'
 import { Star } from 'lucide-react-native'
 import { LinearGradient } from 'expo-linear-gradient'
+import { avatarFallback } from '../../lib/fallbackImages'
 
 
 
@@ -132,7 +133,7 @@ const RatingsPage = () => {
                             <View className='flex-row gap-3 justify-between items-center w-full '>
                                 <View className='flex-row gap-2 justify-center items-center' style={{}}>
                                     <Image
-                                    source={{ uri: item.user.profilePic }}
+                                    source={{ uri: item.user.profilePic || avatarFallback }}
                                     contentFit='cover'
                                     style={{ width:30, height:30, borderRadius:50 }}
                                     />

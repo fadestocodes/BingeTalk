@@ -22,6 +22,14 @@ import ActivityCard2 from '../../../../components/ActivityCard2';
 import { useNotificationCountContext } from '../../../../lib/NotificationCountContext';
 import debounce from 'lodash.debounce';
 import ReviewCard from '../../../../components/Screens/ReviewCard';
+import { avatarFallback } from '../../../../lib/fallbackImages';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+import WhatsNewModal from '../../../../components/Screens/WhatsNewModal';
+// import { ratingToReview } from '../../constants/Images' 
+
+
+
 
 const homeIndex = () => {
   const { notifCount, updateNotifCount } = useNotificationCountContext()
@@ -46,6 +54,12 @@ const homeIndex = () => {
     const [ unreadNotifs, setUnreadNotifs ]  = useState([])
     const flatListRef = useRef(null);
     const [scrollPosition, setScrollPosition] = useState(0);
+    const [ shouldShowWhatsNew, setShouldShowWhatsNew ] = useState(false)
+    
+
+    const WHATS_NEW_KEY = 'ALREADY_SHOWN_WHATS_NEW';
+    const CURRENT_APP_VERSION = Constants.expoConfig.version     // e.g., '1.3.0'
+    // console.log(`CURRENT VERSION: ${CURRENT_APP_VERSION}`)
 
     const getFeed = async () => {
         if (loading) return
@@ -100,7 +114,35 @@ const homeIndex = () => {
     } catch (err) {
         console.log(err)
     }
-    setLoading(false);
+      setLoading(false);
+    }
+
+    const checkWhatsNew = async () => {
+
+      const alreadyShown = await AsyncStorage.getItem(WHATS_NEW_KEY)
+
+      // await AsyncStorage.removeItem(WHATS_NEW_KEY)
+
+      // const keys = await AsyncStorage.getAllKeys();
+      // const items = await AsyncStorage.multiGet(keys);
+  
+      // console.log('🔍 AsyncStorage contents:');
+      // items.forEach(([key, value]) => {
+      //   console.log(`${key}: ${value}`);
+      // });
+      
+      
+      if ( CURRENT_APP_VERSION === '1.3.0' && (!alreadyShown || (alreadyShown && alreadyShown !== CURRENT_APP_VERSION) )){
+        
+        setShouldShowWhatsNew(true)
+      } 
+
+
+    }
+
+    const closeWhatsNew = async () => {
+      await AsyncStorage.setItem(WHATS_NEW_KEY, CURRENT_APP_VERSION)
+      setShouldShowWhatsNew(null)
     }
 
 
@@ -110,6 +152,7 @@ const homeIndex = () => {
         if (ownerUser){
           getFeed()
         }
+        checkWhatsNew()
         
     }, [ownerUser])
 
@@ -170,7 +213,11 @@ const homeIndex = () => {
           <ActivityIndicator />
         </View>
       ) : (
-
+        <>
+        { shouldShowWhatsNew && (
+          <WhatsNewModal handleClose={closeWhatsNew} />
+        ) }
+      
      
     <View className='w-full  px-4 gap-5' style={{paddingBottom:130}}>
       <View className="gap-3">
@@ -183,7 +230,7 @@ const homeIndex = () => {
       <TouchableOpacity onPress={()=>{router.push('/notification')}} style={{ position:'absolute', top:0, right:30 }}>
         <View className='relative' >
           <Image
-            source={{ uri: ownerUser.profilePic }}
+            source={{ uri: ownerUser.profilePic || avatarFallback }}
             contentFit='cover'
             style={{ width:30, height:30, borderRadius:50 }}
           />
@@ -278,9 +325,11 @@ const homeIndex = () => {
                   </View>
 
       ) }
+      
 
       </View>
       </View>
+      </>
       ) }
       </SafeAreaView>
   )

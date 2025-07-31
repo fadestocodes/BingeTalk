@@ -9,6 +9,7 @@ import { useFetchOwnerUser } from '../api/user'
 import { formatDate } from '../lib/formatDate'
 import { useRouter } from 'expo-router'
 import { listInteraction } from '../api/list'
+import { avatarFallback } from '../lib/fallbackImages'
 
 const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDisabled}) => {
 
@@ -190,7 +191,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 ) : null}
                                     <TouchableOpacity style={{flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5}} onPress={()=>handleUserPress(item)}>
                                     <Image
-                                    source ={{ uri :item.user.profilePic }}
+                                    source ={{ uri :item.user.profilePic || avatarFallback}}
                                     contentFit='cover'
                                     style={{ width:25, height :25, borderRadius:50 }}
                                     />

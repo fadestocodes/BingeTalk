@@ -55,6 +55,7 @@ export default {
           "backgroundColor": "#171717"
         }
       ],
+      
       "expo-font",
       [
         'expo-dev-client',

@@ -14,6 +14,8 @@ import { dialogueInteraction } from '../api/dialogue'
 import { useFetchOwnerUser } from '../api/user'
 import { getLinkPreview } from '../api/linkPreview'
 import { LinearGradient } from 'expo-linear-gradient'
+import { avatarFallback } from '../lib/fallbackImages'
+import {avatarFallbackImage} from '../constants/Images'
 
 
 
@@ -236,7 +238,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                 ) : null}
                             <TouchableOpacity onPress={handleUserPress} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                             <Image
-                                source={{ uri: userDB.profilePic }}
+                                source={{ uri: userDB?.profilePic || avatarFallback }}
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                             />

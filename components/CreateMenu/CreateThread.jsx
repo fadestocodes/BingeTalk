@@ -18,6 +18,7 @@ import { MessagesSquare, ExternalLink , FileImage, Link} from 'lucide-react-nati
 import { getLinkPreview } from '../../api/linkPreview'
 import { useCreateContext } from '../../lib/CreateContext'
 import { LinearGradient } from 'expo-linear-gradient'
+import { avatarFallback } from '../../lib/fallbackImages'
   
 
 
@@ -203,7 +204,7 @@ import { LinearGradient } from 'expo-linear-gradient'
                     
                         <View className="flex-row items-center gap-2">
                             <Image
-                                source={{ uri: ownerUser.profilePic }}
+                                source={{ uri: ownerUser.profilePic || avatarFallback }}
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                             />

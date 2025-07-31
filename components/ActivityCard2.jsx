@@ -10,6 +10,7 @@ import { toPascalCase } from '../lib/ToPascalCase'
 import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
 import { likeActivity, activityInteraction, useFetchActivityId } from '../api/activity'
+import { avatarFallback } from '../lib/fallbackImages'
 
 const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground}) => {
 
@@ -170,7 +171,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
 
             <TouchableOpacity onPress={()=>{handleUserPress(activity.user)}} className='flex-row gap-2 justify-center items-center'>
             <Image
-                source={{ uri : activity.user.profilePic }}
+                source={{ uri : activity.user.profilePic || avatarFallback }}
                 contentFit='cover'
                 style={{ width:30, height:30, borderRadius:50 }}
             />

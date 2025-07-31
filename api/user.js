@@ -872,3 +872,16 @@ export const useGetUserRatings = (userId, limit) => {
     return { data, loading, hasMore, refetch , getMore : getUserRatings }
 
 }
+
+
+export const findUniqueRotations = async () => {
+    try {
+        const res = await fetch(`${nodeServer.currentIP}/user/unique-rotations`)
+        const data = await res.json()
+        console.log("UNIQUROTATIONS", data)
+        return data
+    } catch(err){
+        console.log(err)
+        return err
+    }
+}

@@ -10,14 +10,16 @@ import debounce from 'lodash.debounce';
 import { useRouter } from 'expo-router'
 import { getYear } from '../../../../lib/formatDate'
 import DiscoverHorizontal from '../../../../components/DiscoverHorizontal'
-import { searchUsers } from '../../../../api/user'
+import { findUniqueRotations, searchUsers } from '../../../../api/user'
 import { useQueryClient } from '@tanstack/react-query';
-import { ChevronRight, MessagesSquare, MessageSquare } from 'lucide-react-native'
+import { ChevronRight, MessagesSquare, MessageSquare, Popcorn, Dna, Utensils, Fingerprint } from 'lucide-react-native'
 import { getRecentDialogues, getTrendingDialogues, useGetRecentDialoguesInfinite } from '../../../../api/dialogue'
 import DialogueCard from '../../../../components/DialogueCard'
 import { useFetchTrailers } from '../../../../api/trailer'
 import YoutubeCard from '../../../../components/YoutubeCard'
 import {  IOScrollView, IOScrollViewController,InView, } from 'react-native-intersection-observer';
+import { avatarFallback } from '../../../../lib/fallbackImages'
+import ProfileCard from '../../../../components/ProfileCard'
 
 
 
@@ -44,6 +46,7 @@ const SearchPage = () => {
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
   const [ trendingDialogues, setTrendingDialogues ] = useState(null)
+  const [ uniqueRotations, setUniqueRotations  ] = useState(null)
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -138,6 +141,8 @@ const SearchPage = () => {
       }) 
       const trendingDialoguesResponse = await getRecentDialogues(5);
       setTrendingDialogues(trendingDialoguesResponse);
+      const uniqueRotationsData = await findUniqueRotations()
+      setUniqueRotations(uniqueRotationsData)
     } catch (err) {
       console.log('Error fetching all categories',err)
     } finally{
@@ -161,6 +166,9 @@ const SearchPage = () => {
         }) 
         const trendingDialoguesResponse = await getRecentDialogues(5);
         setTrendingDialogues(trendingDialoguesResponse);
+
+        const uniqueRotationsData = await findUniqueRotations()
+        setUniqueRotations(uniqueRotationsData)
         
 
       } catch (err) {
@@ -204,7 +212,9 @@ const SearchPage = () => {
     router.push(`/threads/${item.id}`)
   }
 
-
+  const handleProfileCard = (item) => {
+    router.push(`/user/${item.id}`)
+  }
 
 
   return (
@@ -254,18 +264,20 @@ const SearchPage = () => {
         data = {results}
         scrollEnabled={ !discoverPage ? true : false }
         style ={{ width:'100%'}}
+        contentContainerStyle={{paddingBottom:100}}
         keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
           return (
           <>
           <View className=' w-full   '>
             <TouchableOpacity onPress={()=>handlePress(item)} className='w-full gap-5 flex-row my-3 justify-start items-center'>
               <Image 
-                source={  searchingFor === 'users' ? { uri:item.profilePic } : item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
-                placeholder={  searchingFor === 'users' ? { uri:item.profilePic } : item.media_type === 'person' ? {uri:`${posterURLlow}${item.profile_path}`}  : {uri:`${posterURLlow}${item.poster_path}`}}
+                source={  searchingFor === 'users' ? { uri:item.profilePic || avatarFallback} : item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
+                placeholder={  searchingFor === 'users' ? { uri:item.profilePic || avatarFallback} : item.media_type === 'person' ? {uri:`${posterURLlow}${item.profile_path}`}  : {uri:`${posterURLlow}${item.poster_path}`}}
                 placeholderContentFit='cover'
                 contentFit='cover'
-                style={{ width:50, height:75, borderRadius:10, overflow:'hidden' }}
+                style={{ width:50, height: searchingFor === 'users' ? 50 : 75, borderRadius: searchingFor === 'users' ? 50 : 10, overflow:'hidden' }}
               />
               <View className='flex flex-1 w-full justify-center pr-0'>
                 <View className='flex-row gap-2 flex-1 justify-center items-center'>
@@ -279,7 +291,6 @@ const SearchPage = () => {
               </View>
             </TouchableOpacity>
           </View>
-            <View style={{ borderTopWidth: .5, borderColor:Colors.mainGray }} />
             </>
         )}}
       >
@@ -343,14 +354,14 @@ const SearchPage = () => {
                 
                 />
             </View>
-            <InView className='gap-3 flex items-start w-full'  
+            <InView className='gap-3 flex items-start w-full h-[260px]'  
               
               onChange={(inView) => {console.log('Inview:', inView); setVideosInView(inView)}}
             >
-              <TouchableOpacity onPress={()=>router.push('/threads/discover')} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
-                  <MessagesSquare   size={20} color={Colors.mainGray}/>
+              <TouchableOpacity disabled style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+                  <Popcorn   size={20} color={Colors.mainGray}/>
                   <Text className='text-mainGray font-pbold text-xl '>Recent Trailers</Text>
-                  <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} />
+                  {/* <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} /> */}
               </TouchableOpacity>
                 <FlatList
                   data={trailers}
@@ -362,7 +373,7 @@ const SearchPage = () => {
                   keyExtractor={(item) => item.id.videoId}
                   nestedScrollEnabled={false}  // Optional: prevent nested scrolls
                   style={{height:400}}
-                  contentContainerStyle={{gap:15, overflow:"hidden", height:400}}
+                  contentContainerStyle={{gap:15, overflow:"hidden", height:200}}
                   renderItem={({item, index}) => {
                       // console.log('trending thread', item)
                     return (
@@ -373,6 +384,31 @@ const SearchPage = () => {
                   scrollEventThrottle={16}
                 />
             </InView>
+
+            <View className='gap-3' style={{paddingBottom:100}}>
+            <View className='gap-3 flex items-start w-full' style={{}} >
+              <TouchableOpacity onPress={()=> { router.push('/movie/discover') }} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+                < Fingerprint size={20} color={Colors.mainGray}/>
+                <Text className='text-mainGray font-pbold text-xl '>Cinematic DNA</Text>
+                {/* <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} /> */}
+              </TouchableOpacity>
+            </View>
+
+            <FlatList
+              data={uniqueRotations}
+              horizontal
+              keyExtractor={(item,index) => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{gap:15}}
+              renderItem={({item}) => (
+                <TouchableOpacity onPress={()=>handleProfileCard(item)}>
+                  <ProfileCard  user={item}/>
+                </TouchableOpacity>
+              )}
+            />
+
+
+            </View>
            
           </View>
         </IOScrollView>

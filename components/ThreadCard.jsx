@@ -12,6 +12,7 @@ import React, {useState, useEffect} from 'react'
 import { toPascalCase } from '../lib/ToPascalCase';
 import { getLinkPreview } from '../api/linkPreview'
 import { LinearGradient } from 'expo-linear-gradient'
+import { avatarFallback } from '../lib/fallbackImages';
 
 
 
@@ -220,7 +221,7 @@ const ThreadCard = ({thread, refetch, isBackground, isShortened, showThreadTopic
                 ) : null }
                             <TouchableOpacity onPress={()=>handleUserPress(thread)} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                                 <Image
-                                    source={{ uri: thread?.user?.profilePic }}
+                                    source={{ uri: thread?.user?.profilePic || avatarFallback }}
                                     contentFit='cover'
                                     style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                                 />

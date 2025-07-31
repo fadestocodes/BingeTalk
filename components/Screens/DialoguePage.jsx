@@ -18,6 +18,7 @@ import ThreadCard from '../ThreadCard'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import DialogueCard from '../DialogueCard'
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
+import { avatarFallback } from '../../lib/fallbackImages'
 
 
 
@@ -378,7 +379,7 @@ const DialogueScreen = () => {
                             <View className='flex-row w-full justify-between items-center'>
                                     <TouchableOpacity onPress={()=>handleUserPress(item)} className="flex-row items-center gap-2">
                                         <Image
-                                            source={{ uri: item.user.profilePic }}
+                                            source={{ uri: item.user.profilePic  || avatarFallback}}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
@@ -434,7 +435,7 @@ const DialogueScreen = () => {
                             <View className='flex-row w-full justify-between items-center'>
                                     <TouchableOpacity onPress={()=>handleUserPress(reply)} className="flex-row  items-center gap-2 ">
                                         <Image
-                                            source={{ uri: reply.user.profilePic }}
+                                            source={{ uri: reply.user.profilePic || avatarFallback }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />

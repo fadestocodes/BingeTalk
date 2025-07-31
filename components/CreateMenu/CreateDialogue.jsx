@@ -24,6 +24,7 @@ import { MessageSquare, FileImage, Link , ExternalLink} from 'lucide-react-nativ
 import { getLinkPreview } from '../../api/linkPreview'
 import { useCreateContext } from '../../lib/CreateContext'
 import { LinearGradient } from 'expo-linear-gradient'
+import { avatarFallback } from '../../lib/fallbackImages'
 
 
 const toPascalCase = (str) => {
@@ -301,7 +302,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
                             <Image
-                                source={{ uri: userDB.profilePic }}
+                                source={{ uri: userDB.profilePic || avatarFallback }}
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                             />
