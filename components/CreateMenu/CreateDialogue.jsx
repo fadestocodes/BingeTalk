@@ -25,6 +25,7 @@ import { getLinkPreview } from '../../api/linkPreview'
 import { useCreateContext } from '../../lib/CreateContext'
 import { LinearGradient } from 'expo-linear-gradient'
 import { avatarFallback } from '../../lib/fallbackImages'
+import { avatarFallbackCustom, moviePosterFallback } from '../../constants/Images'
 
 
 const toPascalCase = (str) => {
@@ -302,7 +303,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             <View className='flex-row w-full justify-between items-center'>
                         <View className="flex-row items-center gap-2">
                             <Image
-                                source={{ uri: userDB.profilePic || avatarFallback }}
+                                source={{ uri: userDB.profilePic || avatarFallbackCustom }}
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                             />
@@ -406,6 +407,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             <TouchableOpacity className=' items-center z-10'>
                 <Image
                     source={{ uri: `${posterURL}${mention.poster_path || mention.profile_path}` }}
+                    placeholder={moviePosterFallback}
+
                     contentFit='cover'
                     style={{ width:35, height:40, borderRadius:10, overflow:'hidden' }}
                 />

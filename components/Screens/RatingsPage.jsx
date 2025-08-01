@@ -11,6 +11,7 @@ import { useGetTitleRatings } from '../../api/rating'
 import { Star } from 'lucide-react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { avatarFallback } from '../../lib/fallbackImages'
+import { avatarFallbackCustom } from '../../constants/Images'
 
 
 
@@ -133,7 +134,7 @@ const RatingsPage = () => {
                             <View className='flex-row gap-3 justify-between items-center w-full '>
                                 <View className='flex-row gap-2 justify-center items-center' style={{}}>
                                     <Image
-                                    source={{ uri: item.user.profilePic || avatarFallback }}
+                                    source={{ uri: item.user.profilePic || avatarFallbackCustom }}
                                     contentFit='cover'
                                     style={{ width:30, height:30, borderRadius:50 }}
                                     />

@@ -15,6 +15,7 @@ import { createComment, commentInteraction } from '../api/comments'
 import { useFetchActivityId } from '../api/activity'
 import { useRouter } from 'expo-router'
 import { avatarFallback } from '../lib/fallbackImages'
+import { avatarFallbackCustom } from '../constants/Images'
 
 const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}) => {
 
@@ -393,7 +394,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                             <View className='flex-row w-full justify-between items-center'>
                                     <View className="flex-row items-center gap-2">
                                         <Image
-                                            source={{ uri: item.user.profilePic || avatarFallback }}
+                                            source={{ uri: item.user.profilePic || avatarFallbackCustom }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
@@ -445,7 +446,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                             <View className='flex-row w-full justify-between items-center'>
                                     <View className="flex-row items-center gap-2 pl-10">
                                         <Image
-                                            source={{ uri: reply.user.profilePic  || avatarFallback}}
+                                            source={{ uri: reply.user.profilePic  || avatarFallbackCustom}}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />

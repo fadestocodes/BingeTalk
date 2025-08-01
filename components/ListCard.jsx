@@ -10,6 +10,7 @@ import { formatDate } from '../lib/formatDate'
 import { useRouter } from 'expo-router'
 import { listInteraction } from '../api/list'
 import { avatarFallback } from '../lib/fallbackImages'
+import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 
 const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDisabled}) => {
 
@@ -191,7 +192,7 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
                                 ) : null}
                                     <TouchableOpacity style={{flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5}} onPress={()=>handleUserPress(item)}>
                                     <Image
-                                    source ={{ uri :item.user.profilePic || avatarFallback}}
+                                    source ={{ uri :item.user.profilePic || avatarFallbackCustom}}
                                     contentFit='cover'
                                     style={{ width:25, height :25, borderRadius:50 }}
                                     />
@@ -221,6 +222,8 @@ const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDi
 
                                 <Image
                                     source={{ uri : element.movie ? `${posterURL}${element.movie.posterPath}` : element.tv ? `${posterURL}${element.tv.posterPath}` : element.castCrew &&  `${posterURL}${element?.castCrew.posterPath}` }}
+                                    placeholder={moviePosterFallback}
+
                                     contentFit='cover'
                                     style= {{ borderRadius : 10, width:40, height:60 }}
                                 />

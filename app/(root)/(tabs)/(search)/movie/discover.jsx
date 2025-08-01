@@ -76,6 +76,7 @@ const MovieIndex = () => {
                 }}
                 source={{ uri: `${posterURL}${ item.backdrop_path  }` }}
                 placeholder={{ uri: `${posterURLlow}${ item.backdrop_path }`  }}
+                
                 placeholderContentFit="cover"
                 contentFit="cover" // Same as resizeMode='cover'
                 // transition={300} // Optional: Adds a fade-in effect

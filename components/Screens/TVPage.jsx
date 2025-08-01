@@ -26,6 +26,7 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { markTVWatch } from '../../api/tv'
 import ToastMessage from '../ui/ToastMessage'
+import { moviePosterFallback } from '../../constants/Images'
 
 
 
@@ -326,7 +327,8 @@ const TVPage = () => {
         <View className='beside-poster w-full  items-center flex-row justify-center gap-6 mb-8 ' style={{paddingTop:150}}>
             <Image 
                 source={{uri : `${posterURL}${movie.poster_path}`}}
-                placeholder={{uri : `${posterURLlow}${movie.poster_path}`}}
+                placeholder={moviePosterFallback}
+
                 placeholderContentFit='cover'
                 style={{ width:100, height: 180, overflow:'hidden', borderRadius:10}}
                 contentFit='cover'

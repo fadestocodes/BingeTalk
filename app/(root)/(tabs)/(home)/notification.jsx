@@ -15,6 +15,7 @@ import { useNotificationCountContext } from '../../../../lib/NotificationCountCo
 import { BackIcon } from '../../../../assets/icons/icons'
 import { notificationFilterCategories } from '../../../../lib/CategoryOptions'
 import { avatarFallback } from '../../../../lib/fallbackImages';
+import { avatarFallbackCustom } from '../../../../constants/Images';
 
 const Notification = () => {
   const { user : clerkUser } = useUser();
@@ -273,7 +274,7 @@ const Notification = () => {
                 <TouchableOpacity onPress={()=>router.push(`user/${item.user.id}`)} className='flex-row gap-2 justify-center items-center'>
 
                   <Image 
-                    source={{ uri : item.user.profilePic || avatarFallback}}
+                    source={{ uri : item.user.profilePic || avatarFallbackCustom}}
                     style={{ width:30, height:30, borderRadius:50 }}
                     contentFit='cover'
                   />

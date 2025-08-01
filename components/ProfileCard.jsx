@@ -3,6 +3,7 @@ import React from 'react'
 import { Image } from 'expo-image'
 import { avatarFallback } from '../lib/fallbackImages'
 import { Colors } from '../constants/Colors'
+import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 
 const ProfileCard = ({user}) => {
 
@@ -13,7 +14,7 @@ const ProfileCard = ({user}) => {
 
         <View className='flex-row gap-3 justify-center items-center  '>
             <Image 
-                source={{ uri: user.profilePic  || avatarFallback}}
+                source={{ uri: user.profilePic  || avatarFallbackCustom}}
                 contentFit='cover'
                 style={{ borderRadius:'50%', overflow:'hidden', width:50, height:50 }}
             />
@@ -32,7 +33,9 @@ const ProfileCard = ({user}) => {
                 keyExtractor={(item) => item.id}
                 renderItem={({item}) => (
                     <Image
-                        source={{ uri: `${posterURL}${item?.movie?.posterPath || item?.tv?.posterPath}` }}
+                        source={{ uri: `${posterURL}${item?.movie?.posterPath || item?.tv?.posterPath}`  }}
+                        placeholder={moviePosterFallback}
+
                         contentFit='cover'
                         style={{ width:45, height:70, borderRadius:10, overflow:'hidden' }}
                         

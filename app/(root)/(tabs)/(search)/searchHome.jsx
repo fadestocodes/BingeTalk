@@ -20,6 +20,7 @@ import YoutubeCard from '../../../../components/YoutubeCard'
 import {  IOScrollView, IOScrollViewController,InView, } from 'react-native-intersection-observer';
 import { avatarFallback } from '../../../../lib/fallbackImages'
 import ProfileCard from '../../../../components/ProfileCard'
+import { avatarFallbackCustom } from '../../../../constants/Images'
 
 
 
@@ -273,8 +274,8 @@ const SearchPage = () => {
           <View className=' w-full   '>
             <TouchableOpacity onPress={()=>handlePress(item)} className='w-full gap-5 flex-row my-3 justify-start items-center'>
               <Image 
-                source={  searchingFor === 'users' ? { uri:item.profilePic || avatarFallback} : item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
-                placeholder={  searchingFor === 'users' ? { uri:item.profilePic || avatarFallback} : item.media_type === 'person' ? {uri:`${posterURLlow}${item.profile_path}`}  : {uri:`${posterURLlow}${item.poster_path}`}}
+                source={  searchingFor === 'users' ? { uri:item.profilePic || avatarFallbackCustom} : item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
+                placeholder={  searchingFor === 'users' ? { uri:item.profilePic || avatarFallbackCustom} : item.media_type === 'person' ? {uri:`${posterURLlow}${item.profile_path}`}  : {uri:`${posterURLlow}${item.poster_path}`}}
                 placeholderContentFit='cover'
                 contentFit='cover'
                 style={{ width:50, height: searchingFor === 'users' ? 50 : 75, borderRadius: searchingFor === 'users' ? 50 : 10, overflow:'hidden' }}

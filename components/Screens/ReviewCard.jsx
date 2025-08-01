@@ -15,6 +15,7 @@ import { getReadingTime } from '../../lib/getReadingTIme'
 import { NotebookPen } from 'lucide-react-native'
 import { reviewInteraction } from '../../api/review'
 import { avatarFallback } from '../../lib/fallbackImages'
+import { avatarFallbackCustom } from '../../constants/Images'
 
 const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, isReposted}) => {
 
@@ -193,7 +194,7 @@ const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, 
                                             ) : null}
                                             <TouchableOpacity style={{flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5}} onPress={()=>handleUserPress(item)}>
                                                 <Image
-                                                source ={{ uri :item.user.profilePic || avatarFallback}}
+                                                source ={{ uri :item.user.profilePic || avatarFallbackCustom}}
                                                 contentFit='cover'
                                                 style={{ width:25, height :25, borderRadius:50 }}
                                                 />

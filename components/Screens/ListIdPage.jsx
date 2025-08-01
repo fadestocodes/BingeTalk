@@ -16,6 +16,7 @@ import { commentInteraction } from '../../api/comments'
 import { createComment } from '../../api/comments'
 import { listInteraction } from '../../api/list'
 import { avatarFallback } from '../../lib/fallbackImages'
+import { avatarFallbackCustom, moviePosterFallback } from '../../constants/Images'
 
 
 const ListIdScreen = () => {
@@ -422,7 +423,7 @@ const ListIdScreen = () => {
             <View className='w-full flex-row justify-between items-center'>
         <TouchableOpacity onPress={()=>router.push(`user/${list.user.id}`)} className='flex-row justify-start items-center gap-3 '>
         <Image
-            source={{ uri: list.user.profilePic || avatarFallback }}
+            source={{ uri: list.user.profilePic || avatarFallbackCustom }}
             contentFit='cover'
             style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
         />
@@ -483,7 +484,8 @@ const ListIdScreen = () => {
                 <TouchableOpacity onPress={()=>handlePress(item)}  >
                     <Image 
                         source = {{ uri : item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : item.castCrew &&  `${posterURL}${item.castCrew.posterPath}` }}
-                        placeholder = {{ uri : item.movie ? `${posterURLlow}${item.movie.posterPath}` : item.tv ? `${posterURLlow}${item.tv.posterPath}` : item.castCrew &&  `${posterURLlow}${item.castCrew.posterPath}` }}
+                        placeholder={moviePosterFallback}
+
                         placeholderContentFit='cover'
                         style= {{ width: 70, height :100, borderRadius:10  }}
                         contentFit='cover'
@@ -535,7 +537,7 @@ const ListIdScreen = () => {
                             <View className='flex-row w-full justify-between items-center'>
                                     <TouchableOpacity onPress={()=>{handleUserPress(item.user)}} className="flex-row items-center gap-2">
                                         <Image
-                                            source={{ uri: item.user.profilePic || avatarFallback }}
+                                            source={{ uri: item.user.profilePic || avatarFallbackCustom }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
@@ -591,7 +593,7 @@ const ListIdScreen = () => {
                             <View className='flex-row w-full justify-between items-center'>
                                     <TouchableOpacity onPress={()=>{handleUserPress(reply.user)}} className="flex-row  items-center gap-2 ">
                                         <Image
-                                            source={{ uri: reply.user.profilePic || avatarFallback }}
+                                            source={{ uri: reply.user.profilePic || avatarFallbackCustom }}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />

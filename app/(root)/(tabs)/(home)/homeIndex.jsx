@@ -26,6 +26,7 @@ import { avatarFallback } from '../../../../lib/fallbackImages';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import WhatsNewModal from '../../../../components/Screens/WhatsNewModal';
+import { avatarFallbackCustom } from '../../../../constants/Images';
 // import { ratingToReview } from '../../constants/Images' 
 
 
@@ -230,7 +231,7 @@ const homeIndex = () => {
       <TouchableOpacity onPress={()=>{router.push('/notification')}} style={{ position:'absolute', top:0, right:30 }}>
         <View className='relative' >
           <Image
-            source={{ uri: ownerUser.profilePic || avatarFallback }}
+            source={{ uri: ownerUser.profilePic || avatarFallbackCustom }}
             contentFit='cover'
             style={{ width:30, height:30, borderRadius:50 }}
           />

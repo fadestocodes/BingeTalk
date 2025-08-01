@@ -23,6 +23,7 @@ import ThreadCard from './ThreadCard'
 import ListCard from './ListCard'
 import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 import { avatarFallback } from '../lib/fallbackImages'
+import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
  
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
@@ -200,7 +201,7 @@ import { avatarFallback } from '../lib/fallbackImages'
                         position: 'absolute',
                         borderRadius:30
                         }}
-                        source={{ uri: user?.profilePic  || avatarFallback}}
+                        source={{ uri: user?.profilePic  || avatarFallbackCustom}}
                         contentFit="cover" // Same as resizeMode='cover'
                         transition={300} // Optional: Adds a fade-in effect
                     />
@@ -261,7 +262,8 @@ import { avatarFallback } from '../lib/fallbackImages'
     
                                     <TouchableOpacity onPress={() => handleRotationPress(item)} style={{ marginRight:10 }}>
                                         <Image
-                                            source={{uri: item.movie ? `${posterURL}${item.movie.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : null }}
+                                            source={{uri: item.movie ? `${posterURL}${item?.movie?.posterPath}` : item.tv ? `${posterURL}${item.tv.posterPath}` : moviePosterFallback }}
+                                            placeholder={moviePosterFallback}
                                             contentFit='cover'
                                             style={{ width:50, height:80, borderRadius:10, overflow:'hidden' }}
                                         />

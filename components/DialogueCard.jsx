@@ -15,9 +15,8 @@ import { useFetchOwnerUser } from '../api/user'
 import { getLinkPreview } from '../api/linkPreview'
 import { LinearGradient } from 'expo-linear-gradient'
 import { avatarFallback } from '../lib/fallbackImages'
-import {avatarFallbackImage} from '../constants/Images'
-
-
+import {avatarFallbackImage, moviePosterFallback} from '../constants/Images'
+import { avatarFallbackCustom } from '../constants/Images'
 
 
 const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
@@ -238,7 +237,7 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                 ) : null}
                             <TouchableOpacity onPress={handleUserPress} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                             <Image
-                                source={{ uri: userDB?.profilePic || avatarFallback }}
+                                source={{ uri: userDB?.profilePic || avatarFallbackCustom }}
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                             />
@@ -315,6 +314,8 @@ const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal,
                     <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
                         <Image
                             source={{ uri: `${posterURL}${mention.movie ? mention.movie.posterPath : mention.tv ? mention.tv.posterPath : mention.castCrew && mention.castCrew.posterPath}` }}
+                            placeholder={moviePosterFallback}
+
                             contentFit='cover'
                             style={{ width:35, height:40, borderRadius:10, overflow:'hidden' }}
                         />

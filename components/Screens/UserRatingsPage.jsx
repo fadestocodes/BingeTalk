@@ -10,6 +10,7 @@ import { getYear } from '../../lib/formatDate'
 import { userRatingsCategories } from '../../lib/CategoryOptions'
 import { ThreeDotsIcon } from '../../assets/icons/icons'
 import { Star } from 'lucide-react-native'
+import { moviePosterFallback } from '../../constants/Images'
 
 const UserRatingsPage = () => {
     const {userId, firstName} = useLocalSearchParams()
@@ -112,6 +113,8 @@ const UserRatingsPage = () => {
                             <View className='flex-row gap-3 justify-center items-center'>
                                 <Image
                                 source={{ uri: `${posterURL}${item.movie ? item.movie.posterPath : item.tv && item.tv.posterPath }` }}
+                                placeholder={moviePosterFallback}
+
                                 contentFit='cover'
                                 style={{ width:40, height:55, borderRadius:8 }}
                                 />

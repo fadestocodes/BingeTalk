@@ -8,6 +8,7 @@ import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { blockUser } from '../../api/user'
 import { avatarFallback } from '../../lib/fallbackImages'
+import { avatarFallbackCustom } from '../../constants/Images'
 
 
 const BlockedUserPage = () => {
@@ -76,7 +77,7 @@ const BlockedUserPage = () => {
                    <View className="flex-row justify-between items-center gap-2">
                         <TouchableOpacity  onPress={()=>router.push(`/user/${item.userBlocked.id}`)} className='flex-row gap-2 justify-center items-center'>
                                 <Image
-                                source={{ uri : item.userBlocked.profilePic || avatarFallback }}
+                                source={{ uri : item.userBlocked.profilePic || avatarFallbackCustom }}
                                 contentFit='cover'
                                 style={{ width:40, height:40, borderRadius:50 }}
                                 />

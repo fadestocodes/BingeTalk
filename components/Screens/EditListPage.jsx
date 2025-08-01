@@ -14,6 +14,7 @@ import { DraggableGrid } from 'react-native-draggable-grid';
 import { getYear } from '../../lib/formatDate'
 import { createListSchema } from '../../lib/zodSchemas'
 import ToastMessage from '../ui/ToastMessage'
+import { moviePosterFallback } from '../../constants/Images'
 
 
 const EditListScreen = () => {
@@ -114,6 +115,8 @@ const EditListScreen = () => {
           >
            <Image 
             source={ item.media_type === 'person' ? {uri:`${posterURL}${item.item.profile_path}`}  : {uri:`${posterURL}${item.item.poster_path}`}}
+            placeholder={moviePosterFallback}
+
             contentFit='cover'
             style={{ width:70, height:100, borderRadius:10, overflow:'hidden' }}
             />
@@ -231,6 +234,8 @@ const EditListScreen = () => {
                                     >
                                     <Image 
                                     source={ item.media_type === 'person' ? {uri:`${posterURL}${item.profile_path}`}  : {uri:`${posterURL}${item.poster_path}`}}
+                                    placeholder={moviePosterFallback}
+
                                     contentFit='cover'
                                     style={{ width:50, height:75, borderRadius:10, overflow:'hidden' }}
                                     />
