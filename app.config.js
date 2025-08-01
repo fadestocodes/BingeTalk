@@ -3,7 +3,7 @@ export default {
   "expo": {
     "name": IS_DEV ? "Bingeable (dev)" :  "Bingeable",
     "slug": "bingeable-app",
-    "version": "1.2.2",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "bingeable",
