@@ -23,11 +23,6 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(prev => [...prev, ...response.items])
-
-         
-            // setReadNotifs(prev => [...prev, ...response.readNotifs])
-            // setUnreadNotifs(prev => [...prev, ...response.unreadNotifs])
-
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
 

@@ -496,25 +496,7 @@ const TVPage = () => {
 
 
 
-            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200 ' style={{borderColor:Colors.mainGrayDark}}/>
-              
-                    <FlatList
-                        scrollEnabled={false}
-                        data={threads}
-                        keyExtractor={(item)=>item.id}
-                        contentContainerStyle={{ }}
-                        ListHeaderComponent={(
-                            <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
-                        )}
-                        renderItem={({item}) => {
-                            return (
-                            <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >
-                                <ThreadCard thread={item} refetch={ fetchData} ></ThreadCard>
-                            </TouchableOpacity>
-                        )}}
-                    />
-                    <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-                    
+            
            
 
      

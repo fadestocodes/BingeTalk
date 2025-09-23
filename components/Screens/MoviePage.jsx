@@ -498,25 +498,7 @@ const MoviePage = () => {
             </View>
 
 
-            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <FlatList
-                        scrollEnabled={false}
-                        data={threads}
-                        keyExtractor={(item)=>item.id}
-                        contentContainerStyle={{ }} 
-                        ListHeaderComponent={(
-                            <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
-                        )}
-                        renderItem={({item}) => {
-                            
-                            return (
-                            <TouchableOpacity onPress={()=>threadsPress(item.id)}  >
-                                <ThreadCard thread={item} refetch={ refreshData} isShortened={true} showThreadTopic={true} fromSearchHome={true} isBackground={true} ></ThreadCard>
-                            </TouchableOpacity>
-                        )}}
-                    />
-            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-
+            
             <View>
      
     </View>

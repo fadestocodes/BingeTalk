@@ -355,8 +355,8 @@ const SearchPage = () => {
                 
                 />
             </View>
-            <InView className='gap-3 flex items-start w-full h-[260px]'  
-              
+            <InView className='gap-3 flex items-start w-full h-[260px] overflow-hidden'  
+              style={{ height: 260, overflow: "hidden" }}
               onChange={(inView) => {console.log('Inview:', inView); setVideosInView(inView)}}
             >
               <TouchableOpacity disabled style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
@@ -374,11 +374,11 @@ const SearchPage = () => {
                   keyExtractor={(item) => item.id.videoId}
                   nestedScrollEnabled={false}  // Optional: prevent nested scrolls
                   style={{height:400}}
-                  contentContainerStyle={{gap:15, overflow:"hidden", height:200}}
+                  contentContainerStyle={{gap:15, overflow:"hidden", height:220}}
                   renderItem={({item, index}) => {
                       // console.log('trending thread', item)
                     return (
-                      <YoutubeCard item={item} index={index} currentIndex={currentIndex} isScrolling={isScrolling} videosInView={videosInView} />
+                        <YoutubeCard item={item} index={index} currentIndex={currentIndex} isScrolling={isScrolling} videosInView={videosInView} />
                   )}}
 
                   onScroll={onScroll}

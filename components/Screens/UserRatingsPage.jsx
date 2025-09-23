@@ -144,7 +144,7 @@ const UserRatingsPage = () => {
                         </View>
 
                     </View>
-                        { item.review.review && (
+                        { item.review?.review && (
                         <TouchableOpacity onPress={()=>handleReviewPress(item)}>
                             <Text className='text-white font-pcourier py-2 px-4' numberOfLines={5}>{item.review.review}</Text>
                         </TouchableOpacity>

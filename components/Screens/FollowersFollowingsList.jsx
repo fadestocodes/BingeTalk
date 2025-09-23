@@ -160,9 +160,6 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
             onEndReachedThreshold={0.2}
             contentContainerStyle={{gap:15}}
             renderItem={({item}) => {
-                // const checkFollowFromFollower = isFollowingIds.includes( item?.following?.id ) 
-                // const checkFollowFromFollowing = isFollowingIdsFromFollowing.includes( item?.follower?.id ) 
-                // console.log('items',item)
                 return (
                 <TouchableOpacity onPress={()=>{console.log('presseditem', item)}}>
                    <View className="flex-row justify-between items-center gap-2">
