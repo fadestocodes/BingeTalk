@@ -42,7 +42,7 @@ const TVPage = () => {
     const queryClient = useQueryClient();
 
 
-    const [movie, setMovie] = useState('');
+    const [movie, setMovie] = useState(null);
     const [loading, setLoading] = useState(false);
     const [videoId, setVideoId] = useState(null)
     const [refreshing, setRefreshing] = useState(false);
@@ -270,7 +270,7 @@ const TVPage = () => {
     }
 
 
-    if ( !ownerUser){
+    if ( !ownerUser || !movie){
         return (
             <View className='h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>

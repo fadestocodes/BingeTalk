@@ -133,7 +133,7 @@ export const markMovieWatchlist =  async ( data ) => {
 export const useGetMovieFromDB = ( DBmovieId ) => {
 
     const [ movie, setMovie ] = useState(null)
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
 
     const getMovieFromDB = async () => {
         setLoading(true)

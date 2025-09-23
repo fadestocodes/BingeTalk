@@ -191,7 +191,7 @@ export const markTVWatchlist =  async ( data ) => {
 export const useGetTVFromDB = ( DBtvId ) => {
 
     const [ tv, setTv ] = useState(null)
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState(true)
 
     const getTVFromDB = async () => {
         setLoading(true)

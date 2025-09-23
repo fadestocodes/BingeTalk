@@ -1,4 +1,5 @@
 import * as nodeServer from '../lib/ipaddresses'
+import { useState, useEffect } from 'react';
 
 export const findOrCreateEntity = async (type, movieData, castData) => {
     let entity;
@@ -50,3 +51,38 @@ export const findOrCreateEntity = async (type, movieData, castData) => {
     }
 
 };
+
+export const useGetMovieOrTvFromDB = (params) => {
+    const [ isLoading, setIsLoading ]  = useState(true)
+    const [ movie, setMovie ] = useState(null)
+    const [ tv, setTv] = useState(null)
+    const { DBmovieId, DBtvId } = params
+
+    const getMovieOrTvFromDB = async () => {
+
+        try {
+            if (DBmovieId){
+                const res = await fetch(`${nodeServer.currentIP}/movie?DBmovieId=${DBmovieId}`)
+                const data = await res.json()
+                setMovie(data)
+                setTv(null)
+            } else if (DBtvId){
+                const res = await fetch(`${nodeServer.currentIP}/tv?DBmovieId=${DBmovieId}`)
+                const data = await res.json()
+                setTv(data)
+                setMovie(null)
+            }
+        } catch(err){
+            console.log(err)
+        } finally {
+            setIsLoading(false)
+        }
+
+    }
+
+    useEffect(()=> {
+        getMovieOrTvFromDB()
+    }, [DBmovieId, DBtvId])
+
+    return { isLoading, movie, tv }
+}

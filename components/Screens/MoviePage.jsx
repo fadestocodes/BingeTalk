@@ -1,5 +1,6 @@
 import {  Text, View, ScrollView, RefreshControl, FlatList } from 'react-native'
 import { Image } from 'expo-image'
+import { ActivityIndicator } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'expo-router/build/hooks'
 import { useLocalSearchParams } from 'expo-router/build/hooks'
@@ -36,7 +37,7 @@ const MoviePage = () => {
     const queryClient = useQueryClient();
 
 
-    const [movie, setMovie] = useState([]);
+    const [movie, setMovie] = useState(null);
     const [ DBmovieId, setDBmovieId ] = useState(null)
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false)
@@ -277,7 +278,7 @@ const MoviePage = () => {
     }
 
 
-    if ( !ownerUser){
+    if ( !ownerUser || !movie){
         return (
             <View className='h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>

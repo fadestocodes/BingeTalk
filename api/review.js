@@ -134,3 +134,19 @@ export const reviewInteraction = async (data) => {
         console.log(err)
     }
 }
+
+export const deleteReview = async (params) => {
+    try {
+        const res = await fetch(`${nodeServer.currentIP}/review`, {
+            method : 'DELETE', 
+            headers : {
+                "Content-type" : 'application/json'
+            },
+            body : JSON.stringify(params)
+        })
+        const data = await res.json()
+        return data
+    } catch (err){
+        console.log(err)
+    }
+}
