@@ -20,6 +20,7 @@ import Animated, {
     useAnimatedStyle,
   } from 'react-native-reanimated';
 import { reviewTraits } from '../../lib/tagOptions'
+import { useGetMovieOrTvFromDB } from '../../api/db'
 
 const RatingModalPage = () => {
     const { DBmovieId, DBtvId,  DBcastId, prevRating } = useLocalSearchParams();
@@ -36,6 +37,9 @@ const RatingModalPage = () => {
     const [ isConfirmPage, setIsConfirmPage  ] = useState(false)
     const keyboard = useAnimatedKeyboard();
     const [ traits, setTraits ] = useState([])
+
+    // const params = {DBmovieId, DBtvId}
+    // const {movie, tv, isLoading} = useGetMovieOrTvFromDB(params)
     
     const animatedStyles = useAnimatedStyle(() => ({
         transform: [{ translateY: -keyboard.height.value / 3 }],
@@ -47,7 +51,13 @@ const RatingModalPage = () => {
     const movieData = DBmovieId && useGetMovieFromDB(DBmovieId);
     const tvData  = DBtvId && useGetTVFromDB(DBtvId);
     const movie = movieData?.movie;
+    console.log('MOVIEEEE', movie)
     const tv = tvData?.tv;
+
+    // const {movie} =  useGetMovieFromDB(DBmovieId);
+    // const {tv}  =  useGetTVFromDB(DBtvId);
+
+
     
 
 
@@ -120,6 +130,11 @@ const RatingModalPage = () => {
 
   return (
     <ScrollView className='w-full h-full bg-primary' style={{borderRadius:30}}>
+
+        {!movie?.title && !tv?.title ? (
+            <ActivityIndicator />
+        ) : (
+
 
         <View style={{gap:80, paddingTop:30, paddingBottom:150,justifyContent:'center' , width:'100%'}}>
                 <View style={{ width:55, height:7, borderRadius:10, backgroundColor:Colors.mainGray, position:'absolute', top:20 , alignSelf:'center'}} />
@@ -247,6 +262,8 @@ const RatingModalPage = () => {
         
 
         </View>
+        )}
+
         
     </ScrollView>
   )

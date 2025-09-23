@@ -118,7 +118,7 @@ const RatingUI = ({ setRating, rating , handlePost, prevRating}) => {
           </GestureDetector>
         </View>
 
-        <TouchableOpacity onPress={()=>handlePost()} style={{ backgroundColor:Colors.secondary, paddingHorizontal:30, paddingVertical:15, borderRadius:30, marginTop:50 }}>
+        <TouchableOpacity  onPress={()=>handlePost()} style={{ backgroundColor:Colors.secondary, paddingHorizontal:30, paddingVertical:15, borderRadius:30, marginTop:50 }}>
             <Text className='text-primary font-pbold'>Post rating</Text>
         </TouchableOpacity>
       </GestureHandlerRootView>

@@ -12,6 +12,7 @@ import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
 import { deleteThread } from '../../api/thread'
 import { deleteList } from '../../api/list'
 import { deleteComment } from '../../api/comments'
+import { deleteReview } from '../../api/review'
 
 const PostOptions = () => {
     const { fromOwnPost, ownerId, postType, postId, postUserId} = useLocalSearchParams()
@@ -52,6 +53,11 @@ const PostOptions = () => {
         } else if (postType === 'COMMENT' || postType === 'REPLY'){
             data.commentId = Number(postId)
             deleted = await deleteComment(data)
+        } else if (postType === 'REVIEW'){
+            console.log('trying to delete review')
+            data.reviewId = Number(postId)
+            deleted = await deleteReview(data)
+            console.log('deleted', deleted)
         }
         setToastMessage(deleted.message)
 
