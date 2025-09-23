@@ -21,6 +21,9 @@ import {  IOScrollView, IOScrollViewController,InView, } from 'react-native-inte
 import { avatarFallback } from '../../../../lib/fallbackImages'
 import ProfileCard from '../../../../components/ProfileCard'
 import { avatarFallbackCustom } from '../../../../constants/Images'
+import { fetchTrendingReviews } from '../../../../api/review'
+import ReviewCard from '../../../../components/Screens/ReviewCard'
+import { NotebookPen } from 'lucide-react-native'
 
 
 
@@ -43,7 +46,8 @@ const SearchPage = () => {
     trendingPeople : [],
     nowPlaying : [],
     trendingTV :[],
-    trendingMovie : []
+    trendingMovie : [],
+    trendingReviews : []
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
   const [ trendingDialogues, setTrendingDialogues ] = useState(null)
@@ -154,15 +158,17 @@ const SearchPage = () => {
   useEffect(()=>{
     const fetchCategories = async () => {
       try {
-        const [trendingTVData, trendingMovieData] = await Promise.all([
+        const [trendingTVData, trendingMovieData, trendingReviewData] = await Promise.all([
         
           getTrendingTV(),
-          getTrendingMovie()
+          getTrendingMovie(),
+          fetchTrendingReviews()
         ]);
         setFlatListCategories({
          
           trendingTV: trendingTVData.results,
-          trendingMovie : trendingMovieData.results
+          trendingMovie : trendingMovieData.results,
+          trendingReviews : trendingReviewData
 
         }) 
         const trendingDialoguesResponse = await getRecentDialogues(5);
@@ -385,6 +391,29 @@ const SearchPage = () => {
                   scrollEventThrottle={16}
                 />
             </InView>
+
+            <View className='gap-3'>
+              <TouchableOpacity className='gap-2 items-center justify-start flex flex-row'>
+                  <NotebookPen size={20} color={Colors.mainGray}/>
+                  <Text className='text-mainGray font-pbold text-xl'>Reviews</Text>
+              </TouchableOpacity>
+              <FlatList
+                data={flatListCategories.trendingReviews}
+                horizontal
+                keyExtractor={(item) => item.id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap:15}}
+
+                renderItem={({item}) => (
+                  <View className='w-[300px] '>
+                  <TouchableOpacity style-={{}}className='w-full' >
+                    <ReviewCard review={item}  fromHome={true} isBackground={true}/>
+                  </TouchableOpacity>
+                  
+                  </View>
+                )}
+              />
+            </View>
 
             <View className='gap-3' style={{paddingBottom:100}}>
             <View className='gap-3 flex items-start w-full' style={{}} >

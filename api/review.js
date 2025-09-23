@@ -150,3 +150,18 @@ export const deleteReview = async (params) => {
         console.log(err)
     }
 }
+
+export const fetchTrendingReviews = async () => {
+    try {
+        const res = await fetch(`${nodeServer.currentIP}/review/trending`)
+        console.log('RESSSS status code', res.status)
+        if (res.ok){
+            console.log("RES IS OKAYYY")
+        }
+        const data = await res.json()
+        console.log('THE DATAAA', data.data)
+        return data.data
+    } catch (err) {
+        console.log(err)
+    }
+}
