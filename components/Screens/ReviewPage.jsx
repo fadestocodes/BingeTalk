@@ -349,7 +349,7 @@ const ReviewScreen = () => {
               <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
           <View className='gap-3' >
-          <ReviewCard review={review} disableCommentsModal={true} fromHome={false} isBackground={false} />
+          <ReviewCard review={review} isReviewPage={true} disableCommentsModal={true} fromHome={false} isBackground={false} />
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
                 { commentsData.length > 0 && (

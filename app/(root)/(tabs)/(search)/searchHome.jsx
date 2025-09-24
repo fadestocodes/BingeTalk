@@ -395,7 +395,7 @@ const SearchPage = () => {
             <View className='gap-3'>
               <TouchableOpacity className='gap-2 items-center justify-start flex flex-row'>
                   <NotebookPen size={20} color={Colors.mainGray}/>
-                  <Text className='text-mainGray font-pbold text-xl'>Reviews</Text>
+                  <Text className='text-mainGray font-pbold text-xl'>Recent Reviews</Text>
               </TouchableOpacity>
               <FlatList
                 data={flatListCategories.trendingReviews}
@@ -407,7 +407,7 @@ const SearchPage = () => {
                 renderItem={({item}) => (
                   <View className='w-[300px] '>
                   <TouchableOpacity style-={{}}className='w-full' >
-                    <ReviewCard review={item}  fromHome={true} isBackground={true}/>
+                    <ReviewCard review={item}   isBackground={true} cardStyle={true}/>
                   </TouchableOpacity>
                   
                   </View>

@@ -17,7 +17,7 @@ import { reviewInteraction } from '../../api/review'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
 
-const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, isReposted}) => {
+const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isReviewPage, isBackground, isReposted}) => {
 
 
         const { user:clerkUser } = useUser();
@@ -73,6 +73,7 @@ const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, 
             if (fromHome){
                 router.push(`(home)/review/${item.id}`)
             } else {
+                console.log('itemmm', item)
                 router.push(`/review/${item.id}`)
             }
         }
@@ -184,7 +185,7 @@ const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, 
     
       return (
         <View className='w-full' >
-                        <TouchableOpacity disabled={!fromHome}  onPress={()=>handleReviewPress(item)}  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
+                        <TouchableOpacity disabled={isReviewPage} onPress={()=>handleReviewPress(item)}  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
                             <View className='gap-3 '>
                                 <View className='gap-3'>
                                     <View className='flex-row w-full gap-2 justify-between items-center '>
@@ -208,7 +209,7 @@ const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, 
                                         <View className='flex-row justify-center items-center gap-2'>
                                             <NotebookPen size={24} color={Colors.secondary}  />
                                             <View className='justify-center items-center'>
-                                                <Text className='text-white font-pbold text-2xl'>{item?.movie?.title || item?.tv?.title} ({getYear(item?.movie?.releaseDate || item?.tv?.releaseDate)})</Text>
+                                                <Text className={`text-white font-pbold ${cardStyle ? 'text-lg' : 'text-2xl'}`}>{item?.movie?.title || item?.tv?.title} ({getYear(item?.movie?.releaseDate || item?.tv?.releaseDate)})</Text>
                                             </View>
                                         </View>
 
@@ -255,7 +256,7 @@ const ReviewCard = ({review:item, fromHome, disableCommentsModal, isBackground, 
                             
                             </View>
                         )  }
-                                <Text className='  font-pcourier text-lg text-white ' style={{lineHeight:18, paddingTop:10}} numberOfLines={fromHome ? 3 : undefined}>{ item.review }</Text>
+                                <Text className='  font-pcourier text-lg text-white ' style={{lineHeight:18, paddingTop:10}} numberOfLines={cardStyle ? 3 : undefined}>{ item.review }</Text>
                             </View>
     
                                 
