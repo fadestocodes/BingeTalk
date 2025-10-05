@@ -244,6 +244,7 @@ const MoviePage = () => {
 
 
     const handleRecommendation = () => {
+        console.log('MOVIEPAGE DBmovieId', DBmovieId)
         router.push({
             pathname : '/recommendationModal',
             params: { DBmovieId }
@@ -278,7 +279,7 @@ const MoviePage = () => {
     }
 
 
-    if ( !ownerUser || !movie){
+    if ( !ownerUser || !movie || !DBmovieId){
         return (
             <View className='h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>

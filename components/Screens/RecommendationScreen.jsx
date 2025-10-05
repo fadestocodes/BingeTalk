@@ -4,14 +4,16 @@ import React, {useEffect, useState, useRef} from 'react'
 import { newRecommendation } from '../../api/recommendation'
 import { Colors } from '../../constants/Colors'
 import { useUser } from '@clerk/clerk-expo'
-import { getAllMutuals, useFetchOwnerUser } from '../../api/user'
-import { BackIcon } from '../../assets/icons/icons'
+import { getAllMutuals, searchUsers, useFetchOwnerUser } from '../../api/user'
+import { BackIcon, CloseIcon } from '../../assets/icons/icons'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Handshake } from 'lucide-react-native'
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import ToastMessage from '../ui/ToastMessage'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
+import debounce from 'lodash.debounce'
+
 
 const RecommendationScreen = () => {
 
@@ -24,8 +26,11 @@ const RecommendationScreen = () => {
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  
     const [ recipient, setRecipient ] = useState(null)
+    const [ query, setQuery ] = useState('')
+    const [ searchResults, setSearchResults ] = useState([])
 
     const { DBmovieId, DBtvId, DBcastId } = useLocalSearchParams();
+    // console.log(`searchparams: ${DBmovieId}, ${DBtvId}` )
    
     const useGetAllMutuals = async () => {
         const mutuals = await getAllMutuals(ownerUser?.id);
@@ -100,6 +105,17 @@ const RecommendationScreen = () => {
         } 
     }
 
+    const handleChange = (text) => {
+        setQuery(text)
+        handleSearch(text)
+    }
+
+    const handleSearch = debounce(async (text) => {
+        const searchResultsData = await searchUsers(text)
+        setSearchResults(searchResultsData.users)
+
+    }, 300)
+
   
 
     if (loadingMutuals || !ownerUser){
@@ -119,44 +135,104 @@ const RecommendationScreen = () => {
                 
                     <View className='gap-2' >
                         <Text className='text-secondary text-2xl font-pbold'>Select a user to send a recommendation to</Text>
-                        <Text className='text-mainGray text-center'>(must be mutual followers)</Text>
                     </View>
-        
-                    <FlatList
-                        scrollEnabled={false}
-                        data ={ mutuals}
-                        keyExtractor = { item => item.id }
-                        contentContainerStyle={{ gap:20, paddingVertical:30 }}
-                        renderItem = { ({item, index}) => {
-                            const alreadySent = ownerUser.recommendationSender.some(element => {
-                                if (element.recipientId !== item.following.id) return false;
-                                if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
-                                if (element.type === 'TV') return element.tvId === Number(DBtvId);
-                                if (element.type === 'CAST') return element.castId === Number(DBcastId)
-                                return false;
-                            });
-                            return (
-                                <View className='flex-row w-full justify-between items-center gap-3'>
-                                    <View className='flex-row gap-3 justify-center items-center'>
-                                        <Image
-                                            source = {{ uri : item.following.profilePic || avatarFallbackCustom }}
-                                            contentFit='cover'
-                                            transition={300}
-                                            style = {{ width:45, height : 45, borderRadius:'50%' }}
-                                        />
-                                        <View className=''>
-                                            <Text className='text-mainGray  font-pbold '>{item.following.firstName} {item.following.lastName}</Text>
-                                            <Text className='text-mainGray text-sm'>@{item.following.username}</Text>
+
+                    <View className='relative justify-center w-full items-center'>
+                        <TextInput onChangeText={handleChange} 
+                        // onFocus={()=>{setInFocus(true); setDiscoverPage(false)}}
+                            placeholder='Search...' placeholderTextColor={Colors.mainGray} value={query} autoCorrect={false}
+                            className=' w-full rounded-full h-14 pl-8 pr-14  '
+                            style={{ backgroundColor:Colors.mainGrayDark, color:'white' }}
+                        
+                        >
+                        </TextInput>
+                        <TouchableOpacity onPress={()=>setQuery('')} className='absolute right-4 top-4'>
+                            <CloseIcon size={24} color={Colors.mainGrayLight}></CloseIcon>
+                        </TouchableOpacity>
+
+                    </View>
+
+                    { searchResults?.length > 0 ? (
+
+
+                        <FlatList
+                            scrollEnabled={false}
+                            data ={ searchResults}
+                            keyExtractor = { item => item.id }
+                            contentContainerStyle={{ gap:20, paddingVertical:30 }}
+                            renderItem = { ({item, index}) => {
+                                console.log('SERAECH RESULT', item)
+                                const alreadySent = ownerUser.recommendationSender.some(element => {
+                                    if (element.recipientId !== item.id) return false;
+                                    if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
+                                    if (element.type === 'TV') return element.tvId === Number(DBtvId);
+                                    if (element.type === 'CAST') return element.castId === Number(DBcastId)
+                                    return false;
+
+                                });
+                                return (
+                                    <View className='flex-row w-full justify-between items-center gap-3'>
+                                        <View className='flex-row gap-3 justify-center items-center'>
+                                            <Image
+                                                source = {{ uri : item.profilePic || avatarFallbackCustom }}
+                                                contentFit='cover'
+                                                transition={300}
+                                                style = {{ width:45, height : 45, borderRadius:'50%' }}
+                                            />
+                                            <View className=''>
+                                                <Text className='text-mainGray  font-pbold '>{item.firstName} {item.lastName}</Text>
+                                                <Text className='text-mainGray text-sm'>@{item.username}</Text>
+                                            </View>
                                         </View>
+                                        <TouchableOpacity onPress={()=>{ handleRecommendation({item, alreadySent })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
+                                            <Handshake color={ alreadySent ? Colors.secondary  : Colors.primary} size={22} />
+                                            {/* <Text className='text-primary text-sm font-pbold'>send rec.</Text> */}
+                                        </TouchableOpacity>
+            
                                     </View>
-                                    <TouchableOpacity onPress={()=>{ handleRecommendation({item, alreadySent })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
-                                        <Handshake color={ alreadySent ? Colors.secondary  : Colors.primary} size={22} />
-                                        {/* <Text className='text-primary text-sm font-pbold'>send rec.</Text> */}
-                                    </TouchableOpacity>
+                                ) }}
+                        />
+                    ) : (
+                        <FlatList
+                            scrollEnabled={false}
+                            data ={ mutuals}
+                            keyExtractor = { item => item.id }
+                            contentContainerStyle={{ gap:20, paddingVertical:30 }}
+                            renderItem = { ({item, index}) => {
+                                console.log('ITEM IS ', item)
+                                console.log('MOVIEID', DBmovieId)
+                                const alreadySent = ownerUser.recommendationSender.some(element => {
+                                    console.log('ELEMENT IS', element)
+                                    if (element.recipientId !== item.following.id){console.log('FROM OVER FHERE'); return false};
+                                    if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
+                                    if (element.type === 'TV') return element.tvId === Number(DBtvId);
+                                    if (element.type === 'CAST') return element.castId === Number(DBcastId)
+                                    return false;
+                                });
+                                return (
+                                    <View className='flex-row w-full justify-between items-center gap-3'>
+                                        <View className='flex-row gap-3 justify-center items-center'>
+                                            <Image
+                                                source = {{ uri : item.following.profilePic || avatarFallbackCustom }}
+                                                contentFit='cover'
+                                                transition={300}
+                                                style = {{ width:45, height : 45, borderRadius:'50%' }}
+                                            />
+                                            <View className=''>
+                                                <Text className='text-mainGray  font-pbold '>{item.following.firstName} {item.following.lastName}</Text>
+                                                <Text className='text-mainGray text-sm'>@{item.following.username}</Text>
+                                            </View>
+                                        </View>
+                                        <TouchableOpacity onPress={()=>{ handleRecommendation({item, alreadySent })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
+                                            <Handshake color={ alreadySent ? Colors.secondary  : Colors.primary} size={22} />
+                                            {/* <Text className='text-primary text-sm font-pbold'>send rec.</Text> */}
+                                        </TouchableOpacity>
+            
+                                    </View>
+                                ) }}
+                        />
+                    ) }
         
-                                </View>
-                            ) }}
-                    />
                       </View>
                       </ScrollView>
             ) : whichStep === 'step2' && (

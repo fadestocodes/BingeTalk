@@ -12,7 +12,7 @@ import { listInteraction } from '../api/list'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 
-const ListCard = ({ list:item , activity, fromHome, refetch, isReposted, pressDisabled}) => {
+const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) => {
 
     const { user:clerkUser } = useUser();
     const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0]?.emailAddress});

@@ -19,7 +19,7 @@ import {avatarFallbackImage, moviePosterFallback} from '../constants/Images'
 import { avatarFallbackCustom } from '../constants/Images'
 
 
-const DialogueCard = (  {dialogue, refetch , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
+const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
 
 
     const userDB = dialogue?.user

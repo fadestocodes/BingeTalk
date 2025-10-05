@@ -270,7 +270,7 @@ const TVPage = () => {
     }
 
 
-    if ( !ownerUser || !movie){
+    if ( !ownerUser || !movie || !DBtvId){
         return (
             <View className='h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>

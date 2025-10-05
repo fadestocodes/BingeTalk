@@ -39,12 +39,12 @@ export const useGetProfileFeed = (userId, limit) => {
     const [ isFetching, setIsFetching ] = useState(false)
     const [ hasMore, setHasMore] = useState({
         dialogue : true,
-        thread : true,
+        review : true,
         list : true
     })
     const [ cursors, setCursors ] = useState({
         dialogue : null,
-        thread : null,
+        review : null,
         list : null
     })
 
@@ -53,18 +53,19 @@ export const useGetProfileFeed = (userId, limit) => {
         if (isFetching) return 
         try {
             setIsFetching(true)
-            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&threadCursor=${cursors.thread}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreThreads=${hasMore.thread}&hasMoreLists=${hasMore.list}`)
+            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&reviewCursor=${cursors.review}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreReviews=${hasMore.review}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
+            console.log(results)
             setData(prev => ([...prev, ...results.items]))
             setHasMore({
                 dialogue : !!results.nextDialogueCursor,
-                thread : !!results.nextThreadCursor,
+                review : !!results.nextReviewCursor,
                 list : !!results.nextListCursor
             })
             setCursors(prev => ({
                 ...prev,
                 dialogue : results.nextDialogueCursor,
-                thread : results.nextThreadCursor,
+                review : results.nextReviewCursor,
                 list : results.nextListCursor
             }))
 
@@ -88,18 +89,18 @@ export const useGetProfileFeed = (userId, limit) => {
         if (isFetching) return
         try {
             setIsFetching(true)
-            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&threadCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreThreads=true&hasMoreLists=true`)
+            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&reviewCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreReviews=true&hasMoreLists=true`)
             const results = await response.json()
             setData(results.items)
             setHasMore({
                 dialogue : !!results.nextDialogueCursor,
-                thread : !!results.nextThreadCursor,
+                review : !!results.nextReviewCursor,
                 list : !!results.nextListCursor
             })
             setCursors(prev => ({
                 ...prev,
                 dialogue : results.nextDialogueCursor,
-                thread : results.nextThreadCursor,
+                review : results.nextReviewCursor,
                 list : results.nextListCursor
             }))
 

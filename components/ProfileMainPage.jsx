@@ -24,6 +24,7 @@ import ListCard from './ListCard'
 import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
+import ReviewCard from './Screens/ReviewCard'
  
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
@@ -36,7 +37,6 @@ import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
-        const { data: dialogues, refetch, isFetching } = useFetchDialogues( Number(user.id) );
         const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
         const isOwnersProfilePage = user?.id === ownerUser?.id
         const [ isFollowing, setIsFollowing ] = useState(null)
@@ -327,21 +327,20 @@ import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
                 // console.log("FLATLISTITEM", item)
             return (
                 <>
-                { item?.feedType === 'thread' ? (
-                    <TouchableOpacity key={item.id} onPress={()=>{handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
-                        <ThreadCard  thread={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate } />
-                    </TouchableOpacity>
-
-                ) : item.feedType === 'dialogue' ? (
+                { item.feedType === 'dialogue' ? (
 
                     <TouchableOpacity key={item.id} onPress={()=>{handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
-                        <DialogueCard  dialogue={item} refetch={refetchProfileFeed} isBackground={true} isReposted={ item.repostDate }  />
+                        <DialogueCard  dialogue={item}  isBackground={true} isReposted={ item.repostDate }  />
                     </TouchableOpacity>
 
-                ) : item?.feedType === 'list' &&  (
+                ) : item?.feedType === 'list' ?  (
                 
                     <TouchableOpacity key={item.id} onPress={()=>{handleItemPress(item)}}  style={{ paddingHorizontal:15 }}>
-                        <ListCard  list={item} refetch={refetch} isReposted={item.repostDate} pressDisabled={true} />
+                        <ListCard  list={item}  isReposted={item.repostDate} pressDisabled={true} />
+                    </TouchableOpacity>
+                ) : item?.feedType === 'review' && (
+                    <TouchableOpacity onPress={()=>{router.push(`review/${item.id}`)}} isReposted={item.activityType === 'REPOST'} style={{paddingHorizontal:15}}>
+                        <ReviewCard review={item} fromHome={false} cardStyle={true} isBackground={true} />
                     </TouchableOpacity>
                 )} 
                 </>

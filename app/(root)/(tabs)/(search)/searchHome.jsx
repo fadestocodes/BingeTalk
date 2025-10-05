@@ -417,7 +417,7 @@ const SearchPage = () => {
 
             <View className='gap-3' style={{paddingBottom:100}}>
             <View className='gap-3 flex items-start w-full' style={{}} >
-              <TouchableOpacity onPress={()=> { router.push('/movie/discover') }} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
+              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                 < Fingerprint size={20} color={Colors.mainGray}/>
                 <Text className='text-mainGray font-pbold text-xl '>Cinematic DNA</Text>
                 {/* <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} /> */}

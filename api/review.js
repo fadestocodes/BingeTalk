@@ -159,7 +159,6 @@ export const fetchTrendingReviews = async () => {
             console.log("RES IS OKAYYY")
         }
         const data = await res.json()
-        console.log('THE DATAAA', data.data)
         return data.data
     } catch (err) {
         console.log(err)
