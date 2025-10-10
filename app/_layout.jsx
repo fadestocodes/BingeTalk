@@ -24,6 +24,8 @@ import {NotificationProvider} from '../lib/NotificationCountContext'
 import {CreateProvider} from '../lib/CreateContext'
 import {SignUpProvider} from '../lib/SignUpContext'
 import * as Sentry from '@sentry/react-native';
+import Constants from 'expo-constants';
+
 
 
 
@@ -55,7 +57,8 @@ export default Sentry.wrap(function RootLayout() {
 
   
 
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+  // const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+  const publishableKey = Constants.expoConfig.extra.CLERK_PUBLISHABLE_KEY
   
   
 

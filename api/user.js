@@ -26,7 +26,6 @@ export const checkEmail = async (email) => {
             body : JSON.stringify({ email })
         })
         const data = await response.json()
-        console.log("checkemaildata",data)
         return data
     } catch (err) {
         console.log(err)
@@ -884,4 +883,75 @@ export const findUniqueRotations = async () => {
         console.log(err)
         return err
     }
+}
+
+export const useGetBadges = (userId) => {
+
+    const [badgeList, setBadgeList] = useState([])
+    const [criticProgression, setCriticProgression] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState('')
+
+
+    const getBadges = async () => {
+        if (!userId) return
+        try {
+            setIsLoading(true)
+            setError('')
+
+            const response = await fetch(`${nodeServer.currentIP}/user/${userId}/badges`)
+            const result = await response.json()
+            if (!response.ok){
+                throw new Error(result.message || "Unexpected error.")
+            }
+            const badgeData = result.data
+            setBadgeList(badgeData)
+        } catch (err){
+            console.error(err)
+            setError(err.message)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        getBadges()
+    }, [userId])
+
+    return { badges, isLoading, refetch: getBadges, error, criticProgression }
+}
+
+export const useGetCriticProgression = (userId) => {
+    const [criticProgression, setCriticProgression] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState('')
+    
+    const getCriticProgression = async () => {
+        if (!userId) return
+        try {
+            setIsLoading(true)
+            setError('')
+            const criticResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/critic-badge-progression`)
+            const criticResult = await criticResponse.json()
+
+            if (!criticResponse.ok){
+                throw new Error(criticResult.message || "Error fetching progression data for Critic badge")
+            }
+            const criticProgressionData = criticResult.data
+            setCriticProgression(criticProgressionData)
+    
+        } catch (err){
+            console.error(err)
+            setError(err.message)
+        } finally {
+            setIsLoading(false)
+        }
+
+    }
+
+    useEffect(() => {
+        getCriticProgression()
+    }, [userId])
+
+    return {criticProgression, isLoading, error}
 }
