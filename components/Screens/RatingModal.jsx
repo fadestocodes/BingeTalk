@@ -21,6 +21,7 @@ import Animated, {
   } from 'react-native-reanimated';
 import { reviewTraits } from '../../lib/tagOptions'
 import { useGetMovieOrTvFromDB } from '../../api/db'
+import { checkCriticBadgeProgress } from '../../api/badge'
 
 const RatingModalPage = () => {
     const { DBmovieId, DBtvId,  DBcastId, prevRating } = useLocalSearchParams();
@@ -51,7 +52,6 @@ const RatingModalPage = () => {
     const movieData = DBmovieId && useGetMovieFromDB(DBmovieId);
     const tvData  = DBtvId && useGetTVFromDB(DBtvId);
     const movie = movieData?.movie;
-    console.log('MOVIEEEE', movie)
     const tv = tvData?.tv;
 
     // const {movie} =  useGetMovieFromDB(DBmovieId);
@@ -82,9 +82,17 @@ const RatingModalPage = () => {
         }
         console.log('REVIEW DATAAA', data)
         const postedRating = await createRating(data)
+        console.log('postedRating',postedRating)
+
         // router.back()
         if (postedRating){
             setMessage('Successfully posted rating')
+            if (postedRating.review){
+                console.log('fromhereee')
+                const criticBadgeProgress = await checkCriticBadgeProgress(postedRating.id, ownerUser?.id)
+                console.log('Criticbadgeprogress', criticBadgeProgress)
+
+            }
         }
         setTimeout(() => {
             router.back()

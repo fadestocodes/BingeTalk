@@ -55,7 +55,6 @@ export const useGetProfileFeed = (userId, limit) => {
             setIsFetching(true)
             const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&reviewCursor=${cursors.review}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreReviews=${hasMore.review}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
-            console.log(results)
             setData(prev => ([...prev, ...results.items]))
             setHasMore({
                 dialogue : !!results.nextDialogueCursor,

@@ -938,6 +938,8 @@ export const useGetCriticProgression = (userId) => {
                 throw new Error(criticResult.message || "Error fetching progression data for Critic badge")
             }
             const criticProgressionData = criticResult.data
+            console.log('criticprogresion', criticProgressionData)
+            console.log(`Critic progression: ${criticProgressionData.untilNextLevel.currentlyAt} / ${criticProgressionData.untilNextLevel.toNextLevel} `)
             setCriticProgression(criticProgressionData)
     
         } catch (err){
