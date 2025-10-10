@@ -924,6 +924,7 @@ export const useGetBadges = (userId) => {
 export const useGetCriticProgression = (userId) => {
     const [criticProgression, setCriticProgression] = useState('')
     const [isLoading, setIsLoading] = useState(true)
+    const [hasLeveledUp, setHasLeveledUp] = useState(false)
     const [error, setError] = useState('')
     
     const getCriticProgression = async () => {
@@ -941,6 +942,7 @@ export const useGetCriticProgression = (userId) => {
             console.log('criticprogresion', criticProgressionData)
             console.log(`Critic progression: ${criticProgressionData.untilNextLevel.currentlyAt} / ${criticProgressionData.untilNextLevel.toNextLevel} `)
             setCriticProgression(criticProgressionData)
+
     
         } catch (err){
             console.error(err)

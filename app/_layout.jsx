@@ -25,6 +25,7 @@ import {CreateProvider} from '../lib/CreateContext'
 import {SignUpProvider} from '../lib/SignUpContext'
 import * as Sentry from '@sentry/react-native';
 import Constants from 'expo-constants';
+import {BadgeModalProvider} from '../lib/BadgeModalContext'
 
 
 
@@ -86,7 +87,7 @@ export default Sentry.wrap(function RootLayout() {
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
-    }
+    } 
   }, [fontsLoaded]);
 
 
@@ -102,6 +103,7 @@ export default Sentry.wrap(function RootLayout() {
     
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey} >
       <ClerkLoaded>
+      <BadgeModalProvider>
         <QueryClientProvider client={queryClient}>
           <SignUpProvider>
         <UserDBProvider>
@@ -129,6 +131,7 @@ export default Sentry.wrap(function RootLayout() {
           </UserDBProvider>
           </SignUpProvider>
         </QueryClientProvider>
+          </BadgeModalProvider> 
       </ ClerkLoaded >
     </ClerkProvider >
   );

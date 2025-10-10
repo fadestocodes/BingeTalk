@@ -22,6 +22,7 @@ import Animated, {
 import { reviewTraits } from '../../lib/tagOptions'
 import { useGetMovieOrTvFromDB } from '../../api/db'
 import { checkCriticBadgeProgress } from '../../api/badge'
+import {useBadgeContext} from '../../lib/BadgeModalContext'
 
 const RatingModalPage = () => {
     const { DBmovieId, DBtvId,  DBcastId, prevRating } = useLocalSearchParams();
@@ -38,6 +39,7 @@ const RatingModalPage = () => {
     const [ isConfirmPage, setIsConfirmPage  ] = useState(false)
     const keyboard = useAnimatedKeyboard();
     const [ traits, setTraits ] = useState([])
+    const {showBadgeModal, hideBadgeModal} = useBadgeContext()
 
     // const params = {DBmovieId, DBtvId}
     // const {movie, tv, isLoading} = useGetMovieOrTvFromDB(params)
@@ -80,22 +82,30 @@ const RatingModalPage = () => {
             traits 
 
         }
-        console.log('REVIEW DATAAA', data)
         const postedRating = await createRating(data)
-        console.log('postedRating',postedRating)
 
         // router.back()
+        let levelUpData = null
         if (postedRating){
             setMessage('Successfully posted rating')
             if (postedRating.review){
-                console.log('fromhereee')
                 const criticBadgeProgress = await checkCriticBadgeProgress(postedRating.id, ownerUser?.id)
                 console.log('Criticbadgeprogress', criticBadgeProgress)
+                if (criticBadgeProgress?.hasLeveledUp){
+                    console.log('🎊 Congrats you leveled up!')
+                    levelUpData = {
+                        badgeType: 'CRITIC',
+                        level: `${criticBadgeProgress.newLevel}`
+                    };
+                }
 
             }
         }
         setTimeout(() => {
             router.back()
+            if (levelUpData) {
+                showBadgeModal(levelUpData.badgeType, levelUpData.level);
+            }
         }, 1700)
 
 
