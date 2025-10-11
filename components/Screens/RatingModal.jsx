@@ -39,7 +39,7 @@ const RatingModalPage = () => {
     const [ isConfirmPage, setIsConfirmPage  ] = useState(false)
     const keyboard = useAnimatedKeyboard();
     const [ traits, setTraits ] = useState([])
-    const {showBadgeModal, hideBadgeModal} = useBadgeContext()
+    const {showBadgeModal} = useBadgeContext()
 
     // const params = {DBmovieId, DBtvId}
     // const {movie, tv, isLoading} = useGetMovieOrTvFromDB(params)
@@ -92,7 +92,7 @@ const RatingModalPage = () => {
                 const criticBadgeProgress = await checkCriticBadgeProgress(postedRating.id, ownerUser?.id)
                 console.log('Criticbadgeprogress', criticBadgeProgress)
                 if (criticBadgeProgress?.hasLeveledUp){
-                    console.log('🎊 Congrats you leveled up!')
+                    console.log('🎊 Congrats you leveled up the Critic badge!')
                     levelUpData = {
                         badgeType: 'CRITIC',
                         level: `${criticBadgeProgress.newLevel}`

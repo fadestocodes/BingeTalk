@@ -133,6 +133,7 @@ export const markTVWatch =  async ( data ) => {
             body : JSON.stringify(data)
         })
         const response = await request.json();
+        console.log('tv watch response', response)
         return response
     } catch (err) {
         console.log(err)

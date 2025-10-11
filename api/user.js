@@ -939,7 +939,7 @@ export const useGetCriticProgression = (userId) => {
                 throw new Error(criticResult.message || "Error fetching progression data for Critic badge")
             }
             const criticProgressionData = criticResult.data
-            console.log('criticprogresion', criticProgressionData)
+            // console.log('criticprogresion', criticProgressionData)
             console.log(`Critic progression: ${criticProgressionData.untilNextLevel.currentlyAt} / ${criticProgressionData.untilNextLevel.toNextLevel} `)
             setCriticProgression(criticProgressionData)
 
@@ -977,8 +977,8 @@ export const useGetHistorianProgression = (userId) => {
                 throw new Error(historianResult.message || "Error fetching progression data for Critic badge")
             }
             const historianProgressionData = historianResult.data
-            console.log('criticprogresion', historianProgressionData)
-            console.log(`Critic progression: ${historianProgressionData.untilNextLevel.currentlyAt} / ${historianProgressionData.untilNextLevel.toNextLevel} `)
+            // console.log('historianprogresion', historianProgressionData)
+            console.log(`Historian progression: ${historianProgressionData.untilNextLevel.currentlyAt} / ${historianProgressionData.untilNextLevel.toNextLevel} `)
             setHistorianProgression(historianProgressionData)
 
     
