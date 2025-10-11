@@ -959,3 +959,41 @@ export const useGetCriticProgression = (userId) => {
 
     return {criticProgression, isLoading, error}
 }
+
+export const useGetHistorianProgression = (userId) => {
+    const [historianProgression, setHistorianProgression] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState('')
+    
+    const getHistorianProgression = async () => {
+        if (!userId) return
+        try {
+            setIsLoading(true)
+            setError('')
+            const historianResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/historian-badge-progression`)
+            const historianResult = await historianResponse.json()
+
+            if (!historianResponse.ok){
+                throw new Error(historianResult.message || "Error fetching progression data for Critic badge")
+            }
+            const historianProgressionData = historianResult.data
+            console.log('criticprogresion', historianProgressionData)
+            console.log(`Critic progression: ${historianProgressionData.untilNextLevel.currentlyAt} / ${historianProgressionData.untilNextLevel.toNextLevel} `)
+            setHistorianProgression(historianProgressionData)
+
+    
+        } catch (err){
+            console.error(err)
+            setError(err.message)
+        } finally {
+            setIsLoading(false)
+        }
+
+    }
+
+    useEffect(() => {
+        getHistorianProgression()
+    }, [userId])
+
+    return {historianProgression, isLoading, error}
+}

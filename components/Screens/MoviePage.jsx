@@ -23,6 +23,7 @@ import { useUser } from '@clerk/clerk-expo'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
 import { newRecommendation } from '../../api/recommendation'
 import ToastMessage from '../ui/ToastMessage'
+import { checkHistorianBadgeProgress } from '../../api/badge'
 
 
 
@@ -211,6 +212,7 @@ const MoviePage = () => {
                 setMessage('Marked as Watched')
             }
         }
+        const checkHistorian = await checkHistorianBadgeProgress(movie,'MOVIE', ownerUser?.id)
         refetchOwnerUser();
         setButtonPressed('')
     }
