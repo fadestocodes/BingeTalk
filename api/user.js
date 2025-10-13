@@ -3,6 +3,7 @@ import { useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-quer
 import { SignOutButton, useAuth, useUser } from '@clerk/clerk-react'
 import React, {useState, useCallback, useEffect, useRef} from 'react'
 import { node } from '@sentry/core';
+import { useBadgeContext } from '@/lib/BadgeModalContext';
 
 
 export const checkUsername = async ( username ) => {
@@ -997,3 +998,85 @@ export const useGetHistorianProgression = (userId) => {
 
     return {historianProgression, isLoading, error}
 }
+
+
+export const useGetCuratorProgression = (userId) => {
+    const [curatorProgression, setCuratorProgression] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState('')
+    
+    const getCuratorProgression = async () => {
+        if (!userId) return
+        try {
+            setIsLoading(true)
+            setError('')
+            const curatorResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/curator-badge-progression`)
+            const curatorResult = await curatorResponse.json()
+
+            if (!curatorResponse.ok){
+                throw new Error(curatorResult.message || "Error fetching progression data for Critic badge")
+            }
+            const curatorProgressionData = curatorResult.data
+            // console.log('historianprogresion', curatorProgressionData)
+            console.log(`Curator progression: ${curatorProgressionData.untilNextLevel.currentlyAt} / ${curatorProgressionData.untilNextLevel.toNextLevel} `)
+            setCuratorProgression(curatorProgressionData)
+
+    
+        } catch (err){
+            console.error(err)
+            setError(err.message)
+        } finally {
+            setIsLoading(false)
+        }
+
+    }
+
+    useEffect(() => {
+        getCuratorProgression()
+    }, [userId])
+
+    return {curatorProgression, isLoading, error}
+}
+
+export const useCheckBadgeNotifications = (userId) => {
+    const [ badgeNotifications, setBadgeNotifications ] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState("")
+    const { showBadgeModal } = useBadgeContext()
+
+
+    const checkBadgeNotifications = async () => {
+        try {
+            setLoading(true)
+            setError("")
+            if (!userId) return
+            const response = await fetch(`${nodeServer.currentIP}/user/${userId}/badge-notification`)
+            if (!response.ok) throw new Error("Unexpected error")
+            const result = await response.json()
+            const notifs = result.data.badgeNotifications
+            console.log(result.message)
+            setBadgeNotifications(notifs)
+            if (notifs.length > 0) {
+                // Push each notification into the modal queue
+
+                notifs.forEach(n => {
+                    console.log('notif in queue', n)
+                    showBadgeModal(n.badgeType, n.badgeLevel)
+                });
+            }
+        } catch (err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+   
+    
+
+    useEffect(() => {
+        checkBadgeNotifications()
+    },[userId])
+
+    return { badgeNotifications, loading, error, refetchBadgeNotifications : checkBadgeNotifications }
+}
+

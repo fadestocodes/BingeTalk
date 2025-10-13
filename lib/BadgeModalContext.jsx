@@ -10,36 +10,37 @@ export const BadgeModalProvider = ({ children }) => {
     badgeType: "",
     level: "",
   });
+  const [badgeQueue, setBadgeQueue] = useState([]);
 
-//   const showBadgeModal = (badgeType, level) => {
-//     setBadgeModal({ visible: true, badgeType, level });
-//   };
-    const showBadgeModal = (badgeType, level) => {
-        // first set visible false (optional, ensures a fresh mount)
-        setBadgeModal({ visible: false, badgeType, level });
-        
-        // then next tick, set visible true
-        setTimeout(() => {
-        setBadgeModal({ visible: true, badgeType, level });
-        }, 50); // 50ms delay ensures Modal mounts after layout
-    };
-    
-
-  const hideBadgeModal = () => {
-    setBadgeModal((prev) => ({ ...prev, visible: false }));
-    setTimeout(() => {
-      setBadgeModal({ visible: false, badgeType: "", level: "" });
-    }, 300); // match your animation duration
+  const showNextBadge = () => {
+    if (badgeQueue.length === 0) return;
+    const nextBadge = badgeQueue[0];
+    setBadgeQueue(badgeQueue.slice(1));
+    setBadgeModal({ visible: true, badgeType: nextBadge.badgeType, level: nextBadge.level });
   };
 
+  const showBadgeModal = (badgeType, level) => {
+    setBadgeQueue(prev => [...prev, { badgeType, level }]);
+    if (!badgeModal.visible) {
+      // If no modal currently visible, show the first one immediately
+      showNextBadge();
+    }
+  };
+
+  const handleModalClose = () => {
+    setBadgeModal(prev => ({ ...prev, visible: false }));
+    setTimeout(() => {
+      showNextBadge();
+    }, 300); // match animation duration
+  };
   return (
-    <BadgeContext.Provider value={{ showBadgeModal, hideBadgeModal }}>
+    <BadgeContext.Provider value={{ showBadgeModal }}>
       {children}
       <BadgeLevelUpModal
         visible={badgeModal.visible}
         badgeType={badgeModal.badgeType}
         level={badgeModal.level}
-        onClose={hideBadgeModal}
+        onClose={handleModalClose}
       />
     </BadgeContext.Provider>
   );

@@ -11,7 +11,7 @@ import { Redirect } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { LinkIcon } from '../assets/icons/icons'
 import { useUserDB } from '../lib/UserDBContext'
-import { fetchUser, useFetchOwnerUser, useGetCriticProgression, useGetHistorianProgression } from '../api/user'
+import { fetchUser, useCheckBadgeNotifications, useFetchOwnerUser, useGetCriticProgression, useGetCuratorProgression, useGetHistorianProgression } from '../api/user'
 import { formatDate } from '../lib/formatDate'
 import DialogueCard from './DialogueCard'
 import { useFetchDialogues } from '../api/dialogue'
@@ -47,6 +47,9 @@ import ReviewCard from './Screens/ReviewCard'
         })
         const {criticProgression} = useGetCriticProgression(user?.id)
         const {historianProgression} = useGetHistorianProgression(user?.id)
+        const {curatorProgression} = useGetCuratorProgression(user?.id)
+        const {badgeNotifications} = useCheckBadgeNotifications(user?.id)
+
         const [ refreshingPage, setRefreshingPage ] = useState(false)
 
         const { postToRemove, updatePostToRemove } = usePostRemoveContext()

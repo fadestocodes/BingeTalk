@@ -47,3 +47,11 @@ export const checkHistorianBadgeProgress = async (tmdbObj, type, userId) => {
     }
 
 }
+
+export const checkCuratorBadge = async (likedByUserId, ownerUserId) => {
+    try {
+        if (!likedByUserId || !ownerUserId) throw new Error("Invalid parameters")
+    } catch (err) {
+        console.error(err)
+    }
+}
