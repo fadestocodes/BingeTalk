@@ -1038,6 +1038,44 @@ export const useGetCuratorProgression = (userId) => {
     return {curatorProgression, isLoading, error}
 }
 
+export const useGetAuteurProgression = (userId) => {
+    const [auteurProgression, setAuteurProgression] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState('')
+    
+    const getAuteurProgression = async () => {
+        if (!userId) return
+        try {
+            setIsLoading(true)
+            setError('')
+            const auteurResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/auteur-badge-progression`)
+            const auteurResult = await auteurResponse.json()
+
+            if (!auteurResponse.ok){
+                throw new Error(auteurResult.message || "Error fetching progression data for Auteur badge")
+            }
+            const auteurProgressionData = auteurResult.data
+            // console.log('historianprogresion', auteurProgressionData)
+            console.log(`Auteur progression: ${auteurProgressionData.untilNextLevel.currentlyAt} / ${auteurProgressionData.untilNextLevel.toNextLevel} `)
+            setAuteurProgression(auteurProgressionData)
+
+    
+        } catch (err){
+            console.error(err)
+            setError(err.message)
+        } finally {
+            setIsLoading(false)
+        }
+
+    }
+
+    useEffect(() => {
+        getAuteurProgression()
+    }, [userId])
+
+    return {auteurProgression, isLoading, error}
+}
+
 export const useCheckBadgeNotifications = (userId) => {
     const [ badgeNotifications, setBadgeNotifications ] = useState([])
     const [loading, setLoading] = useState(true)

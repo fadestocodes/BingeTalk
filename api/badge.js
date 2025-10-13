@@ -55,3 +55,22 @@ export const checkCuratorBadge = async (likedByUserId, ownerUserId) => {
         console.error(err)
     }
 }
+
+export const checkAuteurBadge = async (movieObj, userId) => {
+    try {
+        if (!movieObj || !userId) throw new Error("Invalid parameters")
+        const response = await fetch(`${nodeServer.currentIP}/badge/auteur`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({movieObj, userId})
+        })
+        if (!response.ok) throw new Error("Unexpected error")
+        const result = await response.json()
+        return result.data
+
+    } catch(err){
+        console.error(err)
+    }
+}
