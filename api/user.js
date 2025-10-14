@@ -143,6 +143,8 @@ export const useFetchOwnerUser = (email) => {
 
 //     const fetchOwnerUser = async () => {
 //         try {
+//             setIsLoading(true)
+//             console.log('fetching user...')
 //             const request = await fetch(`${nodeServer.currentIP}/user`, {
 //                 method:'POST',
 //                 headers:{
@@ -154,8 +156,10 @@ export const useFetchOwnerUser = (email) => {
 //             setData(response)
 //         } catch (err) {
 //             console.log('Error fetching user from db', err)
+//         } finally {
+//             setIsLoading(false)
+
 //         }
-//         setIsLoading(false)
 //     }
 
 //     useEffect(()=>{
@@ -1099,7 +1103,8 @@ export const useCheckBadgeNotifications = (userId) => {
 
                 notifs.forEach(n => {
                     console.log('notif in queue', n)
-                    showBadgeModal(n.badgeType, n.badgeLevel)
+                    console.log('userId for badge queue', userId)
+                    showBadgeModal(n.badgeType, n.badgeLevel, n.id, userId)
                 });
             }
         } catch (err){
@@ -1116,5 +1121,26 @@ export const useCheckBadgeNotifications = (userId) => {
     },[userId])
 
     return { badgeNotifications, loading, error, refetchBadgeNotifications : checkBadgeNotifications }
+}
+
+export const markBadgeNotificationSeen = async ( badgeId) => {
+
+
+    try {
+        console.log(`userid: ${userId}, badgeId: ${badgeId}`)
+        if (!userId || !badgeId) throw new Error("Invalid parameters")
+        const response = await fetch(`${nodeServer.currentIP}/user/${userId}/badge-notification/${badgeId}`, {
+            method : "PATCH",
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({userId, badgeId})
+        })
+        if (!response.ok) throw new Error("Unexpected error")
+            console.log('marked badge notif as seen')
+        
+    } catch(err){
+        console.error(err)
+    }
 }
 

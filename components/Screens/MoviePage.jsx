@@ -215,11 +215,12 @@ const MoviePage = () => {
             console.log('🎊 Congrats you leveled up the Historian badge!')
             levelUpData = {
                 badgeType: 'HISTORIAN',
-                level: `${checkHistorian.newLevel}`
+                level: `${checkHistorian.newLevel}`,
+                badgeId: checkHistorian.badge.id
             };
         }
         if (levelUpData) {
-            showBadgeModal(levelUpData.badgeType, levelUpData.level);
+            showBadgeModal(levelUpData.badgeType, levelUpData.level, levelUpData.badgeId);
         }
         refetchOwnerUser();
         setButtonPressed('')

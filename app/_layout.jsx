@@ -103,8 +103,8 @@ export default Sentry.wrap(function RootLayout() {
     
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey} >
       <ClerkLoaded>
-      <BadgeModalProvider>
         <QueryClientProvider client={queryClient}>
+      <BadgeModalProvider>
           <SignUpProvider>
         <UserDBProvider>
           <NotificationProvider>
@@ -130,8 +130,8 @@ export default Sentry.wrap(function RootLayout() {
           </NotificationProvider>
           </UserDBProvider>
           </SignUpProvider>
-        </QueryClientProvider>
           </BadgeModalProvider> 
+        </QueryClientProvider>
       </ ClerkLoaded >
     </ClerkProvider >
   );

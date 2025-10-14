@@ -185,7 +185,7 @@ import ReviewCard from './Screens/ReviewCard'
                 <RefreshControl
                 tintColor={Colors.secondary}
                 refreshing={refreshingPage}
-                onRefresh={handleRefresh} 
+                onRefresh={refetchOwner} 
                 />
                 }
             onEndReached={()=> {

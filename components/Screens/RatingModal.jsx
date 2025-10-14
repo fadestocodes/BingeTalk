@@ -95,7 +95,8 @@ const RatingModalPage = () => {
                     console.log('🎊 Congrats you leveled up the Critic badge!')
                     levelUpData = {
                         badgeType: 'CRITIC',
-                        level: `${criticBadgeProgress.newLevel}`
+                        level: `${criticBadgeProgress.newLevel}`,
+                        badgeId : criticBadgeProgress.badge
                     };
                 }
 
@@ -104,7 +105,7 @@ const RatingModalPage = () => {
         setTimeout(() => {
             router.back()
             if (levelUpData) {
-                showBadgeModal(levelUpData.badgeType, levelUpData.level);
+                showBadgeModal(levelUpData.badgeType, levelUpData.level,levelUpData.badgeId );
             }
         }, 1700)
 
