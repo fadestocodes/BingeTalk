@@ -16,6 +16,7 @@ import { useFetchActivityId } from '../api/activity'
 import { useRouter } from 'expo-router'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom } from '../constants/Images'
+import { checkConversationalistBadge } from '../api/badge'
 
 const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}) => {
 
@@ -113,10 +114,16 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     
         const newComment = await createComment( commentData );
         console.log('newcomment', newComment)
+
+
         setInput('');
         setReplyingTo(null)
         setReplying(false)
+
         inputRef.current?.blur();
+        await checkConversationalistBadge(Number(userId))
+
+
         
         
         refetch();

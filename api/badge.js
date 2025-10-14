@@ -74,3 +74,23 @@ export const checkAuteurBadge = async (movieObj, userId) => {
         console.error(err)
     }
 }
+
+export const checkConversationalistBadge = async ( userId) => {
+    try {
+        if (!userId) throw new Error("Invalid parameters")
+        const response = await fetch(`${nodeServer.currentIP}/badge/conversationalist`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({ userId})
+        })
+        if (!response.ok) throw new Error("Unexpected error")
+        const result = await response.json()
+        console.log('checking conversationslit badge', result?.data)
+        return result.data
+
+    } catch(err){
+        console.error(err)
+    }
+}

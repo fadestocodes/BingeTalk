@@ -20,6 +20,8 @@ import DialogueCard from '../DialogueCard'
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
+import { checkConversationalistBadge } from '../../api/badge'
+import { useBadgeContext } from '../../lib/BadgeModalContext'
 
 
 
@@ -39,6 +41,8 @@ const DialogueScreen = () => {
 
     const { dialogue, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
+
+    const {showBadgeModal} = useBadgeContext()
 
 
 
@@ -110,6 +114,21 @@ const DialogueScreen = () => {
         setReplyingTo(null)
         setReplying(false)
         inputRef.current?.blur();
+
+        const conversationalistProgression =  await checkConversationalistBadge(Number(ownerUser?.id))
+
+        let levelUpData = null
+        if (conversationalistProgression?.hasLeveledUp){
+            console.log('🎊 Congrats you leveled up the Conversationalist badge!')
+            levelUpData = {
+                badgeType: 'CONVERSATIONALIST',
+                level: `${conversationalistProgression.newLevel}`,
+            };
+        }
+        if (levelUpData) {
+            showBadgeModal(levelUpData.badgeType, levelUpData.level);
+        }
+
         
         
         refetch();

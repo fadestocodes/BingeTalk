@@ -105,7 +105,7 @@ const RatingModalPage = () => {
         setTimeout(() => {
             router.back()
             if (levelUpData) {
-                showBadgeModal(levelUpData.badgeType, levelUpData.level,levelUpData.badgeId );
+                showBadgeModal(levelUpData.badgeType, levelUpData.level );
             }
         }, 1700)
 

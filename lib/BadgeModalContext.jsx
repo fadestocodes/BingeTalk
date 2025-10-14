@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import BadgeLevelUpModal from "../components/BadgeLevelUpModal";
 import * as nodeServer from '../lib/ipaddresses'
 
@@ -36,6 +36,10 @@ export const BadgeModalProvider = ({ children }) => {
     const [badgeQueue, setBadgeQueue] = useState([]);
     const [userId, setUserId] = useState('')
 
+    useEffect(() => {
+        if (!badgeModal.visible && badgeQueue.length > 0) showNextBadge();
+      }, [badgeQueue, badgeModal.visible]);
+
     const showNextBadge = () => {
         if (badgeQueue.length === 0) return;
         const nextBadge = badgeQueue[0];
@@ -56,7 +60,9 @@ export const BadgeModalProvider = ({ children }) => {
 
     const handleModalClose = async () => {
         setTimeout(async () => {
-            await markBadgeNotificationSeen(userId, badgeModal.notifId )
+            if (badgeModal?.notifId){
+                await markBadgeNotificationSeen(userId, badgeModal.notifId )
+            }
             setBadgeModal(prev => ({ ...prev, visible: false }));
             showNextBadge();
         }, 300); // match animation duration

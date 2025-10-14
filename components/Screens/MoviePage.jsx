@@ -216,11 +216,10 @@ const MoviePage = () => {
             levelUpData = {
                 badgeType: 'HISTORIAN',
                 level: `${checkHistorian.newLevel}`,
-                badgeId: checkHistorian.badge.id
             };
         }
         if (levelUpData) {
-            showBadgeModal(levelUpData.badgeType, levelUpData.level, levelUpData.badgeId);
+            showBadgeModal(levelUpData.badgeType, levelUpData.level);
         }
         refetchOwnerUser();
         setButtonPressed('')
