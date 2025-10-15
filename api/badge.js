@@ -68,6 +68,7 @@ export const checkAuteurBadge = async (movieObj, userId) => {
         })
         if (!response.ok) throw new Error("Unexpected error")
         const result = await response.json()
+        console.log('auteur result', result.data)
         return result.data
 
     } catch(err){

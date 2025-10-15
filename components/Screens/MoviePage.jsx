@@ -23,7 +23,7 @@ import { useUser } from '@clerk/clerk-expo'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
 import { newRecommendation } from '../../api/recommendation'
 import ToastMessage from '../ui/ToastMessage'
-import { checkHistorianBadgeProgress } from '../../api/badge'
+import { checkAuteurBadge, checkHistorianBadgeProgress } from '../../api/badge'
 import { useBadgeContext } from '../../lib/BadgeModalContext'
 
 
@@ -218,6 +218,16 @@ const MoviePage = () => {
                 level: `${checkHistorian.newLevel}`,
             };
         }
+
+        const checkAuteur = await checkAuteurBadge(movie, ownerUser?.id)
+        if (checkAuteur.hasLeveledUp){
+            console.log('🎊 Congrats you leveled up the Auteur badge!')
+            levelUpData = {
+                badgeType: 'AUTEUR',
+                level: `${checkAuteur.newLevel}`,
+            };
+        }
+
         if (levelUpData) {
             showBadgeModal(levelUpData.badgeType, levelUpData.level);
         }
