@@ -17,6 +17,8 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { avatarFallback } from '../lib/fallbackImages'
 import {avatarFallbackImage, moviePosterFallback} from '../constants/Images'
 import { avatarFallbackCustom } from '../constants/Images'
+import { checkConversationalistBadge } from '../api/badge'
+import { useBadgeContext } from '../lib/BadgeModalContext'
 
 
 const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
@@ -34,6 +36,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
         subtitle : '',
         link : ''
     })
+    const {showBadgeModal} = useBadgeContext()
 
     
     
@@ -182,6 +185,20 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
             recipientId : dialogue.user.id
         }
         const updatedDialogue = await dialogueInteraction(data)
+        const conversationalistProgression =  await checkConversationalistBadge(Number(ownerUser?.id))
+
+        let levelUpData = null
+        if (conversationalistProgression?.hasLeveledUp){
+            console.log('🎊 Congrats you leveled up the Conversationalist badge!')
+            levelUpData = {
+                badgeType: 'CONVERSATIONALIST',
+                level: `${conversationalistProgression.newLevel}`,
+            };
+        }
+        if (levelUpData) {
+            showBadgeModal(levelUpData.badgeType, levelUpData.level);
+        }
+
         refetchOwner();
     }
 

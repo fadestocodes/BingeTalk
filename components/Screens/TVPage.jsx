@@ -17,7 +17,7 @@ import { markTVWatchlist, useFetchTVMentions } from '../../api/tv'
 import DialogueCard from '../DialogueCard'
 import { useFetchTVThreads } from '../../api/tv'
 import { fetchTVFromDB } from '../../api/tv'
-import { useQueryClient, useQuery } from '@tanstack/react-query';
+// import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ThreadCard from '../ThreadCard'
 import { useGetTVById } from '../../api/tmdb'
 import { fetchTVThreads, useGetTVThreads } from '../../api/tv'
@@ -27,6 +27,9 @@ import { useFetchOwnerUser } from '../../api/user'
 import { markTVWatch } from '../../api/tv'
 import ToastMessage from '../ui/ToastMessage'
 import { moviePosterFallback } from '../../constants/Images'
+import { useBadgeContext } from '../../lib/BadgeModalContext'
+import { checkHistorianBadgeProgress } from '../../api/badge'
+
 
 
 
@@ -39,7 +42,8 @@ const TVPage = () => {
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter();
-    const queryClient = useQueryClient();
+    // const queryClient = useQueryClient();
+    const {showBadgeModal} = useBadgeContext()
 
 
     const [movie, setMovie] = useState(null);
@@ -64,6 +68,7 @@ const TVPage = () => {
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
 
     const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
+
     const alreadyInWatchlist = ownerUser?.watchlistItems.some( item => item.tvId === Number(DBtvId) )
 
     const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) && item.userId === ownerUser?.id )
@@ -86,9 +91,9 @@ const TVPage = () => {
         try {
             const res = await GetTVById(tvId);  
             setMovie(res);
-            if (res.videos.results){
+            if (res?.videos?.results){
                 try {
-                    const trailer = res.videos.results.find(item => (item.type === 'Trailer' || item.type === 'Teaser') && item.site === 'YouTube').key ;
+                    const trailer = res.videos.results.find(item => (item.type === 'Trailer' || item.type === 'Teaser') && item.site === 'YouTube')?.key || null;
                     setVideoId(trailer)
                 } catch (err){
                     console.log(err)
@@ -116,7 +121,6 @@ const TVPage = () => {
             }
             
             const tvFromDB = await fetchTVFromDB({tvData})
-            setThreads(tvFromDB.threads)
             setDBtvId(tvFromDB.id)
             setTVRatings(tvFromDB.ratings)
 
@@ -132,10 +136,7 @@ const TVPage = () => {
         }
     };
 
-    const refetchMentionsThreads =  () => {
-        queryClient.invalidateQueries(['mentions']);
-        queryClient.invalidateQueries(['threads']);
-    };
+
     
    
 
@@ -147,7 +148,7 @@ const TVPage = () => {
     
     useEffect(() => {
             fetchData();
-    }, []); 
+    }, [tvId]); 
 
 
 
@@ -202,6 +203,20 @@ const TVPage = () => {
             }
         }
         refetchOwnerUser();
+
+        const checkHistorian = await checkHistorianBadgeProgress(movie,'TV', ownerUser?.id)
+        console.log('checkhistorian', checkHistorian)
+        let levelUpData = null
+        if (checkHistorian?.hasLeveledUp){
+            console.log('🎊 Congrats you leveled up the Historian badge!')
+            levelUpData = {
+                badgeType: 'HISTORIAN',
+                level: `${checkHistorian.newLevel}`
+            };
+        }
+        if (levelUpData) {
+            showBadgeModal(levelUpData.badgeType, levelUpData.level);
+        }
         setButtonPressed('')
     }
 

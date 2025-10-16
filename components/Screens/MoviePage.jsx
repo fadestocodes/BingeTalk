@@ -23,6 +23,8 @@ import { useUser } from '@clerk/clerk-expo'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
 import { newRecommendation } from '../../api/recommendation'
 import ToastMessage from '../ui/ToastMessage'
+import { checkAuteurBadge, checkHistorianBadgeProgress } from '../../api/badge'
+import { useBadgeContext } from '../../lib/BadgeModalContext'
 
 
 
@@ -55,6 +57,7 @@ const MoviePage = () => {
     const [ threads, setThreads ] = useState([])
     const [ buttonPressed , setButtonPressed ] = useState('')
     const [ message ,setMessage ] = useState(null)
+    const {showBadgeModal} = useBadgeContext()
 
     const {user: clerkUser} = useUser();
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
@@ -82,7 +85,7 @@ const MoviePage = () => {
             const res = await GetMovieById(movieId);  
             setMovie(res);
             try {
-                const trailer = res?.videos?.results.find(item => (item.type === 'Trailer' || item.type === 'Teaser') && item.site === 'YouTube').key ;
+                const trailer = res?.videos?.results.find(item => (item.type === 'Trailer' || item.type === 'Teaser') && item.site === 'YouTube')?.key || null ;
                 if (trailer) {
                     setVideoId(trailer)
                 }
@@ -117,12 +120,12 @@ const MoviePage = () => {
                 setMovieRatings(cachedMovieFromDB.ratings)
             } else {
                 const movieFromDB = await fetchMovieFromDB({movieData})
-                queryClient.setQueryData(['movie', movieId]);
+                // queryClient.setQueryData(['movie', movieId]);
     
                 setMovieRatings(movieFromDB.ratings)
                 setThreads( movieFromDB.threads );
                 setDBmovieId( movieFromDB.id )
-                queryClient.setQueryData(['threads', movieId], movieFromDB.threads);
+                // queryClient.setQueryData(['threads', movieId], movieFromDB.threads);
             }
 
         } catch (err) {
@@ -190,15 +193,10 @@ const MoviePage = () => {
     }
 
 
-    const refetchMentionsThreads =  () => {
-        queryClient.invalidateQueries(['mentions']);
-        queryClient.invalidateQueries(['threads']);
-    };
-
+   
 
     const handleMarkWatched = async (  ) => {
         if ( alreadyWatched ){
-
             setButtonPressed('unwatched')
         } else {
             setButtonPressed('watched')
@@ -210,6 +208,28 @@ const MoviePage = () => {
             } else {
                 setMessage('Marked as Watched')
             }
+        }
+        const checkHistorian = await checkHistorianBadgeProgress(movie,'MOVIE', ownerUser?.id)
+        let levelUpData = null
+        if (checkHistorian?.hasLeveledUp){
+            console.log('🎊 Congrats you leveled up the Historian badge!')
+            levelUpData = {
+                badgeType: 'HISTORIAN',
+                level: `${checkHistorian.newLevel}`,
+            };
+        }
+
+        const checkAuteur = await checkAuteurBadge(movie, ownerUser?.id)
+        if (checkAuteur.hasLeveledUp){
+            console.log('🎊 Congrats you leveled up the Auteur badge!')
+            levelUpData = {
+                badgeType: 'AUTEUR',
+                level: `${checkAuteur.newLevel}`,
+            };
+        }
+
+        if (levelUpData) {
+            showBadgeModal(levelUpData.badgeType, levelUpData.level);
         }
         refetchOwnerUser();
         setButtonPressed('')

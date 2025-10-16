@@ -21,6 +21,8 @@ import Animated, {
   } from 'react-native-reanimated';
 import { reviewTraits } from '../../lib/tagOptions'
 import { useGetMovieOrTvFromDB } from '../../api/db'
+import { checkCriticBadgeProgress } from '../../api/badge'
+import {useBadgeContext} from '../../lib/BadgeModalContext'
 
 const RatingModalPage = () => {
     const { DBmovieId, DBtvId,  DBcastId, prevRating } = useLocalSearchParams();
@@ -37,6 +39,7 @@ const RatingModalPage = () => {
     const [ isConfirmPage, setIsConfirmPage  ] = useState(false)
     const keyboard = useAnimatedKeyboard();
     const [ traits, setTraits ] = useState([])
+    const {showBadgeModal} = useBadgeContext()
 
     // const params = {DBmovieId, DBtvId}
     // const {movie, tv, isLoading} = useGetMovieOrTvFromDB(params)
@@ -51,7 +54,6 @@ const RatingModalPage = () => {
     const movieData = DBmovieId && useGetMovieFromDB(DBmovieId);
     const tvData  = DBtvId && useGetTVFromDB(DBtvId);
     const movie = movieData?.movie;
-    console.log('MOVIEEEE', movie)
     const tv = tvData?.tv;
 
     // const {movie} =  useGetMovieFromDB(DBmovieId);
@@ -80,14 +82,31 @@ const RatingModalPage = () => {
             traits 
 
         }
-        console.log('REVIEW DATAAA', data)
         const postedRating = await createRating(data)
+
         // router.back()
+        let levelUpData = null
         if (postedRating){
             setMessage('Successfully posted rating')
+            if (postedRating.review){
+                const criticBadgeProgress = await checkCriticBadgeProgress(postedRating.id, ownerUser?.id)
+                console.log('Criticbadgeprogress', criticBadgeProgress)
+                if (criticBadgeProgress?.hasLeveledUp){
+                    console.log('🎊 Congrats you leveled up the Critic badge!')
+                    levelUpData = {
+                        badgeType: 'CRITIC',
+                        level: `${criticBadgeProgress.newLevel}`,
+                        badgeId : criticBadgeProgress.badge
+                    };
+                }
+
+            }
         }
         setTimeout(() => {
             router.back()
+            if (levelUpData) {
+                showBadgeModal(levelUpData.badgeType, levelUpData.level );
+            }
         }, 1700)
 
 

@@ -133,6 +133,7 @@ export const markTVWatch =  async ( data ) => {
             body : JSON.stringify(data)
         })
         const response = await request.json();
+        console.log('tv watch response', response)
         return response
     } catch (err) {
         console.log(err)
@@ -173,6 +174,8 @@ export const markTVCurrentlyWatching =  async ( data ) => {
 
 export const markTVWatchlist =  async ( data ) => {
     try {
+
+        if (!data.tvId || !data.userId) throw new Error("Invalid params")
         const request = await fetch(`${nodeServer.currentIP}/tv/update-watchlist`, {
             method : 'POST',
             headers : {
