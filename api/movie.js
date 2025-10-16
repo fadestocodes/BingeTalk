@@ -115,6 +115,8 @@ export const markMovieCurrentlyWatching =  async ( data ) => {
 
 export const markMovieWatchlist =  async ( data ) => {
     try {
+        if (!data.movieId || !data.userId) throw new Error("Invalid params")
+
         const request = await fetch(`${nodeServer.currentIP}/movie/update-watchlist`, {
             method : 'POST',
             headers : {

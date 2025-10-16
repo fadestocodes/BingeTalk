@@ -174,6 +174,8 @@ export const markTVCurrentlyWatching =  async ( data ) => {
 
 export const markTVWatchlist =  async ( data ) => {
     try {
+
+        if (!data.tvId || !data.userId) throw new Error("Invalid params")
         const request = await fetch(`${nodeServer.currentIP}/tv/update-watchlist`, {
             method : 'POST',
             headers : {

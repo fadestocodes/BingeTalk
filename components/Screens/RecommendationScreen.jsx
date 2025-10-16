@@ -61,7 +61,7 @@ const RecommendationScreen = () => {
 
     const handleRecommendation = async (params) => {
 
-        if (params.alreadySent && whichStep === 'step1' || whichStep === 'step2' ){
+        if (params?.alreadySent && whichStep === 'step1' || whichStep === 'step2' ){
             let type
             if (DBmovieId){
                 type = 'MOVIE'
@@ -69,22 +69,21 @@ const RecommendationScreen = () => {
                 type = 'TV'
             } else if (DBcastId){
                 type = 'CASTCREW'
-            }
-            
+            }   
+
+
             const data = {
                 recommenderId : ownerUser?.id,
                 type,
-                recipientId : whichStep === 'step1' ? params.item.followingId : recipient.followingId,
+                recipientId : whichStep === 'step1' ? (params.item.followingId) : recipient,
                 movieId : Number(DBmovieId) || null,
                 castId : Number(DBcastId) || null,
                 tvId : Number(DBtvId) || null,
                 message : input.trim() 
 
             }
-            console.log('data', data)
             
             const newRec = await newRecommendation( data );
-            console.log('newrec',newRec)
             if (newRec){
 
                 if (params.alreadySent){
@@ -99,8 +98,7 @@ const RecommendationScreen = () => {
             },1000)
 
         } else if (whichStep === 'step1') {
-            setRecipient(params.item)
-
+            setRecipient(params?.isMutual ? params.item.followingId : params.item.id)
             setWhichStep('step2')
         } 
     }
@@ -184,7 +182,7 @@ const RecommendationScreen = () => {
                                                 <Text className='text-mainGray text-sm'>@{item.username}</Text>
                                             </View>
                                         </View>
-                                        <TouchableOpacity onPress={()=>{ handleRecommendation({item, alreadySent })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
+                                        <TouchableOpacity onPress={()=>{console.log(item) ;handleRecommendation({item, alreadySent, isMutual: false })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
                                             <Handshake color={ alreadySent ? Colors.secondary  : Colors.primary} size={22} />
                                             {/* <Text className='text-primary text-sm font-pbold'>send rec.</Text> */}
                                         </TouchableOpacity>
@@ -223,7 +221,7 @@ const RecommendationScreen = () => {
                                                 <Text className='text-mainGray text-sm'>@{item.following.username}</Text>
                                             </View>
                                         </View>
-                                        <TouchableOpacity onPress={()=>{ handleRecommendation({item, alreadySent })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
+                                        <TouchableOpacity onPress={()=>{ handleRecommendation({item, alreadySent, isMutual:true })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
                                             <Handshake color={ alreadySent ? Colors.secondary  : Colors.primary} size={22} />
                                             {/* <Text className='text-primary text-sm font-pbold'>send rec.</Text> */}
                                         </TouchableOpacity>

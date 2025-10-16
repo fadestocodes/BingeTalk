@@ -204,3 +204,24 @@ export const useGetRecommendation =  (params, replyCommentId) => {
 
     return { recommendation, ownerUser, refetch , loading, commentsData, director, ratings, interactedComments, setCommentsData, setInteractedComments, didOwnerSend }
 }
+
+export const acceptRecommendation = async (data) => {
+    try {
+        if (!data.userId || !data.recommenderId || !data.recommendationId || !data.type) throw new Error("Invalid params")
+        const {userId, recommendationId} = data
+
+        const response = await fetch(`${nodeServer.currentIP}/recommendation/${recommendationId}`, {
+            method : 'PATCH',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        if (!response.ok) throw new Error("Unexpected error")
+        const result = await response.json()
+    
+
+    } catch(err){
+        console.error(err)
+    }
+}
