@@ -95,3 +95,21 @@ export const checkConversationalistBadge = async ( userId) => {
         console.error(err)
     }
 }
+
+export const checkTastemakerBadge = async (recommenderId) => {
+    try {
+        if (!recommenderId) throw new Error("Invalid recommenderId")
+        const response = await fetch(`${nodeServer.currentIP}/badge/tastemaker`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify({userId : recommenderId})
+        })
+        if (!response.ok) throw new Error("Unexpected error")
+        const result = await response.json()
+        return result.data
+    } catch(err){
+        console.error(err)
+    }
+}

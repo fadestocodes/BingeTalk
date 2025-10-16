@@ -16,6 +16,8 @@ import { avatarFallback } from '../../lib/fallbackImages';
 import { avatarFallbackCustom } from '../../constants/Images';
 import { markMovieWatchlist } from '../../api/movie';
 import { markTVWatchlist } from '../../api/tv';
+import { checkTastemakerBadge } from '../../api/badge';
+import { useBadgeContext } from '../../lib/BadgeModalContext';
 
 
 const RecommendationListScreen = () => {
@@ -23,6 +25,7 @@ const RecommendationListScreen = () => {
     const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(userId)
     const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(userId)
     const [ tab, setTab ] = useState('received')
+    const {showBadgeModal} = useBadgeContext()
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
 
@@ -105,6 +108,9 @@ const RecommendationListScreen = () => {
             await markTVWatchlist(watchlistData)
         }
         removeReceivedItems(item)
+
+        await checkTastemakerBadge(item.recommenderId)
+        
 
     }
 
