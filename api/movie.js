@@ -1,6 +1,7 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query';
 import { useState , useEffect} from 'react';
+import { apiFetch } from './auth';
 
 export const getMovieMentions = async (movieId) => {
     try {
@@ -66,7 +67,7 @@ export const useFetchMovieFromDB = (  movieData ) => {
 
 export const markMovieWatch =  async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/movie/update-hasWatched`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/movie/update-hasWatched`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -83,7 +84,7 @@ export const markMovieWatch =  async ( data ) => {
 
 export const markMovieInterested =  async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/movie/update-interested`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/movie/update-interested`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -99,7 +100,7 @@ export const markMovieInterested =  async ( data ) => {
 
 export const markMovieCurrentlyWatching =  async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/movie/update-currentlyWatching`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/movie/update-currentlyWatching`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -117,7 +118,7 @@ export const markMovieWatchlist =  async ( data ) => {
     try {
         if (!data.movieId || !data.userId) throw new Error("Invalid params")
 
-        const request = await fetch(`${nodeServer.currentIP}/movie/update-watchlist`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/movie/update-watchlist`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'

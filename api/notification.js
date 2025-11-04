@@ -3,7 +3,7 @@ import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user';
 import { useNotificationCountContext } from '@/lib/NotificationCountContext';
-import { useGetUser, useGetUserFull } from './auth';
+import { apiFetch, useGetUser, useGetUserFull } from './auth';
 
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
@@ -22,7 +22,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const getAllNotifs = async () => {
         if (!hasMore || !ownerUser) return
         try {
-            const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
+            const notifications = await apiFetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(prev => [...prev, ...response.items])
             setCursor(response.nextCursor)
@@ -48,7 +48,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
 
     const refetch = async () => {
         try {
-            const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
+            const notifications = await apiFetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(response.items)
 
@@ -81,7 +81,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
 
 export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCount) => {
     try {
-        const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
+        const notifications = await apiFetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
         const response = await notifications.json();
         // console.log('NOTIFRESPONSE', response)
         const unreadNotifs = response.filter(i => i.isRead === false)
@@ -95,7 +95,7 @@ export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCoun
 
 export const markNotifRead = async (data, notifCount, updateNotifCount) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/notifications/mark-read`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/notifications/mark-read`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -112,7 +112,7 @@ export const markNotifRead = async (data, notifCount, updateNotifCount) => {
 
 export const markAllRead = async (data) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/notifications/mark-all-read`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/notifications/mark-all-read`, {
             method : "POST",
             headers:{
                 'Content-type' : 'application/json'
@@ -128,7 +128,7 @@ export const markAllRead = async (data) => {
 
 export const postPushToken = async (token) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/notifications/save-push-token`,{
+        const response = await apiFetch(`${nodeServer.currentIP}/notifications/save-push-token`,{
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -149,6 +149,6 @@ export const useGetAllNotifRead = async (limit) => {
     const [ cursor, setCursor ] = useState('null')
 
     const getAllNotifRead = async () => {
-        const response = await fetch(`${nodeServer.currentIP}/notifications/read`)
+        const response = await apiFetch(`${nodeServer.currentIP}/notifications/read`)
     }
 }

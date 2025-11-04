@@ -1,8 +1,9 @@
 import * as nodeServer from '../lib/ipaddresses'
+import { apiFetch } from './auth'
 
 export const submitFeedback = async (params) => {
     try {
-        const res = await fetch(`${nodeServer.currentIP}/submit-feedback`, {
+        const res = await apiFetch(`${nodeServer.currentIP}/submit-feedback`, {
             method : "POST",
             headers:{
                 'Content-type' : 'application/json'

@@ -3,11 +3,11 @@ import * as nodeServer from '../lib/ipaddresses'
 import { findDirector } from './tmdb';
 
 import { useFetchOwnerUser } from './user';
-import { useGetUser, useGetUserFull } from './auth';
+import { apiFetch, useGetUser, useGetUserFull } from './auth';
 
 export const newRecommendation = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/recommend-to-friend`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/recommend-to-friend`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -23,7 +23,7 @@ export const newRecommendation = async (data) => {
 
 export const mySentRecommendations = async (userId) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/`)
+        const request = await apiFetch(`${nodeServer.currentIP}/`)
     } catch (err){
         console.log(err)
         
@@ -32,7 +32,7 @@ export const mySentRecommendations = async (userId) => {
 
 export const deleteRecommendation = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/recommendation/delete`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/recommendation/delete`, {
             method : 'POST',
             headers: {
                 'Content-type' : 'application/json'
@@ -68,7 +68,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
     
     const getRecommendation = async () => {
         try {
-            const response = await fetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
             const data = await response.json()
             setRecommendation(data)
             const ownerSent = Number(userId) === data.recommender.id
@@ -87,7 +87,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
             })
             
             if (replyCommentId){
-                const commentResponse = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const commentResponse = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await commentResponse.json();
                 
                 const reorderedCommentsData = [
@@ -140,7 +140,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
 
         await refetchOwner()
         try {
-            const response = await fetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
             const data = await response.json()
             setRecommendation(data)
             const ownerSent = Number(userId) === data.recommender.id
@@ -159,7 +159,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
             })
             
             if (replyCommentId){
-                const commentResponse = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const commentResponse = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await commentResponse.json();
                 
                 const reorderedCommentsData = [
@@ -212,7 +212,7 @@ export const acceptRecommendation = async (data) => {
         if (!data.userId || !data.recommenderId || !data.recommendationId || !data.type) throw new Error("Invalid params")
         const {userId, recommendationId} = data
 
-        const response = await fetch(`${nodeServer.currentIP}/recommendation/${recommendationId}`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/recommendation/${recommendationId}`, {
             method : 'PATCH',
             headers : {
                 'Content-type' : 'application/json'

@@ -1,12 +1,12 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react';
 import { useFetchOwnerUser } from './user';
-import { useGetUser, useGetUserFull } from './auth';
+import { apiFetch, useGetUser, useGetUserFull } from './auth';
 
 
 export const addActivity = async ( activityData ) => {
     try {
-        const request = await fetch (`${nodeServer.currentIP}/activity/create`, {
+        const request = await apiFetch (`${nodeServer.currentIP}/activity/create`, {
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -22,7 +22,7 @@ export const addActivity = async ( activityData ) => {
 
 export const likeActivity = async (data) => {
     try {
-        const request = await fetch (`${nodeServer.currentIP}/activity/interact`, {
+        const request = await apiFetch (`${nodeServer.currentIP}/activity/interact`, {
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -51,7 +51,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
     const fetchActivityId = async () => {
         try {   
             setLoading(true)
-            const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/activity?id=${id}`)
             const activity = await request.json();
             setData(activity);
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
@@ -65,7 +65,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
                 downvotes : downvotedComments
             })
             if (replyCommentId){
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
 
                 const reorderedCommentsData = [
@@ -108,7 +108,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
         // await refetchOwner()
         // fetchActivityId()
         try {   
-            const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/activity?id=${id}`)
             const activity = await request.json();
             setData(activity);
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
@@ -122,7 +122,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
                 downvotes : downvotedComments
             })
             if (replyCommentId){
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
 
                 const reorderedCommentsData = [
@@ -148,7 +148,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
 
 export const activityInteraction = async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/activity/interact`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/activity/interact`, {
             method : 'POST',
             headers: {
                 'Content-type' : 'application/json'

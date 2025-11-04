@@ -2,13 +2,13 @@ import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user'
-import { useGetUser, useGetUserFull } from './auth'
+import { apiFetch, useGetUser, useGetUserFull } from './auth'
 
 
 export const createList = async (postData) => {
     
     try { 
-        const request = await fetch (`${nodeServer.currentIP}/list/create`, {
+        const request = await apiFetch (`${nodeServer.currentIP}/list/create`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -24,7 +24,7 @@ export const createList = async (postData) => {
 
 export const addToList = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/list/add-to-list`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/list/add-to-list`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -41,7 +41,7 @@ export const addToList = async (data) => {
 
 export const fetchUsersLists = async ( userId ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/list/user?userId=${userId}`)
+        const request = await apiFetch(`${nodeServer.currentIP}/list/user?userId=${userId}`)
         const response = await request.json()
         // console.log('Fetched users lists', response)
         return response
@@ -74,7 +74,7 @@ export const useFetchUsersListsInfinite = (userId, limit) => {
     const fetchUsersListsInfinite = async () => {
         if(!hasMore) return
         try {
-            const response = await fetch(`${nodeServer.currentIP}/list/infinite?userId=${userId}&limit=${limit}&cursor=${cursor}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/list/infinite?userId=${userId}&limit=${limit}&cursor=${cursor}`)
             const results = await response.json()
             setData(prev => [...prev, ...results.items])
             setCursor(results.nextCursor)
@@ -92,7 +92,7 @@ export const useFetchUsersListsInfinite = (userId, limit) => {
 
     const refetch = async () => {
         try {
-            const response = await fetch(`${nodeServer.currentIP}/list/infinite?userId=${userId}&limit=${limit}&cursor=null`)
+            const response = await apiFetch(`${nodeServer.currentIP}/list/infinite?userId=${userId}&limit=${limit}&cursor=null`)
             const results = await response.json()
             setData(results.items)
             setCursor(results.nextCursor)
@@ -112,7 +112,7 @@ export const useFetchUsersListsInfinite = (userId, limit) => {
 
 export const listInteraction = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/list/interact`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/list/interact`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -128,7 +128,7 @@ export const listInteraction = async (data) => {
 
 export const fetchSpecificList = async (listId) => {
     try {
-        const request = await fetch (`${nodeServer.currentIP}/list?listId=${listId}`)
+        const request = await apiFetch (`${nodeServer.currentIP}/list?listId=${listId}`)
         const response = await request.json();
         return response
     } catch (err) {
@@ -152,7 +152,7 @@ export const useFetchSpecificList = ( listId ) => {
 
 export const getTrendingLists = async (limit) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/list/trending?limit=${limit}`)
+        const request = await apiFetch(`${nodeServer.currentIP}/list/trending?limit=${limit}`)
         const response = await request.json();
         return response
     } catch (err) {
@@ -168,7 +168,7 @@ export const useGetTrendingLists = (limit) => {
     const getTrendingLists = async (limit) => {
         if (!hasMore) return 
         try {
-            const request = await fetch(`${nodeServer.currentIP}/list/trending?cursor=${cursor}&limit=${limit}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/list/trending?cursor=${cursor}&limit=${limit}`)
             const response = await request.json();
             setTrendingList(prev => [...prev, ...response.items]);
             setCursor(response.nextCursor)
@@ -186,7 +186,7 @@ export const useGetTrendingLists = (limit) => {
 
     const refetch = async () => {
         try {
-            const request = await fetch(`${nodeServer.currentIP}/list/trending?cursor=null&limit=${limit}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/list/trending?cursor=null&limit=${limit}`)
             const response = await request.json();
             setTrendingList(response.items)
             setCursor(response.nextCursor)
@@ -211,7 +211,7 @@ export const useGetRecentLists = (limit) => {
     const getRecentLists = async (limit) => {
         if (!hasMore) return
         try {
-            const request = await fetch(`${nodeServer.currentIP}/list/most-recent?cursor=${cursor}&limit=${limit}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/list/most-recent?cursor=${cursor}&limit=${limit}`)
             const response = await request.json();
             setRecentLists(prev => [...prev, ...response.items]);
             setCursor(response.nextCursor)
@@ -229,7 +229,7 @@ export const useGetRecentLists = (limit) => {
 
     const refetch = async () => {
         try {
-            const request = await fetch(`${nodeServer.currentIP}/list/most-recent?cursor=null&limit=${limit}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/list/most-recent?cursor=null&limit=${limit}`)
             const response = await request.json();
             setRecentLists(response.items);
             setCursor(response.nextCursor)
@@ -248,7 +248,7 @@ export const useGetRecentLists = (limit) => {
 
 export const deleteList = async (data) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/list/delete`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/list/delete`, {
             method:'POST',
             headers:{
                 'Content-type': 'application/json'
@@ -297,7 +297,7 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     const fetchList = async () => {
         // await refetchOwner()
         try {
-            const response = await fetch(`${nodeServer.currentIP}/list?listId=${listId}`);
+            const response = await apiFetch(`${nodeServer.currentIP}/list?listId=${listId}`);
             const fetchedList = await response.json();
 
             const upvotedComments = ownerUser?.commentInteractions.filter( i => {
@@ -331,7 +331,7 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
             setList(fetchedList)
 
             if (replyCommentId){
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
 
                 const reorderedCommentsData = [
@@ -360,7 +360,7 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
         // await refetchOwner()
         await refetchOwner()
         try {
-            const response = await fetch(`${nodeServer.currentIP}/list?listId=${listId}`);
+            const response = await apiFetch(`${nodeServer.currentIP}/list?listId=${listId}`);
             const fetchedList = await response.json();
             setList(fetchedList)
 
@@ -395,7 +395,7 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
 
 
             if (replyCommentId){
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
 
                 const reorderedCommentsData = [
@@ -421,7 +421,7 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
 
 export const updateList = async (params) => {
     try {
-        const response = await fetch (`${nodeServer.currentIP}/list/update`, {
+        const response = await apiFetch (`${nodeServer.currentIP}/list/update`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'

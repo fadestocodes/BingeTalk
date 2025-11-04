@@ -13,7 +13,7 @@ export const useGetFeed = ( userId, limit ) => {
         if (!hasMore) return
         try {
             setLoading(true);
-            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${userId}&limit=${limit}&cursor=${cursor}`);
+            const request = await apiFetch (`${nodeServer.currentIP}/feed?userId=${userId}&limit=${limit}&cursor=${cursor}`);
             const response = await request.json();
             setData( prev => [ ...prev, ...response.items ] );
             setCursor(response.nextCursor)
@@ -89,7 +89,7 @@ export const useGetProfileFeed = (userId, limit) => {
         if (isFetching) return
         try {
             setIsFetching(true)
-            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&reviewCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreReviews=true&hasMoreLists=true`)
+            const response = await apiFetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&reviewCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreReviews=true&hasMoreLists=true`)
             const results = await response.json()
             setData(results.items)
             setHasMore({

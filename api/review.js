@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 
 
 import * as nodeServer from '../lib/ipaddresses'
-import { useGetUser, useGetUserFull } from "./auth"
+import { apiFetch, useGetUser, useGetUserFull } from "./auth"
 
 
 export const useFetchReview = (reviewId, replyCommentId) => {
@@ -124,7 +124,7 @@ export const useFetchReview = (reviewId, replyCommentId) => {
 
 export const reviewInteraction = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/review/interact`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/review/interact`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -140,7 +140,7 @@ export const reviewInteraction = async (data) => {
 
 export const deleteReview = async (params) => {
     try {
-        const res = await fetch(`${nodeServer.currentIP}/review`, {
+        const res = await apiFetch(`${nodeServer.currentIP}/review`, {
             method : 'DELETE', 
             headers : {
                 "Content-type" : 'application/json'

@@ -3,11 +3,11 @@ import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user'
 import { findDirector } from './tmdb'
-import { useGetUser, useGetUserFull } from './auth'
+import { apiFetch, useGetUser, useGetUserFull } from './auth'
 
 export const createRating = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/rating/create`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/rating/create`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -23,7 +23,7 @@ export const createRating = async (data) => {
 
 export const deleteRating = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/rating/delete`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/rating/delete`, {
             method : "POST",
             headers:{
                 'Content-type' : 'application/json'
@@ -58,7 +58,7 @@ export const useGetTitleRatings = (data) => {
         if (!hasMore) return 
         setIsLoading(true)
         try {
-            const response = await fetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=${cursor}&take=${limit}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=${cursor}&take=${limit}`)
             const ratingsData = await response.json()
             console.log("RATINGSSSDATA", ratingsData.data)
             setRatings( prev => [...prev, ...ratingsData.data] )
@@ -109,7 +109,7 @@ export const useGetTitleRatings = (data) => {
         await refetchOwner()
         setIsLoading(true)
         try {
-            const response = await fetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=null&take=${limit}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=null&take=${limit}`)
             const ratingsData = await response.json()
 
             setRatings(ratingsData.data )
