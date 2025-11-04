@@ -7,19 +7,21 @@ import { Colors } from '../../constants/Colors';
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
 import {  LayersIcon, MessageIcon, RepostIcon, ThreeDotsIcon} from '../../assets/icons/icons'
 import { useFetchOwnerUser } from '../../api/user';
-import { useUser } from '@clerk/clerk-expo';
+
 import { useRouter } from 'expo-router';
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext';
 import ListCard from '../ListCard';
+import { useGetUserFull } from '../../api/auth';
 
 
 const UserListsPage = ( { userId } ) => {
     const { data : lists, refetch, loading , removeItem, fetchMore, hasMore} = useFetchUsersListsInfinite(userId, 10);
     const posterURL = 'https://image.tmdb.org/t/p/w500';
-    const { user : clerkUser } = useUser()
+
+    const {userFull:ownerUser} = useGetUserFull(userId)
+
     const router = useRouter();
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
 
 
     useEffect(() => {

@@ -7,7 +7,7 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { SignedIn, SignedOut, useUser, useClerk } from '@clerk/clerk-expo'
+
 import { useEffect } from "react";
 import { Colors } from "../constants/Colors";
 import { fetchUser, useFetchOwnerUser } from "../api/user";
@@ -20,6 +20,7 @@ import  Constants  from 'expo-constants';
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
 import * as StoreReview from 'expo-store-review';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useGetUser } from "../api/auth";
 
 
 
@@ -92,8 +93,8 @@ const initializeNotification = () => {
 const Welcome = () => {
   initializeNotification()
 
-  const {user} = useUser();
-  
+  // const {user} = useUser();
+  const {user} = useGetUser()
   const router = useRouter(); 
   const [expoPushToken, setExpoPushToken] = useState(null);
   const [isTokenSent, setIsTokenSent] = useState(false);
@@ -176,9 +177,6 @@ useEffect(() => {
     return (
       <View style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%', backgroundColor:Colors.primary }} >
         <View className="items-center gap-3 text-lg font-psemibold text-white">
-          <SignedIn>
-          </SignedIn>
-          <SignedOut>
             < Animated.View style={[{ opacity: logoOpacity, transform: [{ translateY: logoTranslateY }] }]} >
           <Image
             source={require('../assets/images/splash.png')}
@@ -197,7 +195,6 @@ useEffect(() => {
             <Link  href="/(auth)/signIn">
               <Text  className='text-white text-lg font-semibold w-full text-center' >Sign in</Text>
             </Link>
-          </SignedOut>
         </View>
       </View>
     )

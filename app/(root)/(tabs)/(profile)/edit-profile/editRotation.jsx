@@ -5,12 +5,13 @@ import { searchTitles } from '../../../../../api/tmdb';
 import { getYear } from '../../../../../lib/formatDate';
 import debounce from 'lodash.debounce';
 import { Colors } from '../../../../../constants/Colors';
-import { useUser } from '@clerk/clerk-expo';
+
 import { useRouter } from 'expo-router';
 import { updateRotation } from '../../../../../api/user';
 
 import React, {useEffect, useState} from 'react'
 import { useFetchOwnerUser } from '../../../../../api/user';
+import { useGetUser, useGetUserFull } from '../../../../../api/auth';
 
 const editRotation = () => {
   
@@ -18,11 +19,11 @@ const editRotation = () => {
   const [ results, setResults ] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [ listItems, setListItems ]  = useState([])
-  const {user} = useUser();
+  const {user} = useGetUser()
+  const {userFull:userDB, refetch} = useGetUserFull(user?.id)
   const posterURL = 'https://image.tmdb.org/t/p/original';
   const router = useRouter();
 
-  const { data : userDB, refetch } = useFetchOwnerUser( {email : user.emailAddresses[0].emailAddress} );
   const userId = userDB?.id
   const oldRotation = userDB?.currentRotation
   

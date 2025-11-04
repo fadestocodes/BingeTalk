@@ -3,7 +3,7 @@ import { Image } from 'expo-image'
 import React, {useEffect, useState, useRef} from 'react'
 import { newRecommendation } from '../../api/recommendation'
 import { Colors } from '../../constants/Colors'
-import { useUser } from '@clerk/clerk-expo'
+
 import { getAllMutuals, searchUsers, useFetchOwnerUser } from '../../api/user'
 import { BackIcon, CloseIcon } from '../../assets/icons/icons'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -13,12 +13,14 @@ import ToastMessage from '../ui/ToastMessage'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
 import debounce from 'lodash.debounce'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 const RecommendationScreen = () => {
 
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch, loading:isLoading}= useGetUserFull(user?.id)
+    
     const [ mutuals, setMutuals ] = useState([])
     const [ loadingMutuals, setLoadingMutuals ] = useState(false)
     const [ message , setMessage ] = useState(null)

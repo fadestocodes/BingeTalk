@@ -1,5 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import React, {useState, useEffect} from 'react'
+import { apiFetch } from './auth';
 
 
 export const useGetFeed = ( userId, limit ) => {
@@ -53,7 +54,7 @@ export const useGetProfileFeed = (userId, limit) => {
         if (isFetching) return 
         try {
             setIsFetching(true)
-            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&reviewCursor=${cursors.review}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreReviews=${hasMore.review}&hasMoreLists=${hasMore.list}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&reviewCursor=${cursors.review}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreReviews=${hasMore.review}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
             setData(prev => ([...prev, ...results.items]))
             setHasMore({

@@ -5,20 +5,21 @@ import TinderSwipeCard from '../../../../components/TinderSwipeCard/TinderSwipeC
 import { useRouter } from 'expo-router'
 import { Colors } from '../../../../constants/Colors'
 import { useGetTrendingLists, listInteraction, useGetRecentLists } from '../../../../api/list'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
 import { LayersIcon , MessageIcon, RepostIcon, ThreeDotsIcon} from '../../../../assets/icons/icons'
 import { formatDate } from '../../../../lib/formatDate'
 import { browseCataegories } from '../../../../lib/CategoryOptions'
 import ListCard from '../../../../components/ListCard'
+import { useGetUser, useGetUserFull } from '../../../../api/auth'
 
 
 
 const browseHome = () => {
     const router = useRouter()
-    const { user: clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+
+    const {user} = useGetUser()
+    const {ownerUser} = useGetUserFull(user?.id)
     const [ selected, setSelected ] = useState('Trending')
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 

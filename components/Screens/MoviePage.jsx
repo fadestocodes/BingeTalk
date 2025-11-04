@@ -17,14 +17,13 @@ import { getMovieMentions, useFetchMovieMentions, markMovieWatch, markMovieWatch
 import DialogueCard from '../DialogueCard'
 import { fetchMovieFromDB } from '../../api/movie'
 import { useQueryClient } from '@tanstack/react-query';
-import ThreadCard from '../ThreadCard'
 import { useFetchOwnerUser } from '../../api/user'
-import { useUser } from '@clerk/clerk-expo'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
 import { newRecommendation } from '../../api/recommendation'
 import ToastMessage from '../ui/ToastMessage'
 import { checkAuteurBadge, checkHistorianBadgeProgress } from '../../api/badge'
 import { useBadgeContext } from '../../lib/BadgeModalContext'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 
@@ -58,10 +57,11 @@ const MoviePage = () => {
     const [ buttonPressed , setButtonPressed ] = useState('')
     const [ message ,setMessage ] = useState(null)
     const {showBadgeModal} = useBadgeContext()
-
-    const {user: clerkUser} = useUser();
+    const {user:userSimple} = useGetUser()
+    const {userFull : ownerUser, refetch:refetchOwnerUser} = useGetUserFull(userSimple?.id)
+    // const {user: clerkUser} = useUser();
     const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
-    const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
+    // const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
     const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
     const alreadyInWatchlist = ownerUser?.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
     const [ movieRatings, setMovieRatings ] = useState([])

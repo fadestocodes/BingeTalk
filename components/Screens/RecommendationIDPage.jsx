@@ -11,7 +11,7 @@ import { commentInteraction, createComment } from '../../api/comments'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { getYear, formatDate } from '../../lib/formatDate'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical} from 'lucide-react-native';
-import { useUser } from '@clerk/clerk-expo'
+
 import { useFetchOwnerUser } from '../../api/user'
 import { avatarFallbackCustom } from '../../lib/fallbackImages'
 import { avatarFallbackCustomCustom, moviePosterFallback } from '../../constants/Images'

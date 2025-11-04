@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import * as nodeServer from '../lib/ipaddresses'
 import { findDirector } from './tmdb';
-import { useUser } from '@clerk/clerk-expo';
+
 import { useFetchOwnerUser } from './user';
+import { useGetUser, useGetUserFull } from './auth';
 
 export const newRecommendation = async (data) => {
     try {
@@ -48,8 +49,9 @@ export const deleteRecommendation = async (data) => {
 
 export const useGetRecommendation =  (params, replyCommentId) => {
     
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser, refetch :refetchOwner } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+    
     const [ recommendation, setRecommendation ] = useState('')
     const [ loading, setLoading ] = useState(true)
     const { id , userId } = params

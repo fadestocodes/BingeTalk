@@ -7,19 +7,22 @@ import { ThumbsUp, ThumbsDown, Heart, MessagesSquare, MessageSquare, ListChecks 
 import { useRouter } from 'expo-router'
 import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { toPascalCase } from '../lib/ToPascalCase'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
 import { likeActivity, activityInteraction, useFetchActivityId } from '../api/activity'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
+import { useGetUser, useGetUserFull } from '../api/auth'
 
 const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground}) => {
 
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress }) 
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+
     const { refetch } = useFetchActivityId(activity?.id)
 
 

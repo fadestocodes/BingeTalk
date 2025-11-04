@@ -9,7 +9,6 @@ import { useFetchOwnerUser } from '../api/user'
 import { useCustomFetchSingleDialogue } from '../api/dialogue'
 import { useCustomFetchSingleThread } from '../api/thread'
 import { useCustomFetchSingleList } from '../api/list'
-import { useUser } from '@clerk/clerk-expo'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { createComment, commentInteraction } from '../api/comments'
 import { useFetchActivityId } from '../api/activity'
@@ -17,6 +16,7 @@ import { useRouter } from 'expo-router'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom } from '../constants/Images'
 import { checkConversationalistBadge } from '../api/badge'
+import { useGetUser, useGetUserFull } from '../api/auth'
 
 const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}) => {
 
@@ -38,8 +38,11 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
-    const { user : clerkUser } = useUser();
-    const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwnerUser}= useGetUserFull(user?.id)
+
     const router = useRouter()
 
 

@@ -18,17 +18,17 @@ import DialogueCard from '../DialogueCard'
 import { useFetchTVThreads } from '../../api/tv'
 import { fetchTVFromDB } from '../../api/tv'
 // import { useQueryClient, useQuery } from '@tanstack/react-query';
-import ThreadCard from '../ThreadCard'
 import { useGetTVById } from '../../api/tmdb'
 import { fetchTVThreads, useGetTVThreads } from '../../api/tv'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
-import { useUser } from '@clerk/clerk-expo'
+
 import { useFetchOwnerUser } from '../../api/user'
 import { markTVWatch } from '../../api/tv'
 import ToastMessage from '../ui/ToastMessage'
 import { moviePosterFallback } from '../../constants/Images'
 import { useBadgeContext } from '../../lib/BadgeModalContext'
 import { checkHistorianBadgeProgress } from '../../api/badge'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 
@@ -63,8 +63,10 @@ const TVPage = () => {
     const [ tvRatings, setTVRatings ] = useState([])
    
 
-    const { user:clerkUser } = useUser();
-    const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
 
     const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.tvId === Number(DBtvId) )

@@ -1,6 +1,6 @@
 import {  StyleSheet, Text, View, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator, RefreshControl, ScrollView } from 'react-native'
 import React, {useState, useEffect} from 'react'
-import { useUser } from '@clerk/clerk-expo'
+
 import { Colors } from '../../constants/Colors'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'

@@ -1,8 +1,8 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query'
-import { useUser } from '@clerk/clerk-expo'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user'
+import { useGetUser, useGetUserFull } from './auth'
 
 
 export const createList = async (postData) => {
@@ -269,8 +269,11 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     const [ list, setList ] = useState(null);
     const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
-    const { user : clerkUser }  = useUser()
-    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser?.emailAddresses[0]?.emailAddress})
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []

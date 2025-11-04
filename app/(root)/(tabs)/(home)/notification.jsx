@@ -3,7 +3,7 @@ import { Image } from 'expo-image'
 import { useFocusEffect } from '@react-navigation/native';
 
 import React, {useState, useEffect, useCallback} from 'react'
-import { useUser } from '@clerk/clerk-expo'
+
 import { followUser, unfollowUser, useFetchOwnerUser } from '../../../../api/user'
 import { useGetAllNotifs, markNotifRead } from '../../../../api/notification'
 import { Colors } from '../../../../constants/Colors'
@@ -16,10 +16,13 @@ import { BackIcon } from '../../../../assets/icons/icons'
 import { notificationFilterCategories } from '../../../../lib/CategoryOptions'
 import { avatarFallback } from '../../../../lib/fallbackImages';
 import { avatarFallbackCustom } from '../../../../constants/Images';
+import { useGetUser, useGetUserFull } from '../../../../api/auth';
 
 const Notification = () => {
-  const { user : clerkUser } = useUser();
-  const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress})
+
+  const {user} = useGetUser()
+  const {userFull:ownerUser} = useGetUserFull(user?.id)
+  
   const { data : notifications, readNotifs, unreadNotifs, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds, fetchMore} = useGetAllNotifs(ownerUser?.id, 10);
   const { updateNotifCount, notifCount } = useNotificationCountContext()
   const [selected, setSelected] = useState('All')

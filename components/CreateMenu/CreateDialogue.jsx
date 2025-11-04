@@ -14,7 +14,6 @@ import { addActivity } from '../../api/activity'
 import { useFetchDialogues } from '../../api/dialogue'
 import { FilmIcon, TVIcon, PersonIcon } from '../../assets/icons/icons'
 import { useFetchOwnerUser, useFetchUser } from '../../api/user'
-import { useUser } from '@clerk/clerk-expo'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTagsContext } from '../../lib/TagsContext'
 import { formatDate } from '../../lib/formatDate'
@@ -26,6 +25,7 @@ import { useCreateContext } from '../../lib/CreateContext'
 import { LinearGradient } from 'expo-linear-gradient'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 const toPascalCase = (str) => {
@@ -66,8 +66,10 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
 
     // const { userDB, updateUserDB } = useUserDB();
-    const { user } = useUser();
-    const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchOwnerUser({email: user.emailAddresses[0].emailAddress} )
+    const {user} = useGetUser()
+    const {userFull:ownerUser, loading:refetchUser, loading:isFetchingUser} = useGetUserFull(user?.id)
+
+
     const { data : dialogues, refetch, isFetching } = useFetchDialogues(userDB?.id);
     const urlPattern = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}(?:\/[^\s]*)?/;
 

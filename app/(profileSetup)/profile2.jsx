@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, TextInput,  Keyboard, FlatList, TouchableWithou
 import React, {useState} from 'react'
 import { Image } from 'expo-image'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useUser, useSignUp } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
 import debounce from 'lodash.debounce'
 import { DraggableGrid } from 'react-native-draggable-grid';
@@ -10,25 +9,29 @@ import { CloseIcon, BackIcon, TVIcon, FilmIcon } from '../../assets/icons/icons'
 import { searchTitles } from '../../api/tmdb'
 import { getYear } from '../../lib/formatDate'
 import { updateUser, useFetchOwnerUser } from '../../api/user'
-import { useUserDB } from '../../lib/UserDBContext'
+
 import { updateRotation } from '../../api/user'
 import { useSignUpContext } from '../../lib/SignUpContext'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 const profile2 = () => {
 
+    const {user} = useGetUser()
+
+
     const { signUpData, updateSignUpData } = useSignUpContext()
     const { bio, bioLink, image } = signUpData
-    const { userDB, updateUserDB } = useUserDB();
+
     const [ resultsOpen, setResultsOpen ] = useState(false);
     const [ results, setResults ] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [ listItems, setListItems ]  = useState([])
-    const {user} = useUser();
+
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter();
-    const userId = userDB?.id
+    const userId = user?.id
 
 
 
@@ -154,7 +157,7 @@ const profile2 = () => {
 
     }
 
-    if (!userDB || !user) {
+    if ( !user) {
         return (
             <View className='w-full h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>

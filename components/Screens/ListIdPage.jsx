@@ -8,7 +8,6 @@ import { formatDate, getYear } from '../../lib/formatDate'
 import { BackIcon, ThreeDotsIcon, CloseIcon, MessageIcon } from '../../assets/icons/icons'
 import { ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react-native'
 import { RepostIcon } from '../../assets/icons/icons'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';

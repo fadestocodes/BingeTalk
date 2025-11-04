@@ -3,16 +3,17 @@ import { Colors } from '../../../../constants/Colors'
 import React from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { markAllRead, useGetAllNotifs } from '../../../../api/notification'
-import { useUser } from '@clerk/clerk-expo'
-import { useFetchOwnerUser } from '../../../../api/user'
 import { useNotificationCountContext } from '../../../../lib/NotificationCountContext'
+import { useGetUser, useGetUserFull } from '../../../../api/auth'
 
 
 const markNotifReadModal = () => {
     const { userId  } = useLocalSearchParams()
     const {updateNotifCount} = useNotificationCountContext()
-    const { user : clerkUser } = useUser();
-    const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress})
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
+    
     const router = useRouter()
     const {refetch} = useGetAllNotifs(ownerUser?.id, 10)
 

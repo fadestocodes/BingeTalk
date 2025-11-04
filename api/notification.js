@@ -1,8 +1,9 @@
-import { useUser } from '@clerk/clerk-expo';
+
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user';
 import { useNotificationCountContext } from '@/lib/NotificationCountContext';
+import { useGetUser, useGetUserFull } from './auth';
 
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
@@ -13,8 +14,9 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const [ hasMore , setHasMore ] = useState(true);
     const [ cursor, setCursor ] = useState(null)
     const [ isFollowingIds, setIsFollowingIds ] = useState([])
-    const { user:clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
+
     const [ unreadIds, setUnreadIds ] = useState([])
 
     const getAllNotifs = async () => {

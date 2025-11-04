@@ -7,7 +7,7 @@ import { ThumbsUp, ThumbsDown, Heart, MessagesSquare, MessageSquare, ListChecks 
 import { useRouter } from 'expo-router'
 import { formatDate, formatDateNotif, getYear } from '../../lib/formatDate'
 import { toPascalCase } from '../../lib/ToPascalCase'
-import { useUser } from '@clerk/clerk-expo'
+
 import { useFetchOwnerUser } from '../../api/user'
 // import { likeActivity, activityInteraction, useFetchActivityId } from '../../api/review'
 import { likeActivity,activityInteraction, useFetchActivityId } from '../../api/activity'
@@ -16,12 +16,12 @@ import { NotebookPen } from 'lucide-react-native'
 import { reviewInteraction } from '../../api/review'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isReviewPage, isBackground, isReposted}) => {
 
-
-        const { user:clerkUser } = useUser();
-        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0]?.emailAddress});
+        const {user} = useGetUser()
+        const {userFull:ownerUser} = useGetUserFull(user?.id)
         const posterURL = 'https://image.tmdb.org/t/p/w500';
         const router = useRouter()
         const [ alreadyInteractions, setAlreadyInteractions ] = useState({

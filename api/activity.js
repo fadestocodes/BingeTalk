@@ -1,7 +1,7 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-expo';
 import { useFetchOwnerUser } from './user';
+import { useGetUser, useGetUserFull } from './auth';
 
 
 export const addActivity = async ( activityData ) => {
@@ -39,9 +39,9 @@ export const likeActivity = async (data) => {
 
 export const useFetchActivityId = (id, replyCommentId) => {
     const [ data, setData ] = useState(null)
-    const [ loading, setLoading ] = useState(true);
-    const { user : clerkUser }  = useUser()
-    const { data : ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+    const [ loading, setLoading ] = useState(true)
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []

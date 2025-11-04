@@ -4,19 +4,22 @@ import { Colors } from '../../../../constants/Colors'
 import { ProgressCheckIcon } from '../../../../assets/icons/icons'
 import { BadgeHelp, List, BadgeMinus } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useUser } from '@clerk/clerk-expo'
+
 import { useFetchOwnerUser } from '../../../../api/user'
 import { markTVInterested, markTVCurrentlyWatching, markTVWatchlist } from '../../../../api/tv'
 import { markMovieInterested, markMovieCurrentlyWatching, markMovieWatchlist } from '../../../../api/movie'
 import ToastMessage from '../../../../components/ui/ToastMessage'
+import { useGetUser, useGetUserFull } from '../../../../api/auth'
 
 const moreInteractions = () => {
     const router = useRouter()
     const { DBtvId, DBMovieId, tmdbId } = useLocalSearchParams();
     const [ message, setMessage ] = useState(null)
     const [ dynamicIcon, setDynamicIcon ] = useState(null)
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress });
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch} = useGetUserFull(user?.id)
+    
     const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
     const alreadyWatching = ownerUser.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
 

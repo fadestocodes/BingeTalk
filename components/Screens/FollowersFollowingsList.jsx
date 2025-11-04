@@ -5,19 +5,22 @@ import { useGetFollowersListInfinite, useGetFollowingListInfinite, unfollowUser,
 import { formatDate } from '../../lib/formatDate'
 import { followersListCategories } from '../../lib/CategoryOptions'
 import { Colors } from '../../constants/Colors'
-import { useUser } from '@clerk/clerk-expo'
 import { router } from 'expo-router'
 import { BackIcon } from '../../assets/icons/icons'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => {
 
     const { data : followers, loading: loadingFollowers, refetch: refetchFollowers, isFollowingIds, setIsFollowingIds, fetchMore, hasMore } = useGetFollowersListInfinite( userId, limit )
     const { data : followings, loading: loadingFollowings, refetch: refetchFollowings, isFollowingIds:isFollowingIdsFromFollowing, setIsFollowingIds : setIsFollowingIdsFromFollowing, fetchMore:fetchMoreFollowings, hasMore : hasMoreFollowings } = useGetFollowingListInfinite( userId, limit )
-    const {user : clerkUser} = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
+   
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser}= useGetUserFull(user?.id)
 
     
 

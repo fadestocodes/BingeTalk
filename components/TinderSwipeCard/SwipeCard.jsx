@@ -8,7 +8,7 @@ import { ListChecks, FastForward , BadgeHelp} from "lucide-react-native";
 import { markMovieInterested, swipeMovieInterested } from "../../api/movie";
 import { markTVInterested, swipeTVInterested } from "../../api/tv";
 import { useFetchOwnerUser } from "../../api/user";
-import { useUser } from "@clerk/clerk-expo";
+
 
 
 const SwipeCard = ({ item, setItem, onLike, onReject, onSwipeUp, onAnimationEnd, nextItem, setSavedItem }) => {

@@ -4,18 +4,19 @@ import { ThumbsUp, ThumbsDown, List } from 'lucide-react-native'
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
 import { Image } from 'expo-image'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
 import { formatDate } from '../lib/formatDate'
 import { useRouter } from 'expo-router'
 import { listInteraction } from '../api/list'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
+import { useGetUser, useGetUserFull } from '../api/auth'
 
 const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) => {
 
-    const { user:clerkUser } = useUser();
-    const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0]?.emailAddress});
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
     const [ alreadyInteractions, setAlreadyInteractions ] = useState({

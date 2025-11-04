@@ -8,13 +8,11 @@ import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, C
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
 import { commentInteraction, createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { dialogueInteraction, fetchSingleThread , threadInteraction, useCustomFetchSingleDialogue, useFetchSingleThread} from '../../api/dialogue'
 import { fetchSingleDialogue, useFetchSingleDialogue } from '../../api/dialogue'
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
-import ThreadCard from '../ThreadCard'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import DialogueCard from '../DialogueCard'
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
@@ -36,32 +34,32 @@ const DialogueScreen = () => {
     // const { user : clerkUser } = useUser();
     // const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
    
-    const userId = ownerUser?.id
     const { dialogueId, tvId, movieId, castId }= useLocalSearchParams();
-
+    
     const { dialogue, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
-
+    
     const {showBadgeModal} = useBadgeContext()
-
-
-
+    
+    
+    
     const keyboard = useAnimatedKeyboard(); 
     const translateY = useSharedValue(0); 
     const atTop = useSharedValue(true); 
-  
+    
     
     const animatedStyle = useAnimatedStyle(() => ({
-      bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+        bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
     }));
-
+    
     useEffect(()=>{
         console.log('triggeredf from useeffect')
         removeItem( postToRemove.id, postToRemove.postType )
         
     },[postToRemove])
-   
-
+    
+    
+    
 
 
 

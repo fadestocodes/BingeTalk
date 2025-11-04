@@ -10,8 +10,6 @@ import { Slot } from "expo-router"
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Colors } from '@/constants/Colors';
-import { ClerkProvider, ClerkLoaded, useUser, useClerk } from '@clerk/clerk-expo'
-import {tokenCache} from '@/cache'
 import { UserDBProvider } from '../lib/UserDBContext'
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '../lib/tanStackClient'; // Import the query client
@@ -26,7 +24,7 @@ import {SignUpProvider} from '../lib/SignUpContext'
 import * as Sentry from '@sentry/react-native';
 import Constants from 'expo-constants';
 import {BadgeModalProvider} from '../lib/BadgeModalContext'
-
+import {UserProvider} from '@/lib/UserContext'
 
 
 
@@ -101,8 +99,7 @@ export default Sentry.wrap(function RootLayout() {
 
   return (
     
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey} >
-      <ClerkLoaded>
+        <UserProvider>
         <QueryClientProvider client={queryClient}>
       <BadgeModalProvider>
           <SignUpProvider>
@@ -132,7 +129,7 @@ export default Sentry.wrap(function RootLayout() {
           </SignUpProvider>
           </BadgeModalProvider> 
         </QueryClientProvider>
-      </ ClerkLoaded >
-    </ClerkProvider >
+        </UserProvider>
+
   );
 });

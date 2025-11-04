@@ -5,7 +5,6 @@ import React, {useState, useEffect} from 'react'
 import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { Colors } from '../constants/Colors'
 import { useUserDB } from '../lib/UserDBContext'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchUser } from '../api/user'
 import { useRouter } from 'expo-router'
 import { fetchSingleDialogue } from '../api/dialogue'
@@ -19,6 +18,7 @@ import {avatarFallbackImage, moviePosterFallback} from '../constants/Images'
 import { avatarFallbackCustom } from '../constants/Images'
 import { checkConversationalistBadge } from '../api/badge'
 import { useBadgeContext } from '../lib/BadgeModalContext'
+import { useGetUser, useGetUserFull } from '../api/auth'
 
 
 const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
@@ -28,8 +28,8 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
     const tag = dialogue?.tag;
-    const { user: clerkUser } = useUser()
-    const { data : ownerUser, refetch: refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
     const [ url, setUrl ] = useState({
         image : '',
         title : '',

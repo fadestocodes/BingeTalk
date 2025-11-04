@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react"
-import { useUser } from "@clerk/clerk-expo"
-import { useFetchOwnerUser } from "./user"
+
+
 import * as nodeServer from '../lib/ipaddresses'
+import { useGetUser, useGetUserFull } from "./auth"
 
 
 export const useFetchReview = (reviewId, replyCommentId) => {
     const [ review, setReview ] = useState('')
-    const { user : clerkUser }  = useUser()
-    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+    
     const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
     const [ interactedComments, setInteractedComments ] = useState({

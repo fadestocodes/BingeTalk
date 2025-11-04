@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback,
 import { Image } from 'expo-image'
 import React, { useState, useRef } from 'react'
 import { useFetchOwnerUser, useFetchUser } from '../../../../../api/user'
-import { useUser } from '@clerk/clerk-expo'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Colors } from '../../../../../constants/Colors'
 import { CloseIcon, BackIcon } from '../../../../../assets/icons/icons'
@@ -11,14 +10,14 @@ import { router, useRouter } from 'expo-router'
 import { updateUser } from '../../../../../api/user'
 import { pickSingleImage } from '../../../../../lib/pickImage'
 import { urlSchema } from '../../../../../lib/zodSchemas'
+import { useGetUser, useGetUserFull } from '../../../../../api/auth'
 
 
 
-const editProfile = () => {
-
-    const { user:clerkUser } = useUser()
+const editProfile = () => { 
+    const {user} = useGetUser()
+    const {userFull:fetchedUser, refetch} = useGetUserFull(user?.id)
     const router = useRouter();
-    const { data : fetchedUser, refetch } = useFetchOwnerUser( {email:clerkUser?.emailAddresses[0].emailAddress} )
     const [ image, setImage ] = useState(fetchedUser?.profilePic);
     const [ loadingImage, setLoadingImage] = useState(false) 
     const [ inputs, setInputs ] = useState({

@@ -1,8 +1,8 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { SignOutButton, useAuth, useUser } from '@clerk/clerk-react'
 import React, {useState,useEffect} from 'react';
 import { useFetchOwnerUser } from './user';
+import { useGetUser, useGetUserFull } from './auth';
 
 
 
@@ -77,8 +77,11 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     const [ dialogue, setDialogue ] = useState(null);
     const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
-    const { user : clerkUser }  = useUser()
-    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []

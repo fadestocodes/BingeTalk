@@ -1,8 +1,9 @@
-import { useUser } from '@clerk/clerk-expo'
+
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user'
 import { findDirector } from './tmdb'
+import { useGetUser, useGetUserFull } from './auth'
 
 export const createRating = async (data) => {
     try {
@@ -41,8 +42,13 @@ export const useGetTitleRatings = (data) => {
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore, setHasMore ] = useState(true)
     const [ isLoading, setIsLoading ] = useState(false)
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser?.emailAddresses[0]?.emailAddress})
+
+
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+
     const { ratingsId, limit} = data
     let { type } = data
     const [ friendsRatings, setFriendsRatings ] = useState([])

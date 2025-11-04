@@ -6,7 +6,6 @@ import React, {useEffect, useState} from 'react'
 import {feed} from '../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
-import { useClerk, useUser } from '@clerk/clerk-expo'
 import { Redirect } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { LinkIcon } from '../assets/icons/icons'
@@ -19,12 +18,12 @@ import { useFetchUser } from '../api/user'
 import { followUser, unfollowUser } from '../api/user'
 import { UserCheck, UserPlus,Send, UserPen,  LogOut, CircleUserRound } from 'lucide-react-native'; // Example icons
 import { useGetProfileFeed } from '../api/feed'
-import ThreadCard from './ThreadCard'
 import ListCard from './ListCard'
 import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 import ReviewCard from './Screens/ReviewCard'
+import { useGetUser, useGetUserFull } from '../api/auth'
  
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
@@ -32,13 +31,13 @@ import ReviewCard from './Screens/ReviewCard'
     
 
 
-        const { signOut } = useClerk();
-        const { user:clerkUser } = useUser();
+        const {user:userSimple} = useGetUser()
+        const {userFull:ownerUser} = useGetUserFull(userSimple?.id)
+
 
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
-        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
-        const isOwnersProfilePage = user?.id === ownerUser?.id
+        const isOwnersProfilePage = user?.id === userSimple?.id
         const [ isFollowing, setIsFollowing ] = useState(null)
         const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user?.id, 15)
         const [ followCounts, setFollowCounts ] = useState({
@@ -187,8 +186,8 @@ import ReviewCard from './Screens/ReviewCard'
             refreshControl={
                 <RefreshControl
                 tintColor={Colors.secondary}
-                refreshing={refreshingPage}
-                onRefresh={refetchOwner} 
+                refreshing={isFetchingUser}
+                onRefresh={refetchUser} 
                 />
                 }
             onEndReached={()=> {

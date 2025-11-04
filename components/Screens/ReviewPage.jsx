@@ -8,11 +8,10 @@ import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, C
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
 import { commentInteraction, createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
-import { useUser } from '@clerk/clerk-expo'
+
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
-import ThreadCard from '../ThreadCard'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
 import { useFetchReview } from '../../api/review'
@@ -32,8 +31,7 @@ const ReviewScreen = () => {
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     // const { user : clerkUser } = useUser();
     // const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-   
-    const userId = ownerUser?.id
+  
     const { reviewId, tvId, movieId, castId }= useLocalSearchParams();
 
     const { review, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useFetchReview(Number(reviewId), Number(replyCommentId))

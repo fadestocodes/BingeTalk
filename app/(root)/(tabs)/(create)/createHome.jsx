@@ -4,20 +4,19 @@ import React, {useState, useEffect, useRef} from 'react'
 import { PeopleIcon, SlateIcon, ThreadsIcon, DownIcon, FilmIcon, TVIcon, PersonIcon, CloseIcon, BackIcon } from '../../../../assets/icons/icons'
 import { Colors } from '../../../../constants/Colors'
 import CreateDialogue from '../../../../components/CreateMenu/CreateDialogue'
-import CreateThread from '../../../../components/CreateMenu/CreateThread'
-import CreateShowcase from '../../../../components/CreateMenu/CreateShowcase'
 import CreateList from '../../../../components/CreateMenu/CreateList'
 import { searchAll } from '../../../../api/tmdb'
 import debounce from 'lodash.debounce'
 import { getYear } from '../../../../lib/formatDate'
 import { DraggableGrid } from 'react-native-draggable-grid';
-import { useUser } from '@clerk/clerk-expo'
-import { useFetchOwnerUser } from '../../../../api/user'
 import { useRouter } from 'expo-router'
 import { createCategories } from '../../../../lib/CategoryOptions'
 import { useCreateContext } from '../../../../lib/CreateContext'
+import { useGetUser, useGetUserFull } from '../../../../api/auth'
 
 const CreateHome = () => {
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
 
     const [ content, setContent ] = useState('');
     const [ menuOpen, setMenuOpen ] = useState(false);
@@ -43,8 +42,6 @@ const CreateHome = () => {
 
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
-    const {user:clerkUser} = useUser();
-    const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress});
     useEffect(() => {
         if (dialogueItems.length < 4 ){
             setDialogueMaxError(null)
@@ -295,13 +292,6 @@ const CreateHome = () => {
                 setResultsOpen={setResultsOpen} handleSearch={handleSearch} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleChange={handleChange} dialogueItems={dialogueItems}
                 dialogueMaxError={dialogueMaxError} setDialogueItems={setDialogueItems} setDialogueMaxError={setDialogueMaxError}
             />
-        ) : createType === 'Thread' ? (
-            <CreateThread threadObject={threadObject}  handleChange={handleChange} inputs={inputs} setInputs={setInputs}
-                results={results} setResults={setResults} resultsOpen={resultsOpen} setResultsOpen={setResultsOpen}
-                handleSearch={handleSearch} searchQuery={searchQuery} setSearchQuery={setSearchQuery}
-            />
-        ) : createType === 'Showcase' ? (
-            <CreateShowcase handleChange={handleChange} content={content} setContent={setContent} />
         ) : createType === 'List' && (
             <CreateList userId={userId}  handleChange={handleChange} inputs={inputs} setInputs={setInputs} setResultsOpen={setResultsOpen}
             setResults={setResults} setSearchQuery={setSearchQuery}  searchQuery={searchQuery} setListItems={setListItems} listItems={listItems} 

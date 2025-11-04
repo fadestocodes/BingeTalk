@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, SafeAreaView, Activ
 import React, { useEffect, useState} from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { fetchUser, useFetchOwnerUser, useGetUserRatings } from '../../api/user'
-import { useUser } from '@clerk/clerk-expo'
+
 import { Colors } from '../../constants/Colors'
 import { Image } from 'expo-image'
 import { BackIcon, FilmIcon, TVIcon } from '../../assets/icons/icons'
@@ -11,11 +11,14 @@ import { userRatingsCategories } from '../../lib/CategoryOptions'
 import { ThreeDotsIcon } from '../../assets/icons/icons'
 import { Star } from 'lucide-react-native'
 import { moviePosterFallback } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 const UserRatingsPage = () => {
     const {userId, firstName} = useLocalSearchParams()
-    const {user : clerkUser} = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser}= useGetUserFull(user?.id)
+
     const { data, refetch, loading, getMore } = useGetUserRatings(userId, 10)
 
     const [ selected, setSelected ] = useState('All')

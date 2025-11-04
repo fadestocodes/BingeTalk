@@ -4,14 +4,11 @@ import { homeCategories } from '../../../../lib/CategoryOptions'
 import { Colors } from '../../../../constants/Colors';
 import { useGetFeed } from '../../../../api/feed';
 import { Image } from 'expo-image';
-import { useUser } from '@clerk/clerk-expo';
-import { fetchUser, useFetchOwnerUser } from '../../../../api/user';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useUserDB } from '../../../../lib/UserDBContext';
 import * as nodeServer from '../../../../lib/ipaddresses'
 import DialogueCard from '../../../../components/DialogueCard';
 import { formatDate } from '../../../../lib/formatDate';
-import ThreadCard from '../../../../components/ThreadCard';
+
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis , List, MessagesSquare, Heart} from 'lucide-react-native'
 import { ProgressCheckIcon, ThumbsUp, ThumbsDown, MessageIcon, RepostIcon } from '../../../../assets/icons/icons';
 import ListCard from '../../../../components/ListCard';
@@ -27,6 +24,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import WhatsNewModal from '../../../../components/Screens/WhatsNewModal';
 import { avatarFallbackCustom } from '../../../../constants/Images';
+import { apiFetch, useGetUser } from '../../../../api/auth';
+
+
 // import { ratingToReview } from '../../constants/Images' 
 
 
@@ -35,10 +35,11 @@ import { avatarFallbackCustom } from '../../../../constants/Images';
 const homeIndex = () => {
   const { notifCount, updateNotifCount } = useNotificationCountContext()
     const [selected, setSelected] = useState('All');
-    const { user: clerkUser } = useUser();
-    const { data: ownerUser, isLoading: isLoadingOwnerUser, refetch:refetchOwner } = useFetchOwnerUser({
-      email: clerkUser?.emailAddresses[0].emailAddress,
-    });
+    const {user: ownerUser, updateUser } = useGetUser()
+    console.log("USERRRRRRR", ownerUser)
+    // const { data: ownerUser, isLoading: isLoadingOwnerUser, refetch:refetchOwner } = useFetchOwnerUser({
+    //   email: clerkUser?.emailAddresses[0].emailAddress,
+    // });
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
@@ -62,6 +63,7 @@ const homeIndex = () => {
     const CURRENT_APP_VERSION = Constants.expoConfig.version     // e.g., '1.3.0'
     // console.log(`CURRENT VERSION: ${CURRENT_APP_VERSION}`)
 
+
     const getFeed = async () => {
         if (loading) return
         try {
@@ -74,7 +76,7 @@ const homeIndex = () => {
         }
         if (!hasMoreFeed && !hasMoreThreads &&!hasMoreRotations )return 
         try {
-            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&rotationCursor=${rotationCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}&hasMoreRotations=${hasMoreRotations}`);
+            const request = await apiFetch(`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&rotationCursor=${rotationCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}&hasMoreRotations=${hasMoreRotations}`);
             const response = await request.json();
             setData( prev => [ ...prev, ...response.items ] );
             setFeedCursor(response.nextFeedCursorServer)
@@ -100,7 +102,7 @@ const homeIndex = () => {
         const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
-        const request = await fetch (`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
+        const request = await fetch (`${nodeServer.currentIP}/feed?limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
         const response = await request.json();
         setData( response.items );
         setFeedCursor(response.nextFeedCursorServer)
@@ -289,16 +291,13 @@ const homeIndex = () => {
                   renderItem={({item}) => 
                     (
                       <>
-                    { item.feedFrom === 'activity' ? (
+                    { item.feedFrom === 'activity' && (
                       <View>
                         { item.postType === 'dialogue' ? (
                           <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
                            <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
                           </TouchableOpacity>
-                        ) : item.postType === 'thread' ? (
-                          <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
-                            <ThreadCard thread={item.threads} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
-                          </TouchableOpacity>
+
           
                         ) : item.postType === 'list' ? (
                           <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
@@ -315,11 +314,7 @@ const homeIndex = () => {
                           </TouchableOpacity>
                         ) }
                       </View>
-                    ) : (
-                      <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
-                        <ThreadCard thread={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
-                      </TouchableOpacity>
-                    ) }
+                    )}
                   </>
                   )}
                   />

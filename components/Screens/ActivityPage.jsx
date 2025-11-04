@@ -8,12 +8,10 @@ import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, C
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
 import { commentInteraction, createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { fetchSingleDialogue, useFetchSingleDialogue } from '../../api/dialogue'
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
-import ThreadCard from '../ThreadCard'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import DialogueCard from '../DialogueCard'
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
@@ -21,6 +19,7 @@ import { useFetchActivityId } from '../../api/activity'
 import ActivityCard2 from '../ActivityCard2'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 
@@ -32,8 +31,9 @@ const ActivityPage = () => {
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
-    const { user : clerkUser } = useUser();
-    const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwnerUser} = useGetUserFull(user?.id)
    
     const userId = ownerUser?.id
     const { activityId, tvId, movieId, castId }= useLocalSearchParams();
