@@ -93,14 +93,7 @@ const CreateHome = () => {
 
 
     const handleSearchPress = (item) => {
-        if (createType === 'Thread') {
-            setSearchQuery(  `/${toPascalCase(item.name || item.title)}` )
-            setThreadObject(item)
-
-
-            setResults([]);
-            setResultsOpen(false);
-        } else if (createType === 'List') {
+        if (createType === 'List') {
             setListItems((prev) => [
                 ...prev,
                 {

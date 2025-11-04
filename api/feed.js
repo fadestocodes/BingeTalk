@@ -53,7 +53,7 @@ export const useGetProfileFeed = (userId, limit) => {
         if (!hasMore.dialogue && !hasMore.thread && !hasMore.list) return
         if (isFetching) return 
         try {
-            setIsFetching(true)
+            setLoading(true)
             const response = await apiFetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&reviewCursor=${cursors.review}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreReviews=${hasMore.review}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
             setData(prev => ([...prev, ...results.items]))
@@ -72,7 +72,6 @@ export const useGetProfileFeed = (userId, limit) => {
         } catch (err){
             console.log(err)
         } finally {
-            setIsFetching(false)
             setLoading(false)
         }
     }
@@ -86,12 +85,14 @@ export const useGetProfileFeed = (userId, limit) => {
     }
 
     const refetch = async () => {
-        if (isFetching) return
         try {
-            setIsFetching(true)
+            console.log('hellofromrefetchprofilefeed')
+            setLoading(true)
+
             const response = await apiFetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&reviewCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreReviews=true&hasMoreLists=true`)
             const results = await response.json()
             setData(results.items)
+            console.log('just refetched feed')
             setHasMore({
                 dialogue : !!results.nextDialogueCursor,
                 review : !!results.nextReviewCursor,
@@ -107,7 +108,6 @@ export const useGetProfileFeed = (userId, limit) => {
         } catch (err){
             console.log(err)
         } finally {
-            setIsFetching(false)
             setLoading(false)
 
         }

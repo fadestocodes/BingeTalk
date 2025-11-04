@@ -190,7 +190,7 @@ export const useCheckSignedIn =  () => {
   
 
 export const useGetUserFull = (id) => {
-    const [userFull, setUserFull] = useState()
+    const [userFull, setUserFull] = useState(null)
     const [loading, setLoading] = useState(true)
 
     const getUserFull = async () => {

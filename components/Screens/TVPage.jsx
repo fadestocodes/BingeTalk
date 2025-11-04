@@ -76,7 +76,7 @@ const TVPage = () => {
     const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) && item.userId === ownerUser?.id )
     const ownerRating = tvRatings?.find( item => item.userId === ownerUser?.id && item.tvId === Number(DBtvId) ) || 'N/A'
     const followersAndFollowingIds = ownerUser?.followers.map(item => item.followerId ).concat(ownerUser?.followers.map(f => f.followingId))
-    const friendsRatingList = tvRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser?.id )
+    const friendsRatingList = tvRatings?.filter( item => followersAndFollowingIds?.includes(item.userId) && item.userId !== ownerUser?.id )
     const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
     const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
     const totalOverallRatings = tvRatings?.reduce((sum,rating) => sum + rating.rating, 0)

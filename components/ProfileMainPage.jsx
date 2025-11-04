@@ -31,15 +31,15 @@ import { useGetUser, useGetUserFull } from '../api/auth'
     
 
 
-        const {user:userSimple} = useGetUser()
-        const {userFull:ownerUser} = useGetUserFull(userSimple?.id)
+        const {user:userSimple,refetch:refetchUserHook} = useGetUser()
+        const {userFull:ownerUser, loading:loadingUser} = useGetUserFull(userSimple?.id)
 
 
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
         const isOwnersProfilePage = user?.id === userSimple?.id
         const [ isFollowing, setIsFollowing ] = useState(null)
-        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user?.id, 15)
+        const { data : profileDialogues, hasMore, refetch:refetchFeed, loading, removeItem } = useGetProfileFeed(user?.id, 15)
         const [ followCounts, setFollowCounts ] = useState({
             followers : user?.followers?.length,
             following : user?.following?.length
@@ -150,12 +150,6 @@ import { useGetUser, useGetUserFull } from '../api/auth'
             })
         }
 
-        const handleRefresh = async () => {
-            setRefreshingPage(true)
-            await refetchUser()
-            await refetchProfileFeed()
-            setRefreshingPage(false)
-        }
 
         const handleThreeDots = () => {
             router.push({
@@ -170,12 +164,13 @@ import { useGetUser, useGetUserFull } from '../api/auth'
                 params:{userId:user.id, firstName : user.firstName}
             })
         }
+        
 
 
   return (
 
     <View className='w-full h-full bg-primary' style={{paddingBottom:30}}>
-        { isFetchingUser || loading ||!user  || !ownerUser ? (
+        { loading || !ownerUser || isFetchingUser ? (
             <View className="bg-primary w-full h-full justify-center items-center">
             <ActivityIndicator></ActivityIndicator>
         </View>
@@ -187,7 +182,7 @@ import { useGetUser, useGetUserFull } from '../api/auth'
                 <RefreshControl
                 tintColor={Colors.secondary}
                 refreshing={isFetchingUser}
-                onRefresh={refetchUser} 
+                onRefresh={()=>{console.log('refreshinguser...');refetchUser(); refetchFeed()}} 
                 />
                 }
             onEndReached={()=> {

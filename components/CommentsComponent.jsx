@@ -7,7 +7,7 @@ import { CloseIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { ThumbsDown, ThumbsUp} from 'lucide-react-native'
 import { useFetchOwnerUser } from '../api/user'
 import { useCustomFetchSingleDialogue } from '../api/dialogue'
-import { useCustomFetchSingleThread } from '../api/thread'
+
 import { useCustomFetchSingleList } from '../api/list'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { createComment, commentInteraction } from '../api/comments'
@@ -26,8 +26,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
 
     if (postType === 'dialogue') {
         ({ dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleDialogue(Number(dialogueId)));
-    } else if (postType === 'thread') {
-        ({ thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleThread(Number(threadId)));
     } else if (postType === 'list'){
         ({ list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleList(Number(listId)));
     } else if (postType === 'activity'){

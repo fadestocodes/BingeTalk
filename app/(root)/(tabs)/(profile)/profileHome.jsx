@@ -9,8 +9,8 @@ import { useFetchOwnerUser } from '../../../../api/user'
 import { useGetUser, useGetUserFull } from '../../../../api/auth'
 
 const UserIDPage = () => {
-  const { user:userSimple, refetch, loading } = useGetUser();
-  const {userFull} = useGetUserFull(userSimple?.id)
+  const { user:userSimple, refetch } = useGetUser();
+  const {userFull, refetch:refetchUser, loading} = useGetUserFull(userSimple?.id)
 
 
   return (
@@ -20,7 +20,7 @@ const UserIDPage = () => {
         <ActivityIndicator/>
         </View>
       ) : (
-        <ProfileHomepage user={userFull} refetchUser={refetch} isFetchingUser={loading}  />
+        <ProfileHomepage user={userFull} refetchUser={refetchUser} isFetchingUser={loading}  />
       )}
     </View>
   )

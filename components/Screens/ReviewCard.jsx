@@ -19,7 +19,7 @@ import { avatarFallbackCustom } from '../../constants/Images'
 import { useGetUser, useGetUserFull } from '../../api/auth'
 
 const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isReviewPage, isBackground, isReposted}) => {
-
+        console.log('reviewitme', item)
         const {user} = useGetUser()
         const {userFull:ownerUser} = useGetUserFull(user?.id)
         const posterURL = 'https://image.tmdb.org/t/p/w500';
@@ -39,9 +39,9 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
     
         useEffect(()=>{
     
-            const alreadyUpvoted = item.reviewInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
-            const alreadyDownvoted = item.reviewInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
-            const alreadyReposted = item.reviewInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
+            const alreadyUpvoted = item.reviewInteractions?.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
+            const alreadyDownvoted = item.reviewInteractions?.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
+            const alreadyReposted = item.reviewInteractions?.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
             setAlreadyInteractions({
                 upvoted: alreadyUpvoted,
                 downvoted:alreadyDownvoted,
