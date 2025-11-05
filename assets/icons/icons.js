@@ -41,3 +41,6 @@ export const ThreeDotsIcon = (props) => <Entypo name="dots-three-vertical" {...p
 export const ProgressCheckIcon = (props) => <MaterialCommunityIcons name="progress-check" {...props} />;
 export const SwipeIcon = (props) => <MaterialIcons name="swipe" {...props} />;
 export const CastCrewIcon = (props) => <FontAwesome6 name="people-group" {...props} />;
+export const FacebookIcon = (props) => <Entypo name="facebook" {...props} />;
+export const GoogleIcon = (props) => <AntDesign name="google" {...props} />;
+

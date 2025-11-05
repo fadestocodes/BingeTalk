@@ -23,7 +23,7 @@ const Notification = () => {
   const {user} = useGetUser()
   const {userFull:ownerUser} = useGetUserFull(user?.id)
   
-  const { data : notifications, readNotifs, unreadNotifs, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds, fetchMore} = useGetAllNotifs(ownerUser?.id, 10);
+  const { data : notifications, readNotifs, unreadNotifs, loading , hasMore, refetch, isFollowingIds, setIsFollowingIds, unreadIds, setUnreadIds, fetchMore} = useGetAllNotifs(user?.id, 10);
   const { updateNotifCount, notifCount } = useNotificationCountContext()
   const [selected, setSelected] = useState('All')
   

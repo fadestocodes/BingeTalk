@@ -66,8 +66,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
 
     // const { userDB, updateUserDB } = useUserDB();
-    const {user} = useGetUser()
-    const {userFull:ownerUser, loading:refetchUser, loading:isFetchingUser} = useGetUserFull(user?.id)
+    const {user:userDB} = useGetUser()
+    const {userFull:ownerUser, loading:refetchUser, loading:isFetchingUser} = useGetUserFull(userDB?.id)
 
 
     const { data : dialogues, refetch, isFetching } = useFetchDialogues(userDB?.id);

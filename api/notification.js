@@ -7,6 +7,7 @@ import { apiFetch, useGetUser, useGetUserFull } from './auth';
 
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
+    console.log('recipient id is ',recipientId)
     const [ data, setData ] = useState([])
     const [ readNotifs, setReadNotifs ] = useState([])
     const [ unreadNotifs, setUnreadNotifs ] = useState([])
@@ -20,7 +21,8 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const [ unreadIds, setUnreadIds ] = useState([])
 
     const getAllNotifs = async () => {
-        if (!hasMore || !ownerUser) return
+        
+        if (!hasMore || !ownerUser || !recipientId) return
         try {
             const notifications = await apiFetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();

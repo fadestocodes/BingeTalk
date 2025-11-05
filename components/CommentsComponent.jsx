@@ -17,12 +17,15 @@ import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom } from '../constants/Images'
 import { checkConversationalistBadge } from '../api/badge'
 import { useGetUser, useGetUserFull } from '../api/auth'
+import { useFetchReview } from '../api/review'
 
-const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}) => {
+const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, activityId}) => {
 
 
 
-    let dialogue, thread, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData;
+    let dialogue, thread, review, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData;
+
+    console.log('FOM COMMENT COMPONENT: posttype', postType)
 
     if (postType === 'dialogue') {
         ({ dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleDialogue(Number(dialogueId)));
@@ -30,6 +33,9 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
         ({ list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleList(Number(listId)));
     } else if (postType === 'activity'){
         ({ data:activity, interactedComments, commentsData, loading : isLoading, refetch, setInteractedComments, setCommentsData } = useFetchActivityId(Number(activityId)))
+    } else if (postType === 'review'){
+        ({ review, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useFetchReview(Number(reviewId)))
+        console.log('commentsdata', commentsData)
     }
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  
@@ -335,7 +341,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     }
 
 
-    if ((!dialogue && !thread && !list && !activity ) || !ownerUser){ 
+    if ((!dialogue && !thread && !list && !activity && !review ) || !ownerUser){ 
         return (
             <View className='w-full h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>
@@ -367,7 +373,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
 
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
-                { commentsData.length > 0 ? (
+                { commentsData?.length > 0 ? (
                     <>
                     <FlatList
                     refreshControl={

@@ -11,7 +11,6 @@ const ProfileLayout = () => {
         <Stack.Screen name='review' options={{headerShown : false}} />
         <Stack.Screen name='tv' options={{headerShown : false}} />
         <Stack.Screen name='cast' options={{headerShown : false}} />
-        <Stack.Screen name='threads' options={{headerShown : false}} />
         <Stack.Screen name='user' options={{headerShown : false}} />
         <Stack.Screen name='list' options={{headerShown : false}} />
         <Stack.Screen name='dialogue' options={{headerShown : false}} />

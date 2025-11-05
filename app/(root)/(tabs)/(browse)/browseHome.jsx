@@ -19,7 +19,9 @@ const browseHome = () => {
     const router = useRouter()
 
     const {user} = useGetUser()
+    console.log('user from browseHome', user)
     const {ownerUser} = useGetUserFull(user?.id)
+    console.log('owneruser from browseHome', ownerUser)
     const [ selected, setSelected ] = useState('Trending')
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
@@ -42,7 +44,7 @@ const browseHome = () => {
       router.push(`/list/${item.id}`)
     }
 
-    if (!ownerUser){
+    if (!user){
       return (
         <View className='w-full h-full bg-primary justify-center items-center'>
           <ActivityIndicator />

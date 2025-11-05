@@ -4,6 +4,8 @@ import * as SecureStore from 'expo-secure-store';
 import { useUserContext } from '../lib/UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
+import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 
 
 // Token storage helpers
@@ -20,28 +22,45 @@ async function saveRefreshToken(token) {
   await SecureStore.setItemAsync('refreshToken', token);
 }
 
+export async function clearAuthTokens() {
+    try {
+      await SecureStore.deleteItemAsync('accessToken');
+      await SecureStore.deleteItemAsync('refreshToken');
+      console.log('Auth tokens cleared successfully');
+    } catch (err) {
+      console.error('Failed to clear auth tokens:', err);
+      // Optionally show a user-friendly message or handle retry
+    }
+}
+
 // Refresh access token
 async function refreshAccessToken() {
-  const refreshToken = await getRefreshToken();
-  if (!refreshToken) throw new Error('No refresh token');
 
-  const res = await fetch(`${nodeServer.currentIP}/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken }),
-  });
+    try  {
+        const refreshToken = await getRefreshToken();
+        if (!refreshToken) throw new Error('No refresh token');
+      
+        const res = await fetch(`${nodeServer.currentIP}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        });
+     
+        if (!res.ok) throw new Error('Refresh failed');
+      
+        const data = await res.json();
+        await saveAccessToken(data.accessToken);
+        if (data.refreshToken) await saveRefreshToken(data.refreshToken);
+        return data.accessToken;
 
-  if (!res.ok) throw new Error('Refresh failed');
-
-  const data = await res.json();
-  await saveAccessToken(data.accessToken);
-  if (data.refreshToken) await saveRefreshToken(data.refreshToken);
-  return data.accessToken;
+    } catch (err){
+        console.error(err)
+    }
 }
 
 // Central fetch wrapper
 export async function apiFetch(url, options = {}) {
-  let accessToken = await getAccessToken();
+    let accessToken = await getAccessToken();
 
   let res = await fetch(url, {
     ...options,
@@ -52,25 +71,30 @@ export async function apiFetch(url, options = {}) {
   });
 
 
-  if (res.status !== 401) return res; // success or other error
+    if (res.status !== 401) return res; // success or other error
 
-  // Access token expired → refresh
-  try {
-    const newAccessToken = await refreshAccessToken();
+    
+    // Access token expired → refresh
+    try {
+        const newAccessToken = await refreshAccessToken();
+        
+        if (!newAccessToken) throw new Error("Couldn't refresh access token")
+            // Retry original request
+        res = await fetch(url, {
+        ...options,
+        headers: {
+            ...(options.headers || {}),
+            Authorization: `Bearer ${newAccessToken}`,
+        },
+        });
+        return res;
+    } catch (err) {
+        console.error(err); // Refresh failed → force logout
+        
+    }
 
-    // Retry original request
-    res = await fetch(url, {
-      ...options,
-      headers: {
-        ...(options.headers || {}),
-        Authorization: `Bearer ${newAccessToken}`,
-      },
-    });
-    return res;
-  } catch (err) {
-    console.error(err); // Refresh failed → force logout
-  }
 }
+
 export const loginLocal = async (login, password) => {
     try {
         const response = await fetch(`${nodeServer.currentIP}/auth/login`, {
@@ -98,10 +122,16 @@ export const useGetUser = () => {
   const { user, updateUser } = useUserContext();
   const [loading, setLoading] = useState(!user);
   const [error, setError] = useState(null);
-
+    const router = useRouter()
   const getUser = async () => {
     // 1️⃣ Check global state
     if (user) return user;
+
+    const accessToken = await SecureStore.getItemAsync('accessToken');
+    if (!accessToken) {
+      return null;
+    }
+  
 
     // 2️⃣ Check AsyncStorage
     try {
@@ -118,7 +148,12 @@ export const useGetUser = () => {
 
     // 3️⃣ Fetch from API (using apiFetch to auto-refresh token)
     try {
+       
       const res = await apiFetch(`${nodeServer.currentIP}/user/simple`);
+      if (res.status === 401){
+        console.log('401 from getUser')
+        return
+      }
       if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
 
       const userData = await res.json();
@@ -131,6 +166,7 @@ export const useGetUser = () => {
       return userData;
     } catch (err) {
       console.error('Failed to fetch user', err);
+
     }
   };
 
@@ -193,8 +229,17 @@ export const useGetUserFull = (id) => {
     const [userFull, setUserFull] = useState(null)
     const [loading, setLoading] = useState(true)
 
+
     const getUserFull = async () => {
+
+
+        const accessToken = await SecureStore.getItemAsync('accessToken');
+        if (!accessToken || !id) {
+          return null;
+        }
+      
         try {
+            console.log('trying to get userful with id', id)
             setLoading(true)
             const res = await apiFetch(`${nodeServer.currentIP}/user`, {
                 method : 'POST',
@@ -220,4 +265,24 @@ export const useGetUserFull = (id) => {
     }, [id])
 
     return {userFull, loading, refetch: getUserFull}
+}
+
+export const useSignOutUser = () => {
+    
+    
+    const router = useRouter()
+    const {user,updateUser} = useUserContext()
+
+    const signOutUser = async () => {
+        try {
+            await clearAuthTokens()
+            updateUser(null)
+            await AsyncStorage.removeItem('user-data')
+    
+        } catch(err){
+            console.error(err)
+        }
+    }
+
+    return {signOutUser}
 }

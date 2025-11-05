@@ -112,12 +112,12 @@ export default Sentry.wrap(function RootLayout() {
           <StatusBar
             backgroundColor={Colors.mainGray}
           />
-          <Stack  >
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(root)" options={{headerShown: false}} />
-            <Stack.Screen name="(auth)" options={{headerShown: false}} />
-            <Stack.Screen name="(onboarding)" options={{headerShown: false}} />
-            <Stack.Screen name="(profileSetup)" options={{headerShown: false}} />
+          <Stack  options={{contentStyle: { backgroundColor: '#171717' }}} >
+            <Stack.Screen name="index" options={{ headerShown: false,contentStyle: { backgroundColor: '#171717' } }} />
+            <Stack.Screen name="(root)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
+            <Stack.Screen name="(auth)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
+            <Stack.Screen name="(onboarding)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
+            <Stack.Screen name="(profileSetup)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
             <Stack.Screen name="+not-found" />
           </Stack>
           </GestureHandlerRootView>

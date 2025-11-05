@@ -20,7 +20,8 @@ import  Constants  from 'expo-constants';
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
 import * as StoreReview from 'expo-store-review';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useGetUser } from "../api/auth";
+import { useGetUser, useGetUserFull } from "../api/auth";
+import IntroComponent from "../components/IntroScreen";
 
 
 
@@ -94,7 +95,9 @@ const Welcome = () => {
   initializeNotification()
 
   // const {user} = useUser();
-  const {user} = useGetUser()
+  const {user:userSimple} = useGetUser()
+  console.log('user simple data', userSimple)
+  const {userFull:user} = useGetUserFull(userSimple?.id)
   const router = useRouter(); 
   const [expoPushToken, setExpoPushToken] = useState(null);
   const [isTokenSent, setIsTokenSent] = useState(false);
@@ -175,28 +178,29 @@ useEffect(() => {
   }
 
     return (
-      <View style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%', backgroundColor:Colors.primary }} >
-        <View className="items-center gap-3 text-lg font-psemibold text-white">
-            < Animated.View style={[{ opacity: logoOpacity, transform: [{ translateY: logoTranslateY }] }]} >
-          <Image
-            source={require('../assets/images/splash.png')}
-            contentFit="cover"
-            style={{width:220, height:220}}
-            transition={200}
-          />
-          </Animated.View>
-          {/* <Text className="text-4xl text-secondary font-pbold" style={{paddingBottom:20}}>Bingeable</Text> */}
+      <IntroComponent />
+      // <View style={{ justifyContent:'center', alignItems:'center', width:'100%', height:'100%', backgroundColor:Colors.primary }} >
+      //   <View className="items-center gap-3 text-lg font-psemibold text-white">
+      //       < Animated.View style={[{ opacity: logoOpacity, transform: [{ translateY: logoTranslateY }] }]} >
+      //     <Image
+      //       source={require('../assets/images/splash.png')}
+      //       contentFit="cover"
+      //       style={{width:220, height:220}}
+      //       transition={200}
+      //     />
+      //     </Animated.View>
+      //     {/* <Text className="text-4xl text-secondary font-pbold" style={{paddingBottom:20}}>Bingeable</Text> */}
 
-            <TouchableOpacity onPress={handleSignUp}  style={{ borderRadius:30, backgroundColor:Colors.secondary, paddingVertical:10, paddingHorizontal:15, width:200, justifyContent:'center', alignItems:'center' }}>
-              <Link href="/(onboarding)/step1-firstName"  >
-                <Text className="text-primary text-lg text-center font-pbold ">Create account </Text>
-              </Link>
-            </TouchableOpacity>
-            <Link  href="/(auth)/signIn">
-              <Text  className='text-white text-lg font-semibold w-full text-center' >Sign in</Text>
-            </Link>
-        </View>
-      </View>
+      //       <TouchableOpacity onPress={handleSignUp}  style={{ borderRadius:30, backgroundColor:Colors.secondary, paddingVertical:10, paddingHorizontal:15, width:200, justifyContent:'center', alignItems:'center' }}>
+      //         <Link href="/(onboarding)/step1-firstName"  >
+      //           <Text className="text-primary text-lg text-center font-pbold ">Create account </Text>
+      //         </Link>
+      //       </TouchableOpacity>
+      //       <Link  href="/(auth)/signIn">
+      //         <Text  className='text-white text-lg font-semibold w-full text-center' >Sign in</Text>
+      //       </Link>
+      //   </View>
+      // </View>
     )
 };
 

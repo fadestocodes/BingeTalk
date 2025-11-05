@@ -24,7 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import WhatsNewModal from '../../../../components/Screens/WhatsNewModal';
 import { avatarFallbackCustom } from '../../../../constants/Images';
-import { apiFetch, useGetUser } from '../../../../api/auth';
+import { apiFetch, useGetUser, useGetUserFull } from '../../../../api/auth';
 
 
 // import { ratingToReview } from '../../constants/Images' 
@@ -35,8 +35,8 @@ import { apiFetch, useGetUser } from '../../../../api/auth';
 const homeIndex = () => {
   const { notifCount, updateNotifCount } = useNotificationCountContext()
     const [selected, setSelected] = useState('All');
-    const {user: ownerUser, updateUser } = useGetUser()
-    console.log("USERRRRRRR", ownerUser)
+    const {user, updateUser } = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner} = useGetUserFull(user?.id)
     // const { data: ownerUser, isLoading: isLoadingOwnerUser, refetch:refetchOwner } = useFetchOwnerUser({
     //   email: clerkUser?.emailAddresses[0].emailAddress,
     // });
@@ -65,7 +65,8 @@ const homeIndex = () => {
 
 
     const getFeed = async () => {
-        if (loading) return
+      if (!hasMoreFeed && !hasMoreThreads &&!hasMoreRotations  )return 
+
         try {
           setLoading(true)
           const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
@@ -74,7 +75,6 @@ const homeIndex = () => {
         } catch {
           console.log('error fetchign notifs')
         }
-        if (!hasMoreFeed && !hasMoreThreads &&!hasMoreRotations )return 
         try {
             const request = await apiFetch(`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&rotationCursor=${rotationCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}&hasMoreRotations=${hasMoreRotations}`);
             const response = await request.json();
@@ -96,14 +96,15 @@ const homeIndex = () => {
     }
 
     const refetchFeed = async () => {
-      setLoading(true)
       try {
-        await refetchOwner();
+        setLoading(true)
+        // await refetchOwner();
         const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
-        const request = await fetch (`${nodeServer.currentIP}/feed?limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
+        const request = await apiFetch (`${nodeServer.currentIP}/feed?limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
         const response = await request.json();
+        console.log('responsehere',request.status)
         setData( response.items );
         setFeedCursor(response.nextFeedCursorServer)
         setThreadCursor(response.nextThreadCursorServer)
@@ -124,16 +125,7 @@ const homeIndex = () => {
 
       const alreadyShown = await AsyncStorage.getItem(WHATS_NEW_KEY)
 
-      // await AsyncStorage.removeItem(WHATS_NEW_KEY)
-
-      // const keys = await AsyncStorage.getAllKeys();
-      // const items = await AsyncStorage.multiGet(keys);
-  
-      // console.log('🔍 AsyncStorage contents:');
-      // items.forEach(([key, value]) => {
-      //   console.log(`${key}: ${value}`);
-      // });
-      
+     
       
       if ( CURRENT_APP_VERSION === '1.3.0' && (!alreadyShown || (alreadyShown && alreadyShown !== CURRENT_APP_VERSION) )){
         
@@ -177,7 +169,7 @@ const homeIndex = () => {
         activityId : item.id
       }
       const likedActivity = await likeActivity(likeData)
-      refetchOwner()
+      // refetchOwner()
       await refetchFeed()
     } 
 
@@ -201,10 +193,6 @@ const homeIndex = () => {
         await getFeed();
       }
     }, 500); 
-
-
-
-
 
 
   

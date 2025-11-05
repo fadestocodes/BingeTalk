@@ -39,7 +39,7 @@ import { useGetUser, useGetUserFull } from '../api/auth'
         const posterURL = 'https://image.tmdb.org/t/p/original';
         const isOwnersProfilePage = user?.id === userSimple?.id
         const [ isFollowing, setIsFollowing ] = useState(null)
-        const { data : profileDialogues, hasMore, refetch:refetchFeed, loading, removeItem } = useGetProfileFeed(user?.id, 15)
+        const { data : profileDialogues, hasMore, refetch:refetchFeed, loading, removeItem , fetchMore} = useGetProfileFeed(user?.id, 15)
         const [ followCounts, setFollowCounts ] = useState({
             followers : user?.followers?.length,
             following : user?.following?.length
@@ -165,12 +165,15 @@ import { useGetUser, useGetUserFull } from '../api/auth'
             })
         }
         
+        const handleBadgePress = () => {
+            router.push('/user/badges/')
+        }
 
 
   return (
 
     <View className='w-full h-full bg-primary' style={{paddingBottom:30}}>
-        { loading || !ownerUser || isFetchingUser ? (
+        { !ownerUser || isFetchingUser ? (
             <View className="bg-primary w-full h-full justify-center items-center">
             <ActivityIndicator></ActivityIndicator>
         </View>
@@ -186,7 +189,7 @@ import { useGetUser, useGetUserFull } from '../api/auth'
                 />
                 }
             onEndReached={()=> {
-                    refetchProfileFeed()
+                    fetchMore()
             }}
             initialNumToRender={10}
             windowSize={8}
@@ -291,6 +294,9 @@ import { useGetUser, useGetUserFull } from '../api/auth'
                         <TouchableOpacity onPress={handleAccount}  style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }} >
                         <CircleUserRound color={Colors.mainGray} size={16}/>
                                 <Text className='' style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray}}>Account</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleBadgePress } style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}> 
+                                <Text className='' style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray}}>Badges</Text>
                         </TouchableOpacity>
 
                     </View>

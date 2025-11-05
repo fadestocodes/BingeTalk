@@ -19,9 +19,8 @@ import { avatarFallbackCustom } from '../../constants/Images'
 import { useGetUser, useGetUserFull } from '../../api/auth'
 
 const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isReviewPage, isBackground, isReposted}) => {
-        console.log('reviewitme', item)
         const {user} = useGetUser()
-        const {userFull:ownerUser} = useGetUserFull(user?.id)
+        const {userFull:ownerUser, refetch:refetchOwner} = useGetUserFull(user?.id)
         const posterURL = 'https://image.tmdb.org/t/p/w500';
         const router = useRouter()
         const [ alreadyInteractions, setAlreadyInteractions ] = useState({

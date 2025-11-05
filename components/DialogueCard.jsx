@@ -29,7 +29,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
     const router = useRouter();
     const tag = dialogue?.tag;
     const {user} = useGetUser()
-    const {userFull:ownerUser} = useGetUserFull(user?.id)
+    const {userFull:ownerUser, refetch:refetchOwner} = useGetUserFull(user?.id)
     const [ url, setUrl ] = useState({
         image : '',
         title : '',
