@@ -15,7 +15,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^2.7.6",
+    "@clerk/clerk-expo": "^2.18.3",
     "@expo/config-plugins": "~9.0.0",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "1.23.1",
@@ -26,8 +26,10 @@
     "@tanstack/react-query": "^5.66.7",
     "date-fns": "^4.1.0",
     "expo": "~52.0.23",
+    "expo-auth-session": "~6.0.3",
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.3",
+    "expo-crypto": "~14.0.2",
     "expo-dev-client": "~5.0.15",
     "expo-font": "~13.0.2",
     "expo-haptics": "~14.0.0",
@@ -48,7 +50,7 @@
     "jwt-decode": "^4.0.0",
     "lodash.debounce": "^4.0.8",
     "lucide-react-native": "^0.475.0",
-    "nativewind": "^4.1.23",
+    "nativewind": "4.1.23",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.9",
