@@ -43,4 +43,5 @@ export const SwipeIcon = (props) => <MaterialIcons name="swipe" {...props} />;
 export const CastCrewIcon = (props) => <FontAwesome6 name="people-group" {...props} />;
 export const FacebookIcon = (props) => <Entypo name="facebook" {...props} />;
 export const GoogleIcon = (props) => <AntDesign name="google" {...props} />;
+export const AppleIcon = (props) => <FontAwesome name="apple" {...props} />;
 

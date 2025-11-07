@@ -97,12 +97,16 @@ export async function apiFetch(url, options = {}) {
 
 export const loginLocal = async (login, password) => {
     try {
+        const existingToken = await getRefreshToken()
+        console.log('existingToken?', existingToken)
+        const body = { login, password };
+        if (existingToken) body.existingToken = existingToken;
         const response = await fetch(`${nodeServer.currentIP}/auth/login`, {
             method : 'POST',
             headers : {
                 'Content-type':"application/json"
             },
-            body : JSON.stringify({login, password})
+            body : JSON.stringify(body)
         })
         if (!response.ok){
             throw new Error("Couldn't login")
@@ -275,6 +279,20 @@ export const useSignOutUser = () => {
 
     const signOutUser = async () => {
         try {
+            const refreshToken = await getRefreshToken()
+            if (refreshToken){
+              const res = await apiFetch(`${nodeServer.currentIP}/user/sign-out`, {
+                method : 'POST',
+                headers : {
+                  'Content-type' : 'application/json'
+                },
+                body:JSON.stringify({token:refreshToken})
+              })
+              if (!res.ok){
+                throw new Error("Error signing out user")
+              }
+
+            }
             await clearAuthTokens()
             updateUser(null)
             await AsyncStorage.removeItem('user-data')
@@ -285,4 +303,44 @@ export const useSignOutUser = () => {
     }
 
     return {signOutUser}
+}
+
+
+
+export const getUserInfoGoogle = async (token) => {
+  if (!token) return
+  try {
+    const res = await fetch("https://www.googleapis.com/userinfo/v2/me",{
+      headers:{Authorization: `Bearer ${token}`}
+    })
+    const user = await res.json()
+    console.log('USERDATA', user)
+    return user
+  } catch (err){
+    console.error(err)
+  }
+}
+
+export const checkExistingUser = async (checkData) => {
+  try {
+    const res = await fetch(`${nodeServer.currentIP}/user/oauth-check`, {
+      method : 'POST',
+      headers : {
+        'Content-type' : 'application/json'
+      },
+
+      body : JSON.stringify(checkData)
+    })
+    if (!res.ok){
+      throw new Error ("Couldn't check user")
+  
+    } 
+    const data = await res.json()
+    const {accessToken, refreshToken} = data
+    await saveAccessToken(accessToken)
+    await saveRefreshToken(refreshToken)
+    return true
+  } catch (err){
+    console.error(err)
+  }
 }

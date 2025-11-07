@@ -7,6 +7,7 @@ import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import * as WebBrowser from 'expo-web-browser'
 
 import { useEffect } from "react";
 import { Colors } from "../constants/Colors";
@@ -23,6 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useGetUser, useGetUserFull } from "../api/auth";
 import IntroComponent from "../components/IntroScreen";
 
+WebBrowser.maybeCompleteAuthSession()
 
 
 const REVIEW_KEY = 'last_review_prompt';
@@ -92,6 +94,7 @@ const initializeNotification = () => {
       
 
 const Welcome = () => {
+
   initializeNotification()
 
   // const {user} = useUser();
