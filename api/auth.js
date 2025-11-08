@@ -344,3 +344,34 @@ export const checkExistingUser = async (checkData) => {
     console.error(err)
   }
 }
+
+
+export const signInAppleAuth = async (data) => {
+  try {
+    console.log('data to login', data)
+    const res = await fetch(`${nodeServer.currentIP}/user/oauth/apple`, {
+      method : 'POST',
+      headers:{
+        'Content-type' : 'application/json'
+      },
+      body : JSON.stringify(data)
+    })
+    if (res.status === 202) {
+      console.log('Need to onboard user and store apple response data')  
+      await AsyncStorage.setItem('apple-email', data.email || '');
+      await AsyncStorage.setItem('apple-fullName', JSON.stringify(data.fullName || {}));
+      return { status: 202, data: responseData }
+    };
+    if (!res.ok) throw new Error("Error trying to login with apple auth")
+
+    const responseData = await res.json()
+    console.log('the resposne data', responseData)
+    const {accessToken, refreshToken} = responseData
+    await saveAccessToken(accessToken)
+    await saveRefreshToken(refreshToken)
+    
+    return true
+  } catch (err){
+    console.error(err)
+  }
+}

@@ -8,10 +8,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import jwtDecode from "jwt-decode";
-import { checkExistingUser, getUserInfoGoogle } from '../api/auth'
+import { checkExistingUser, getUserInfoGoogle, signInAppleAuth } from '../api/auth'
 import { useRouter } from 'expo-router'
 import * as AuthSession from 'expo-auth-session'
+import * as AppleAuthentication from 'expo-apple-authentication';
 
+
+
+
+const keyID = "BYS3B5F84C";
 
 
 
@@ -22,7 +27,7 @@ const SigninComponent = () => {
   
   const IS_DEV = process.env.NODE_ENV === 'development'
   
-  const APPLE_CLIENT_ID = IS_DEV ? "com.bingeableapp.dev" : "com.bingeableapp"
+  const APPLE_CLIENT_ID = IS_DEV ? "com.bingeableappdev.service" : "com.bingeableapp"
   const APPLE_REDIRECT_URI = AuthSession.makeRedirectUri({
     scheme: IS_DEV ? "bingeable-dev" : "bingeable",
   });
@@ -121,6 +126,36 @@ const SigninComponent = () => {
     router.push('(auth)/signIn')
   }
 
+  const handleApplePrompt = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      console.log('Signed in with apple', credential)
+      const signInData = {
+        appleId : credential.identityToken,
+        email : credential.email,
+        fullName : credential.fullName
+      }
+      const res = await signInAppleAuth(signInData)
+      console.log('res here', res)
+      if (res?.status === 202){
+        // Create user onboard
+        router.replace('/(onboarding)/step1')
+      } else {
+        router.replace('/')
+      }
+    } catch (e) {
+      if (e.code === 'ERR_REQUEST_CANCELED') {
+        // handle that the user canceled the sign-in flow
+      } else {
+        // handle other errors
+      }
+    }
+  }
 
 
   return (
@@ -129,6 +164,16 @@ const SigninComponent = () => {
         <AppleIcon color={Colors.lightGray} size={20}  className='absolute left-5'/>
         <Text className='text-mainGray font-semibold'>Continue with Apple</Text>
       </TouchableOpacity>
+
+      <View style={styles.container}>
+      <AppleAuthentication.AppleAuthenticationButton
+        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+        cornerRadius={5}
+        style={styles.button}
+        onPress={handleApplePrompt}
+      />
+    </View>
      
       <TouchableOpacity onPress={()=>{console.log('pressed');promptAsync()}} className='w-[300px] px-4 py-3 rounded-2xl bg-primary flex flex-row justify-center items-center gap-3 relative'>
         <GoogleIcon color={Colors.lightGray} size={20} className='absolute left-5'/>
@@ -147,4 +192,16 @@ const SigninComponent = () => {
 
 export default SigninComponent
 
-const styles = StyleSheet.create({})
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    width: 200,
+    height: 44,
+  },
+});

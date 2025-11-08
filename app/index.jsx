@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useRef, useState } from "react";
-import { Redirect, router, Link } from "expo-router";
+import { Redirect, Link } from "expo-router";
 import { View, Text, ScrollView, Button, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 // import { useNavigation } from "expo-router";
@@ -174,6 +174,8 @@ useEffect(() => {
 
   if (user) {
     return <Redirect href="(home)/homeIndex" />
+  } else {
+    return <Redirect href="(onboarding)/step1" />
   }
 
   const handleSignUp = () => {

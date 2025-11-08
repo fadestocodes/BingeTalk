@@ -6,6 +6,7 @@ import { signupNameSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
 import { useSignUpContext } from '../../lib/SignUpContext'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 
@@ -27,6 +28,14 @@ const step1 = () => {
   
       inputOpacity.value = withDelay(800, withTiming(1, { duration: 400, easing: Easing.ease }));
       inputTranslateY.value = withDelay(800, withTiming(0, { duration: 400, easing: Easing.ease }));
+
+      const getAppleName = async () => {
+        const appleNameData = await AsyncStorage.getItem('apple-fullName')
+        const appleName = JSON.parse(appleNameData)
+        console.log("Apple name", appleName)
+      }
+      getAppleName()
+
     }, []);
   
    

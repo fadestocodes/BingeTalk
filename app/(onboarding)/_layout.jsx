@@ -6,6 +6,9 @@ import { Colors } from '../../constants/Colors'
 const Onboarding = () => {
   return (
     <Stack>
+      <Stack.Screen name='step1' options={{headerShown : false}} />
+      <Stack.Screen name='profile-setup' options={{headerShown : false}} />
+      <Stack.Screen name='film-role' options={{headerShown : false}} />
       <Stack.Screen name='step1-firstName' options={{headerShown : false}} />
       <Stack.Screen name='step2-username' options={{headerShown : false}} />
       <Stack.Screen name='step3-email' options={{headerShown : false}} />

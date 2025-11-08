@@ -13,6 +13,7 @@ export default {
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
+      "usesAppleSignIn": true,
       "associatedDomains": [
         "webcredentials:bingeable.app"
       ],
@@ -29,7 +30,7 @@ export default {
           "NSAllowsArbitraryLoads": true
         },
         "NSAllowsArbitraryLoadsInWebContent": true
-      }
+      } 
     },
     "android": {
       "adaptiveIcon": {
@@ -47,6 +48,7 @@ export default {
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-apple-authentication",
       "expo-router",
       [
         "expo-splash-screen",

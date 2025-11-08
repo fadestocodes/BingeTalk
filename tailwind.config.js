@@ -20,8 +20,10 @@ module.exports = {
         mainGray : '#9ca3af',
         mainGrayLight:'#bfb9a6',
         mainGrayDark:'#525252',
+        newDarkGray : '#454242',
         darkGray : '#232533',
-        lightGray : '#CDCDE0'
+        lightGray : '#CDCDE0',
+        newLightGray : '#9CA3AF'
       },
       fontFamily: {
         pthin: ["Geist-Thin", "sans-serif"],
