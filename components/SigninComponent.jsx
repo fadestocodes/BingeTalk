@@ -136,7 +136,7 @@ const SigninComponent = () => {
       });
       console.log('Signed in with apple', credential)
       const signInData = {
-        appleId : credential.identityToken,
+        appleId : credential.user,
         email : credential.email,
         fullName : credential.fullName
       }

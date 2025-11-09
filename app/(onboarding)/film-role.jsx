@@ -4,6 +4,7 @@ import { Colors } from '../../constants/Colors'
 import { Wrench, Popcorn, ArrowRight, ArrowLeft } from 'lucide-react-native'
 import { filmRoles } from '../../lib/FilmDeptRoles'
 import {  useLocalSearchParams, useRouter } from 'expo-router'
+import { parseDept } from '../../lib/parseFilmDept'
 
 
 
@@ -18,6 +19,7 @@ const FilmRole = () => {
 
     const [selected, setSelected] = useState('')
     const [selectedRole, setSelectedRole] = useState(null)
+    const [selectedDept, setSelectedDept] = useState(null)
     const router = useRouter()
     const {accountType} = useLocalSearchParams()
 
@@ -25,12 +27,16 @@ const FilmRole = () => {
     // const formatted = dept.toLowerCase().replace(/[^a-z0-9]/g, '');
     // setSelected(formatted)
         setSelected(dept)
+        const parsed = parseDept(dept.name)
+        setSelectedDept(parsed)
     }
 
-    const handleNext = () => {
-        console.log(selected.name)
+    const handleNext = (role) => {
+        
+        const parsed = parseDept(role)
+        setSelectedRole(parsed)
         router.push({
-            params:{role: selectedRole, dept:selected.name, accountType},
+            params:{role: parsed, dept:selectedDept, accountType},
             pathname: '(onboarding)/profile-setup'
         })
     }
@@ -70,7 +76,7 @@ const FilmRole = () => {
                     )}
                     renderItem={({item}) => {
                         return (
-                            <TouchableOpacity onPress={()=>{setSelectedRole(item);handleNext()}} style={{width:'100%'}} className='  '>
+                            <TouchableOpacity onPress={()=>{handleNext(item)}} style={{width:'100%'}} className='  '>
                                 <Text className=' font-semibold text-newLightGray text-lg'>{item}</Text>
                             </TouchableOpacity>
                         )

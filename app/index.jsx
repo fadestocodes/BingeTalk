@@ -174,9 +174,11 @@ useEffect(() => {
 
   if (user) {
     return <Redirect href="(home)/homeIndex" />
-  } else {
-    return <Redirect href="(onboarding)/step1" />
-  }
+  } 
+  
+  // else {
+  //   return <Redirect href="(onboarding)/step1" />
+  // }
 
   const handleSignUp = () => {
     router.push('(onboarding)/step1-firstName')

@@ -349,6 +349,10 @@ export const checkExistingUser = async (checkData) => {
 export const signInAppleAuth = async (data) => {
   try {
     console.log('data to login', data)
+    if (!data?.email){
+      const email = await AsyncStorage.getItem('apple-email')
+      data.email = email
+    }
     const res = await fetch(`${nodeServer.currentIP}/user/oauth/apple`, {
       method : 'POST',
       headers:{
@@ -358,20 +362,46 @@ export const signInAppleAuth = async (data) => {
     })
     if (res.status === 202) {
       console.log('Need to onboard user and store apple response data')  
+      const appleId = await AsyncStorage.setItem('appleId', data.appleId || '');
+      console.log('appleId...', appleId)
       await AsyncStorage.setItem('apple-email', data.email || '');
       await AsyncStorage.setItem('apple-fullName', JSON.stringify(data.fullName || {}));
       return { status: 202, data: responseData }
     };
     if (!res.ok) throw new Error("Error trying to login with apple auth")
 
+
     const responseData = await res.json()
-    console.log('the resposne data', responseData)
+    console.log('the resposne data...', responseData)
     const {accessToken, refreshToken} = responseData
     await saveAccessToken(accessToken)
     await saveRefreshToken(refreshToken)
-    
+
     return true
   } catch (err){
     console.error(err)
   }
 }
+
+
+ export const createAppleUser = async (data) => {
+    try {
+      const res = await fetch(`${nodeServer.currentIP}/user/apple`, {
+        method : 'POST',
+        headers : {'Content-type' : 'application/json'},
+        body:JSON.stringify(data)
+      })
+      if (!res.ok) throw new Error ("Couldn't create user with apple data")
+      const resData = await res.json()
+      console.log('resdata',resData)
+      const {accessToken, refreshToken} = resData.data
+      await saveAccessToken(accessToken)
+      await saveRefreshToken(refreshToken)
+      return true
+      
+    } catch(err){
+      console.error(err)
+    }
+}
+
+

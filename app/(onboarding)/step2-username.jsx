@@ -80,7 +80,7 @@ const onSetup2Press = () => {
 
 
   return (
-    <SafeAreaView className='w-full h-full   bg-primary' style ={{height:'100%', width:'100%' , justifyContent:'center', alignItems:'center'}}>
+    <SafeAreaView className='w-full h-full flex-1 flex  bg-primary' style ={{height:'100%', width:'100%' , justifyContent:'center', alignItems:'center'}}>
       <KeyboardAvoidingView
         style={{ flex: 1, width:'100%', height:'100%' }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

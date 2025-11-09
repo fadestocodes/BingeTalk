@@ -11,7 +11,7 @@ const step1 = () => {
     const handleNext  = () => {
         router.push({
             params: {accountType:selected},
-            pathname : selected === 'filmmaker' ? '(onboarding)/film-role' : '(onboarding)/step-2'
+            pathname : selected === 'FILMMAKER' ? '(onboarding)/film-role' : '(onboarding)/step-2'
         })
     }
 
@@ -20,14 +20,14 @@ const step1 = () => {
         <View className='px-10 pt-20 gap-3'>
             <Text className='text-3xl font-bold text-white'>Looks like you don't have an account yet, lets get you started!</Text>
             <Text className='text-xl font-bold text-white pt-10 pb-2'>Select your account type</Text>
-            <TouchableOpacity onPress={()=>setSelected('filmmaker')} style={{backgroundColor: selected === 'filmmaker'  ? Colors.primaryLight :'none' }} className='rounded-3xl border-2 border-primaryLight h-[150px] justify-center items-center'>
+            <TouchableOpacity onPress={()=>setSelected('FILMMAKER')} style={{backgroundColor: selected === 'FILMMAKER'  ? Colors.primaryLight :'none' }} className='rounded-3xl border-2 border-primaryLight h-[150px] justify-center items-center'>
                 <View className='flex flex-row gap-2'>
                     <Wrench color={Colors.mainGray}/>
                     <Text className='text-newLightGray font-bold text-lg'>Filmmaker</Text>
                 </View>
                 <Text className='text-newLightGray'>I work in the film industry</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>setSelected('filmlover')} style={{backgroundColor: selected === 'filmlover' ?  Colors.primaryLight : 'none'}} className='rounded-3xl h-[150px] border-2 border-primaryLight justify-center items-center'>
+            <TouchableOpacity onPress={()=>setSelected('FILMLOVER')} style={{backgroundColor: selected === 'FILMLOVER' ?  Colors.primaryLight : 'none'}} className='rounded-3xl h-[150px] border-2 border-primaryLight justify-center items-center'>
                 <View className='flex flex-row gap-2'>
                     <Popcorn color={Colors.mainGray} />
                     <Text className='text-newLightGray font-bold text-lg'>Film lover</Text>
