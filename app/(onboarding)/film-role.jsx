@@ -16,12 +16,12 @@ const FilmRole = () => {
         emoji: info.emoji,
         numRoles : info.roles.length
       }));
-
     const [selected, setSelected] = useState('')
     const [selectedRole, setSelectedRole] = useState(null)
     const [selectedDept, setSelectedDept] = useState(null)
     const router = useRouter()
-    const {accountType} = useLocalSearchParams()
+    const {accountType, oauthProvider} = useLocalSearchParams()
+
 
     const handleDeptSelect = (dept) => {
     // const formatted = dept.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -36,7 +36,7 @@ const FilmRole = () => {
         const parsed = parseDept(role)
         setSelectedRole(parsed)
         router.push({
-            params:{role: parsed, dept:selectedDept, accountType},
+            params:{role: parsed, dept:selectedDept, accountType, oauthProvider},
             pathname: '(onboarding)/profile-setup'
         })
     }

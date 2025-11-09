@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import jwtDecode from 'jwt-decode';
 import { useRouter } from 'expo-router';
 import { router } from 'expo-router';
+import { useCreateContext } from '@/lib/CreateContext';
 
 
 // Token storage helpers
@@ -109,7 +110,7 @@ export const loginLocal = async (login, password) => {
             body : JSON.stringify(body)
         })
         if (!response.ok){
-            throw new Error("Couldn't login")
+            return {error : "Error signing in"}
         }
         const data = await response.json()
         const {accessToken, refreshToken} = data
@@ -118,7 +119,7 @@ export const loginLocal = async (login, password) => {
         return {messaage : "Successfully logged in"}
     } catch (err){
         console.error(err)
-        return {error : err}
+        return {error : "Error signing in"}
     }
 }
 
@@ -335,11 +336,15 @@ export const checkExistingUser = async (checkData) => {
       throw new Error ("Couldn't check user")
   
     } 
+    if (res.status === 202){
+      console.log('status 202')
+      return {status: 202}
+    }
     const data = await res.json()
     const {accessToken, refreshToken} = data
     await saveAccessToken(accessToken)
     await saveRefreshToken(refreshToken)
-    return true
+    return {status : 200}
   } catch (err){
     console.error(err)
   }
@@ -347,6 +352,8 @@ export const checkExistingUser = async (checkData) => {
 
 
 export const signInAppleAuth = async (data) => {
+  console.log('hello')
+  // console.log('createuserdata', createUserData)
   try {
     console.log('data to login', data)
     if (!data?.email){
@@ -362,10 +369,19 @@ export const signInAppleAuth = async (data) => {
     })
     if (res.status === 202) {
       console.log('Need to onboard user and store apple response data')  
-      const appleId = await AsyncStorage.setItem('appleId', data.appleId || '');
-      console.log('appleId...', appleId)
+      // const appleId = await AsyncStorage.setItem('appleId', data.appleId || '');
+      // console.log('appleId...', appleId)
       await AsyncStorage.setItem('apple-email', data.email || '');
       await AsyncStorage.setItem('apple-fullName', JSON.stringify(data.fullName || {}));
+      console.log('successfulyl stored apple data...')
+      
+      // updateCreateUserData({
+      //   ...createUserData,
+      //   appleId : data.appleId,
+      //   email : data.email,
+      //   firstName : data?.fullName?.givenName ,
+      //   lastName : data?.fullName?.familyName
+      // })
       return { status: 202, data: responseData }
     };
     if (!res.ok) throw new Error("Error trying to login with apple auth")
@@ -384,9 +400,9 @@ export const signInAppleAuth = async (data) => {
 }
 
 
- export const createAppleUser = async (data) => {
+ export const createOauthUser = async (data) => {
     try {
-      const res = await fetch(`${nodeServer.currentIP}/user/apple`, {
+      const res = await fetch(`${nodeServer.currentIP}/user/oauth/create`, {
         method : 'POST',
         headers : {'Content-type' : 'application/json'},
         body:JSON.stringify(data)

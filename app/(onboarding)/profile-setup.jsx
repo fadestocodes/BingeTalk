@@ -14,35 +14,39 @@ import { autocompleteLocationSearch } from '../../api/location'
 import { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
 import { CloseIcon } from '../../assets/icons/icons'
-import { createAppleUser } from '../../api/auth'
-
+import {  createOauthUser } from '../../api/auth'
+import { useCreateContext } from '../../lib/CreateContext'
+// import {useCreateContext} from '../../lib/CreateContext'
 
 
 
 
 
 const ProfileSetup = () => {
-    const {role, dept, accountType} = useLocalSearchParams()
+    const {role, dept, accountType, oauthProvider} = useLocalSearchParams()
     console.log('search params', role, dept, accountType)
     const [ inputs, setInputs ] = useState({
         firstName : '',
         lastName : '',
         username : '',
         location : '',
+        profilePic : ''
     })
+    const {createUserData, updateCreateUserData} = useCreateContext()
     const [locationResults, setLocationResults] = useState([])
     const [selectedLocation, setSelectedLocation] = useState('')
     const [uploading, setUploading] = useState(false)
-
     const [errors, setErrors] = useState({})
     const [ usernameTakenError, setUsernameTakenError ] = useState('')
     const keyboard = useAnimatedKeyboard();
     const translateStyle = useAnimatedStyle(() => {
-      return {
-        transform: [{ translateY: -keyboard.height.value }],
-      };
+        return {
+            transform: [{ translateY: -keyboard.height.value }],
+        };
     });
-  
+    
+    
+    // const {createUserData,updateCreateUserData} = useCreateContext()
 
 
 
@@ -53,19 +57,27 @@ const ProfileSetup = () => {
     const router = useRouter()
 
     useEffect(()=>{
-        const getAppleInfo = async () => {
-            const fullNameData = await AsyncStorage.getItem('apple-fullName')
-            const fullName = JSON.parse(fullNameData)
-            if (fullName){
+        const getGlobalStateInfo = async () => {
+            // const fullNameData = await AsyncStorage.getItem('apple-fullName')
+            // const fullName = JSON.parse(fullNameData)
+            // if (fullName){
 
-                setInputs(prev => ({
-                    ...prev,
-                    firstName : fullName.givenName,
-                    lastName:fullName.familyName
-                }))
-            }
+            //     setInputs(prev => ({
+            //         ...prev,
+            //         firstName : fullName.givenName,
+            //         lastName:fullName.familyName
+            //     }))
+            // }
+            const {firstName:firstNameState, lastName:lastNameState, profilePic:profilePicState} = createUserData
+            setInputs(prev => ({
+                ...prev,
+                firstName:firstNameState,
+                lastName:lastNameState,
+                profilePic:profilePicState
+            }))
+
         }
-        getAppleInfo()
+        getGlobalStateInfo()
     }, [])
 
 
@@ -158,16 +170,17 @@ const ProfileSetup = () => {
     }
 
     const handleNext = async () => {
-        const appleId = await AsyncStorage.getItem('appleId')
-        const fullNameData = await AsyncStorage.getItem('apple-fullName')
-        const fullName = JSON.parse(fullNameData)
-        const emailData = await AsyncStorage.getItem('apple-email')
+        // const appleId = await AsyncStorage.getItem('appleId')
+        // const fullNameData = await AsyncStorage.getItem('apple-fullName')
+        // const fullName = JSON.parse(fullNameData)
+        // const emailData = await AsyncStorage.getItem('apple-email')
 
-        const createUserData = {
-            appleId,
-            email : emailData,
-            firstName : fullName.givenName,
-            lastName: fullName.lastName || null,
+        const userParams = {
+            appleId: createUserData?.appleId || null,
+            googleId : createUserData?.googleId || null,
+            email : createUserData?.email || null,
+            firstName : inputs.firstName,
+            lastName: inputs.lastName,
             username : inputs.username.trim(),
             city : selectedLocation?.city || null,
             country : selectedLocation?.country || null,
@@ -177,12 +190,26 @@ const ProfileSetup = () => {
             filmRole : role ? role : null,
             profilePic : inputs?.profilePic || null
         }
+        // const createUserData = {
+        //     appleId,
+        //     email : emailData,
+        //     firstName : fullName.givenName,
+        //     lastName: fullName.lastName || null,
+        //     username : inputs.username.trim(),
+        //     city : selectedLocation?.city || null,
+        //     country : selectedLocation?.country || null,
+        //     countryCode: selectedLocation?.countryCode || null,
+        //     accountType : accountType ? accountType : 'FILMLOVER',
+        //     filmDept : dept ? dept : null,
+        //     filmRole : role ? role : null,
+        //     profilePic : inputs?.profilePic || null
+        // }
 
-        console.log('user create data', createUserData)
+        console.log('user create data', userParams)
 
         setUploading(true)
         try {
-            const successfulUser = await createAppleUser(createUserData)
+            const successfulUser = await createOauthUser(userParams)
             router.replace('/')
         } catch(err) {
             console.error(err)

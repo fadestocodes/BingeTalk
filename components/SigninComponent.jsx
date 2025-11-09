@@ -12,11 +12,12 @@ import { checkExistingUser, getUserInfoGoogle, signInAppleAuth } from '../api/au
 import { useRouter } from 'expo-router'
 import * as AuthSession from 'expo-auth-session'
 import * as AppleAuthentication from 'expo-apple-authentication';
+import GoogleColor from './ui/GoogleColor'
+import {useCreateContext} from '../lib/CreateContext'
+import { create } from 'react-test-renderer'
 
 
-
-
-const keyID = "BYS3B5F84C";
+// const keyID = "BYS3B5F84C";
 
 
 
@@ -24,6 +25,8 @@ const SigninComponent = () => {
   
   const [userInfo, setUserInfo] = useState(null)
   const router= useRouter()
+  const {createUserData, updateCreateUserData} = useCreateContext()
+  console.log('createUserdata', createUserData)
   
   const IS_DEV = process.env.NODE_ENV === 'development'
   
@@ -74,11 +77,25 @@ const SigninComponent = () => {
           oauthProvider : 'GOOGLE',
           oauthId : googleUser.id
         }
-
-        const isExistingUser = await checkExistingUser(checkData)
-        if (!isExistingUser) {
+        console.log('check dataa', checkData)
+        const statusCode = await checkExistingUser(checkData)
+        if (statusCode.status === 202) {
           // No user with this oauth, create user then log them in
-          router.replace('(onboarding)/step1')
+          //  ADD LOGIC TO STORE GOOGLE AUTH DATA TO USE IN ONBOARDING LOGIC
+          
+          updateCreateUserData({
+
+            email: googleUser.email,
+            firstName : googleUser.given_name,
+            lastName : googleUser.family_name,
+            profilePic : googleUser.picture,
+            googleId : googleUser.id
+          })
+
+          router.replace({
+            pathname:'(onboarding)/step1',
+            params : {oauthProvider : 'google'}
+          })
         } else {
           router.replace('/')
         }
@@ -87,38 +104,6 @@ const SigninComponent = () => {
     }
   }, [response])
 
-  useEffect(() => {
-    console.log('hello from useEffect for repsoneApple')
-    console.log('repsone from apple',responseApple);
-    if (responseApple?.type === "success") {
-      console.log('apple oauth login success')
-      // const checkUser = async () => {
-      //   const googleUser = await getUserInfoGoogle(response.authentication.accessToken)      
-      //   const createData = {
-      //     email : googleUser.email,
-      //     firstName : googleUser.given_name,
-      //     lastName : googleUser.family_name,
-      //     profilePic : googleUser.picture,
-      //     googleId : googleUser.id
-      //   }
-
-      //   const checkData = {
-      //     email : googleUser.email,
-      //     oauthProvider : 'GOOGLE',
-      //     oauthId : googleUser.id
-      //   }
-
-      //   const isExistingUser = await checkExistingUser(checkData)
-      //   if (!isExistingUser) {
-      //     // No user with this oauth, create user then log them in
-      //     router.replace('(onboarding)/step1')
-      //   } else {
-      //     router.replace('/')
-      //   }
-      // };
-      // checkUser();
-    }
-  }, [responseApple])
 
   
 
@@ -140,13 +125,25 @@ const SigninComponent = () => {
         email : credential.email,
         fullName : credential.fullName
       }
-      const res = await signInAppleAuth(signInData)
+
+      updateCreateUserData({
+        appleId : signInData.appleId,
+        email : signInData.email,
+        firstName : signInData?.fullName?.givenName,
+        lastName : signInData?.fullName?.familyName
+      })
+
+      const res = await signInAppleAuth(signInData, createUserData)
       console.log('res here', res)
       if (res?.status === 202){
         // Create user onboard
-        router.replace('/(onboarding)/step1')
+        router.replace({
+          pathname:'(onboarding)/step1',
+          params : {oauthProvider : 'apple'}
+        })
       } else {
         router.replace('/')
+
       }
     } catch (e) {
       if (e.code === 'ERR_REQUEST_CANCELED') {
@@ -159,29 +156,24 @@ const SigninComponent = () => {
 
 
   return (
-    <View className='flex flex-col gap-2'>
-      <TouchableOpacity onPress={()=>promptAsyncApple()} className='w-[300px] px-4 py-3 rounded-2xl bg-primary flex flex-row justify-center items-center gap-3 relative'>
-        <AppleIcon color={Colors.lightGray} size={20}  className='absolute left-5'/>
-        <Text className='text-mainGray font-semibold'>Continue with Apple</Text>
-      </TouchableOpacity>
-
-      <View style={styles.container}>
-      <AppleAuthentication.AppleAuthenticationButton
-        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-        cornerRadius={5}
-        style={styles.button}
-        onPress={handleApplePrompt}
-      />
-    </View>
+    <View className='flex flex-col gap-5'>
+      <View >
+        <AppleAuthentication.AppleAuthenticationButton
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            cornerRadius={15}
+            style={{width:'100%', height:50}}
+            onPress={handleApplePrompt}
+        />
+      </View>
      
-      <TouchableOpacity onPress={()=>{console.log('pressed');promptAsync()}} className='w-[300px] px-4 py-3 rounded-2xl bg-primary flex flex-row justify-center items-center gap-3 relative'>
-        <GoogleIcon color={Colors.lightGray} size={20} className='absolute left-5'/>
-        <Text className='text-mainGray font-semibold'>Continue with Google</Text>
+      <TouchableOpacity onPress={()=>{console.log('pressed');promptAsync()}} className='w-[300px] h-[50px] px-4 py-3 rounded-2xl bg-black flex flex-row justify-center items-center gap-3 relative'>
+        <GoogleColor width={18} height={18}/>
+        <Text className='text-white font-semibold'>Continue with Google</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleLocalLogin} className='w-[300px] px-4 py-3 rounded-2xl bg-primary flex flex-row justify-center items-center gap-3 relative'>
-        <User color={Colors.lightGray} size={20} style={{position:'absolute', left:14}}/>
-        <Text className='text-mainGray font-semibold'>Use email or username</Text>
+      <TouchableOpacity onPress={handleLocalLogin} className='w-[300px] h-[50px] px-4 py-3 rounded-2xl bg-black flex flex-row justify-center items-center gap-3 relative'>
+        <User color='white' size={20} style={{}}/>
+        <Text className='text-white font-semibold'>Use email or username</Text>
       </TouchableOpacity>
         <TouchableOpacity className='pt-6 justify-center items-center'>
             <Text className='text-mainGray'>Don't have an account? Sign up</Text>

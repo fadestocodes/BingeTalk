@@ -2,15 +2,16 @@ import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native'
 import React, {useState} from 'react'
 import { Colors } from '../../constants/Colors'
 import { Wrench, Popcorn, ArrowRight } from 'lucide-react-native'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 
 const step1 = () => {
     const [selected, setSelected] = useState(null)
+    const {oauthProvider} = useLocalSearchParams()
     const router = useRouter()
 
     const handleNext  = () => {
         router.push({
-            params: {accountType:selected},
+            params: {accountType:selected, oauthProvider},
             pathname : selected === 'FILMMAKER' ? '(onboarding)/film-role' : '(onboarding)/step-2'
         })
     }
