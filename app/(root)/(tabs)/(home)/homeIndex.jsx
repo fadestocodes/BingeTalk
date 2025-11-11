@@ -210,7 +210,7 @@ const homeIndex = () => {
         ) }
       
      
-    <View className='w-full  px-4 gap-5' style={{paddingBottom:130}}>
+    <View className='w-full  px-4 gap-5' style={{paddingBottom:0}}>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
         
@@ -231,7 +231,7 @@ const homeIndex = () => {
         </View>
       </TouchableOpacity>
 
-      <View className='w-full my-2 gap-3' style={{paddingBottom:100}}>
+      <View className='w-full my-2 gap-3' style={{paddingBottom:0}}>
       {/* <FlatList
         horizontal
         data={homeCategories}

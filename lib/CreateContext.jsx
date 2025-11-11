@@ -53,8 +53,13 @@ export const CreateProvider = ({ children }) => {
     setCreateUserData(data);
   };
 
+  const [url, setUrl] = useState('')
+  const updateUrl = (data) =>{
+    setUrl(data)
+  }
+
   return (
-    <CreateContext.Provider value={{ createUserData, updateCreateUserData }}>
+    <CreateContext.Provider value={{ createUserData, updateCreateUserData, url, updateUrl }}>
       {children}
     </CreateContext.Provider>
   );

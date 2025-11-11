@@ -166,7 +166,7 @@ const CastIdPage = () => {
 
 
   return (
-    <SafeAreaView className='h-full pb-24 bg-primary'>
+    <SafeAreaView className='h-full  bg-primary'>
       <ToastMessage message={toastMesage} onComplete={()=>setToastMessage(null)} icon={<CastCrewIcon size ={30} color={Colors.secondary} />}   />
     <ScrollView 
      refreshControl={

@@ -46,7 +46,7 @@ const ReviewScreen = () => {
   
     
     const animatedStyle = useAnimatedStyle(() => ({
-      bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+      bottom: withTiming(keyboard.height.value-80, { duration: 0 }),
     }));
 
     useEffect(()=>{
@@ -566,7 +566,7 @@ ReviewScreen.options = {
       backgroundColor: '#111',
       position: 'absolute',
       bottom:100,
-      height:200,
+      height:150,
       left: 0,
       right: 0,
       paddingBottom: 50,

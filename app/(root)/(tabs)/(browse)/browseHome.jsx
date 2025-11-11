@@ -76,7 +76,7 @@ const browseHome = () => {
         />
       </View>
 
-        <View className='w-full ' style={{ paddingBottom:200 }} >
+        <View className='w-full ' style={{ paddingBottom:0 }} >
 
           {loading && loadingRecents ? (
             <ActivityIndicator/>

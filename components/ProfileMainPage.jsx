@@ -172,7 +172,7 @@ import { useGetUser, useGetUserFull } from '../api/auth'
 
   return (
 
-    <View className='w-full h-full bg-primary' style={{paddingBottom:30}}>
+    <View className='w-full h-full bg-primary' style={{paddingBottom:0}}>
         { !ownerUser || isFetchingUser ? (
             <View className="bg-primary w-full h-full justify-center items-center">
             <ActivityIndicator></ActivityIndicator>

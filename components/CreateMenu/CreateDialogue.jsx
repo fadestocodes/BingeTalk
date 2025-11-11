@@ -360,7 +360,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                     </View>
             </View>
             ) } 
-                    { url.image && (
+                    { url?.image && (
 
                         image ? (
                             <>

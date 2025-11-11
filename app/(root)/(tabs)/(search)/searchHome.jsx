@@ -51,7 +51,6 @@ const SearchPage = () => {
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
   const [ trendingDialogues, setTrendingDialogues ] = useState(null)
-  const [ uniqueRotations, setUniqueRotations  ] = useState(null)
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -146,8 +145,6 @@ const SearchPage = () => {
       }) 
       const trendingDialoguesResponse = await getRecentDialogues(5);
       setTrendingDialogues(trendingDialoguesResponse);
-      const uniqueRotationsData = await findUniqueRotations()
-      setUniqueRotations(uniqueRotationsData)
     } catch (err) {
       console.log('Error fetching all categories',err)
     } finally{
@@ -174,8 +171,6 @@ const SearchPage = () => {
         const trendingDialoguesResponse = await getRecentDialogues(5);
         setTrendingDialogues(trendingDialoguesResponse);
 
-        const uniqueRotationsData = await findUniqueRotations()
-        setUniqueRotations(uniqueRotationsData)
         
 
       } catch (err) {
@@ -226,7 +221,7 @@ const SearchPage = () => {
 
   return (
 
-    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary pb-24 pt-3 px-5 relative' >
+    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary  pt-3 px-5 relative' >
       
       <View className='justify-center items-center'>
       <View className=' flex-row gap-4  w-full px-8 justify-center items-center relative'>
@@ -271,7 +266,7 @@ const SearchPage = () => {
         data = {results}
         scrollEnabled={ !discoverPage ? true : false }
         style ={{ width:'100%'}}
-        contentContainerStyle={{paddingBottom:100}}
+        contentContainerStyle={{paddingBottom:0}}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
@@ -414,32 +409,6 @@ const SearchPage = () => {
                 )}
               />
             </View>
-
-            <View className='gap-3' style={{paddingBottom:100}}>
-            <View className='gap-3 flex items-start w-full' style={{}} >
-              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
-                < Fingerprint size={20} color={Colors.mainGray}/>
-                <Text className='text-mainGray font-pbold text-xl '>Cinematic DNA</Text>
-                {/* <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} /> */}
-              </TouchableOpacity>
-            </View>
-
-            <FlatList
-              data={uniqueRotations}
-              horizontal
-              keyExtractor={(item,index) => item.id}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{gap:15}}
-              renderItem={({item}) => (
-                <TouchableOpacity onPress={()=>handleProfileCard(item)}>
-                  <ProfileCard  user={item}/>
-                </TouchableOpacity>
-              )}
-            />
-
-
-            </View>
-           
           </View>
         </IOScrollView>
         ) }
