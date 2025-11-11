@@ -18,12 +18,14 @@ import { markMovieWatchlist } from '../../api/movie';
 import { markTVWatchlist } from '../../api/tv';
 import { checkTastemakerBadge } from '../../api/badge';
 import { useBadgeContext } from '../../lib/BadgeModalContext';
+import { useGetUser } from '../../api/auth';
 
 
 const RecommendationListScreen = () => {
     const {userId} = useLocalSearchParams();
-    const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(userId)
-    const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(userId)
+    const {user} = useGetUser()
+    const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(user.id)
+    const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(user.id)
     const [ tab, setTab ] = useState('received')
     const {showBadgeModal} = useBadgeContext()
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -114,17 +116,19 @@ const RecommendationListScreen = () => {
 
     }
 
+    if (!user){
+        return <ActivityIndicator />
+    }
+
 
 
   return (
-    <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{  paddingTop:100, paddingHorizontal:15 }}>
-       <View 
-           
-            style={{ paddingTop:0, gap:10, paddingHorizontal:15, paddingBottom:270,alignItems:'center', width:'100%' }}>
+    <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{   paddingHorizontal:15 }}>
+       <View className='flex-1' style={{ paddingTop:15, gap:10, paddingHorizontal:15,alignItems:'center', width:'100%' }}>
         
-            <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
-         <BackIcon size={26} color={Colors.mainGray} />
-     </TouchableOpacity>
+            {/* <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
+                <BackIcon size={26} color={Colors.mainGray} />
+            </TouchableOpacity> */}
             <View className="flex-row w-full justify-start items-center gap-2 py-1">
                 <Handshake color='white'  />
                 <Text className='text-white text-3xl  font-pbold'>Recommendations</Text>
@@ -143,7 +147,7 @@ const RecommendationListScreen = () => {
                 < View className='w-full' >
                 { recommendationsReceived.length < 1 ? (
                     <View>
-                        <Text className='text-mainGray text-center text-xl font-pmedium' >(List is empty)</Text>
+                        <Text className='text-mainGray text-center text-xl font-pmedium' >(No received recommendations)</Text>
                     </View>
                 ) : (
 
@@ -240,7 +244,7 @@ const RecommendationListScreen = () => {
                 <View className='w-full'>
                                     { recommendationsSent.length < 1 ? (
                     <View>
-                        <Text className='text-mainGray text-center text-xl font-pmedium' >(List is empty)</Text>
+                        <Text className='text-mainGray text-center text-xl font-pmedium' >(No sent recommendations)</Text>
                     </View>
                 ) : (
 

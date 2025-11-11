@@ -331,7 +331,8 @@ import { useGetUser, useGetUserFull } from '../api/auth'
     
                 </View>
             )}
-            contentContainerStyle={{gap:15}}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{gap:15, paddingBottom:100}}
             renderItem={({item}) => {
                 // console.log("FLATLISTITEM", item)
             return (

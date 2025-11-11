@@ -316,7 +316,7 @@ const SearchPage = () => {
           scrollEventThrottle={16}
 
         >
-          <View className='flex gap-6 w-full h-full'>
+          <View className='flex  gap-6 w-full h-full'>
             
             <View className='gap-3 flex items-start w-full' style={{height:200}} >
               <TouchableOpacity onPress={()=> { router.push('/movie/discover') }} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>

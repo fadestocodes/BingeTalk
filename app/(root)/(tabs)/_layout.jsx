@@ -99,9 +99,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(browse)"
+        name="(recs)/recsHome"
         options={{
-          title : 'Browse',
+          title : 'Recs',
           headerShown : false,
           tabBarIcon : ({color, focused}) => (
             <TabIcon

@@ -35,7 +35,7 @@ const RecommendationScreen = () => {
     // console.log(`searchparams: ${DBmovieId}, ${DBtvId}` )
    
     const useGetAllMutuals = async () => {
-        const mutuals = await getAllMutuals(ownerUser?.id);
+        const mutuals = await getAllMutuals(ownerUser.id);
         setMutuals(mutuals)
     }
 
