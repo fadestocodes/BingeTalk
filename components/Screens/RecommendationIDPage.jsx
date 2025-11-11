@@ -5,12 +5,12 @@ import { Image } from 'expo-image'
 
 import React, { useState, useRef, useCallback } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useGetRecommendation, deleteRecommendation } from '../../api/recommendation'
+import { useGetRecommendation, deleteRecommendation, acceptRecommendation } from '../../api/recommendation'
 import { TVIcon, FilmIcon, CloseIcon , BackIcon, ThreeDotsIcon} from '../../assets/icons/icons'
 import { commentInteraction, createComment } from '../../api/comments'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { getYear, formatDate } from '../../lib/formatDate'
-import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical} from 'lucide-react-native';
+import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical, Minus, Trash2} from 'lucide-react-native';
 
 import { useFetchOwnerUser } from '../../api/user'
 import { avatarFallbackCustom } from '../../lib/fallbackImages'
@@ -25,7 +25,8 @@ const RecommendationPage = () => {
         id : recommendationId,
         userId : Number(userId)
     }
-    const { recommendation, ownerUser, refetch, loading, commentsData, setCommentsData, interactedComments, setInteractedComments, didOwnerSend , director, ratings } = useGetRecommendation(data)
+    const { recommendation, ownerUser, refetch, loading, commentsData,status, setStatus,  setCommentsData, interactedComments, setInteractedComments, didOwnerSend , directorOrCreator, ratings } = useGetRecommendation(data)
+    console.log('recomendation...', recommendation)
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  
     const [ visibleReplies, setVisibleReplies  ] = useState({})
@@ -39,7 +40,7 @@ const RecommendationPage = () => {
     const keyboard = useAnimatedKeyboard(); 
 
     const animatedStyle = useAnimatedStyle(() => ({
-      bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+      bottom: withTiming(keyboard.height.value-80, { duration: 0 }),
     }));
 
 
@@ -132,7 +133,7 @@ const handleRemove = async  (type) => {
 const handlePostComment =  async ({ parentId = null }) => {
 
     const commentData = {
-        userId : Number(userId),
+        userId : Number(ownerUser.id),
         recommendationId : Number(recommendationId),
         content : input,
         parentId : replyingTo?.parentId || null,
@@ -359,6 +360,22 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
     })
   }
 
+  const handleAddToWatchlist = async (type, item) => {
+    console.log('trying to handle add to wathclist')
+    setStatus('ACCEPTED')
+
+    const data = {
+        recommenderId : item.recommenderId,
+        recommendationId : item.id,
+        type,
+        movieId : item?.movie ? item.movie.id : null,
+        tvId : item?.tv ? item.tv.id : null
+    }
+    console.log('the data...', data)
+    const res = await acceptRecommendation(data)
+    console.log('adding to wathclist raesults...' ,res)
+  }
+
   if (!recommendation || !ownerUser ){
     return (
       <View className='w-full h-full bg-primary justify-center items-center'>
@@ -414,7 +431,7 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                               { recommendation.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
                               <Text className='text-white text font-pbold'>{ recommendation?.movieId ? `${recommendation.movie.title} (${getYear(recommendation.movie.releaseDate)})` : `${recommendation.tv.title} (${getYear(recommendation.tv.releaseDate)})` }</Text>
                           </View>
-                          <Text className='text-mainGray font-pmedium text-xs  '>Director: {director.name}</Text>
+                          <Text className='text-mainGray font-pmedium text-xs  '>{type === 'TV' ? 'Created by:' : type === 'MOVIE' ? 'Directed by:' : ''} {directorOrCreator.name}</Text>
                       </TouchableOpacity>
                                   
                   </View>
@@ -422,12 +439,15 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                     <Text className='text-mainGray text-sm'>Overall rating</Text>
                     <Text className='text-mainGray text-3xl font-pbold' >{ratings}</Text>
                   </View>
-                  <View className='flex-row gap-3 items-center justify-center ' >
-                      <TouchableOpacity onPress={()=>handleRemove('received',recommendation)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                          <Text className='text-primary font-pbold text-sm'>Remove recommendation</Text>
-                      </TouchableOpacity>
-                      
+                  <View className='flex flex-row gap-5 justify-center items-center'>
+                    <TouchableOpacity onPress={()=>handleAddToWatchlist('ACCEPTED', recommendation)  } className='bg-primaryLight p-4 rounded-2xl'>
+                        <ListChecks color={Colors.newLightGray} />
+                    </TouchableOpacity>
+                      <TouchableOpacity  className='bg-primaryLight p-4 rounded-2xl' onPress={()=>handleRemove('received',recommendation)}>
+                          <Trash2 color={Colors.newLightGray} />              
+                        </TouchableOpacity>
                   </View>
+                      
                 </View>
               </View>
                 <TouchableOpacity onPress={()=>router.push(`user/${recommendation.recommender.id}`)} className="w-full justify-center items-start">
@@ -656,7 +676,7 @@ export default RecommendationPage
 RecommendationPage.options = {
   headerShown: false, 
 }
-
+ 
 
 const styles = StyleSheet.create({
   modalContainer: {
@@ -669,7 +689,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#111',
     position: 'absolute',
     bottom:100,
-    height:200,
+    height:150,
     left: 0,
     right: 0,
     paddingBottom: 50,

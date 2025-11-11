@@ -142,6 +142,7 @@ export const postPushToken = async (token) => {
         return result
     } catch (err){
         console.log(err)
+        return err
     }
 }
 

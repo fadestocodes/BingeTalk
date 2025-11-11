@@ -39,7 +39,7 @@ async function refreshAccessToken() {
 
     try  {
         const refreshToken = await getRefreshToken();
-        if (!refreshToken) throw new Error('No refresh token');
+        if (!refreshToken) return;
       
         const res = await fetch(`${nodeServer.currentIP}/auth/refresh`, {
           method: 'POST',
@@ -79,7 +79,7 @@ export async function apiFetch(url, options = {}) {
     try {
         const newAccessToken = await refreshAccessToken();
         
-        if (!newAccessToken) throw new Error("Couldn't refresh access token")
+        if (!newAccessToken) return
             // Retry original request
         res = await fetch(url, {
         ...options,

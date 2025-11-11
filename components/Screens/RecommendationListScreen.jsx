@@ -24,8 +24,8 @@ import { useGetUser } from '../../api/auth';
 const RecommendationListScreen = () => {
     const {userId} = useLocalSearchParams();
     const {user} = useGetUser()
-    const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(user.id)
-    const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(user.id)
+    const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(user?.id)
+    const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(user?.id)
     const [ tab, setTab ] = useState('received')
     const {showBadgeModal} = useBadgeContext()
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -95,20 +95,22 @@ const RecommendationListScreen = () => {
             userId: item.recipientId,
             recommenderId : item.recommenderId,
             recommendationId : item.id,
-            type
+            type,
+            movieId : item?.movie ? item.movie.id : null,
+            tvId : item?.tv ? item.tv.id : null
         }
         await acceptRecommendation(data)
-        console.log(item)
-        const watchlistData = {
-            userId : item.recipientId,
-            movieId : item?.movie ? item.movie.id : undefined,
-            tvId : item?.tv ? item.tv.id : undefined
-        }
-        if (item.movie){
-            await markMovieWatchlist(watchlistData)
-        } else if (item.tv){
-            await markTVWatchlist(watchlistData)
-        }
+        // console.log(item)
+        // const watchlistData = {
+        //     userId : item.recipientId,
+        //     movieId : item?.movie ? item.movie.id : undefined,
+        //     tvId : item?.tv ? item.tv.id : undefined
+        // }
+        // if (item.movie){
+        //     await markMovieWatchlist(watchlistData)
+        // } else if (item.tv){
+        //     await markTVWatchlist(watchlistData)
+        // }
         removeReceivedItems(item)
 
         await checkTastemakerBadge(item.recommenderId)

@@ -3,7 +3,7 @@ import { Stack } from 'expo-router'
 import React from 'react'
 import { Colors } from '../../../../constants/Colors'
 
-const ProfileLayout = () => {
+const RecsLayout = () => {
   return (
     <Stack  >
         <Stack.Screen name='recsHome' options={{headerShown : false}} />
@@ -17,3 +17,5 @@ const ProfileLayout = () => {
         <Stack.Screen name='tv' options={{headerShown : false}} />
     </Stack>
   )}
+
+  export default RecsLayout

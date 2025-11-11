@@ -272,7 +272,7 @@ const homeIndex = () => {
                   windowSize={8}
                   showsVerticalScrollIndicator={false}
                   keyExtractor={(item) => item.id.toString()}
-                  contentContainerStyle={{gap:10}}
+                  contentContainerStyle={{gap:10, paddingBottom:200}}
                   onEndReached={debouncedGetFeed}
                   onEndReachedThreshold={0}
           

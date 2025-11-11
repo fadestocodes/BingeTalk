@@ -99,7 +99,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(recs)/recsHome"
+        name="(recs)"
         options={{
           title : 'Recs',
           headerShown : false,
