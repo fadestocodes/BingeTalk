@@ -121,7 +121,7 @@ export const GetNowPlaying = async () => {
   
   export const getTrending = async () => {
     try {
-      const response = await fetch(`${nodeServer.currentIP}/tmdb/trending/all`);
+      const response = await fetch(`${nodeServer.currentIP}/tmdb/trending/recents`);
       const data = await response.json();
       return data
     } catch (err) {

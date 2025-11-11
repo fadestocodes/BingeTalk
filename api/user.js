@@ -1228,3 +1228,23 @@ export const markBadgeNotificationSeen = async ( badgeId) => {
     }
 }
 
+export const updateWatchedBatch = async (data) => {
+    try {
+        const res = await apiFetch(`${nodeServer.currentIP}/user/update-hasWatched/batch`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        if (!res.ok) {
+            return false
+        }
+        const resData = await res.json()
+        console.log('resdata...',resData)
+        return true
+    } catch(err){
+        console.error(err)
+        return false
+    }
+}

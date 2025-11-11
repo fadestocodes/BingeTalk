@@ -14,8 +14,9 @@ import { autocompleteLocationSearch } from '../../api/location'
 import { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
 import { CloseIcon } from '../../assets/icons/icons'
-import {  createOauthUser } from '../../api/auth'
+import {  createOauthUser, useGetUser } from '../../api/auth'
 import { useCreateContext } from '../../lib/CreateContext'
+import { useSignUpContext } from '../../lib/SignUpContext'
 // import {useCreateContext} from '../../lib/CreateContext'
 
 
@@ -23,15 +24,16 @@ import { useCreateContext } from '../../lib/CreateContext'
 
 
 const ProfileSetup = () => {
-    const {role, dept, accountType, oauthProvider} = useLocalSearchParams()
-    console.log('search params', role, dept, accountType)
+
+    const { signUpData, updateSignUpData } = useSignUpContext()
     const [ inputs, setInputs ] = useState({
         firstName : '',
         lastName : '',
         username : '',
         location : '',
-        profilePic : ''
     })
+    const [profilePicUrl, setProfilePicUrl] = useState('')
+    const {oauthProvider} = useLocalSearchParams()
     const {createUserData, updateCreateUserData} = useCreateContext()
     const [locationResults, setLocationResults] = useState([])
     const [selectedLocation, setSelectedLocation] = useState('')
@@ -41,9 +43,13 @@ const ProfileSetup = () => {
     const keyboard = useAnimatedKeyboard();
     const translateStyle = useAnimatedStyle(() => {
         return {
-            transform: [{ translateY: -keyboard.height.value }],
+            transform: [{ translateY: -keyboard.height.value * .6}],
         };
     });
+
+    const counterTranslate = useAnimatedStyle(() => ({
+        transform: [{ translateY: keyboard.height.value }],
+      }));
     
     
     // const {createUserData,updateCreateUserData} = useCreateContext()
@@ -73,8 +79,8 @@ const ProfileSetup = () => {
                 ...prev,
                 firstName:firstNameState,
                 lastName:lastNameState,
-                profilePic:profilePicState
             }))
+            setProfilePicUrl(profilePicState)
 
         }
         getGlobalStateInfo()
@@ -175,6 +181,20 @@ const ProfileSetup = () => {
         // const fullName = JSON.parse(fullNameData)
         // const emailData = await AsyncStorage.getItem('apple-email')
 
+        updateSignUpData(prev => ({
+            ...prev,
+            firstName : inputs.firstName,
+            lastName : inputs.lastName,
+            username : inputs.username.trim(),
+            city : selectedLocation?.city || null,
+            country : selectedLocation?.country || null,
+            countryCode: selectedLocation?.countryCode || null,
+            accountType : signUpData?.accountType ? signUpData.accountType : 'FILMLOVER',
+            filmDept : signUpData?.filmDept ? signUpData.filmDept : null,
+            filmRole : signUpData?.filmRole ? signUpData.filmRole : null,
+            image : profilePicUrl || null
+        }))
+
         const userParams = {
             appleId: createUserData?.appleId || null,
             googleId : createUserData?.googleId || null,
@@ -185,10 +205,10 @@ const ProfileSetup = () => {
             city : selectedLocation?.city || null,
             country : selectedLocation?.country || null,
             countryCode: selectedLocation?.countryCode || null,
-            accountType : accountType ? accountType : 'FILMLOVER',
-            filmDept : dept ? dept : null,
-            filmRole : role ? role : null,
-            profilePic : inputs?.profilePic || null
+            accountType : signUpData?.accountType ? signUpData.accountType : 'FILMLOVER',
+            filmDept : signUpData?.filmDept ? signUpData.filmDept : null,
+            filmRole : signUpData?.filmRole ? signUpData.filmRole : null,
+            profilePic : profilePicUrl || null
         }
         // const createUserData = {
         //     appleId,
@@ -205,16 +225,19 @@ const ProfileSetup = () => {
         //     profilePic : inputs?.profilePic || null
         // }
 
-        console.log('user create data', userParams)
 
-        setUploading(true)
-        try {
-            const successfulUser = await createOauthUser(userParams)
-            router.replace('/')
-        } catch(err) {
-            console.error(err)
-        } finally {
-            setUploading(false)
+        if (oauthProvider){
+            try {
+                setUploading(true)
+                const successfulUser = await createOauthUser(userParams)
+                router.replace('(onboarding)/recentlyWatched')
+            } catch(err) {
+                console.error(err)
+            } finally {
+                setUploading(false)
+            }
+        } else {
+            router.push('(onboarding)/step3-email')
         }
 
     }
@@ -253,6 +276,8 @@ const ProfileSetup = () => {
                     />
                 </TouchableOpacity>
                 <View className='gap-10 pt-10'>
+
+
                     <View className='flex flex-col gap-3 justify-start items-start'>
                         { errors?.firstName?.[0] && (
                             <View >
@@ -350,7 +375,7 @@ const ProfileSetup = () => {
                         <ArrowLeft color={Colors.newLightGray} />
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleNext} style={{opacity : missingInputs || hasErrors ? 0.3: 1}} className='mt-10  self-center rounded-full bg-primaryLight w-[45px] h-[45px] relative justify-center items-center'>
+                <TouchableOpacity disabled={missingInputs || hasErrors} onPress={handleNext} style={{opacity : missingInputs || hasErrors ? 0.3: 1}} className='mt-10  self-center rounded-full bg-primaryLight w-[45px] h-[45px] relative justify-center items-center'>
                     <View className=''>
                         <ArrowRight color={Colors.newLightGray} />
                     </View>

@@ -46,6 +46,7 @@ export const CreateProvider = ({ children }) => {
             profilePic : '',
             googleId : '',
             appleId : '',
+            
     
         })
   const updateCreateUserData = (data) => {

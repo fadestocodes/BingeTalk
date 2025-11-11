@@ -177,7 +177,7 @@ useEffect(() => {
   } 
   
   // else {
-  //   return <Redirect href="(onboarding)/step1" />
+  //   return <Redirect href="(onboarding)/step4-password" />
   // }
 
   const handleSignUp = () => {

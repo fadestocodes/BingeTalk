@@ -421,3 +421,42 @@ export const signInAppleAuth = async (data) => {
 }
 
 
+export const sendVerificationCode = async (params) => {
+  try {
+    const res = await fetch(`${nodeServer.currentIP}/auth/verification-code`, {
+      method : 'POST',
+      headers : {
+        'Content-type' : 'application/json'
+      },
+      body: JSON.stringify(params)
+    })
+    if (!res.ok) throw new Error("Coudlnt' send verification code")
+    const resData = await res.json()
+    console.log('resdata', resData)
+  } catch(err){
+    console.error(err)
+  }
+}
+
+export const checkVerificationCodeToCreateUser = async (params) => {
+  try {
+    console.log("hello from here")
+    const res = await fetch(`${nodeServer.currentIP}/auth/verification-code/check`, {
+      method : 'POST',
+      headers : {
+        'Content-type' : 'application/json'
+      },
+      body : JSON.stringify(params)
+    })
+    if (!res.ok) throw new Error("Invalid response")
+    const resData = await res.json()
+    const {accessToken,refreshToken} = resData.data
+    await saveAccessToken(accessToken)
+    await saveRefreshToken(refreshToken)
+    return {success: true}
+  } catch(err){
+    console.error(err)
+    return {success:false}
+  }
+
+}

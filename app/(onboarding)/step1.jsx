@@ -3,15 +3,28 @@ import React, {useState} from 'react'
 import { Colors } from '../../constants/Colors'
 import { Wrench, Popcorn, ArrowRight } from 'lucide-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import FilmmakerIcon from '../../components/ui/UserFilmmaker'
+import FilmloverIcon from '../../components/ui/UserFilmlover'
+import ArrowNextButton from '../../components/ui/ArrowNextButton'
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 const step1 = () => {
     const [selected, setSelected] = useState(null)
     const {oauthProvider} = useLocalSearchParams()
+    const { signUpData, updateSignUpData } = useSignUpContext()
+    
+    const handleSelect  = (selection) => {
+        setSelected(selection)
+        updateSignUpData(prev => ({
+            ...prev,
+            accountType : selection
+        }))
+    }
     const router = useRouter()
 
     const handleNext  = () => {
         router.push({
-            params: {accountType:selected, oauthProvider},
+            params: { oauthProvider},
             pathname : selected === 'FILMMAKER' ? '(onboarding)/film-role' : '(onboarding)/step-2'
         })
     }
@@ -21,27 +34,24 @@ const step1 = () => {
         <View className='px-10 pt-20 gap-3'>
             <Text className='text-3xl font-bold text-white'>Looks like you don't have an account yet, lets get you started!</Text>
             <Text className='text-xl font-bold text-white pt-10 pb-2'>Select your account type</Text>
-            <TouchableOpacity onPress={()=>setSelected('FILMMAKER')} style={{backgroundColor: selected === 'FILMMAKER'  ? Colors.primaryLight :'none' }} className='rounded-3xl border-2 border-primaryLight h-[150px] justify-center items-center'>
-                <View className='flex flex-row gap-2'>
-                    <Wrench color={Colors.mainGray}/>
+            <TouchableOpacity onPress={()=>handleSelect('FILMMAKER')} style={{backgroundColor: selected === 'FILMMAKER'  ? Colors.primaryLight :'none' }} className=' px-6 gap-2 rounded-3xl border-2 border-primaryLight h-[150px] justify-center items-center'>
+                <View className='flex flex-row gap-2 justify-center items-center'>
+                    <FilmmakerIcon size={35} color={Colors.mainGray}/>
                     <Text className='text-newLightGray font-bold text-lg'>Filmmaker</Text>
                 </View>
-                <Text className='text-newLightGray'>I work in the film industry</Text>
+                <Text className='text-newLightGray'>I work in the film industry and want to connect with other filmmakers, while using all the other features.</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>setSelected('FILMLOVER')} style={{backgroundColor: selected === 'FILMLOVER' ?  Colors.primaryLight : 'none'}} className='rounded-3xl h-[150px] border-2 border-primaryLight justify-center items-center'>
-                <View className='flex flex-row gap-2'>
-                    <Popcorn color={Colors.mainGray} />
+            <TouchableOpacity onPress={()=>handleSelect('FILMLOVER')} style={{backgroundColor: selected === 'FILMLOVER' ?  Colors.primaryLight : 'none'}} className='px-6 gap-2 rounded-3xl h-[150px] border-2 border-primaryLight justify-center items-center'>
+                <View className='flex flex-row gap-2 justify-center items-center'>
+                    <FilmloverIcon size={35} color={Colors.mainGray} />
                     <Text className='text-newLightGray font-bold text-lg'>Film lover</Text>
                 </View>
-                <Text className='text-newLightGray'>I enjoy watching films and shows</Text>
+                <Text className='text-newLightGray'>I enjoy watching films/shows and want to use features like sending recommendations, tracking my watches, etc.</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleNext} disabled={!selected} style={{opacity : !selected ? .2 : 1}} className='mt-10  self-center rounded-full bg-primaryLight w-[45px] h-[45px] relative justify-center items-center'>
-                <View className=''>
-                    <ArrowRight color={Colors.newLightGray} />
-                </View>
-            </TouchableOpacity>
-
+            <View className='pt-10 self-center'>
+                <ArrowNextButton onPress={handleNext} disabled={!selected}  />
+            </View>
         </View>
 
     </SafeAreaView>

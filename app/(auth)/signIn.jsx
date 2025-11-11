@@ -94,7 +94,7 @@ export default function Page() {
             <Text className='text-primary text-lg font-bold w-full  text-center' style={{width:'100%'}} >Sign in</Text>
           </TouchableOpacity>
           <View className='gap-3 flex-row  justify-center items-center mt-5'>
-            <TouchableOpacity onPress={()=>router.push('/(onboarding)/step1-firstName')} style={{borderRadius:15, borderWidth:1, borderColor:'white', paddingHorizontal:10, paddingVertical:3}}>
+            <TouchableOpacity onPress={()=>router.push('/(onboarding)/step1')} style={{borderRadius:15, borderWidth:1, borderColor:'white', paddingHorizontal:10, paddingVertical:3}}>
                 <Text className='text-white  text-sm text-center' >Create an account</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>router.push('/(auth)/resetPassword')} style={{borderRadius:15, borderWidth:1, borderColor:'white', paddingHorizontal:10, paddingVertical:3}}>

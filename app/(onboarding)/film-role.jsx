@@ -5,6 +5,7 @@ import { Wrench, Popcorn, ArrowRight, ArrowLeft } from 'lucide-react-native'
 import { filmRoles } from '../../lib/FilmDeptRoles'
 import {  useLocalSearchParams, useRouter } from 'expo-router'
 import { parseDept } from '../../lib/parseFilmDept'
+import { useSignUpContext } from '../../lib/SignUpContext'
 
 
 
@@ -20,7 +21,10 @@ const FilmRole = () => {
     const [selectedRole, setSelectedRole] = useState(null)
     const [selectedDept, setSelectedDept] = useState(null)
     const router = useRouter()
-    const {accountType, oauthProvider} = useLocalSearchParams()
+    const { oauthProvider} = useLocalSearchParams()
+    const { signUpData, updateSignUpData } = useSignUpContext()
+
+
 
 
     const handleDeptSelect = (dept) => {
@@ -29,15 +33,23 @@ const FilmRole = () => {
         setSelected(dept)
         const parsed = parseDept(dept.name)
         setSelectedDept(parsed)
+        updateSignUpData(prev => ({
+            ...prev,
+            filmDept : parsed
+        }))
     }
 
     const handleNext = (role) => {
         
         const parsed = parseDept(role)
         setSelectedRole(parsed)
+        updateSignUpData(prev => ({
+            ...prev,
+            filmRole  : parsed
+        }))
         router.push({
-            params:{role: parsed, dept:selectedDept, accountType, oauthProvider},
-            pathname: '(onboarding)/profile-setup'
+            pathname: '(onboarding)/profile-setup',
+            params : {oauthProvider}
         })
     }
   return (

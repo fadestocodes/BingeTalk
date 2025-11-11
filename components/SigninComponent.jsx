@@ -121,9 +121,9 @@ const SigninComponent = () => {
       });
       console.log('Signed in with apple', credential)
       const signInData = {
-        appleId : credential.user,
-        email : credential.email,
-        fullName : credential.fullName
+        appleId : credential?.user || createUserData.appleId,
+        email : credential?.email || createUserData.email ,
+        fullName : credential?.fullName || createUserData.firstName
       }
 
       updateCreateUserData({
@@ -132,8 +132,8 @@ const SigninComponent = () => {
         firstName : signInData?.fullName?.givenName,
         lastName : signInData?.fullName?.familyName
       })
-
-      const res = await signInAppleAuth(signInData, createUserData)
+      console.log('create user data...', createUserData)
+      const res = await signInAppleAuth(signInData)
       console.log('res here', res)
       if (res?.status === 202){
         // Create user onboard
@@ -152,6 +152,10 @@ const SigninComponent = () => {
         // handle other errors
       }
     }
+  }
+
+  const handleSignUpAccount = () => {
+    router.push('(onboarding)/step1')
   }
 
 
@@ -175,7 +179,7 @@ const SigninComponent = () => {
         <User color='white' size={20} style={{}}/>
         <Text className='text-white font-semibold'>Use email or username</Text>
       </TouchableOpacity>
-        <TouchableOpacity className='pt-6 justify-center items-center'>
+        <TouchableOpacity onPress={handleSignUpAccount} className='pt-6 justify-center items-center'>
             <Text className='text-mainGray'>Don't have an account? Sign up</Text>
         </TouchableOpacity>
     </View>
