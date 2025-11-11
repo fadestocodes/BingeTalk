@@ -110,7 +110,7 @@ export const loginLocal = async (login, password) => {
             body : JSON.stringify(body)
         })
         if (!response.ok){
-            return {error : "Error signing in"}
+            return {error : "Invalid credentials"}
         }
         const data = await response.json()
         const {accessToken, refreshToken} = data
@@ -119,7 +119,7 @@ export const loginLocal = async (login, password) => {
         return {messaage : "Successfully logged in"}
     } catch (err){
         console.error(err)
-        return {error : "Error signing in"}
+        return {error : "Invalid credentials"}
     }
 }
 
@@ -432,16 +432,63 @@ export const sendVerificationCode = async (params) => {
     })
     if (!res.ok) throw new Error("Coudlnt' send verification code")
     const resData = await res.json()
-    console.log('resdata', resData)
   } catch(err){
     console.error(err)
   }
 }
 
-export const checkVerificationCodeToCreateUser = async (params) => {
+export const checkVerificationCodeToCreateUser = async (params, checkOnly=null) => {
   try {
     console.log("hello from here")
-    const res = await fetch(`${nodeServer.currentIP}/auth/verification-code/check`, {
+    const query = checkOnly ? '?checkOnly=true' : ''
+
+    const res = await fetch(`${nodeServer.currentIP}/auth/verification-code/check${query}`, {
+      method : 'POST',
+      headers : {
+        'Content-type' : 'application/json'
+      },
+      body : JSON.stringify(params)
+    })
+    if (!res.ok) throw new Error("Invalid response")
+    if (res.status === 202) return {success : true}
+    const resData = await res.json()
+    const {accessToken,refreshToken} = resData.data
+    await saveAccessToken(accessToken)
+    await saveRefreshToken(refreshToken)
+    return {success: true}
+  } catch(err){
+    console.error(err)
+    return {success:false}
+  }
+
+}
+
+
+export const checkNewPassword = async (params) => {
+  console.log('params.....', params)
+  try {
+    const res = await fetch(`${nodeServer.currentIP}/user/new-password`, {
+      method : 'POST',
+      headers:{'Content-type' : 'application/json'},
+      body:JSON.stringify(params)
+    })
+    console.log('the full res', res)
+    if (res.status === 400) {
+      console.log('status 400...')
+      return {success : false, status : 400, message : "Cannot use previous password"}
+    }
+    const resData = await res.json()
+    console.log('res data....', resData)
+    return {success : true}
+  } catch(err){
+    console.error(err)
+    return {success : false}
+  }
+}
+
+export const resetUserPassword = async (params) => {
+  try {
+    const res = await fetch(`${nodeServer.currentIP}/auth/password-reset`, {
       method : 'POST',
       headers : {
         'Content-type' : 'application/json'
@@ -453,10 +500,9 @@ export const checkVerificationCodeToCreateUser = async (params) => {
     const {accessToken,refreshToken} = resData.data
     await saveAccessToken(accessToken)
     await saveRefreshToken(refreshToken)
-    return {success: true}
+    return {success : true}
   } catch(err){
     console.error(err)
     return {success:false}
   }
-
 }
