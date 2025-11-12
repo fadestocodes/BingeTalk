@@ -64,14 +64,98 @@ export const useGetRecommendation =  (params, replyCommentId) => {
     const [ directorOrCreator, setDirectorOrCreator ] = useState('')
     const [ ratings, setRatings ] = useState([])
     const [ status, setStatus ] = useState('')
+    const [ alreadyInWatchlist, setAlreadyInWatchlist ] = useState('')
 
     
     const getRecommendation = async () => {
+        setLoading(true)
         try {
             const response = await apiFetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
             const data = await response.json()
             setRecommendation(data)
             setStatus(data.status)
+            const ownerSent = Number(userId) === data.recommender.id
+            setDidOwnerSend(ownerSent)
+
+            const upvotedComments = ownerUser.commentInteractions.filter( i => {
+                return data.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
+            } )
+            const downvotedComments = ownerUser.commentInteractions.filter( i => {
+                return data.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
+            } )
+            // setInteractedComments(interactedCommentsData)
+            setInteractedComments({
+                upvotes : upvotedComments,
+                downvotes : downvotedComments
+            })
+            
+            if (replyCommentId){
+                const commentResponse = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const replyCommentFromNotif = await commentResponse.json();
+                
+                const reorderedCommentsData = [
+                    ...data?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id === replyCommentFromNotif.id) ,
+                    ...data?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId && comment.id !== replyCommentFromNotif?.id) 
+                ]
+                setCommentsData(reorderedCommentsData)
+            }else {
+                setCommentsData(data.comments)
+            }
+            
+            let type
+            let tmdbId
+            let ratings
+
+            if ( data.movie ){
+                type = 'MOVIE'
+                tmdbId = data.movie.tmdbId
+                ratings = data.movie.ratings.length > 0 && data.movie.ratings
+
+                const checkAlreadyWatched = ownerUser.watchlistItems.some( i => i.movieId === data.movie.id)
+                console.log('checking allready watched...', checkAlreadyWatched)
+                setAlreadyInWatchlist(checkAlreadyWatched)
+                
+            } else if (data.tv){
+                type = 'TV'
+                tmdbId = data.tv.tmdbId
+                ratings = data.tv.ratings.length > 0 && data.tv.ratings
+                const checkAlreadyWatched = ownerUser.watchlistItems.some( i => i.tvId === data.tv.id)
+                console.log('checking allready watched...', checkAlreadyWatched)
+                setAlreadyInWatchlist(checkAlreadyWatched)
+            }
+            const directorParams = {
+                type,
+                tmdbId
+            }
+            const foundDirector = await findDirectorOrCreator(directorParams)
+            console.log('found director', foundDirector)
+            setDirectorOrCreator(foundDirector)
+
+            const totalOverallRatings = ratings ? ratings.reduce((sum,rating) => sum + rating.rating, 0) : null
+            const overallRatings = ratings.length > 0 ? (totalOverallRatings / ratings.length).toFixed(1) : 'N/A'
+            setRatings(overallRatings)    
+
+
+
+        } catch (err){
+            console.log(err)
+        }
+
+
+        setLoading(false)
+
+    }
+    useEffect(() => {
+        getRecommendation()
+    }, [ownerUser])
+
+    const refetch = async () => {
+
+        await refetchOwner()
+        try {
+            const response = await apiFetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
+            const data = await response.json()
+            setRecommendation(data)
             const ownerSent = Number(userId) === data.recommender.id
             setDidOwnerSend(ownerSent)
 
@@ -117,14 +201,12 @@ export const useGetRecommendation =  (params, replyCommentId) => {
                 type,
                 tmdbId
             }
-            const foundDirector = await findDirectorOrCreator(directorParams)
-            console.log('found director', foundDirector)
-            setDirectorOrCreator(foundDirector)
+            const foundDirector = await findDirector(directorParams)
+            setDirector(foundDirector)
 
             const totalOverallRatings = ratings ? ratings.reduce((sum,rating) => sum + rating.rating, 0) : null
             const overallRatings = ratings.length > 0 ? (totalOverallRatings / ratings.length).toFixed(1) : 'N/A'
-            setRatings(overallRatings)    
-
+            setRatings(overallRatings)            
 
 
         } catch (err){
@@ -133,89 +215,18 @@ export const useGetRecommendation =  (params, replyCommentId) => {
 
 
         setLoading(false)
-
     }
-    useEffect(() => {
-        getRecommendation()
-    }, [ownerUser])
 
-    // const refetch = async () => {
-
-    //     await refetchOwner()
-    //     try {
-    //         const response = await apiFetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
-    //         const data = await response.json()
-    //         setRecommendation(data)
-    //         const ownerSent = Number(userId) === data.recommender.id
-    //         setDidOwnerSend(ownerSent)
-
-    //         const upvotedComments = ownerUser.commentInteractions.filter( i => {
-    //             return data.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
-    //         } )
-    //         const downvotedComments = ownerUser.commentInteractions.filter( i => {
-    //             return data.comments.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
-    //         } )
-    //         // setInteractedComments(interactedCommentsData)
-    //         setInteractedComments({
-    //             upvotes : upvotedComments,
-    //             downvotes : downvotedComments
-    //         })
-            
-    //         if (replyCommentId){
-    //             const commentResponse = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
-    //             const replyCommentFromNotif = await commentResponse.json();
-                
-    //             const reorderedCommentsData = [
-    //                 ...data?.comments.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id === replyCommentFromNotif.id) ,
-    //                 ...data?.comments.filter( comment => comment.id !== replyCommentFromNotif?.parentId && comment.id !== replyCommentFromNotif?.id) 
-    //             ]
-    //             setCommentsData(reorderedCommentsData)
-    //         }else {
-    //             setCommentsData(data.comments)
-    //         }
-            
-    //         let type
-    //         let tmdbId
-    //         let ratings
-
-    //         if ( data.movie ){
-    //             type = 'MOVIE'
-    //             tmdbId = data.movie.tmdbId
-    //             ratings = data.movie.ratings.length > 0 && data.movie.ratings
-    //         } else if (data.tv){
-    //             type = 'TV'
-    //             tmdbId = data.tv.tmdbId
-    //             ratings = data.tv.ratings.length > 0 && data.tv.ratings
-    //         }
-    //         const directorParams = {
-    //             type,
-    //             tmdbId
-    //         }
-    //         const foundDirector = await findDirector(directorParams)
-    //         setDirector(foundDirector)
-
-    //         const totalOverallRatings = ratings ? ratings.reduce((sum,rating) => sum + rating.rating, 0) : null
-    //         const overallRatings = ratings.length > 0 ? (totalOverallRatings / ratings.length).toFixed(1) : 'N/A'
-    //         setRatings(overallRatings)            
-
-
-    //     } catch (err){
-    //         console.log(err)
-    //     }
-
-
-    //     setLoading(false)
-    // }
-
-    return { recommendation, ownerUser, status, setStatus, refetch:getRecommendation , loading, commentsData, directorOrCreator, ratings, interactedComments, setCommentsData, setInteractedComments, didOwnerSend }
+    return { recommendation, ownerUser, alreadyInWatchlist, setAlreadyInWatchlist, status, setStatus, refetch , loading, commentsData, directorOrCreator, ratings, interactedComments, setCommentsData, setInteractedComments, didOwnerSend }
 }
 
 export const acceptRecommendation = async (data) => {
     try {
         if (!data.recommenderId || !data.recommendationId || !data.type) throw new Error("Invalid params")
-        const {userId, recommendationId} = data
+        const { recommendationId, type} = data
+    console.log('data is', data)
 
-        const response = await apiFetch(`${nodeServer.currentIP}/recommendation/${recommendationId}`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/recommendation/${recommendationId}?status=${type}`, {
             method : 'PATCH',
             headers : {
                 'Content-type' : 'application/json'

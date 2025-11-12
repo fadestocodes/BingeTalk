@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user';
 import { useNotificationCountContext } from '@/lib/NotificationCountContext';
 import { apiFetch, useGetUser, useGetUserFull } from './auth';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications'
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     console.log('recipient id is ',recipientId)
@@ -154,4 +155,54 @@ export const useGetAllNotifRead = async (limit) => {
     const getAllNotifRead = async () => {
         const response = await apiFetch(`${nodeServer.currentIP}/notifications/read`)
     }
+}
+
+export const useCheckNotificationPrompt = () => {
+
+    const [showModal, setShowModal] = useState('')
+
+
+    const checkNotificationPrompt = async () => {
+
+        console.log('checking notifi....')
+        const { status, granted, canAskAgain } = await Notifications.getPermissionsAsync();
+        console.log('status...',status)
+        if (status !== 'undetermined'){
+            console.log('os notif setting is not undetermined, so iether granted or denied or undefined...',status)
+            return
+        }
+
+        const flag = await AsyncStorage.getItem('hasPromptedNotif')
+        console.log('flag status..', flag)
+        if (flag && flag === 'true') return
+
+        setShowModal(true)
+        
+        
+    }
+    
+    const handleYesCustomPrompt = async () => {
+        console.log('trying to turn on notifs...')
+        const { status } = await Notifications.requestPermissionsAsync();
+        console.log('status', status)
+        await AsyncStorage.setItem('hasPromptedNotif', 'true')
+        setShowModal('')
+        console.log('done...')
+    }
+    
+    const handleNoCustomPrompt = async () => {
+        console.log('trying to turn off notifs...')
+        await AsyncStorage.setItem('hasPromptedNotif', 'true')
+        setShowModal('')
+        console.log('done...')
+    }
+
+
+
+    useEffect(()=> {
+        checkNotificationPrompt()
+    }, [])
+
+    return {showModal, setShowModal, handleYesCustomPrompt, handleNoCustomPrompt}
+
 }

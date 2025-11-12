@@ -309,8 +309,8 @@ export default function Welcome() {
 
     const getPushNotificationPermissions = async () => {
       try {
-        const { status } = await Notifications.requestPermissionsAsync();
-        if (status !== "granted") return;
+        // const { status } = await Notifications.requestPermissionsAsync();
+        // if (status !== "granted") return;
 
         if (!projectId) {
           console.error("Missing projectId — check app.json or EAS config");

@@ -11,7 +11,7 @@ import { commentInteraction, createComment } from '../../api/comments'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { getYear, formatDate } from '../../lib/formatDate'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical, Minus, Trash2} from 'lucide-react-native';
-
+import { PlaylistAdd, PlaylistMinus } from '../../assets/icons/icons'
 import { useFetchOwnerUser } from '../../api/user'
 import { avatarFallbackCustom } from '../../lib/fallbackImages'
 import { avatarFallbackCustomCustom, moviePosterFallback } from '../../constants/Images'
@@ -25,8 +25,7 @@ const RecommendationPage = () => {
         id : recommendationId,
         userId : Number(userId)
     }
-    const { recommendation, ownerUser, refetch, loading, commentsData,status, setStatus,  setCommentsData, interactedComments, setInteractedComments, didOwnerSend , directorOrCreator, ratings } = useGetRecommendation(data)
-    console.log('recomendation...', recommendation)
+    const { recommendation, ownerUser, refetch, loading, commentsData,status, setStatus, alreadyInWatchlist, setAlreadyInWatchlist, setCommentsData, interactedComments, setInteractedComments, didOwnerSend , directorOrCreator, ratings } = useGetRecommendation(data)
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  
     const [ visibleReplies, setVisibleReplies  ] = useState({})
@@ -360,20 +359,37 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
     })
   }
 
-  const handleAddToWatchlist = async (type, item) => {
+  const handleAddToWatchlist = async (item) => {
     console.log('trying to handle add to wathclist')
-    setStatus('ACCEPTED')
-
+    // setStatus('ACCEPTED')
     const data = {
         recommenderId : item.recommenderId,
         recommendationId : item.id,
-        type,
+        type : 'ACCEPTED',
         movieId : item?.movie ? item.movie.id : null,
         tvId : item?.tv ? item.tv.id : null
     }
-    console.log('the data...', data)
-    const res = await acceptRecommendation(data)
-    console.log('adding to wathclist raesults...' ,res)
+        setStatus('ACCEPTED')
+        console.log('the data...', data)
+        const res = await acceptRecommendation(data)
+        console.log('adding to wathclist raesults...' ,res)
+        
+        
+        
+    }
+    
+    const handleDeclineRecommendation = async (item) => {
+      const data = {
+          recommenderId : item.recommenderId,
+          recommendationId : item.id,
+          type : 'DECLINED',
+          movieId : item?.movie ? item.movie.id : null,
+          tvId : item?.tv ? item.tv.id : null
+      }
+      const res = await acceptRecommendation(data)
+      console.log('declining recommendation...' ,res)
+      setStatus('DECLINED')
+
   }
 
   if (!recommendation || !ownerUser ){
@@ -402,9 +418,12 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
         <BackIcon size={26} color={Colors.mainGray} />
     </TouchableOpacity>
         <View style={{paddingTop:15, gap:15, paddingBottom:15}}>
-           <View className="flex-row w-full justify-start items-center gap-2 py-1">
-               <Handshake color='white'  />
-               <Text className='text-white text-3xl  font-pbold'>Recommendations</Text>
+           <View className='gap-1 flex flex-col justify-center items-start'>
+               <View className="flex-row w-full justify-start items-center gap-2 py-1">
+                   <Handshake color='white'  />
+                   <Text className='text-white text-3xl  font-pbold'>Recommendations</Text>
+               </View>
+                   <Text className='text-mainGray font-medium'>Accept and add to your Watchlist or decline.</Text>
            </View>
          <View className='w-full justify-center items-center flex-row' style={{paddingHorizontal:15}}>
          <TouchableOpacity onPress={()=>handlePress(recommendation)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:180, width:125 ,overflow:'hidden'}}>
@@ -431,7 +450,9 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                               { recommendation.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
                               <Text className='text-white text font-pbold'>{ recommendation?.movieId ? `${recommendation.movie.title} (${getYear(recommendation.movie.releaseDate)})` : `${recommendation.tv.title} (${getYear(recommendation.tv.releaseDate)})` }</Text>
                           </View>
+                          {directorOrCreator && (
                           <Text className='text-mainGray font-pmedium text-xs  '>{type === 'TV' ? 'Created by:' : type === 'MOVIE' ? 'Directed by:' : ''} {directorOrCreator.name}</Text>
+                          )}
                       </TouchableOpacity>
                                   
                   </View>
@@ -439,14 +460,18 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                     <Text className='text-mainGray text-sm'>Overall rating</Text>
                     <Text className='text-mainGray text-3xl font-pbold' >{ratings}</Text>
                   </View>
-                  <View className='flex flex-row gap-5 justify-center items-center'>
-                    <TouchableOpacity onPress={()=>handleAddToWatchlist('ACCEPTED', recommendation)  } className='bg-primaryLight p-4 rounded-2xl'>
-                        <ListChecks color={Colors.newLightGray} />
-                    </TouchableOpacity>
-                      <TouchableOpacity  className='bg-primaryLight p-4 rounded-2xl' onPress={()=>handleRemove('received',recommendation)}>
-                          <Trash2 color={Colors.newLightGray} />              
+                        
+                    { status === 'PENDING' && (
+                    <View className='flex flex-row gap-5 justify-center items-center'>
+                        <TouchableOpacity onPress={()=>handleAddToWatchlist(recommendation)  } className={`py-4 px-4  w-[70px] bg-primaryLight justify-center items-center rounded-2xl`}>
+                            <PlaylistAdd size={30} color={Colors.newDarkGray} />
+                            {/* <Text className='text-mainGray text-sm' >Accept & Add to Watchlist</Text> */}
                         </TouchableOpacity>
-                  </View>
+                        <TouchableOpacity onPressIn={()=>handleDeclineRecommendation(recommendation)}  className='py-4 px-4  w-[70px] bg-primaryLight justify-center items-center  rounded-2xl' >
+                            <Trash2 size={30} color={Colors.newDarkGray}/>
+                        </TouchableOpacity>
+                    </View>
+                    )  }
                       
                 </View>
               </View>

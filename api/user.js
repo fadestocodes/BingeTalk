@@ -463,26 +463,26 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
     }, [ userId]);
 
 
-    const refetchReceived =  async () => {
-        try {
-            setLoading(true)
-            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
-            const result = await response.json();
-            // setData(reset ? result.items : prev => [...prev, ...result.items]);
-            const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'PENDING')
-            setData(resultFiltered );
-            setCursor(result.nextCursor)
-            setHasMore( !!result.nextCursor )
-        } catch (err) {
-            console.log(err)
-        }
-        setLoading(false)
-    }
+    // const refetchReceived =  async () => {
+    //     try {
+    //         setLoading(true)
+    //         const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
+    //         const result = await response.json();
+    //         // setData(reset ? result.items : prev => [...prev, ...result.items]);
+    //         const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'PENDING')
+    //         setData(resultFiltered );
+    //         setCursor(result.nextCursor)
+    //         setHasMore( !!result.nextCursor )
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+    //     setLoading(false)
+    // }
 
     const removeReceivedItems = (item) => {
         setData( prev => prev.filter( element => element.id !== item.id ) )
     }
-    return { data, hasMore, loading, refetchReceived  , fetchMoreReceived: getRecommendationsReceived, removeReceivedItems    }
+    return { data, hasMore, loading, refetchReceived:getRecommendationsReceived  , fetchMoreReceived: getRecommendationsReceived, removeReceivedItems    }
 
 }
 

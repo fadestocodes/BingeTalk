@@ -44,4 +44,6 @@ export const CastCrewIcon = (props) => <FontAwesome6 name="people-group" {...pro
 export const FacebookIcon = (props) => <Entypo name="facebook" {...props} />;
 export const GoogleIcon = (props) => <AntDesign name="google" {...props} />;
 export const AppleIcon = (props) => <FontAwesome name="apple" {...props} />;
+export const PlaylistAdd = (props) => <MaterialCommunityIcons name="playlist-plus" {...props} />;
+export const PlaylistMinus = (props) => <MaterialCommunityIcons name="playlist-minus" {...props} />;
 

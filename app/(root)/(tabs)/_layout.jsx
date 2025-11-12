@@ -16,7 +16,7 @@ import { HapticTab } from '@/components/HapticTab';
 
 const TabIcon = ({icon, color, name, focused, className, isCreate, style}) => {
   return (
-    <View className={`flex items-center justify-center bg-black  ${className} `} style={{
+    <View className={`flex items-center justify-center bg-[#0e1010]  ${className} `} style={{
     }}>
       {React.createElement(icon, { color: color, size:  34 })} 
       <Text
@@ -42,8 +42,8 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          borderTopColor : 'black',
-          backgroundColor:'black',
+          borderTopColor : '#0e1010',
+          backgroundColor:'#0e1010',
           height:75,
           paddingTop:10,
           paddingHorizontal:20,

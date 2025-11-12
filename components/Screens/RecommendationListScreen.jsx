@@ -8,9 +8,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useFetchrecommendations, userecommendations, useGetRecommendationsSent, useGetRecommendationsReceived } from '../../api/user'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Colors } from '../../constants/Colors'
-import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical, Check, X, Minus} from 'lucide-react-native';
+import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical, Check, X, Minus, Trash2} from 'lucide-react-native';
 import { formatDate, getYear } from '../../lib/formatDate'
-import { FilmIcon, TVIcon , BackIcon} from '../../assets/icons/icons'
+import { FilmIcon, TVIcon , BackIcon, PlaylistAdd} from '../../assets/icons/icons'
 import { acceptRecommendation, deleteRecommendation } from '../../api/recommendation'
 import { avatarFallback } from '../../lib/fallbackImages';
 import { avatarFallbackCustom } from '../../constants/Images';
@@ -68,24 +68,50 @@ const RecommendationListScreen = () => {
 
     const handleRemove = async  (type, item) => {
         if (type === 'sent'){
+
+            console.log('trying to delte sent recommednation')
             const data = {
                 recipientId : item.recipientId,
-                recommenderId : item.recommenderId,
                 movieId : item?.movie?.id || null,
                 tvId : item?.tv?.id || null
             }
             const deletedRec = await deleteRecommendation(data)
             removeSentItems(item)
+            console.log('deleted rec', deletedRec)
 
         } else if (type === 'received'){
+            // const data = {
+            //     recipientId : item.recipientId,
+            //     recommenderId : item.recommenderId,
+            //     movieId : item?.movie?.id || null,
+            //     tvId : item?.tv?.id || null
+            // }
+
+            
+
+
+            // const deletedRec = await deleteRecommendation(data)
+
             const data = {
-                recipientId : item.recipientId,
+                userId: item.recipientId,
                 recommenderId : item.recommenderId,
-                movieId : item?.movie?.id || null,
-                tvId : item?.tv?.id || null
+                recommendationId : item.id,
+                type:'DECLINED',
+                movieId : item?.movie ? item.movie.id : null,
+                tvId : item?.tv ? item.tv.id : null
             }
-            const deletedRec = await deleteRecommendation(data)
+            await acceptRecommendation(data)
+            console.log(item)
+            const watchlistData = {
+                userId : item.recipientId,
+                movieId : item?.movie ? item.movie.id : undefined,
+                tvId : item?.tv ? item.tv.id : undefined
+            }
+           
             removeReceivedItems(item)
+    
+            await checkTastemakerBadge(item.recommenderId)
+
         }
         
     }
@@ -100,23 +126,21 @@ const RecommendationListScreen = () => {
             tvId : item?.tv ? item.tv.id : null
         }
         await acceptRecommendation(data)
-        // console.log(item)
-        // const watchlistData = {
-        //     userId : item.recipientId,
-        //     movieId : item?.movie ? item.movie.id : undefined,
-        //     tvId : item?.tv ? item.tv.id : undefined
-        // }
-        // if (item.movie){
-        //     await markMovieWatchlist(watchlistData)
-        // } else if (item.tv){
-        //     await markTVWatchlist(watchlistData)
-        // }
+        console.log(item)
+        const watchlistData = {
+            userId : item.recipientId,
+            movieId : item?.movie ? item.movie.id : undefined,
+            tvId : item?.tv ? item.tv.id : undefined
+        }
+       
         removeReceivedItems(item)
 
         await checkTastemakerBadge(item.recommenderId)
         
 
     }
+
+
 
     if (!user){
         return <ActivityIndicator />
@@ -224,11 +248,11 @@ const RecommendationListScreen = () => {
                                             <View className='flex flex-row gap-3  justify-center items-center'>
                                             { item.status !== 'ACCEPTED' && (
                                                     <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleAccept('ACCEPTED',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                                                        <ListChecks size={18} color={'green'} strokeWidth={3} />
+                                                        <PlaylistAdd size={18} color={'green'} strokeWidth={3} />
                                                     </TouchableOpacity>
                                             ) }
                                                     <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                                                        <Minus color={'red'} size={18} strokeWidth={3}/>
+                                                        <Trash2 color={'red'} size={18} strokeWidth={3}/>
                                                     </TouchableOpacity>
                                             </View>
                                            
@@ -319,8 +343,8 @@ const RecommendationListScreen = () => {
                                                         </TouchableOpacity>
                                         </View>
                                         <View className='flex-row gap-3 items-center justify-center ' >
-                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                                                        <Minus color={'red'} size={18} strokeWidth={3}/>
+                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('sent',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                                        <Trash2 color={'red'} size={18} strokeWidth={3}/>
                                                     </TouchableOpacity>
                                                    
                                         </View>
