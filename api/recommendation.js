@@ -47,6 +47,24 @@ export const deleteRecommendation = async (data) => {
     }
 }
 
+export const removeRecommendationFlag = async (data) => {
+    try{
+         const res = await apiFetch(`${nodeServer.currentIP}/recommendation/remove, `, {
+            method : 'PATCH',
+            headers : {
+                'Content-type' :'application/json'
+            },
+            body : JSON.stringify(data)
+         })
+         if (!res.ok) throw new Error("Bad request")
+        const resData = await res.json()
+         return resData
+    } catch(err){
+        console.error(err)
+        return err
+    }
+}
+
 export const useGetRecommendation =  (params, replyCommentId) => {
     
     const {user} = useGetUser()

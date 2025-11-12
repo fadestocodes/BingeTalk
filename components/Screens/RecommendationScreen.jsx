@@ -36,7 +36,9 @@ const RecommendationScreen = () => {
    
     const useGetAllMutuals = async () => {
         const mutuals = await getAllMutuals(ownerUser.id);
-        setMutuals(mutuals)
+        const filtered = mutuals.filter(i => i.id !== ownerUser.id)
+        console.log('filtered mutuals', filtered)
+        setMutuals(filtered)
     }
 
     useEffect(()=>{
@@ -48,7 +50,7 @@ const RecommendationScreen = () => {
         } finally{
             setLoadingMutuals(false)
         }
-    },[])
+    },[ownerUser])
 
 
     const keyboard = useAnimatedKeyboard(); 
@@ -112,7 +114,8 @@ const RecommendationScreen = () => {
 
     const handleSearch = debounce(async (text) => {
         const searchResultsData = await searchUsers(text)
-        setSearchResults(searchResultsData.users)
+        const excludeOwnName = searchResultsData.users.filter(i => i.id !== ownerUser.id)
+        setSearchResults(excludeOwnName)
 
     }, 300)
 
