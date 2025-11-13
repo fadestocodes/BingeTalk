@@ -161,12 +161,140 @@
 //      </>
 //   );
 // }
+
+// import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
+// import React, { useState, useEffect } from 'react';
+// import { View, Text, Dimensions } from 'react-native';
+// import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+// import { House, BadgePlus, Handshake, User } from 'lucide-react-native';
+// import { SearchIcon } from 'lucide-react-native';
+// import { useNotificationCountContext } from '@/lib/NotificationCountContext';
+// import { useGetPendingRecNotifCount } from '@/api/user';
+// import { useGetUser } from '@/api/auth';
+// import { Colors } from '@/constants/Colors';
+
+// const SCREEN_WIDTH = Dimensions.get('window').width;
+// const BAR_WIDTH = 30;
+// const TAB_COUNT = 5;
+// const TAB_LIST_PADDING_HORIZONTAL = 15;
+// const TAB_WIDTH = (SCREEN_WIDTH - TAB_LIST_PADDING_HORIZONTAL * 2) / TAB_COUNT;
+
+// const ACTIVE_COLOR = '#9CA3AF';   // newLightGray
+// const INACTIVE_COLOR = '#1f2223'; // primaryLight
+
+// export default function TabLayout() {
+
+//   const {user} = useGetUser()
+//   useGetPendingRecNotifCount(user?.id)
+
+//   const { pendingRecsNotifCount } = useNotificationCountContext();
+//   console.log('pendingrec count...', pendingRecsNotifCount)
+//   const [activeTab, setActiveTab] = useState(0);
+//   const activeIndex = useSharedValue(0);
+
+//   useEffect(() => {
+//     activeIndex.value = activeTab;
+//   }, [activeTab]);
+
+//   const animatedBarStyle = useAnimatedStyle(() => ({
+//     transform: [
+//       {
+//         translateX: withTiming(
+//           TAB_LIST_PADDING_HORIZONTAL + activeIndex.value * TAB_WIDTH + (TAB_WIDTH - BAR_WIDTH) / 2,
+//           { duration: 100 }
+//         ),
+//       },
+//     ],
+//   }));
+
+//   const icons = [House, SearchIcon, BadgePlus, Handshake, User];
+//   const labels = ['Home', 'Search', 'Create', 'Recs', 'Profile'];
+//   const hrefs = ['(home)', '(search)', '(create)', '(recs)', '(profile)'];
+
+//   return (
+//     <Tabs>
+//       <TabSlot />
+
+//       <TabList
+//         style={{
+//           flexDirection: 'row',
+//           height: 80,
+//           backgroundColor: '#0e1010',
+//           borderTopColor: '#0e1010',
+//           paddingHorizontal: TAB_LIST_PADDING_HORIZONTAL,
+//           paddingTop: 10,
+//           position: 'relative',
+//         }}
+//       >
+//         {/* Animated bar */}
+//         <Animated.View
+//           style={[
+//             {
+//               position: 'absolute',
+//               top: 0,
+//               width: BAR_WIDTH,
+//               height: 4,
+//               backgroundColor: '#ffe600',
+//               borderRadius: 999,
+//             },
+//             animatedBarStyle,
+//           ]}
+//         />
+
+//         {labels.map((label, index) => {
+//           const Icon = icons[index];
+//           const isActive = activeTab === index;
+
+//           return (
+//             <TabTrigger
+//               key={label}
+//               name={label.toLowerCase()}
+//               href={`/${hrefs[index]}`}
+//               onPress={() => setActiveTab(index)}
+//               style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+//             >
+//               <View className="relative items-center">
+//                 <Icon color={isActive ? ACTIVE_COLOR : INACTIVE_COLOR} size={34} />
+
+//                 {/* Dynamic pending recs badge only on "Recs" tab */}
+//                 {label === 'Recs' && pendingRecsNotifCount > 0 && (
+//                   <View className="absolute w-[22px] h-[22px] rounded-full bg-secondary -top-3 -right-3 justify-center items-center">
+//                     <Text
+//                       style={{
+//                         fontSize: 10,
+//                         fontWeight: '600',
+//                         color: Colors.primary, // Badge text color, independent of active tab
+//                       }}
+//                     >
+//                       {pendingRecsNotifCount > 99 ? '99+' : pendingRecsNotifCount}
+//                     </Text>
+//                   </View>
+//                 )}
+
+//                 <Text
+//                   style={{
+//                     color: isActive ? ACTIVE_COLOR : INACTIVE_COLOR,
+//                     fontSize: 10,
+//                     marginTop: 2,
+//                   }}
+//                 >
+//                   {label}
+//                 </Text>
+//               </View>
+//             </TabTrigger>
+//           );
+//         })}
+//       </TabList>
+//     </Tabs>
+//   );
+// }
+
+
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Dimensions } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { House, BadgePlus, Handshake, User } from 'lucide-react-native';
-import { SearchIcon } from 'lucide-react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { House, BadgePlus, Handshake, User, SearchIcon } from 'lucide-react-native';
 import { useNotificationCountContext } from '@/lib/NotificationCountContext';
 import { useGetPendingRecNotifCount } from '@/api/user';
 import { useGetUser } from '@/api/auth';
@@ -182,12 +310,11 @@ const ACTIVE_COLOR = '#9CA3AF';   // newLightGray
 const INACTIVE_COLOR = '#1f2223'; // primaryLight
 
 export default function TabLayout() {
-
-  const {user} = useGetUser()
-  useGetPendingRecNotifCount(user?.id)
+  const { user } = useGetUser();
+  useGetPendingRecNotifCount(user?.id);
 
   const { pendingRecsNotifCount } = useNotificationCountContext();
-  console.log('pendingrec count...', pendingRecsNotifCount)
+
   const [activeTab, setActiveTab] = useState(0);
   const activeIndex = useSharedValue(0);
 
@@ -195,6 +322,7 @@ export default function TabLayout() {
     activeIndex.value = activeTab;
   }, [activeTab]);
 
+  // Animated bar style
   const animatedBarStyle = useAnimatedStyle(() => ({
     transform: [
       {
@@ -244,6 +372,22 @@ export default function TabLayout() {
           const Icon = icons[index];
           const isActive = activeTab === index;
 
+          // Icon animation values
+          const scale = useSharedValue(isActive ? 1.2 : 1);
+          const translateY = useSharedValue(isActive ? -5 : 0);
+
+          useEffect(() => {
+            scale.value = withSpring(isActive ? 1.2 : 1, { damping: 6, stiffness: 150 });
+            translateY.value = withSpring(isActive ? -5 : 0, { damping: 6, stiffness: 150 });
+          }, [isActive]);
+
+          const animatedIconStyle = useAnimatedStyle(() => ({
+            transform: [
+              { scale: scale.value },
+              { translateY: translateY.value },
+            ],
+          }));
+
           return (
             <TabTrigger
               key={label}
@@ -253,7 +397,9 @@ export default function TabLayout() {
               style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
             >
               <View className="relative items-center">
-                <Icon color={isActive ? ACTIVE_COLOR : INACTIVE_COLOR} size={34} />
+                <Animated.View style={animatedIconStyle}>
+                  <Icon color={isActive ? ACTIVE_COLOR : INACTIVE_COLOR} size={34} />
+                </Animated.View>
 
                 {/* Dynamic pending recs badge only on "Recs" tab */}
                 {label === 'Recs' && pendingRecsNotifCount > 0 && (
@@ -262,7 +408,7 @@ export default function TabLayout() {
                       style={{
                         fontSize: 10,
                         fontWeight: '600',
-                        color: Colors.primary, // Badge text color, independent of active tab
+                        color: Colors.primary,
                       }}
                     >
                       {pendingRecsNotifCount > 99 ? '99+' : pendingRecsNotifCount}

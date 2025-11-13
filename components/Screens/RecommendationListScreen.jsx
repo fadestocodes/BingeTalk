@@ -108,13 +108,20 @@ const RecommendationListScreen = () => {
             removeReceivedItems(item)
 
         }  else if (type === 'accepted'){
+            
             const removeData = {
                 recommendationId : item.id,
                 removedBy : 'RECIPIENT'
             }
             res = await removeRecommendationFlag(removeData)
             removeAcceptedItem(item)
-
+        } else if (type === 'declined'){
+            const removeData = {
+                recommendationId : item.id,
+                removedBy : 'RECIPIENT'
+            }
+            res = await removeRecommendationFlag(removeData)
+            removeDeclineItem(item)
         }
 
         if (res?.success){
@@ -548,7 +555,7 @@ const RecommendationListScreen = () => {
                                                         </TouchableOpacity>
                                         </View>
                                         <View className='flex-row gap-3 items-center justify-center ' >
-                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('sent',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:12, paddingVertical:10, borderRadius:10 }}>
+                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('declined',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:12, paddingVertical:10, borderRadius:10 }}>
                                                         <Trash2 color={Colors.mainGray} size={18} strokeWidth={3}/>
                                                     </TouchableOpacity>
                                                    
