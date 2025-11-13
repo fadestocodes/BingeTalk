@@ -741,7 +741,7 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                 ) }
 
                 <TouchableOpacity onPress={handleRecommendedList} style={{ paddingTop: 30 }}>
-                  <Text className='text-mainGray text-sm font-pregular'>See the rest of your recommendations ></Text>
+                  <Text className='text-mainGray text-sm font-pregular'>See the rest of your recommendations</Text>
                 </TouchableOpacity>
 
 
