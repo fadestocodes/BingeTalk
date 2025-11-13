@@ -5,7 +5,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 
 const NotificationPromptUI = ({handleNo, handleYes}) => {
-    console.log('hello from custom notif ui prompt...')
   return (
     <View style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} className="absolute inset-0  justify-center items-center pt-6">
       <View className="bg-primary rounded-3xl gap-3 pt-12 w-10/12 max-w-md relative items-center">

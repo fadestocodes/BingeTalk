@@ -171,7 +171,7 @@ const CreateHome = () => {
               {/* <LayersIcon size={30} color='white' /> */}
               <Text className='text-white font-pbold text-3xl'>Create</Text>
             </View>
-            <Text className='text-mainGray font-pmedium'>Speak your mind or create a List for the world to see!</Text>
+            {/* <Text className='text-mainGray font-pmedium'>Speak your mind or create a List for the world to see!</Text> */}
         </View>
 
         <View className='w-full my-3'>

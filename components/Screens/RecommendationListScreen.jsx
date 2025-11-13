@@ -194,7 +194,7 @@ const RecommendationListScreen = () => {
 
 
   return (
-    <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{   paddingHorizontal:15 }}>
+    <SafeAreaView className='flex-1 bg-primary justify-start items-center' style={{   paddingHorizontal:15 }}  edges={['top']}>
        <View className='flex-1' style={{ paddingTop:15, gap:10, paddingHorizontal:15,alignItems:'center', width:'100%' }}>
        <ToastMessage message={toastMessage} onComplete={()=>{setToastMessage(null); setToastIcon(null)}} icon={toastIcon}  />
         

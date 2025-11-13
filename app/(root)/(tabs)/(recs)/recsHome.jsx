@@ -34,7 +34,7 @@ const recsHome = () => {
 
 
   return (
-    <View className='flex-1 relative'>
+    <View  className='flex-1 relative'>
         <RecommendationListScreen />
         { showModal && (
             <Animated.View style={[translateStyle, { position: 'absolute', inset: 0 }]}>

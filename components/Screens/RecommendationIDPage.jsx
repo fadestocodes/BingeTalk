@@ -5,7 +5,7 @@ import { Image } from 'expo-image'
 
 import React, { useState, useRef, useCallback } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useGetRecommendation, deleteRecommendation, acceptRecommendation } from '../../api/recommendation'
+import { useGetRecommendation, deleteRecommendation, acceptRecommendation, removeRecommendationFlag } from '../../api/recommendation'
 import { TVIcon, FilmIcon, CloseIcon , BackIcon, ThreeDotsIcon, PlaylistCheck} from '../../assets/icons/icons'
 import { commentInteraction, createComment } from '../../api/comments'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
@@ -31,6 +31,8 @@ const RecommendationPage = () => {
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
+    const [ toastMessage, setToastMessage ] = useState(null)
+    const [ toastIcon, setToastIcon ] = useState(null)
 
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -95,37 +97,37 @@ const handleViewReplies = ( commentId, totalReplies ) => {
 }
 
 
-const handleRemove = async  (type) => {
-  try {
-    if (didOwnerSend){
-        const data = {
-            recipientId : recommendation.recipientId,
-            recommenderId : recommendation.recommenderId,
-            movieId : recommendation?.movie?.id || null,
-            tvId : recommendation?.tv?.id || null
-        }
-        const deletedRec = await deleteRecommendation(data)
-        // removeSentItems(item)
+// const handleRemove = async  (type) => {
+//   try {
+//     if (didOwnerSend){
+//         const data = {
+//             recipientId : recommendation.recipientId,
+//             recommenderId : recommendation.recommenderId,
+//             movieId : recommendation?.movie?.id || null,
+//             tvId : recommendation?.tv?.id || null
+//         }
+//         const deletedRec = await deleteRecommendation(data)
+//         // removeSentItems(item)
   
-    } else {
-        const data = {
-            recipientId : recommendation.recipientId,
-            recommenderId : recommendation.recommenderId,
-            movieId : recommendation?.movie?.id || null,
-            tvId : recommendation?.tv?.id || null
-        }
-        const deletedRec = await deleteRecommendation(data)
-        // removeReceivedItems(item)
-    }
-  } catch (err){
-    console.log(err)
-  } finally {
-    setTimeout(() => {
-      router.back()
-    }, 1300)
-  }
+//     } else {
+//         const data = {
+//             recipientId : recommendation.recipientId,
+//             recommenderId : recommendation.recommenderId,
+//             movieId : recommendation?.movie?.id || null,
+//             tvId : recommendation?.tv?.id || null
+//         }
+//         const deletedRec = await deleteRecommendation(data)
+//         // removeReceivedItems(item)
+//     }
+//   } catch (err){
+//     console.log(err)
+//   } finally {
+//     setTimeout(() => {
+//       router.back()
+//     }, 1300)
+//   }
   
-}
+// }
 
 
 
@@ -373,6 +375,17 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
         console.log('the data...', data)
         const res = await acceptRecommendation(data)
         console.log('adding to wathclist raesults...' ,res)
+        if (res?.success){
+            setToastIcon(< PlaylistAdd color={Colors.secondary} size={30} />)
+            setToastMessage("Accepted recommendation and added to your Watchlist")
+        }
+
+        if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
+            updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
+            console.log('updated pending notifs ', pendingRecsNotifCount)
+        }
+
+        await checkTastemakerBadge(item.recommenderId)
         
         
         
@@ -390,7 +403,78 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
       console.log('declining recommendation...' ,res)
       setStatus('DECLINED')
 
+        if (res?.success){
+            setToastIcon(< X color={Colors.secondary} size={30} />)
+            setToastMessage("Declined recommendation")
+        }   
+
+        removeReceivedItems(item)
+
+        if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
+            console.log('from this block', pendingRecsNotifCount)
+            updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
+            console.log('made it here...')
+        }
+
   }
+
+
+  const handleRemove = async  (type, item) => {
+    let res
+    if (type === 'sent'){
+
+        // const data = {
+        //     recipientId : item.recipientId,
+        //     movieId : item?.movie?.id || null,
+        //     tvId : item?.tv?.id || null
+        // }
+        // const deletedRec = await deleteRecommendation(data)
+        const removeData = {
+            recommendationId : item.id,
+            removedBy : 'RECOMMENDER'
+        }
+        res = await removeRecommendationFlag(removeData)
+        
+        removeSentItems(item)
+        
+    } else if (type === 'pending'){
+        // const data = {
+            //     recipientId : item.recipientId,
+            //     recommenderId : item.recommenderId,
+            //     movieId : item?.movie?.id || null,
+            //     tvId : item?.tv?.id || null
+            // }
+        
+        const removeData = {
+            recommendationId : item.id,
+            removedBy : 'RECIPIENT'
+        }
+        res = await removeRecommendationFlag(removeData)
+        removeReceivedItems(item)
+
+    }  else if (type === 'accepted'){
+        
+        const removeData = {
+            recommendationId : item.id,
+            removedBy : 'RECIPIENT'
+        }
+        res = await removeRecommendationFlag(removeData)
+        removeAcceptedItem(item)
+    } else if (type === 'declined'){
+        const removeData = {
+            recommendationId : item.id,
+            removedBy : 'RECIPIENT'
+        }
+        res = await removeRecommendationFlag(removeData)
+        removeDeclineItem(item)
+    }
+
+    if (res?.success){
+        setToastIcon(< Trash2 color={Colors.secondary} size={30} />)
+        setToastMessage("Removed recommendation")
+    }
+    
+}
 
   if (!recommendation || !ownerUser ){
     return (
@@ -413,6 +497,8 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
           }
         >
        <View style={{height:'100%', paddingBottom:200}}>
+       <ToastMessage message={toastMessage} onComplete={()=>{setToastMessage(null); setToastIcon(null)}} icon={toastIcon}  />
+
        
            <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
         <BackIcon size={26} color={Colors.mainGray} />

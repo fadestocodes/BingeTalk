@@ -33,10 +33,10 @@ const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) 
 
 
     useEffect(()=>{
-
-        const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
-        const alreadyDownvoted = item.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
-        const alreadyReposted = item.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
+        if (!item) return
+        const alreadyUpvoted = item.listInteractions?.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
+        const alreadyDownvoted = item.listInteractions?.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
+        const alreadyReposted = item.listInteractions?.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
         setAlreadyInteractions({
             upvoted: alreadyUpvoted,
             downvoted:alreadyDownvoted,
@@ -193,7 +193,7 @@ const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) 
                                 ) : null}
                                     <TouchableOpacity style={{flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5}} onPress={()=>handleUserPress(item)}>
                                     <Image
-                                    source ={{ uri :item.user.profilePic || avatarFallbackCustom}}
+                                    source ={{ uri :item.user?.profilePic || avatarFallbackCustom}}
                                     contentFit='cover'
                                     style={{ width:25, height :25, borderRadius:50 }}
                                     />

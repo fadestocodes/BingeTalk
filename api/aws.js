@@ -12,8 +12,9 @@ export const uploadToS3 = async ( fileUri, fileName, fileType ) => {
         body : JSON.stringify({fileName, fileType})
       });
       const {url, location} = await response.json();
+      console.log('res from uploadtos3', url, location)
       try {
-        const uploadResponse = await apiFetch(url, {
+        const uploadResponse = await fetch(url, {
           method: 'PUT',
           headers: {
               'Content-Type': fileType,

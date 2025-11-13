@@ -221,7 +221,7 @@ const SearchPage = () => {
 
   return (
 
-    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary  pt-3 px-5 relative' >
+    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary  pt-3 px-5 relative'  edges={['top']} >
       
       <View className='justify-center items-center'>
       <View className=' flex-row gap-4  w-full px-8 justify-center items-center relative'>
