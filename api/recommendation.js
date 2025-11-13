@@ -49,8 +49,9 @@ export const deleteRecommendation = async (data) => {
 
 export const removeRecommendationFlag = async (data) => {
     try{
-         const res = await apiFetch(`${nodeServer.currentIP}/recommendation/remove, `, {
-            method : 'PATCH',
+        console.log('data',data)
+         const res = await apiFetch(`${nodeServer.currentIP}/recommendation/remove-flag`, {
+            method : 'POST',
             headers : {
                 'Content-type' :'application/json'
             },

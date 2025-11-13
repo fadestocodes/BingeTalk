@@ -6,11 +6,11 @@ import { Image } from 'expo-image'
 import React, { useState, useRef, useCallback } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useGetRecommendation, deleteRecommendation, acceptRecommendation } from '../../api/recommendation'
-import { TVIcon, FilmIcon, CloseIcon , BackIcon, ThreeDotsIcon} from '../../assets/icons/icons'
+import { TVIcon, FilmIcon, CloseIcon , BackIcon, ThreeDotsIcon, PlaylistCheck} from '../../assets/icons/icons'
 import { commentInteraction, createComment } from '../../api/comments'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { getYear, formatDate } from '../../lib/formatDate'
-import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical, Minus, Trash2} from 'lucide-react-native';
+import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake,X , Ellipsis, EllipsisVertical, Minus, Trash2} from 'lucide-react-native';
 import { PlaylistAdd, PlaylistMinus } from '../../assets/icons/icons'
 import { useFetchOwnerUser } from '../../api/user'
 import { avatarFallbackCustom } from '../../lib/fallbackImages'
@@ -463,12 +463,16 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                         
                     { status === 'PENDING' && (
                     <View className='flex flex-row gap-5 justify-center items-center'>
-                        <TouchableOpacity onPress={()=>handleAddToWatchlist(recommendation)  } className={`py-4 px-4  w-[70px] bg-primaryLight justify-center items-center rounded-2xl`}>
-                            <PlaylistAdd size={30} color={Colors.newDarkGray} />
+                        <TouchableOpacity onPress={()=>handleAddToWatchlist(recommendation)  } className={`py-4 px-4  w-[50px] bg-primaryLight justify-center items-center rounded-2xl`}>
+                            <PlaylistCheck size={24} color={'green'} />
                             {/* <Text className='text-mainGray text-sm' >Accept & Add to Watchlist</Text> */}
                         </TouchableOpacity>
-                        <TouchableOpacity onPressIn={()=>handleDeclineRecommendation(recommendation)}  className='py-4 px-4  w-[70px] bg-primaryLight justify-center items-center  rounded-2xl' >
-                            <Trash2 size={30} color={Colors.newDarkGray}/>
+                        <TouchableOpacity onPress={()=>handleAddToWatchlist(recommendation)  } className={`py-4 px-4  w-[50px] bg-primaryLight justify-center items-center rounded-2xl`}>
+                            <X size={24} color={'red'} />
+                            {/* <Text className='text-mainGray text-sm' >Accept & Add to Watchlist</Text> */}
+                        </TouchableOpacity>
+                        <TouchableOpacity onPressIn={()=>handleDeclineRecommendation(recommendation)}  className='py-4 px-4  w-[50px] bg-primaryLight justify-center items-center  rounded-2xl' >
+                            <Trash2 size={24} color={Colors.mainGray}/>
                         </TouchableOpacity>
                     </View>
                     )  }

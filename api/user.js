@@ -5,6 +5,7 @@ import React, {useState, useCallback, useEffect, useRef} from 'react'
 import { node } from '@sentry/core';
 import { useBadgeContext } from '@/lib/BadgeModalContext';
 import {apiFetch, useGetUser,useGetUserFull} from '../api/auth'
+import { useNotificationCountContext } from '@/lib/NotificationCountContext';
 
 export const checkUsername = async ( username ) => {
     try {
@@ -378,7 +379,7 @@ export const useFetchRecommended = (userId) => {
     })
 }
 
-export const useGetRecommendationsSent = (userId, limit=5) => {
+export const useGetRecommendationsSent = (userId, limit=15) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
@@ -431,13 +432,37 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
 
 }
 
-export const useGetRecommendationsReceived = (userId, limit=5) => {
+export const useGetPendingRecNotifCount = (userId) => {
+
+    const {pendingRecsNotifCount, updatePendingRecsNotifCount} = useNotificationCountContext()
+
+    const getPendingNotifCount = async () => {
+        try {
+            const res = await apiFetch(`${nodeServer.currentIP}/notifications/pending-recs`)
+            if (!res?.ok || !res) return
+            const data = await res.json()
+            const pendingCount = data.pendingCount
+            updatePendingRecsNotifCount(pendingCount)
+        } catch (err){
+            console.error(err)
+        }
+    }
+
+    useEffect(() => {
+        getPendingNotifCount()
+    }, [userId, pendingRecsNotifCount])
+
+    return {}
+}
+
+export const useGetRecommendationsReceived = (userId, limit=15) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
     const [ loading, setLoading ] = useState(true)
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
+
 
     const getRecommendationsReceived =  async () => {
         if ( !hasMore && !reset  ) return
@@ -447,11 +472,15 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
             
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
+            console.log('result', result.items)
             // setData(reset ? result.items : prev => [...prev, ...result.items]);
-            const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'PENDING')
+            const resultFiltered = result.items.filter(i =>  i.status === 'PENDING')
+
+            console.log('pending length...', resultFiltered.length)
             setData( prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
             setHasMore( !!result.nextCursor )
+
         } catch (err) {
             console.log(err)
         }
@@ -486,7 +515,7 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
 
 }
 
-export const useGetRecommendationsAccepted = (userId, limit=5) => {
+export const useGetRecommendationsAccepted = (userId, limit=15) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
@@ -507,6 +536,7 @@ export const useGetRecommendationsAccepted = (userId, limit=5) => {
             setData( prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
             setHasMore( !!result.nextCursor )
+
         } catch (err) {
             console.log(err)
         }
@@ -543,7 +573,7 @@ export const useGetRecommendationsAccepted = (userId, limit=5) => {
 
 }
 
-export const useGetRecommendationsDeclined = (userId, limit=5) => {
+export const useGetRecommendationsDeclined = (userId, limit=15) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
@@ -575,7 +605,7 @@ export const useGetRecommendationsDeclined = (userId, limit=5) => {
     }, [ userId]);
 
 
-    const refetchDecline =  async () => {
+    const refetchDeclined =  async () => {
         try {
             setLoading(true)
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
@@ -595,7 +625,7 @@ export const useGetRecommendationsDeclined = (userId, limit=5) => {
     const removeDeclineItem = (item) => {
         setData( prev => prev.filter( element => element.id !== item.id ) )
     }
-    return { data, hasMore, loading, refetchDecline  , fetchMoreDeclined: getRecommendationsDeclined, removeDeclineItem    }
+    return { data, hasMore, loading, refetchDeclined  , fetchMoreDeclined: getRecommendationsDeclined, removeDeclineItem    }
 
 }
 

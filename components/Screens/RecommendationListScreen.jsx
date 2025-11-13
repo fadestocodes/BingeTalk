@@ -10,7 +10,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Colors } from '../../constants/Colors'
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake , Ellipsis, EllipsisVertical, Check, X, Minus, Trash2} from 'lucide-react-native';
 import { formatDate, getYear } from '../../lib/formatDate'
-import { FilmIcon, TVIcon , BackIcon, PlaylistAdd} from '../../assets/icons/icons'
+import { FilmIcon, TVIcon , BackIcon, PlaylistAdd, PlaylistCheck} from '../../assets/icons/icons'
 import { acceptRecommendation, deleteRecommendation, removeRecommendation, removeRecommendationFlag } from '../../api/recommendation'
 import { avatarFallback } from '../../lib/fallbackImages';
 import { avatarFallbackCustom } from '../../constants/Images';
@@ -20,6 +20,8 @@ import { checkTastemakerBadge } from '../../api/badge';
 import { useBadgeContext } from '../../lib/BadgeModalContext';
 import { useGetUser } from '../../api/auth';
 
+import { useNotificationCountContext } from '@/lib/NotificationCountContext';
+
 
 const RecommendationListScreen = () => {
     const {userId} = useLocalSearchParams();
@@ -28,11 +30,11 @@ const RecommendationListScreen = () => {
     const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, fetchMoreReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(user?.id)
     const {data : acceptedRecommendations, refetchAccepted, fetchMoreAccepted,  removeAcceptedItem} = useGetRecommendationsAccepted(user?.id)
     const {data : declinedRecommendations, refetchDeclined, fetchMoreDeclined,  removeDeclineItem} = useGetRecommendationsDeclined(user?.id)
-    const [ tab, setTab ] = useState('received')
+    const [ tab, setTab ] = useState('accepted')
+    const { pendingRecsNotifCount, updatePendingRecsNotifCount } = useNotificationCountContext()
     const {showBadgeModal} = useBadgeContext()
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
-
 
     const router = useRouter()
 
@@ -71,23 +73,20 @@ const RecommendationListScreen = () => {
     const handleRemove = async  (type, item) => {
         if (type === 'sent'){
 
-            console.log('trying to delte sent recommednation')
-            const data = {
-                recipientId : item.recipientId,
-                movieId : item?.movie?.id || null,
-                tvId : item?.tv?.id || null
-            }
+            // const data = {
+            //     recipientId : item.recipientId,
+            //     movieId : item?.movie?.id || null,
+            //     tvId : item?.tv?.id || null
+            // }
             // const deletedRec = await deleteRecommendation(data)
             const removeData = {
                 recommendationId : item.id,
                 removedBy : 'RECOMMENDER'
             }
-            await removeRecommendationFlag(removeData)
-            await removeRecommendation()
+            const res = await removeRecommendationFlag(removeData)
             removeSentItems(item)
-            console.log('deleted rec', deletedRec)
             
-        } else if (type === 'received'){
+        } else if (type === 'pending'){
             // const data = {
                 //     recipientId : item.recipientId,
                 //     recommenderId : item.recommenderId,
@@ -100,13 +99,15 @@ const RecommendationListScreen = () => {
                 removedBy : 'RECIPIENT'
             }
             await removeRecommendationFlag(removeData)
+            removeReceivedItems(item)
 
-
-            // const deletedRec = await deleteRecommendation(data)
-
-         
-    
-            // await checkTastemakerBadge(item.recommenderId)
+        }  else if (type === 'accepted'){
+            const removeData = {
+                recommendationId : item.id,
+                removedBy : 'RECIPIENT'
+            }
+            await removeRecommendationFlag(removeData)
+            removeAcceptedItem(item)
 
         }
         
@@ -121,15 +122,16 @@ const RecommendationListScreen = () => {
             movieId : item?.movie ? item.movie.id : null,
             tvId : item?.tv ? item.tv.id : null
         }
-        await acceptRecommendation(data)
-        console.log(item)
-        const watchlistData = {
-            userId : item.recipientId,
-            movieId : item?.movie ? item.movie.id : undefined,
-            tvId : item?.tv ? item.tv.id : undefined
-        }
-    
+        const res = await acceptRecommendation(data)
+
         removeReceivedItems(item)
+
+        if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
+            console.log('from this block', pendingRecsNotifCount)
+            updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
+            console.log('made it here...')
+        }
+       
     }
 
     const handleAccept = async (type, item) => {
@@ -142,14 +144,20 @@ const RecommendationListScreen = () => {
             tvId : item?.tv ? item.tv.id : null
         }
         await acceptRecommendation(data)
-        console.log(item)
         const watchlistData = {
             userId : item.recipientId,
             movieId : item?.movie ? item.movie.id : undefined,
             tvId : item?.tv ? item.tv.id : undefined
         }
-       
         removeReceivedItems(item)
+
+        console.log('pending notifc ount', pendingRecsNotifCount)
+        
+        if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
+            updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
+            console.log('updated pending notifs ', pendingRecsNotifCount)
+        }
+        
 
         await checkTastemakerBadge(item.recommenderId)
         
@@ -176,14 +184,14 @@ const RecommendationListScreen = () => {
                 <Text className='text-white text-3xl  font-pbold'>Recommendations</Text>
             </View>
             <View className='flex-row gap-2 w-full justify-start items-center'>
-                <TouchableOpacity onPress={()=>{setTab('received') }} style={{ borderRadius:15, backgroundColor:tab==='received' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
-                        <Text className=' font-pmedium' style={{ color : tab==='received' ? Colors.primary : 'white' }}>Received</Text>
+                <TouchableOpacity onPress={()=>{setTab('accepted') }} style={{ borderRadius:15, backgroundColor:tab==='accepted' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+                        <Text className=' font-pmedium' style={{ color : tab==='accepted' ? Colors.primary : 'white' }}>Accepted</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>{setTab('pending') }} style={{ borderRadius:15, backgroundColor:tab==='pending' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+                        <Text className=' font-pmedium' style={{ color : tab==='pending' ? Colors.primary : 'white' }}>Pending</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>{setTab('sent') }} style={{ borderRadius:15, backgroundColor:tab==='sent' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
                         <Text className=' font-pmedium' style={{ color : tab==='sent' ? Colors.primary : 'white' }}>Sent</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{setTab('accepted') }} style={{ borderRadius:15, backgroundColor:tab==='accepted' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
-                        <Text className=' font-pmedium' style={{ color : tab==='accepted' ? Colors.primary : 'white' }}>Accepted</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>{setTab('declined') }} style={{ borderRadius:15, backgroundColor:tab==='declined' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
                         <Text className=' font-pmedium' style={{ color : tab==='declined' ? Colors.primary : 'white' }}>Declined</Text>
@@ -191,11 +199,11 @@ const RecommendationListScreen = () => {
             </View>
 
 
-            {  tab === 'received' ? (
+            {  tab === 'pending' ? (
                 < View className='w-full' >
                 { recommendationsReceived.length < 1 ? (
                     <View>
-                        <Text className='text-mainGray text-center text-xl font-pmedium' >(No received recommendations)</Text>
+                        <Text className='text-mainGray text-center text-xl font-pmedium' >(No pending recommendations)</Text>
                     </View>
                 ) : (
 
@@ -211,7 +219,7 @@ const RecommendationListScreen = () => {
                         keyExtractor={(item,index) => `${item.id}-${index}`}
                         contentContainerStyle={{ width:'100%', gap:10, paddingBottom:100 }}
                         onEndReached={() => {
-                        if ( hasMore  ){
+                        if ( hasMoreReceived  ){
                             fetchMoreReceived()
                         }
                     }}
@@ -267,14 +275,15 @@ const RecommendationListScreen = () => {
                                                         </TouchableOpacity>
                                         </View>
                                         <View className='flex-row gap-3 items-center justify-center ' >
-                                            <View className='flex flex-row gap-3  justify-center items-center'>
-                                            { item.status !== 'ACCEPTED' && (
-                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleAccept('ACCEPTED',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                                                        <PlaylistAdd size={18} color={'green'} strokeWidth={3} />
+                                            <View className='flex flex-col gap-3  justify-center items-center'>
+                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleAccept('ACCEPTED',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:12, paddingVertical:10, borderRadius:10 }}>
+                                                        <PlaylistCheck size={18} color={'green'} strokeWidth={3} />
                                                     </TouchableOpacity>
-                                            ) }
-                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('received',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                                                        <Trash2 color={'red'} size={18} strokeWidth={3}/>
+                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleDecline(item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:12, paddingVertical:10, borderRadius:10 }}>
+                                                        <X  size={18} color={'red'} strokeWidth={3} />
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('pending',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:12, paddingVertical:10, borderRadius:10 }}>
+                                                        <Trash2 color={Colors.mainGray} size={18} strokeWidth={3}/>
                                                     </TouchableOpacity>
                                             </View>
                                            
@@ -364,8 +373,8 @@ const RecommendationListScreen = () => {
                                                         </TouchableOpacity>
                                         </View>
                                         <View className='flex-row gap-3 items-center justify-center ' >
-                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('sent',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                                                        <Trash2 color={'red'} size={18} strokeWidth={3}/>
+                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('sent',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:12, paddingVertical:10, borderRadius:10 }}>
+                                                        <Trash2 color={Colors.mainGray} size={18} strokeWidth={3}/>
                                                     </TouchableOpacity>
                                                    
                                         </View>
@@ -396,7 +405,6 @@ const RecommendationListScreen = () => {
                         
                         onEndReachedThreshold={0.1}
                         renderItem={({item})=>{
-                            console.log('item...',item)
                             return (
                                 <TouchableOpacity onPress={()=>handlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:180, overflow:'hidden', width:'100%' }}>
                                     <Image
@@ -446,8 +454,8 @@ const RecommendationListScreen = () => {
                                                         </TouchableOpacity>
                                         </View>
                                         <View className='flex-row gap-3 items-center justify-center ' >
-                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('sent',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                                                        <Trash2 color={'red'} size={18} strokeWidth={3}/>
+                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('accepted',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:12, paddingVertical:10, borderRadius:10 }}>
+                                                        <Trash2 color={Colors.mainGray} size={18} strokeWidth={3}/>
                                                     </TouchableOpacity>
                                                    
                                         </View>
@@ -525,8 +533,8 @@ const RecommendationListScreen = () => {
                                                         </TouchableOpacity>
                                         </View>
                                         <View className='flex-row gap-3 items-center justify-center ' >
-                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('sent',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
-                                                        <Trash2 color={'red'} size={18} strokeWidth={3}/>
+                                                    <TouchableOpacity className='flex flex-row justify-start items-center gap-1 self-start' onPress={()=>handleRemove('sent',item)} style={{ backgroundColor : Colors.darkGray, paddingHorizontal:12, paddingVertical:10, borderRadius:10 }}>
+                                                        <Trash2 color={Colors.mainGray} size={18} strokeWidth={3}/>
                                                     </TouchableOpacity>
                                                    
                                         </View>
