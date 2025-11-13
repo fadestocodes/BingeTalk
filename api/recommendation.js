@@ -59,10 +59,10 @@ export const removeRecommendationFlag = async (data) => {
          })
          if (!res.ok) throw new Error("Bad request")
         const resData = await res.json()
-         return resData
+         return {success:true}
     } catch(err){
         console.error(err)
-        return err
+        return {success:false}
     }
 }
 
@@ -254,10 +254,10 @@ export const acceptRecommendation = async (data) => {
         })
         if (!response.ok) throw new Error("Unexpected error")
         const result = await response.json()
-        return result
+        return {success:true}
 
     } catch(err){
         console.error(err)
-        return err
+        return {success:false}
     }
 }

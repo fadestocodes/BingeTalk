@@ -161,7 +161,6 @@
 //      </>
 //   );
 // }
-
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Dimensions } from 'react-native';
@@ -169,6 +168,9 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-na
 import { House, BadgePlus, Handshake, User } from 'lucide-react-native';
 import { SearchIcon } from 'lucide-react-native';
 import { useNotificationCountContext } from '@/lib/NotificationCountContext';
+import { useGetPendingRecNotifCount } from '@/api/user';
+import { useGetUser } from '@/api/auth';
+import { Colors } from '@/constants/Colors';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const BAR_WIDTH = 30;
@@ -180,7 +182,12 @@ const ACTIVE_COLOR = '#9CA3AF';   // newLightGray
 const INACTIVE_COLOR = '#1f2223'; // primaryLight
 
 export default function TabLayout() {
+
+  const {user} = useGetUser()
+  useGetPendingRecNotifCount(user?.id)
+
   const { pendingRecsNotifCount } = useNotificationCountContext();
+  console.log('pendingrec count...', pendingRecsNotifCount)
   const [activeTab, setActiveTab] = useState(0);
   const activeIndex = useSharedValue(0);
 
@@ -248,13 +255,14 @@ export default function TabLayout() {
               <View className="relative items-center">
                 <Icon color={isActive ? ACTIVE_COLOR : INACTIVE_COLOR} size={34} />
 
+                {/* Dynamic pending recs badge only on "Recs" tab */}
                 {label === 'Recs' && pendingRecsNotifCount > 0 && (
                   <View className="absolute w-[22px] h-[22px] rounded-full bg-secondary -top-3 -right-3 justify-center items-center">
                     <Text
                       style={{
                         fontSize: 10,
                         fontWeight: '600',
-                        color: isActive ? ACTIVE_COLOR : INACTIVE_COLOR,
+                        color: Colors.primary, // Badge text color, independent of active tab
                       }}
                     >
                       {pendingRecsNotifCount > 99 ? '99+' : pendingRecsNotifCount}

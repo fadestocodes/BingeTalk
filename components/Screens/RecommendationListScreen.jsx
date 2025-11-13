@@ -21,6 +21,7 @@ import { useBadgeContext } from '../../lib/BadgeModalContext';
 import { useGetUser } from '../../api/auth';
 
 import { useNotificationCountContext } from '@/lib/NotificationCountContext';
+import ToastMessage from '../ui/ToastMessage';
 
 
 const RecommendationListScreen = () => {
@@ -35,6 +36,9 @@ const RecommendationListScreen = () => {
     const {showBadgeModal} = useBadgeContext()
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w342';
+
+    const [ toastMessage, setToastMessage ] = useState(null)
+    const [ toastIcon, setToastIcon ] = useState(null)
 
     const router = useRouter()
 
@@ -71,6 +75,7 @@ const RecommendationListScreen = () => {
         }
 
     const handleRemove = async  (type, item) => {
+        let res
         if (type === 'sent'){
 
             // const data = {
@@ -83,7 +88,8 @@ const RecommendationListScreen = () => {
                 recommendationId : item.id,
                 removedBy : 'RECOMMENDER'
             }
-            const res = await removeRecommendationFlag(removeData)
+            res = await removeRecommendationFlag(removeData)
+            
             removeSentItems(item)
             
         } else if (type === 'pending'){
@@ -98,7 +104,7 @@ const RecommendationListScreen = () => {
                 recommendationId : item.id,
                 removedBy : 'RECIPIENT'
             }
-            await removeRecommendationFlag(removeData)
+            res = await removeRecommendationFlag(removeData)
             removeReceivedItems(item)
 
         }  else if (type === 'accepted'){
@@ -106,9 +112,14 @@ const RecommendationListScreen = () => {
                 recommendationId : item.id,
                 removedBy : 'RECIPIENT'
             }
-            await removeRecommendationFlag(removeData)
+            res = await removeRecommendationFlag(removeData)
             removeAcceptedItem(item)
 
+        }
+
+        if (res?.success){
+            setToastIcon(< Trash2 color={Colors.secondary} size={30} />)
+            setToastMessage("Removed recommendation")
         }
         
     }
@@ -123,6 +134,10 @@ const RecommendationListScreen = () => {
             tvId : item?.tv ? item.tv.id : null
         }
         const res = await acceptRecommendation(data)
+        if (res?.success){
+            setToastIcon(< X color={Colors.secondary} size={30} />)
+            setToastMessage("Declined recommendation")
+        }
 
         removeReceivedItems(item)
 
@@ -143,15 +158,14 @@ const RecommendationListScreen = () => {
             movieId : item?.movie ? item.movie.id : null,
             tvId : item?.tv ? item.tv.id : null
         }
-        await acceptRecommendation(data)
-        const watchlistData = {
-            userId : item.recipientId,
-            movieId : item?.movie ? item.movie.id : undefined,
-            tvId : item?.tv ? item.tv.id : undefined
-        }
+        const res = await acceptRecommendation(data)
         removeReceivedItems(item)
+        if (res?.success){
+            setToastIcon(< PlaylistAdd color={Colors.secondary} size={30} />)
+            setToastMessage("Accepted recommendation and added to your Watchlist")
+        }
+        
 
-        console.log('pending notifc ount', pendingRecsNotifCount)
         
         if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
             updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
@@ -175,6 +189,7 @@ const RecommendationListScreen = () => {
   return (
     <SafeAreaView className='w-full h-full bg-primary justify-start items-center' style={{   paddingHorizontal:15 }}>
        <View className='flex-1' style={{ paddingTop:15, gap:10, paddingHorizontal:15,alignItems:'center', width:'100%' }}>
+       <ToastMessage message={toastMessage} onComplete={()=>{setToastMessage(null); setToastIcon(null)}} icon={toastIcon}  />
         
             {/* <TouchableOpacity onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
                 <BackIcon size={26} color={Colors.mainGray} />
