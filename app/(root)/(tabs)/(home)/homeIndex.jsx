@@ -319,7 +319,9 @@ const homeIndex = () => {
                   onEndReached={debouncedGetFeed}
                   onEndReachedThreshold={0}
           
-                  renderItem={({ item }) => (
+                  renderItem={({ item }) => {
+
+                  return (
                     selected === 'Feed' ? (
                       item.feedFrom === 'activity' && (
                         <View>
@@ -328,11 +330,11 @@ const homeIndex = () => {
                               <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'} />
                             </TouchableOpacity>
                           ) : item.postType === 'list' ? (
-                            <TouchableOpacity onPress={() => { refetchOwner(); handlePress(item); }}>
+                            <TouchableOpacity onPress={() => {refetchOwner(); handlePress(item); }}>
                               <ListCard list={item.list} fromHome={true} isReposted={item.activityType === 'REPOST'} />
                             </TouchableOpacity>
                           ) : item.postType === 'review' ? (
-                            <TouchableOpacity onPress={() => { refetchOwner(); router.push(`(home)/review/${item.id}`); }}>
+                            <TouchableOpacity onPress={() => {refetchOwner(); router.push(`(home)/review/${item.id}`); }}>
                               <ReviewCard review={item.review} fromHome={true} isBackground={true} />
                             </TouchableOpacity>
                           ) : (
@@ -343,7 +345,7 @@ const homeIndex = () => {
                         </View>
                       )
                     ) : (
-                      <TouchableOpacity onPress={()=>handleTitlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
+                      <TouchableOpacity onPress={()=>{console.log('form other',item);handleTitlePress(item)}} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
                       <Image
                           style={{
                           width: '100%',
@@ -390,7 +392,7 @@ const homeIndex = () => {
                       </View>
                   </TouchableOpacity>
                     )
-                  )}
+                  )}}
                   
                   />
       ) }

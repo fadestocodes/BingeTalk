@@ -184,7 +184,7 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
     
       return (
         <View className='w-full' >
-                        <TouchableOpacity disabled={isReviewPage} onPress={()=>handleReviewPress(item)}  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
+                        <TouchableOpacity disabled={isReviewPage} onPress={()=>{console.log('from review page!...');handleReviewPress(item)}}  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
                             <View className='gap-3 '>
                                 <View className='gap-3'>
                                     <View className='flex-row w-full gap-2 justify-between items-center '>
