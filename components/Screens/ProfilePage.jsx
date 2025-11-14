@@ -15,6 +15,7 @@ import { Star, UserPen, CircleUserRound, UserPlus , UserCheck} from 'lucide-reac
 import ListCard from '../ListCard'
 import { useRouter } from 'expo-router'
 import { followUser, unfollowUser } from '../../api/user'
+import { badges } from '../../constants/BadgeIcons'
 
 
 const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
@@ -193,7 +194,17 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                 className='text-mainGray font-semibold'>Film Lover</Text>
                             )}
                         </View>
-                        <Text className='text-white font-bold text-lg  '>@{userFetched.username}</Text>
+                        <View className='flex flex-row justify-start items-center  gap-2'>
+                            <Image
+                                source={badges.conversationalistBronze}
+                                width={30}
+                                height={30}
+                                contentFit='cover'
+                            
+                                style={{ overflow:'hidden'}}
+                            />
+                            <Text className='text-white font-bold text-lg  '>@{userFetched.username}</Text>
+                        </View>
                     </View>
                     {userFetched?.bio && ( 
                         <Text className='text-mainGrayLight opacity-50 font-pcourier'>{userFetched?.bio}</Text> 

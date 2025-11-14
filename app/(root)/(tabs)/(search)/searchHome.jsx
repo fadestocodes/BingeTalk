@@ -24,6 +24,7 @@ import { avatarFallbackCustom } from '../../../../constants/Images'
 import { fetchTrendingReviews } from '../../../../api/review'
 import ReviewCard from '../../../../components/Screens/ReviewCard'
 import { NotebookPen } from 'lucide-react-native'
+import { badges } from '../../../../constants/BadgeIcons'
 
 
 
@@ -287,9 +288,22 @@ const SearchPage = () => {
                   <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray   pr-3 font-pbold'>{ searchingFor === 'users' ? `${item.firstName} ${item.lastName}`  :  item.media_type === 'movie' ? item.title : item.name }</Text>
 
                 </View>
-                <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray text-sm  pr-3 font-pmedium'>{ searchingFor === 'users' ? `@${item.username}` : item.media_type === 'person' 
+                { searchingFor === 'users' ? (
+                  <View  className='flex flex-row flex-wrap flex-1  justify-start items-center gap-1'>
+                    <Image 
+                      source={badges.tastemakerBronze}
+                      width={23}
+                      height={23}
+                      contentFit='contain'
+                    />
+                    <Text className='text-mainGray text-sm pr-3 font-medium'>@{item.username}</Text>
+                  </View>
+                ) : (
+
+                <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray text-sm  pr-3 font-pmedium'>{ item.media_type === 'person' 
                 ? `Known for ${item.known_for_department}` : item.media_type === 'movie' ? `Released ${getYear(item.release_date)}` 
                 : `First aired ${getYear(item.first_air_date)}` }</Text>
+                ) }
               </View>
             </TouchableOpacity>
           </View>
