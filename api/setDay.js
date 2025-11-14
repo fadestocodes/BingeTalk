@@ -10,7 +10,7 @@ export const createSetDay = async (data) => {
             body : JSON.stringify(data)
         })
         const resData = await res.json()
-        if (!res.ok) throw new Error(resData.error || "Request failed")
+        if (!res.ok) throw new Error(resData?.error || "Request failed")
         return resData
     } catch (err){
         console.error(err)
@@ -28,7 +28,7 @@ export const useGetSetDayGraph = (userId) => {
             setLoading(true)
             const res = await fetch(`${nodeServer.currentIP}/set-days/graph?userId=${userId}`)
             const resData = await res.json()
-            if (!res.ok) throw new Error (resData.error || "Invalid request")
+            if (!res.ok) throw new Error (resData?.error || "Invalid request")
             setData(resData)
             
         } catch (err){
@@ -102,7 +102,7 @@ export const useGetSetDay = (id) => {
             setLoading(true)
             const res = await fetch(`${nodeServer.currentIP}/set-days/${id}`)
             const resData = await res.json()
-            if (!res.ok) throw new Error(resData.error || "Invalid request")
+            if (!res.ok) throw new Error(resData?.error || "Invalid request")
             setData(resData)
             
         } catch(err){

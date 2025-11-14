@@ -15,6 +15,8 @@ import { Star, UserPen, CircleUserRound, UserPlus , UserCheck} from 'lucide-reac
 import ListCard from '../ListCard'
 import { useRouter } from 'expo-router'
 import { followUser, unfollowUser } from '../../api/user'
+import SetDaysGraph from '../SetDaysGraph'
+import { useGetSetDayGraph } from '../../api/setDay'
 
 
 const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
@@ -29,7 +31,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
         followers : userFetched?.followers?.length,
         following : userFetched?.following?.length
     })
-
+    const {data:setDaysGraphData, refetch:refetchSetDaysGraphData, loading: loadingSetDaysGraphData} = useGetSetDayGraph(userFetched?.id)
 
 
     const [ isFollowing, setIsFollowing ] = useState(null)
@@ -175,7 +177,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
 
             <View className='flex flex-col justify-center items-start gap-3 w-full pb-24'>
 
-                <View className='flex flex-col gap-3 justify-center items-start mb-10'>
+                <View className='flex flex-col gap-3 justify-center items-start mb-4 w-full'>
                     <Image
                         source={{ uri: userFetched?.profilePic  || avatarFallbackCustom}}
                         height={100}
@@ -261,12 +263,27 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
 
                         </View>
                     ) }
+                    {/* SetDays */}
                 </View>
+
+                    { userFetched?.accountType === 'FILMMAKER' && setDaysGraphData && (
+
+                        <View>
+                            {loadingSetDaysGraphData ? (
+                                <ActivityIndicator />
+                            ) : (
+                            <View className='flex flex-col w-full justify-start items-center gap-3'>
+                                <Text className='text-mainGray font-bold text-xl self-start'>SetDays</Text>
+                                <SetDaysGraph data={setDaysGraphData} loading={loadingSetDaysGraphData} refetch={refetchSetDaysGraphData} />
+                            </View>
+                            )}
+                        </View>
+                    )}
 
                     
                     {/* Recently Watched */}
                     {userFetched?.userWatchedItems?.length > 0 && (
-                    <View className=' h-[150px] w-full'>
+                    <View className=' h-[130px] w-full'>
                         <View className='gap-2'>
                             <TouchableOpacity onPress={handleMoreRecentlyWatched}>
                                 <Text className='text-mainGray font-bold text-xl '>Recently Watched</Text>
