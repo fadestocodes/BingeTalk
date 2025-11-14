@@ -332,3 +332,50 @@ export const deleteDialogue = async (data) => {
         console.log(err)
     }
 }
+
+export const useGetUserDialoguesInfinite = (userId, limit=15) => {
+
+    const [data, setData] = useState([])
+    const [loading,setLoading] = useState(true)
+    const [hasMore, setHasMore] = useState(true)
+    const [cursor, setCursor] = useState(null)
+
+    const getUserDialoguesInfinite = async () => {
+        try {
+            if (!hasMore)return
+            setLoading(true)
+            const res = await apiFetch(`${nodeServer.currentIP}/dialogue/user/${userId}?cursor=${cursor}&limit=${limit}`)
+            if (!res.ok) throw new Error('Invalid response')
+            const resData = await res.json()
+            setData(prev => [...prev, ...resData.items])
+            setCursor(resData.nextCursor)
+            setHasMore(!!resData.nextCursor)
+        } catch(err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const refetch = async () => {
+        try {
+            setLoading(true)
+            const res = await apiFetch(`${nodeServer.currentIP}/dialogue/user/${userId}?cursor=null&limit=${limit}`)
+            if (!res.ok) throw new Error('Invalid response')
+            const resData = await res.json()
+            setData(resData.items)
+            setCursor(resData.nextCursor)
+            setHasMore(!!resData.nextCursor)
+        } catch(err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        refetch()
+    }, [userId])
+
+    return {data, loading, hasMore, refetch, fetchMore:getUserDialoguesInfinite}
+}

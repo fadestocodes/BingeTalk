@@ -112,7 +112,7 @@ export default Sentry.wrap(function RootLayout() {
           <StatusBar
             backgroundColor={Colors.mainGray}
           />
-          <Stack  options={{contentStyle: { backgroundColor: '#171717' }}} >
+          <Stack  screenOptions={{contentStyle: { backgroundColor: '#171717' }}} >
             <Stack.Screen name="index" options={{ headerShown: false,contentStyle: { backgroundColor: '#171717' } }} />
             <Stack.Screen name="(root)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
             <Stack.Screen name="(auth)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />

@@ -49,7 +49,7 @@ const DialogueScreen = () => {
     
     
     const animatedStyle = useAnimatedStyle(() => ({
-        bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+        bottom: withTiming(keyboard.height.value-80, { duration: 0 }),
     }));
     
     useEffect(()=>{
@@ -342,7 +342,7 @@ const DialogueScreen = () => {
 
 
   return (
-    <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
+    <SafeAreaView className='h-full relative' style={{backgroundColor:Colors.primary}} >
        
        { isLoading || !ownerUser ? (
             <View className='h-full justify-center items-center bg-primary'>
@@ -586,7 +586,7 @@ DialogueScreen.options = {
       backgroundColor: '#111',
       position: 'absolute',
       bottom:100,
-      height:200,
+      height:150,
       left: 0,
       right: 0,
       paddingBottom: 50,

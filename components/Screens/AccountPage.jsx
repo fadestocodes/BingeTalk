@@ -56,7 +56,7 @@ const AccountPage = () => {
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
     <ScrollView   style={{paddingHorizontal:15}}>
-    <View className='w-full   px-4 gap-5' style={{paddingBottom:200}}>
+    <View className='w-full   px-4 gap-5' style={{paddingBottom:0}}>
 
           <TouchableOpacity onPress={()=>router.back()}>
             <BackIcon size={26} color={Colors.mainGray} />

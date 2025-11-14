@@ -66,11 +66,11 @@ const UserRatingsPage = () => {
 
   return (
     <SafeAreaView className="w-full h-full bg-primary">
-        <View style={{paddingHorizontal:15, paddingBottom:220}}>
+        <View className=' flex-1' style={{paddingHorizontal:15, paddingBottom:0}}>
 
         
       
-        <View className="gap-0">
+        <View  className="gap-0">
       <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:10}}>
               <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
@@ -105,7 +105,7 @@ const UserRatingsPage = () => {
             showsVerticalScrollIndicator={false}
             data={filteredData}
             keyExtractor={item => item.id}
-            contentContainerStyle={{gap:15, paddingTop:30}}
+            contentContainerStyle={{gap:15, paddingTop:30, paddingBottom:100}}
             onEndReached={getMore}
             onEndReachedThreshold={0}
             renderItem={({item}) => {

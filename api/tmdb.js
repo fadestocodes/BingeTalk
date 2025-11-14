@@ -315,7 +315,7 @@ export const useGetUpcomingMovies = () => {
   return { upcomingMovies, refetch : getUpcomingMovies }
 }
 
-export const findDirector = async (params) => {
+export const findDirectorOrCreator = async (params) => {
   const { type, tmdbId } = params
   try {
     const response = await fetch(`${nodeServer.currentIP}/tmdb/find-director`, {

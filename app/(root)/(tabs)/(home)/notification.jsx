@@ -209,7 +209,7 @@ const Notification = () => {
         </View>
       ) : (
 
-    <View className='w-full   px-4 gap-5' style={{paddingBottom:200}}>
+    <View className='w-full flex-1  px-4 gap-5' style={{paddingBottom:0}}>
             <TouchableOpacity onPress={()=>router.back()}>
               <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
@@ -247,7 +247,7 @@ const Notification = () => {
         />
       </TouchableOpacity> */}
 
-      <View className='w-full my-2 gap-3' style={{paddingBottom:200}}>
+      <View className='w-full my-2 gap-3' style={{paddingBottom:0}}>
 
         <FlatList
           refreshControl={
@@ -259,13 +259,14 @@ const Notification = () => {
           }
           data={filteredData }
           keyExtractor={(item, index) => item.id}
+          showsVerticalScrollIndicator={false}
           onEndReached={()=>{
             if (hasMore){
               fetchMore()
             }
           }}
           onEndReachedThreshold={0}
-          contentContainerStyle={{width:'100%',  gap:15}}
+          contentContainerStyle={{width:'100%',  gap:15, paddingBottom:200}}
           renderItem={({item}) => {
               //  const checkFollow = ownerUser?.following.some( followingItem => followingItem?.followerId === item.userId );
               const checkFollow = isFollowingIds.includes( item.userId )

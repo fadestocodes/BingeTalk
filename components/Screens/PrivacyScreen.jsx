@@ -64,7 +64,7 @@ const PrivacyPage = () => {
 <Text style={styles.bodyText}>
   If you have any questions or concerns, please contact us at:
 </Text>
-<Text style={styles.bodyText}>Email: fadestocodes@gmail.com</Text>
+<Text style={styles.bodyText}>Email: hello@bingeable.app</Text>
 <Text style={styles.bodyText}>Website: bingeable.app</Text>
 </View>
         </ScrollView>

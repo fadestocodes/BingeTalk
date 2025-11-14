@@ -9,8 +9,8 @@ import * as nodeServer from '../../../../lib/ipaddresses'
 import DialogueCard from '../../../../components/DialogueCard';
 import { formatDate } from '../../../../lib/formatDate';
 
-import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis , List, MessagesSquare, Heart} from 'lucide-react-native'
-import { ProgressCheckIcon, ThumbsUp, ThumbsDown, MessageIcon, RepostIcon } from '../../../../assets/icons/icons';
+import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis , List, MessagesSquare, Heart, EllipsisVertical} from 'lucide-react-native'
+import { ProgressCheckIcon, ThumbsUp, ThumbsDown, MessageIcon, RepostIcon, TVIcon , FilmIcon } from '../../../../assets/icons/icons';
 import ListCard from '../../../../components/ListCard';
 import { toPascalCase } from '../../../../lib/ToPascalCase';
 import { getAllNotifs, useGetAllNotifs } from '../../../../api/notification';
@@ -25,6 +25,11 @@ import Constants from 'expo-constants';
 import WhatsNewModal from '../../../../components/Screens/WhatsNewModal';
 import { avatarFallbackCustom } from '../../../../constants/Images';
 import { apiFetch, useGetUser, useGetUserFull } from '../../../../api/auth';
+import { deleteInterested, useGetInterestedItems, useGetWatchlistItems } from '../../../../api/user';
+import { LinearGradient } from 'expo-linear-gradient';
+import { getYear } from '../../../../lib/formatDate';
+import { markMovieWatchlist } from '../../../../api/movie';
+import { markTVWatchlist } from '../../../../api/tv';
 
 
 // import { ratingToReview } from '../../constants/Images' 
@@ -34,17 +39,18 @@ import { apiFetch, useGetUser, useGetUserFull } from '../../../../api/auth';
 
 const homeIndex = () => {
   const { notifCount, updateNotifCount } = useNotificationCountContext()
-    const [selected, setSelected] = useState('All');
+    const [selected, setSelected] = useState('Feed');
     const {user, updateUser } = useGetUser()
     const {userFull:ownerUser, refetch:refetchOwner} = useGetUserFull(user?.id)
-    // const { data: ownerUser, isLoading: isLoadingOwnerUser, refetch:refetchOwner } = useFetchOwnerUser({
-    //   email: clerkUser?.emailAddresses[0].emailAddress,
-    // });
+   
+
+    const { data : watchlistItems, loading:loadingWatchlist, refetch:refetchWatchlist, hasMore:hasMoreWatchlist, fetchMore:fetchMoreWatchlist, removeItem:removeWatchlist } = useGetWatchlistItems(ownerUser?.id)
+    const { data : interestedItems, loading:loadingInterested, refetch:refetchInterested, hasMore:hasMoreInterested,removeItem:removeInterested, fetchMore :fetchMoreInterested } = useGetInterestedItems(ownerUser?.id)
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const [ data, setData ] = useState([]);
-    const [ loading, setLoading ] = useState(false);
+    const [ loading, setLoading ] = useState(true);
     // const [ hasMore, setHasMore ] = useState(true);
     const [ hasMoreFeed, setHasMoreFeed ] = useState(true)
     const [ hasMoreThreads, setHasMoreThreads ] = useState(true)
@@ -152,6 +158,10 @@ const homeIndex = () => {
     }, [ownerUser])
 
      
+    const isEmpty =
+      (selected === 'Feed' && data.length < 1) ||
+      (selected === 'Watchlist' && watchlistItems.length < 1) ||
+      (selected === 'Interested' && interestedItems.length < 1);
 
 
     
@@ -174,7 +184,6 @@ const homeIndex = () => {
     } 
 
     const handlePress =(item) => {
-      console.log("ITEMMMM", item)
 
       if (item.dialogue){
         router.push(`(home)/dialogue/${item.dialogue.id}`)
@@ -195,28 +204,67 @@ const homeIndex = () => {
     }, 500); 
 
 
+    const handleRemove = async (item) => {
+
+      if (selected === 'Interested'){
+        const data = {
+            userId : Number(ownerUser.id),
+            movieId : item.movieId || null,
+            tvId : item.tvId
+        }
+        const deletedItem = await deleteInterested(data)
+        removeInterested(item)
+      } else if (selected === 'Watchlist'){
+        if (item.movie){
+          const data = {
+              movieId : item.movie.id,
+              userId : Number(ownerUser.id)
+          }
+          const removedMovie = await markMovieWatchlist(data)
+          removeWatchlist(item)
+
+        } else if(item.tv){
+            const data = {
+                tvId : item.tv.id,
+                userId : Number(ownerUser.id)
+            }
+            const removedMovie = await markTVWatchlist(data)
+            removeWatchlist(item)
+        }
+      }
+    } 
+
+    const handleTitlePress = (item) => {
+      if (item.movie){
+        router.push(`/movie/${item.movie.tmdbId}`)
+      }
+      if (item.tv){
+        router.push(`/tv/${item.tv.tmdbId}`)
+      }
+    }
+
+
+
   
+    if (!ownerUser){
+      return <ActivityIndicator />
+    }
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' >
-      {  !ownerUser  ? (
-        <View className='bg-primary h-full justify-center items-center'>
-          <ActivityIndicator />
-        </View>
-      ) : (
+    
         <>
         { shouldShowWhatsNew && (
           <WhatsNewModal handleClose={closeWhatsNew} />
         ) }
       
      
-    <View className='w-full  px-4 gap-5' style={{paddingBottom:130}}>
+    <View className='w-full flex flex-col  px-4 gap-5' style={{paddingBottom:0}}>
       <View className="gap-3">
           <View className='flex-row gap-2 justify-start items-center'>
         
             <Text className='text-white font-pbold text-3xl'>Home</Text>
           </View>
-          <Text className='text-mainGray font-pmedium'>See what your friends are up to.</Text>
       </View>
       <TouchableOpacity onPress={()=>{router.push('/notification')}} style={{ position:'absolute', top:0, right:30 }}>
         <View className='relative' >
@@ -231,35 +279,30 @@ const homeIndex = () => {
         </View>
       </TouchableOpacity>
 
-      <View className='w-full my-2 gap-3' style={{paddingBottom:100}}>
-      {/* <FlatList
-        horizontal
-        data={homeCategories}
-        keyExtractor={(item,index) => index}
-        contentContainerStyle={{ gap:10 }}
-        renderItem={({item}) => (
-          <TouchableOpacity onPress={()=>{setSelected(item)}} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
-            <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
-          </TouchableOpacity>
-        )}
-      /> */}
-
-     
-
-         {data.length < 1 ? (
-          <ScrollView style={{height:'100%'}} refreshControl={
+        <FlatList
+          horizontal
+          data={homeCategories}
+          keyExtractor={(item,index) => index}
+          contentContainerStyle={{ gap:10 , paddingBottom:10}}
+          renderItem={({item}) => (
+            <TouchableOpacity onPress={()=>{setSelected(item)}} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent',height:30, paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white', justifyContent:'center', alignItems:'center' }}>
+              <Text className=' font-pmedium ' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+         { isEmpty ?  (
+          <ScrollView style={{}} refreshControl={
             <RefreshControl
               tintColor={Colors.secondary}
-              refreshing={loading}
-              onRefresh={refetchFeed}
+              refreshing={selected === 'Feed' ? loading : selected === 'Watchlist' ? loadingWatchlist : loadingInterested}
+              onRefresh={selected === 'Feed' ? refetchFeed : selected === 'Watchlist' ? refetchWatchlist : refetchInterested}
             />
           }> 
             <Text className='text-mainGray font-pbold text-2xl self-center pt-12'>Nothing to show yet...</Text>
           </ScrollView>
         ) : (
-              <View className='h-full'>
                 <FlatList
-                  data = {data}
+                  data = { selected === 'Feed' ? data : selected === 'Watchlist' ? watchlistItems : interestedItems}
                   refreshControl={
                     <RefreshControl
                       tintColor={Colors.secondary}
@@ -271,50 +314,88 @@ const homeIndex = () => {
                   initialNumToRender={10}
                   windowSize={8}
                   showsVerticalScrollIndicator={false}
-                  keyExtractor={(item) => item.id.toString()}
-                  contentContainerStyle={{gap:10}}
+                  keyExtractor={(item,index) => `${item}-${index}-${selected}`}
+                  contentContainerStyle={{gap:10, paddingBottom:200}}
                   onEndReached={debouncedGetFeed}
                   onEndReachedThreshold={0}
           
-                  renderItem={({item}) => 
-                    (
-                      <>
-                    { item.feedFrom === 'activity' && (
-                      <View>
-                        { item.postType === 'dialogue' ? (
-                          <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
-                           <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
-                          </TouchableOpacity>
+                  renderItem={({ item }) => (
+                    selected === 'Feed' ? (
+                      item.feedFrom === 'activity' && (
+                        <View>
+                          {item.postType === 'dialogue' ? (
+                            <TouchableOpacity onPress={() => { refetchOwner(); handlePress(item); }}>
+                              <DialogueCard dialogue={item.dialogue} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'} />
+                            </TouchableOpacity>
+                          ) : item.postType === 'list' ? (
+                            <TouchableOpacity onPress={() => { refetchOwner(); handlePress(item); }}>
+                              <ListCard list={item.list} fromHome={true} isReposted={item.activityType === 'REPOST'} />
+                            </TouchableOpacity>
+                          ) : item.postType === 'review' ? (
+                            <TouchableOpacity onPress={() => { refetchOwner(); router.push(`(home)/review/${item.id}`); }}>
+                              <ReviewCard review={item.review} fromHome={true} isBackground={true} />
+                            </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity onPress={() => { refetchOwner(); router.push(`(home)/activity/${item.id}`); }}>
+                              <ActivityCard2 activity={item} fromHome={true} isBackground={true} />
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      )
+                    ) : (
+                      <TouchableOpacity onPress={()=>handleTitlePress(item)} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
+                      <Image
+                          style={{
+                          width: '100%',
+                          height: '100%',
+                          position: 'absolute',
+                          }}
+                          source={{ uri: `${posterURL}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }` }}
+                          placeholder={{ uri: `${posterURLlow}${item.movie ? item.movie.backdropPath : item.tv && item.tv.backdropPath }`  }}
+                          placeholderContentFit="cover"
+                          contentFit="cover" // Same as resizeMode='cover'
+                          transition={300} // Optional: Adds a fade-in effect
+                      />
+                      <LinearGradient
+                          colors={['transparent', 'black']}
+                          style={{
+                          height: '100%',
+                          width: '100%',
+                          position: 'absolute',
+                          }}
+                      />
+                      <View className='flex-row justify-between items-end w-full h-full' style={{paddingHorizontal:15, paddingVertical:15}}>
 
-          
-                        ) : item.postType === 'list' ? (
-                          <TouchableOpacity onPress={()=>{refetchOwner();handlePress(item)}}>
-                            <ListCard list={item.list} fromHome={true} isReposted={item.activityType === 'REPOST'}/>
+                      <View  className='justify-end items-start  h-full' style={{maxWidth:220}} > 
+                          <TouchableOpacity onPress={()=>handlePress(item)  } className = 'flex-row gap-5 justify-start items-center w-full' >
+                          
+                              <View className='flex-row gap-1 justify-center items-center'>
+                                  { item.movieId ? <FilmIcon color={Colors.secondary}/> : <TVIcon color={Colors.secondary} /> }
+                                  <Text className='text-white text font-pbold'>{ item.movieId ? `${item.movie.title} (${getYear(item.movie.releaseDate)})` : `${item.tv.title} (${getYear(item.tv.releaseDate)})` }</Text>
+                              </View>
                           </TouchableOpacity>
-          
-                        ) : item.postType === 'review' ? (
-                          <TouchableOpacity onPress={()=>{refetchOwner();router.push(`(home)/review/${item.id}`)}} isReposted={item.activityType === 'REPOST'}>
-                            <ReviewCard review={item.review} fromHome={true}  isBackground={true} />
-                          </TouchableOpacity>
-                        ):(
-                          <TouchableOpacity onPress={ ()=>{  refetchOwner(); console.log('activitypress',item) ;router.push(`(home)/activity/${item.id}`)}}>
-                            <ActivityCard2 activity={item} fromHome={true} isBackground={true}/>
-                          </TouchableOpacity>
-                        ) }
+                                      <View className="">
+                                         
+                                          <Text className='text-mainGray text-sm '>Added on {formatDate(item.createdAt)}</Text>
+                                      </View>
                       </View>
-                    )}
-                  </>
+                      <View className='flex-row gap-3 items-center justify-center ' >
+                                  <TouchableOpacity onPress={()=>handleRemove(item)} style={{ backgroundColor : Colors.secondary, paddingHorizontal:8, paddingVertical:5, borderRadius:10 }}>
+                                      <Text className='text-primary font-pbold text-sm'>Remove</Text>
+                                  </TouchableOpacity>
+                                  {/* <TouchableOpacity style={{}}>
+                                      <EllipsisVertical size={20} color={Colors.mainGray} />
+                                  </TouchableOpacity> */}
+                              </View>
+                      </View>
+                  </TouchableOpacity>
+                    )
                   )}
+                  
                   />
-                  </View>
-
       ) }
-      
-
-      </View>
-      </View>
+    </View>
       </>
-      ) }
       </SafeAreaView>
   )
 }

@@ -5,7 +5,7 @@ import { Colors } from '../../constants/Colors'
 
 const Onboarding = () => {
   return (
-    <Stack>
+    <Stack screenOptions={{contentStyle:{backgroundColor : Colors.primary}}}>
       <Stack.Screen name='step1' options={{headerShown : false}} />
       <Stack.Screen name='profile-setup' options={{headerShown : false}} />
       <Stack.Screen name='recentlyWatched' options={{headerShown : false}} />

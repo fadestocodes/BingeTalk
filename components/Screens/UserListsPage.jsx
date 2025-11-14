@@ -5,20 +5,21 @@ import { useFetchUsersLists, listInteraction, useFetchUsersListsInfinite } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
 import { ThumbsUp, ThumbsDown, Clock9, ListChecks, BadgeHelp, Handshake } from 'lucide-react-native';
-import {  LayersIcon, MessageIcon, RepostIcon, ThreeDotsIcon} from '../../assets/icons/icons'
+import {  BackIcon, LayersIcon, MessageIcon, RepostIcon, ThreeDotsIcon} from '../../assets/icons/icons'
 import { useFetchOwnerUser } from '../../api/user';
 
 import { useRouter } from 'expo-router';
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext';
 import ListCard from '../ListCard';
-import { useGetUserFull } from '../../api/auth';
+import { useGetUser, useGetUserFull } from '../../api/auth';
 
 
-const UserListsPage = ( { userId } ) => {
+const UserListsPage = ( { userId, firstName } ) => {
     const { data : lists, refetch, loading , removeItem, fetchMore, hasMore} = useFetchUsersListsInfinite(userId, 10);
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
-    const {userFull:ownerUser} = useGetUserFull(userId)
+    const {user:userSimple} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(userSimple?.id)
 
     const router = useRouter();
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
@@ -61,7 +62,7 @@ const UserListsPage = ( { userId } ) => {
     }
 
 
-    if ( !ownerUser){
+    if ( !ownerUser || !lists){
         return (
             <View className='h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>
@@ -71,10 +72,14 @@ const UserListsPage = ( { userId } ) => {
 
 
     return (
-        <SafeAreaView className='w-full h-full px-4' style={{ paddingTop : 70 }}>
-    <View style={{ height:'100%', gap:15 }} >
+        <SafeAreaView edges={['top']} className='w-full h-full px-4 bg-primary' style={{ paddingTop : 0 }}>
+            <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:10}}>
+              <BackIcon size={26} color={Colors.mainGray}/>
+            </TouchableOpacity>
+    <View style={{ height:'100%', gap:15, paddingTop:10}} >
+        <Text className='text-white font-bold text-3xl'>{firstName ? `${firstName}'s Lists` : 'Lists'}</Text>
 
-        <View className='flex-row justify-evenly items-center gap-1 '>
+        {/* <View className='flex-row justify-evenly items-center gap-1 '>
             <TouchableOpacity onPress={()=>handleRecentlyWatchedPress(userId)} className='justify-center items-center gap-3' style={{backgroundColor:Colors.mainGrayDark, width:80, height:80, padding:8, borderRadius:15}}>
                 <Text className='text-mainGray text-xs font-pbold '>Recently Watched</Text>
                 <Clock9 color={Colors.mainGray} strokeWidth={2.5} />
@@ -91,7 +96,7 @@ const UserListsPage = ( { userId } ) => {
                 <Text className='text-mainGray text-xs font-pbold '>Recommendations</Text>
                 <Handshake color={Colors.mainGray} strokeWidth={2}/>
             </TouchableOpacity>
-        </View>
+        </View> */}
         <FlatList
         refreshControl={
             <RefreshControl
@@ -109,7 +114,7 @@ const UserListsPage = ( { userId } ) => {
             }}
             onEndReachedThreshold={0.2}
             keyExtractor={item => item.id}
-            contentContainerStyle={{ gap:15 }}
+            contentContainerStyle={{ gap:15 ,paddingBottom:100}}
             renderItem={ ({item}) => {
                 return (
                 <ListCard list={item} />

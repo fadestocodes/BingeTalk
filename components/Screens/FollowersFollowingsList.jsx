@@ -62,7 +62,7 @@ const FollowersFollowingsList = ({ userId, limit, whichList, setWhichList }) => 
     }
 
 
-    if ( !ownerUser){
+    if ( !ownerUser || !userId){
         return (
             <View className='h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>

@@ -62,7 +62,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
   
     
     const animatedStyle = useAnimatedStyle(() => ({
-      bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+      bottom: withTiming(keyboard.height.value-80, { duration: 0 }),
     }));
 
 
@@ -351,11 +351,11 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
 
 
   return (
-    <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary, borderRadius:30}} >
+    <SafeAreaView className='h-full relative' style={{backgroundColor:Colors.primary, borderRadius:30}} >
 
      
         <>
-        <View style={{ width:55, height:7, borderRadius:10,  backgroundColor:Colors.mainGray, position:'sticky', alignSelf:'center',  marginVertical:30}} />
+        <View style={{ width:55, height:7, borderRadius:10,  backgroundColor:Colors.mainGray, position:'sticky', alignSelf:'center',  marginVertical:0}} />
 
         <ScrollView className='bg-primary pt-0  relative '  style={{borderRadius:30}}
             refreshControl={
@@ -589,7 +589,7 @@ CommentsComponent.options = {
       backgroundColor: '#111',
       position: 'absolute',
       bottom:100,
-      height:200,
+      height:150,
       left: 0,
       right: 0,
       paddingBottom: 50,
