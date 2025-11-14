@@ -117,6 +117,12 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
         router.push('/user/badges/')
     }
 
+    const handleMoreDialogues = () => {
+        router.push({
+            params : {userId:userFetched.id},
+            pathname : 'user/dialogues'
+        })
+    }
 
 
     const handleFollowersList = (listType) => {
@@ -263,7 +269,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                 </View>
                 
                 {/* Dialogues */}
-                <View className='flex-1 gap-3 '>
+                <View className='flex-1 gap-3 w-full'>
                     {userFetched?.dialogues && (
                         <View className='gap-2 justify-start items-start  flex flex-col'>
                             <Text className='text-mainGray font-bold text-xl '>Dialogues  ({userFetched._count.dialogues})</Text>
@@ -271,17 +277,17 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                 data={userFetched.dialogues.slice(0,3)}
                                 scrollEnabled={false}
                                 key={(item,index) => `${item.title}-${index}`}
-                                contentContainerStyle={{gap:10}}
+                                contentContainerStyle={{gap:10, justifyContent:'center', alignItems:'center', width:'100%'}}
                                 renderItem={({item}) => {
                                     return (
-                                    <TouchableOpacity onPress={() => handleTitlePress(item)} style={{ marginRight:10 }}>
+                                    <TouchableOpacity onPress={() => handleTitlePress(item)} style={{ marginRight:0 }}>
                                         <DialogueCard dialogue={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'} />
                                     </TouchableOpacity>
                                 )}}
                                 ListFooterComponent={(
-                                    <View className='h-[45px] w-[45px] rounded-full justify-center items-center bg-primaryDark self-center'>
+                                    <TouchableOpacity onPress={handleMoreDialogues} className='h-[45px] w-[45px] rounded-full justify-center items-center bg-primaryDark self-center'>
                                             <Text className='text-mainGray font-bold  text-xl pb-2'>...</Text>
-                                    </View>
+                                    </TouchableOpacity>
                                 )}
                                
                             />

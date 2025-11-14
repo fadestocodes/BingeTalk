@@ -137,3 +137,52 @@ export const useGetTitleRatings = (data) => {
     return { ratings, isLoading, ownerUser, refetch , fetchMore : getTitleRatings, hasMore, friendsRatings, director}
 
 }
+
+
+
+export const useGetUserRatingsInfinite = (userId, limit=15) => {
+
+    const [data, setData] = useState([])
+    const [loading,setLoading] = useState(true)
+    const [hasMore, setHasMore] = useState(true)
+    const [cursor, setCursor] = useState(null)
+
+    const getUserRatingsInfinite = async () => {
+        try {
+            setLoading(true)
+            const res = await fetch(`${nodeServer.currentIP}/rating/user?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+            if (!res.ok) throw new Error('Invalid response')
+            const resData = await res.json()
+            setData(prev => [...prev, resData.items])
+            setCursor(resData.nextCursor)
+            setHasMore(!!resData.nextCursor)
+        } catch(err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const refetch = async () => {
+        try {
+            setLoading(true)
+            const res = await fetch(`${nodeServer.currentIP}/rating/user?userId=${userId}&cursor=null&limit=${limit}`)
+            if (!res.ok) throw new Error('Invalid response')
+            const resData = await res.json()
+            setData(resData.items)
+            setCursor(resData.nextCursor)
+            setHasMore(!!resData.nextCursor)
+        } catch(err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        if (!hasMore) return
+        getUserRatingsInfinite()
+    }, [userId])
+
+    return {data, loading, hasMore, refetch, fetchMore:getUserRatingsInfinite}
+}

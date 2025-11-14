@@ -72,7 +72,7 @@ const SearchPage = () => {
       listener: (event) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const index = Math.round(offsetX / (ITEM_WIDTH + SPACING));
-        console.log('INDEXRIGHTNOW', index)
+
         setCurrentIndex(index);
       },
     }

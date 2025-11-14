@@ -23,7 +23,6 @@ import { useGetUser, useGetUserFull } from '../api/auth'
 
 const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
 
-
     const userDB = dialogue?.user
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();

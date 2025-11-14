@@ -5,7 +5,7 @@ import { Colors } from '../../constants/Colors'
 
 const RootLayout = () => {
   return (
-    <Stack>
+<Stack screenOptions={{contentStyle:{backgroundColor : Colors.primary}}}>
         <Stack.Screen name='(tabs)' options={{headerShown : false, contentStyle : {backgroundColor:Colors.primary}}}  />
         {/* <Stack.Screen name='(profile)' options={{headerShown : false}} /> */}
         {/* <Stack.Screen name='movie' options={{headerShown : false}} /> */}

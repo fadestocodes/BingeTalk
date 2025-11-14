@@ -53,7 +53,7 @@ export const addUser =  async ( { firstName, lastName, email, username } ) => {
 
 export const updateUser = async ( params, email ) => {
     // const queryClient = useQueryClient();
-    
+
 
     try {
 
@@ -250,7 +250,7 @@ export const unfollowUser = async ( followData ) => {
     }
 }
 
-export const useRecentlyWatched = (userId, limit=5) => {
+export const useRecentlyWatched = (userId, limit=15) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 

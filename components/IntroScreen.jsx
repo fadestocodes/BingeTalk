@@ -20,7 +20,7 @@ useEffect(() => {
     });
   
   return (
-    <View className='w-full h-full justify-center items-center'>
+    <View className='w-full h-full justify-center items-center bg-primary'>
         <Image
             source={filmmakersBG}
             contentFit='cover'
