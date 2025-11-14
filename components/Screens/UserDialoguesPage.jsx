@@ -4,9 +4,11 @@ import DialogueCard from '../DialogueCard'
 import { MessageSquare } from 'lucide-react-native'
 import { BackIcon } from '../../assets/icons/icons'
 import { Colors } from '../../constants/Colors'
+import { useRouter } from 'expo-router'
 
 const UserDialoguesPage = ({dialogues, refetchDialogues, fetchMoreDialogues, hasMore, loading}) => {
     console.log("IDs:", dialogues.map(d => d.id))
+    const router = useRouter()
 
     if (!dialogues) {
         return <ActivityIndicator/>
@@ -21,6 +23,8 @@ const UserDialoguesPage = ({dialogues, refetchDialogues, fetchMoreDialogues, has
                 <MessageSquare size={30} color='white' />
                 <Text className='text-white font-pbold text-3xl'>Dialogues</Text>
             </View>
+
+
             <FlatList
                 refreshControl={
                     <RefreshControl 

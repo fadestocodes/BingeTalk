@@ -5,7 +5,7 @@ import { Colors } from '../../../../../../constants/Colors'
 
 const UserLayoutProfile = () => {
   return (
-    <Stack>
+    <Stack screenOptions={{contentStyle:{backgroundColor : Colors.primary}}}>
       <Stack.Screen name='accountHome' options={{headerShown : false}} />
       <Stack.Screen name='about' options={{headerShown : false}} />
       <Stack.Screen name='privacy' options={{headerShown : false}} />

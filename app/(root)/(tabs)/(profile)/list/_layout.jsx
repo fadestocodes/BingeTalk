@@ -5,7 +5,7 @@ import { Stack } from 'expo-router'
 
 const ListLayout = () => {
   return (
-    <Stack>
+    <Stack screenOptions={{contentStyle:{backgroundColor : Colors.primary}}}>
       <Stack.Screen name='[listId]' options={{headerShown : false}} />
       <Stack.Screen name='recently-watched' options={{headerShown : false}} />
       <Stack.Screen name='interested' options={{headerShown : false}} />

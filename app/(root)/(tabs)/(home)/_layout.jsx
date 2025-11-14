@@ -6,7 +6,7 @@ import { Colors } from '../../../../constants/Colors'
 
 const HomeLayout = () => {
   return (
-    <Stack>
+    <Stack screenOptions={{contentStyle:{backgroundColor : Colors.primary}}}>
       <Stack.Screen name='homeIndex' options={{headerShown : false}} />
       <Stack.Screen name='movie' options={{headerShown : false}} />
       <Stack.Screen name='review' options={{headerShown : false}} />

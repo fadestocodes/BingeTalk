@@ -14,6 +14,7 @@ import { getYear } from '../../lib/formatDate'
 import { Star, UserPen, CircleUserRound, UserPlus , UserCheck} from 'lucide-react-native'
 import ListCard from '../ListCard'
 import { useRouter } from 'expo-router'
+import { followUser, unfollowUser } from '../../api/user'
 
 
 const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
@@ -24,6 +25,10 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
     const [ isBlocking, setIsBlocking ] = useState([])
+    const [ followCounts, setFollowCounts ] = useState({
+        followers : userFetched?.followers?.length,
+        following : userFetched?.following?.length
+    })
 
 
 
@@ -55,7 +60,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
     const handleAccount = () => {
         router.push({
             pathname:`/user/account/accountHome`,
-            params:{ userId : user.id  }
+            params:{ userId : userFetched.id  }
         })
     }
 
@@ -73,11 +78,12 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
     const handleFollow = async () => {
         
         const followData = {
-            followerId : Number(user.id),
+            followerId : Number(userFetched.id),
             followingId : Number(ownerUser?.id)
         }
         if (isFollowing){
             const unfollow = await unfollowUser( followData )
+            console.log('unfollow res...', unfollow)
             setFollowCounts(prev => ({
                 ...prev,
                 followers : prev.followers - 1,
@@ -90,6 +96,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             }))
         }
         setIsFollowing(prev => !prev)
+        console.log('from  here...')
     }
     
     const handleEditProfile = () => {
@@ -123,6 +130,24 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             pathname : 'user/dialogues'
         })
     }
+    const handleMoreRecentlyWatched = () => {
+        router.push({
+            params : {userId:userFetched.id},
+            pathname : 'user/recentlyWatched'
+        })
+    }
+    const handleMoreRatings = () => {
+        router.push({
+            params : {userId:userFetched.id, firstName : userFetched.firstName},
+            pathname : 'user/userRatings'
+        })
+    }
+    const handleMoreLists = () => {
+        router.push({
+            params : {userId:userFetched.id, firstName : userFetched.firstName},
+            pathname : 'user/lists'
+        })
+    }
 
 
     const handleFollowersList = (listType) => {
@@ -148,9 +173,9 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
         >
             <View className='px-6 h-full pt-4  justify-center items-center '>
 
-            <View className='flex flex-col justify-center items-start gap-3 w-full'>
+            <View className='flex flex-col justify-center items-start gap-3 w-full pb-24'>
 
-                <View className='flex flex-col gap-3 justify-center items-start'>
+                <View className='flex flex-col gap-3 justify-center items-start mb-10'>
                     <Image
                         source={{ uri: userFetched?.profilePic  || avatarFallbackCustom}}
                         height={100}
@@ -200,7 +225,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                     { !isOwnersPage ? (
                         <View className='flex-row gap-2 pt-4 items-center'>
 
-                            <TouchableOpacity onPress={handleFollow} style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, backgroundColor:isFollowing ? Colors.secondary : null , borderColor:Colors.secondary, borderRadius:10,  flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
+                            <TouchableOpacity onPress={handleFollow} style={{ paddingVertical:10, paddingHorizontal:15, backgroundColor:isFollowing ? Colors.secondary : Colors.primaryDark , borderRadius:10,  flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5 }}>
 
                                 { isFollowing ? (
                                     < View  className='flex-row gap-3'>
@@ -238,12 +263,14 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                     ) }
                 </View>
 
-                {/* Recently Watched */}
-                <View className=' h-[150px] w-full pt-4'>
                     
-                    {userFetched?.userWatchedItems && (
+                    {/* Recently Watched */}
+                    {userFetched?.userWatchedItems?.length > 0 && (
+                    <View className=' h-[150px] w-full'>
                         <View className='gap-2'>
-                            <Text className='text-mainGray font-bold text-xl '>Recently Watched</Text>
+                            <TouchableOpacity onPress={handleMoreRecentlyWatched}>
+                                <Text className='text-mainGray font-bold text-xl '>Recently Watched</Text>
+                            </TouchableOpacity>
                             <FlatList
                                 data={userFetched.userWatchedItems}
                                 horizontal
@@ -264,9 +291,9 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                
                             />
                         </View>
+                        </View>
                     )}
 
-                </View>
                 
                 {/* Dialogues */}
                 <View className='flex-1 gap-3 w-full'>
@@ -297,7 +324,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                 
                 {/* Ratings & Reviews */}
                 <View className='flex-1 pt-8 gap-3'>
-                    {userFetched?.ratings && (
+                    {userFetched?.ratings?.length > 0 && (
                         <View className='gap-2 justify-start items-start  flex flex-col'>
                             <View className='flex flex-row gap-2 justify-center items-center'>
                                 <Text className='text-mainGray font-bold text-xl '>Ratings & Reviews ({userFetched._count.ratings})</Text>
@@ -358,16 +385,16 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                     </View>
                                     )}}
                             />
-                            <View className='h-[45] w-[45px] rounded-full justify-center items-center bg-primaryDark self-center'>
+                            <TouchableOpacity onPress={handleMoreRatings} className='h-[45] w-[45px] rounded-full justify-center items-center bg-primaryDark self-center'>
                                 <Text className='text-mainGray font-bold  text-xl pb-2'>...</Text>
-                            </View>
+                            </TouchableOpacity>
                     </View>
                     )}
                 </View>
 
                 {/* Lists */}
-                <View className='flex-1 pt-8 gap-3'>
                     {userFetched?.listCreator?.length > 0 && (
+                    <View className='flex-1 pt-8 gap-3'>
                         <View className='gap-2 justify-start items-start  flex flex-col'>
                             <Text className='text-mainGray font-bold text-xl '>Lists ({userFetched.listCreator.length})</Text>
                             <FlatList
@@ -382,15 +409,15 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                     </TouchableOpacity>
                                 )}}
                                 ListFooterComponent={(
-                                    <TouchableOpacity    className='h-[45] w-[45px] rounded-full justify-center items-center bg-primaryDark self-center'>
+                                    <TouchableOpacity onPress={handleMoreLists}   className='h-[45] w-[45px] rounded-full justify-center items-center bg-primaryDark self-center'>
                                             <Text className='text-mainGray font-bold  text-xl pb-2'>...</Text>
                                     </TouchableOpacity>
                                 )}
                                
                             />
                     </View>
+                    </View>
                     )}
-                </View>
 
 
             </View>
