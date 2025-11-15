@@ -1,4 +1,4 @@
-import { apiFetch } from "./auth"
+import { apiFetch, useGetUser, useGetUserFull } from "./auth"
 import * as nodeServer from '../lib/ipaddresses'
 import { useEffect, useState } from "react"
 
@@ -74,6 +74,7 @@ export const useGetSetDaysInfinite = (userId, limit=15) => {
             if (!userId) return
             const res =  await fetch(`${nodeServer.currentIP}/set-days/infinite?userId=${userId}&cursor=null&limit=${limit}`)
             const resData = await res.json()
+            console.log('resdata...',resData)
             setData(resData.items)
             setCursor(resData.nextCursor)
             setHasMore(!!resData.nextCursor)
@@ -92,9 +93,16 @@ export const useGetSetDaysInfinite = (userId, limit=15) => {
 }
 
 
-export const useGetSetDay = (id) => {
+export const useGetSetDay = (id, replyCommentId=null) => {
     const [data, setData] = useState('')
     const [loading, setLoading] = useState(true)
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchUserFull} = useGetUserFull(user?.id)
+    const [ interactedComments, setInteractedComments ] = useState({
+        upvotes : [],
+        downvotes : []
+    })
+    const [ commentsData, setCommentsData ] = useState([])
 
     const getSetDay = async () => {
         try {
@@ -104,6 +112,33 @@ export const useGetSetDay = (id) => {
             const resData = await res.json()
             if (!res.ok) throw new Error(resData?.error || "Invalid request")
             setData(resData)
+            console.log('resdata..', resData.comment)
+
+            const upvotedComments = ownerUser?.commentInteractions.filter( i => {
+                return resData?.comment.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
+            } )
+            const downvotedComments = ownerUser?.commentInteractions.filter( i => {
+                return resData?.comment.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
+            } )
+
+            console.log('upvotedcomments', upvotedComments)
+            console.log('downotedcomments', downvotedComments)
+            setInteractedComments( {
+                upvotes : upvotedComments,
+                downvotes : downvotedComments
+            })
+            if (replyCommentId){
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const replyCommentFromNotif = await request.json();
+
+                const reorderedCommentsData = [
+                    ...resData?.comment.filter( comment => comment.id === replyCommentFromNotif?.parentId || comment.id === replyCommentFromNotif.id) ,
+                    ...resData?.comment.filter( comment => comment.id !== replyCommentFromNotif?.parentId && comment.id !== replyCommentFromNotif?.id) 
+                ]
+                setCommentsData(reorderedCommentsData)
+            }else {
+                setCommentsData(resData?.comment)
+            }
             
         } catch(err){
             console.error(err)
@@ -114,7 +149,46 @@ export const useGetSetDay = (id) => {
 
     useEffect(() => {
         getSetDay()
-    }, [id])
+    }, [id, ownerUser])
 
-    return {data, loading, refetch:getSetDay}
+    const refetch = async () => {
+        await refetchUserFull()
+        await getSetDay()
+    }
+
+    const removeItem = (removeId, removePostType) => {
+        if (removePostType === 'REPLY'){
+            const filteredComments = commentsData.map( i => {
+
+                if (i.replies.length > 0 && i.replies.some( x => x.id === Number(removeId))){
+                    i.replies = i.replies.filter( reply => reply.id !== Number(removeId) )
+                }
+                return i
+            } )
+            setCommentsData(filteredComments)
+        } else {
+            const filteredCommments = commentsData.filter( i => i.id !== Number(removeId) )
+            setCommentsData(filteredCommments)
+        }
+    }
+
+    return {data, loading, refetch, commentsData, interactedComments, setInteractedComments, setCommentsData, removeItem}
 }
+
+
+export const setDayInteraction = async ( data ) => {
+    try {
+        const request = await apiFetch(`${nodeServer.currentIP}/set-days/interact`, {
+            method : 'POST',
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body:JSON.stringify( data )
+        })
+        const response = await request.json();
+        console.log('response...',response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+} 

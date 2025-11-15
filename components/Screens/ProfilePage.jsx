@@ -158,6 +158,13 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             params : { listType, userId : userFetched.id }
         })
     }
+
+    const handleGraphPress = () => {
+        router.push({
+            pathname:`/user/setDays`,
+            params : {userId : userFetched.id}
+        })
+    }
     
     if (!userFetched ){
         return <ActivityIndicator/>
@@ -268,16 +275,18 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
 
                     { userFetched?.accountType === 'FILMMAKER' && setDaysGraphData?.graphData && (
 
-                        <View>
+                        <View >
                             {loadingSetDaysGraphData?.graphData ? (
                                 <ActivityIndicator />
                             ) : (
-                            <View className='flex flex-col w-full justify-start items-center gap-3'>
+                            <View className=' flex flex-col w-full justify-start items-center gap-3'>
                                 <View className='flex flex-row gap-1 self-start items-center'>
                                     <Text className='text-mainGray font-bold text-xl '>SetDays</Text>
                                     <Text className='text-mainGrayDark  text-sm  pt-1'>({setDaysGraphData.totalWorked} days worked in the last 365 days)</Text>
                                 </View>
-                                <SetDaysGraph data={setDaysGraphData.graphData} loading={loadingSetDaysGraphData} refetch={refetchSetDaysGraphData} />
+                                <TouchableOpacity className='w-full h-[120px]' onPress={handleGraphPress}>
+                                    <SetDaysGraph data={setDaysGraphData.graphData} loading={loadingSetDaysGraphData} refetch={refetchSetDaysGraphData} />
+                                </TouchableOpacity>
                             </View>
                             )}
                         </View>

@@ -18,12 +18,13 @@ import { avatarFallbackCustom } from '../constants/Images'
 import { checkConversationalistBadge } from '../api/badge'
 import { useGetUser, useGetUserFull } from '../api/auth'
 import { useFetchReview } from '../api/review'
+import { useGetSetDay } from '../api/setDay'
 
-const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, activityId}) => {
+const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, activityId, setDayId, fromModal}) => {
 
 
 
-    let dialogue, thread, review, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData;
+    let dialogue, thread, review, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, setDay;
 
     console.log('FOM COMMENT COMPONENT: posttype', postType)
 
@@ -36,7 +37,12 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
     } else if (postType === 'review'){
         ({ review, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useFetchReview(Number(reviewId)))
         console.log('commentsdata', commentsData)
+    } else if (postType === 'setDay'){
+        ({ data:setDay, interactedComments, commentsData, loading:isLoading, refetch, setInteractedComments, setCommentsData} = useGetSetDay(Number(setDayId)))
+        console.log('commentsdata', commentsData)
+
     }
+
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  
     const [ replyingTo, setReplyingTo ] = useState(null)
@@ -80,6 +86,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
             threadId : thread ? Number(thread.id) : null,
             listId : list ? Number(list.id) : null,
             activityId : activity ? Number(activity.id) : null,
+            setDayId : setDay ? Number(setDay.id) : null,
             content : item.content,
             parentId
         }
@@ -109,12 +116,13 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
             dialogueId : Number(dialogueId) || null,
             threadId : Number(threadId) || null,
             listId : Number(listId) || null,
+            setDayId : Number(setDayId) || null,
             activityIdCommentedOn : Number(activityId) || null,
             content : input.trim(),
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
-            description: dialogue ? `commented on your dialogue "${input}"` : thread ?  `commented on your thread "${input}"` : list ? `commented on your list "${input}"` : activity && `commented on your activity "${input}"` ,
-            recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list ? list.user.id : activity && activity.user.id ,
+            description: dialogue ? `commented on your dialogue "${input}"` : thread ?  `commented on your thread "${input}"` : list ? `commented on your list "${input}"` : activity ? `commented on your activity "${input}"` : setDay && `commented on your SetDay ${input}` ,
+            recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list ? list.user.id : activity ? activity.user.id : setDay && setDay.user.id ,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
         console.log('commentdata', commentData)
@@ -341,7 +349,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
     }
 
 
-    if ((!dialogue && !thread && !list && !activity && !review ) || !ownerUser){ 
+    if ((!dialogue && !thread && !list && !activity && !review && !setDay ) || !ownerUser){ 
         return (
             <View className='w-full h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>
@@ -351,11 +359,13 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
 
 
   return (
-    <SafeAreaView className='h-full relative' style={{backgroundColor:Colors.primary, borderRadius:30}} >
+    <SafeAreaView className=' flex-1' style={{backgroundColor:Colors.primary, borderRadius:30}} >
 
      
-        <>
+        <View className='flex-1'>
+        {fromModal && (
         <View style={{ width:55, height:7, borderRadius:10,  backgroundColor:Colors.mainGray, position:'sticky', alignSelf:'center',  marginVertical:0}} />
+        )}
 
         <ScrollView className='bg-primary pt-0  relative '  style={{borderRadius:30}}
             refreshControl={
@@ -563,7 +573,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
                 )}
               </View>
             </Animated.View>
-            </>
+            </View>
 
 
     </SafeAreaView>

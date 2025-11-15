@@ -1,65 +1,79 @@
-import { StyleSheet, Text, View, ScrollView, FlatList, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform , ActivityIndicator, RefreshControl} from 'react-native'
-import React, { useState, useEffect, useRef } from 'react'
+import { ActivityIndicator, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, RefreshControl, FlatList } from 'react-native'
+import React, {useState, useRef, useEffect} from 'react'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { setDayInteraction, useGetSetDay } from '../../api/setDay'
 import { Image } from 'expo-image'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { ArrowLeft, ThumbsDown, ThumbsUp } from 'lucide-react-native'
+import { BackIcon, MessageIcon, RepostIcon } from '../../assets/icons/icons'
 import { Colors } from '../../constants/Colors'
-import { router, useLocalSearchParams } from 'expo-router'
-import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, CloseIcon, RepostIcon, ThreeDotsIcon , BackIcon} from '../../assets/icons/icons'
-import { formatDate } from '../../lib/formatDate'
-import { GestureDetector, Gesture} from 'react-native-gesture-handler';
-import { commentInteraction, createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
-import { useFetchOwnerUser } from '../../api/user'
-import { useQueryClient, useQuery } from '@tanstack/react-query'
-import { dialogueInteraction, fetchSingleThread , threadInteraction, useCustomFetchSingleDialogue, useFetchSingleThread} from '../../api/dialogue'
-import { fetchSingleDialogue, useFetchSingleDialogue } from '../../api/dialogue'
-import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
+import CommentsComponent from '../CommentsComponent'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
-import DialogueCard from '../DialogueCard'
-import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
-import { avatarFallback } from '../../lib/fallbackImages'
-import { avatarFallbackCustom } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
+import { commentInteraction, createComment } from '../../api/comments'
 import { checkConversationalistBadge } from '../../api/badge'
-import { useBadgeContext } from '../../lib/BadgeModalContext'
+import { formatDate } from '../../lib/formatDate'
+import { ThreeDotsIcon } from '../../assets/icons/icons'
 
 
-
-const DialogueScreen = () => {
-
-    const { replyCommentId } = useLocalSearchParams();
+const SetDayIdPage = () => {
+    const {setDayId} = useLocalSearchParams()
+    const {data:setDay, loading, refetch, interactedComments, commentsData, loading:isLoading, setInteractedComments, setCommentsData} = useGetSetDay(setDayId)
+    const {user:userSimple} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchUserFull} = useGetUserFull(userSimple?.id)
+    const router = useRouter()
+    const keyboard = useAnimatedKeyboard(); 
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
-    // const { user : clerkUser } = useUser();
-    // const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-   
-    const { dialogueId, tvId, movieId, castId }= useLocalSearchParams();
-    
-    const { dialogue, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useCustomFetchSingleDialogue(Number(dialogueId), Number(replyCommentId))
-    const { postToRemove, updatePostToRemove } = usePostRemoveContext()
-    
-    const {showBadgeModal} = useBadgeContext()
-    
-    
-    
-    const keyboard = useAnimatedKeyboard(); 
-    const translateY = useSharedValue(0); 
-    const atTop = useSharedValue(true); 
-    
+    console.log('cation', setDay)
+
+    const [ interactions, setInteractions ] = useState({
+        upvotes : {
+            alreadyPressed : false,
+            count : setDay?.upvotes || 0
+        } ,
+        downvotes :{
+            alreadyPressed : false,
+            count : setDay?.downvotes || 0
+        } ,
+        reposts : {
+            alreadyPressed : false,
+            count : setDay?.reposts || 0
+        } 
+    })
+
+    useEffect(() => {
+
+
+        
+        const alreadyUpvoted = setDay?.setDayInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
+        const alreadyDownvoted = setDay?.setDayInteractions?.some( item => item.interactionType === 'DOWNVOTE'  && item.userId === ownerUser?.id )
+        const alreadyReposted = setDay?.setDayInteractions?.some( item => item.interactionType === 'REPOST'  && item.userId === ownerUser?.id )
+
+        setInteractions({
+            upvotes : {
+                alreadyPressed : alreadyUpvoted,
+                count : setDay?.upvotes
+            } ,
+            downvotes :{
+                alreadyPressed : alreadyDownvoted,
+                count : setDay?.downvotes
+            } ,
+            reposts : {
+                alreadyPressed : alreadyReposted,
+                count : setDay?.reposts
+            } 
+        })
+
+       
+    }, [setDay])
     
     const animatedStyle = useAnimatedStyle(() => ({
         bottom: withTiming(keyboard.height.value-80, { duration: 0 }),
     }));
-    
-    useEffect(()=>{
-        console.log('triggeredf from useeffect')
-        removeItem( postToRemove.id, postToRemove.postType )
-        
-    },[postToRemove])
-    
-    
-    
+
 
 
 
@@ -71,7 +85,7 @@ const DialogueScreen = () => {
         
         const replyingToData = {
             user : item.user,
-            dialogueId : Number(dialogue?.id),
+            setDayId : Number(setDayId),
             content : item.content,
             parentId
         }
@@ -95,19 +109,22 @@ const DialogueScreen = () => {
 
 
     const handlePostComment =  async ({ parentId = null }) => {
+        console.log('trying to post comment...')
         const commentData = {
             userId : Number(ownerUser?.id),
-            dialogueId : Number(dialogueId),
+            setDayId : Number(setDayId),
             content : input,
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
-            description: `commented on your dialogue "${input}"`,
-            recipientId : dialogue?.user.id,
+            description: `commented on your SetDay "${input}"`,
+            recipientId : data?.user.id,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
 
+        console.log('postdata', commentData)
     
         const newComment = await createComment( commentData );
+        console.log('new Comment res', newComment)
         setInput('');
         setReplyingTo(null)
         setReplying(false)
@@ -132,6 +149,55 @@ const DialogueScreen = () => {
         refetch();
 
     }   
+
+
+    const handleSetDayInteraction =  async (type) => {
+        setInteractions(prev => ({
+            ...prev,
+            [type]: {
+              ...prev[type],
+              alreadyPressed: !prev[type].alreadyPressed,
+              count : prev[type].alreadyPressed ? prev[type].count -1 : prev[type].count +1
+            }
+          }))
+     
+        let description
+        console.log('set day for interaction', setDay)
+        if ( type === 'upvotes' ){
+            description = `upvoted your SetDay${ setDay?.caption ? ` "${setDay.caption.slice(0,30)}..." `: ''}`
+            
+        } else if (type === 'downvotes'){
+            description = `downvoted your SetDay${ setDay?.caption ? ` "${setDay.caption.slice(0,30)}..." `: ''}`
+           
+        }else  if ( type === 'reposts' ){
+            description = `reposted your SetDay${ setDay?.caption ? ` "${setDay.caption.slice(0,30)}..." `: ''}`
+           
+        }
+        const data = {
+            type,
+            setDayId : setDay.id,
+            userId : ownerUser.id,
+            description,
+            recipientId : setDay.user.id
+        }
+         const interacted = await setDayInteraction(data)
+         console.log('intereacted...',interacted)
+        const conversationalistProgression =  await checkConversationalistBadge(Number(ownerUser?.id))
+
+        let levelUpData = null
+        if (conversationalistProgression?.hasLeveledUp){
+            console.log('🎊 Congrats you leveled up the Conversationalist badge!')
+            levelUpData = {
+                badgeType: 'CONVERSATIONALIST',
+                level: `${conversationalistProgression.newLevel}`,
+            };
+        }
+        if (levelUpData) {
+            showBadgeModal(levelUpData.badgeType, levelUpData.level);
+        }
+
+        await refetchUserFull();
+    }
 
 
     const handleCommentInteraction =  async (type, comment, isAlready, parentId) => {
@@ -328,47 +394,61 @@ const DialogueScreen = () => {
         router.push(`/user/${item.user.id}`)
     }
 
-    const handleThreeDots = (item, fromReply) => {
-        console.log('from threedots', item)
-        console.log('from reply?', fromReply)
 
-        const fromOwnPost = item.userId === ownerUser?.id
-        router.push({
-            pathname:'/postOptions',
-            params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : item.id, postUserId : item.userId}
-        })
+    if (!setDay || !ownerUser){
+        return <ActivityIndicator />
     }
-
-
-
   return (
-    <SafeAreaView className='h-full relative' style={{backgroundColor:Colors.primary}} >
-       
-       { isLoading || !ownerUser ? (
-            <View className='h-full justify-center items-center bg-primary'>
-                <ActivityIndicator/>
-            </View>
-        ) : (
-     
-        <>
-        <ScrollView className='bg-primary  relative ' 
+    <SafeAreaView className='h-full relative' edges={['top', 'bottom']}>
+
+        <ScrollView className='bg-primary   relative  ' 
             refreshControl={
                 <RefreshControl
-                    tintColor={Colors.secondary}
-                    refreshing={isLoading}
-                    onRefresh={refetch}
+                    refreshing={loading}
+                    onRefresh={async ()=>{await refetchUserFull();await refetch()}}
                 />
 
             }
         >
+        <View className='px-6 w-full flex pb-[200px] justify-center items-center  '>
+        <TouchableOpacity className=' pb-6' onPress={()=>router.back()} style={{justifyContent:'flex-start', alignSelf:'flex-start' }}>
+            <BackIcon size={26} color={Colors.mainGray} />
+        </TouchableOpacity>
+        <View className='justify-center items-center gap-3  pb-10 w-full'>
+            <Image 
+                source={setDay.image}
+                height={400}
+                width={360}
+                style={{borderRadius:15}}
+            />
+            
+            {setDay.production && (
+                <Text className='font-semibold  text-sm self-start text-mainGrayDark'>Production: "{setDay.production}"</Text>
+                
+            )}
+            {setDay.caption && (
+                <Text className='text-mainGrayLight font-pcourier px-2'>{setDay.caption}</Text>
 
-        <View style={{gap:10, marginVertical:0, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
-        <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:20}}>
-              <BackIcon size={26} color={Colors.mainGray}/>
-            </TouchableOpacity>
-          <View className='gap-3' >
-          <DialogueCard dialogue={dialogue} disableCommentsModal={true} />
-          <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
+            )}
+            <View className='flex flex-row gap-6  justify-start items-start w-full pt-4'>
+                <TouchableOpacity onPress={()=>handleSetDayInteraction('upvotes')}>
+                    <ThumbsUp size={24} color={ interactions.upvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray}/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>handleSetDayInteraction('downvotes')}>
+                    <ThumbsDown size={24} color={ interactions.downvotes.alreadyPressed ? Colors.secondary :  Colors.mainGray}/>
+                </TouchableOpacity>
+                <View >
+                    <MessageIcon size={24} color={ Colors.mainGray}/>
+                </View>
+                <TouchableOpacity onPress={()=>handleSetDayInteraction('reposts')}>
+                    <RepostIcon size={24} color={ interactions.reposts.alreadyPressed ? Colors.secondary :  Colors.mainGray}/>
+                </TouchableOpacity>
+            </View>
+        </View>
+
+
+
+        <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
                 { commentsData.length > 0 && (
                     <>
@@ -376,14 +456,14 @@ const DialogueScreen = () => {
                     data={ commentsData}
                     keyExtractor={(item, index) => index.toString()}
                     scrollEnabled={false}
-                    contentContainerStyle={{ paddingBottom: 80 }}
+                    contentContainerStyle={{ paddingBottom: 0 }}
                     renderItem={({ item }) =>{
-    
+                        console.log('userhere',item)
                         const shownReplies = visibleReplies[item.id] || 0;
 
 
-                        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === item.id )
-                        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === item.id )
+                        const alreadyUpvotedComment = interactedComments?.upvotes?.some( i => i.commentId === item.id )
+                        const alreadyDownvotedComment = interactedComments?.downvotes?.some( i => i.commentId === item.id )
                         
 
                         
@@ -443,8 +523,8 @@ const DialogueScreen = () => {
                         { item.replies.length > 0 && (
                             <>
                             { item.replies.slice(0, shownReplies).map((reply) => {
-                                const alreadyUpvotedReply = interactedComments.upvotes.some( i => i.commentId === reply.id )
-                                const alreadyDownvotedReply = interactedComments.downvotes.some( i => i.commentId === reply.id )
+                                const alreadyUpvotedReply = interactedComments?.upvotes?.some( i => i.commentId === reply.id )
+                                const alreadyDownvotedReply = interactedComments?.downvotes?.some( i => i.commentId === reply.id )
                                 return (
 
 
@@ -516,17 +596,17 @@ const DialogueScreen = () => {
                     </>
 
                 ) }
-
-
-
-
-
-          </View>
-          </View>
-
+                </View>
         </ScrollView>
-       
-            <Animated.View style={[styles.inputContainer, animatedStyle]}>
+
+
+
+
+
+
+
+
+        <Animated.View style={[styles.inputContainer, animatedStyle]}>
               <View className="relative gap-3">
               { replying && (
                 <View className='px-5'style={{ borderRadius:15, paddingHorizontal:5, paddingVertical:10, backgroundColor:Colors.primary , position:'relative'}} >
@@ -558,24 +638,14 @@ const DialogueScreen = () => {
                 )}
               </View>
             </Animated.View>
-
-            </>
-            )}
-
-
     </SafeAreaView>
   )
 }
 
-export default DialogueScreen
+export default SetDayIdPage
 
 
-DialogueScreen.options = {
-    headerShown: false, 
-  }
-
-
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     modalContainer: {
       flex: 1,
       backgroundColor: Colors.primary,
@@ -585,7 +655,7 @@ DialogueScreen.options = {
       paddingHorizontal: 15,
       backgroundColor: '#111',
       position: 'absolute',
-      bottom:100,
+      bottom:50,
       height:150,
       left: 0,
       right: 0,
