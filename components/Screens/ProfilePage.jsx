@@ -198,7 +198,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                         <Text className='text-white font-bold text-lg  '>@{userFetched.username}</Text>
                     </View>
                     {userFetched?.bio && ( 
-                        <Text className='text-mainGrayLight opacity-50 font-pcourier'>{userFetched?.bio}</Text> 
+                        <Text className='text-mainGrayDark  font-pcourier'>{userFetched?.bio}</Text> 
                     )} 
                     <View className='flex flex-col items-start justify-center gap-3 pt-3 '>
                         { (userFetched?.city || userFetched?.country) && (
@@ -266,15 +266,18 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                     {/* SetDays */}
                 </View>
 
-                    { userFetched?.accountType === 'FILMMAKER' && setDaysGraphData && (
+                    { userFetched?.accountType === 'FILMMAKER' && setDaysGraphData?.graphData && (
 
                         <View>
-                            {loadingSetDaysGraphData ? (
+                            {loadingSetDaysGraphData?.graphData ? (
                                 <ActivityIndicator />
                             ) : (
                             <View className='flex flex-col w-full justify-start items-center gap-3'>
-                                <Text className='text-mainGray font-bold text-xl self-start'>SetDays</Text>
-                                <SetDaysGraph data={setDaysGraphData} loading={loadingSetDaysGraphData} refetch={refetchSetDaysGraphData} />
+                                <View className='flex flex-row gap-1 self-start items-center'>
+                                    <Text className='text-mainGray font-bold text-xl '>SetDays</Text>
+                                    <Text className='text-mainGrayDark  text-sm  pt-1'>({setDaysGraphData.totalWorked} days worked in the last 365 days)</Text>
+                                </View>
+                                <SetDaysGraph data={setDaysGraphData.graphData} loading={loadingSetDaysGraphData} refetch={refetchSetDaysGraphData} />
                             </View>
                             )}
                         </View>
