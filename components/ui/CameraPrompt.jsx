@@ -1,231 +1,19 @@
-// import React, { useState } from "react";
-// import { View, Button } from "react-native";
-// import { Image } from "expo-image";
-// import * as ImagePicker from "expo-image-picker";
-
-// export default function CameraPrompt() {
-//   const [image, setImage] = useState(null);
-
-//   const openCamera = async () => {
-//     // Request permission
-//     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-//     if (status !== "granted") {
-//       alert("Camera permission is required!");
-//       return;
-//     }
-
-//     // Open camera
-//     const result = await ImagePicker.launchCameraAsync({
-//       mediaTypes: 'images',
-//       allowsEditing: true,
-//       quality: 1,
-//     });
-
-//     if (!result.canceled) {
-//       setImage(result.assets[0].uri);
-//     }
-//   };
-
-//   return (
-//     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-//       <Button title="Open Camera" onPress={openCamera} />
-//       {image && (
-//         <Image
-//           source={{ uri: image }}
-//           width={200}
-//           height={200}
-//           style={{ marginTop: 20 }}
-//         />
-//       )}
-//     </View>
-//   );
-// }
-
-
-// import React, { useState } from "react";
-// import { View, Button, Alert, ActivityIndicator } from "react-native";
-// import { Image } from "expo-image";
-// import * as ImagePicker from "expo-image-picker";
-// import Constants from "expo-constants";
-
-// export default function CameraPrompt() {
-//   const [image, setImage] = useState(null);
-//   const [loading, setLoading] = useState(false);
-
-//   const openCamera = async () => {
-//     console.log("Checking camera permissions...");
-//     try {
-//       const { status } = await ImagePicker.requestCameraPermissionsAsync();
-//       console.log("Current camera permission status:", status);
-
-//       if (status !== "granted") {
-//         Alert.alert("Permission Required", "Camera permission is required!");
-//         return;
-//       }
-
-//       console.log("Permission granted, opening camera...");
-//       setLoading(true);
-
-//       let result;
-//       const isDevBuild =
-//         Constants.appOwnership === "expo" || Constants.appOwnership === "standalone-dev";
-
-//       try {
-//         if (isDevBuild) {
-//           console.log("Dev build detected: opening photo library instead of camera");
-//           result = await ImagePicker.launchImageLibraryAsync({
-//             quality: 1,
-//           });
-//         } else {
-//           result = await ImagePicker.launchCameraAsync({
-//             quality: 1,
-//           });
-//         }
-//         console.log("Picker result:", result);
-//       } catch (pickerError) {
-//         console.warn("Picker failed, trying library as fallback:", pickerError);
-//         result = await ImagePicker.launchImageLibraryAsync({
-//           quality: 1,
-//         });
-//         console.log("Library fallback result:", result);
-//       }
-
-//       if (!result.canceled) {
-//         setImage(result.assets[0].uri);
-//         console.log("Selected image URI:", result.assets[0].uri);
-//       } else {
-//         console.log("User cancelled image selection.");
-//       }
-//     } catch (err) {
-//       console.error("Unexpected error opening camera or library:", err);
-//       Alert.alert("Error", "Unable to open camera or photo library.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-//       <Button title="Open Camera" onPress={openCamera} disabled={loading} />
-//       {loading && (
-//         <ActivityIndicator size="large" color="#4ade80" style={{ marginTop: 20 }} />
-//       )}
-//       {image && !loading && (
-//         <Image
-//           source={{ uri: image }}
-//           width={200}
-//           height={200}
-//           style={{ marginTop: 20 }}
-//         />
-//       )}
-//     </View>
-//   );
-// }
-
-
-// import PhotoPreviewSection from '@/components/ui/PhotoPreviewSection';
-// import { AntDesign } from '@expo/vector-icons';
-// import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
-// import { useRef, useState } from 'react';
-// import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-// export default function Camera() {
-//   const [facing, setFacing] = useState('back');
-//   const [permission, requestPermission] = useCameraPermissions();
-//   const [photo, setPhoto] = useState(null);
-//   const cameraRef = useRef(null);
-
-//   if (!permission) {
-//     // Camera permissions are still loading.
-//     return <View />;
-//   }
-
-//   if (!permission.granted) {
-//     // Camera permissions are not granted yet.
-//     return (
-//       <View style={styles.container}>
-//         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-//         <Button onPress={requestPermission} title="grant permission" />
-//       </View>
-//     );
-//   }
-
-//   function toggleCameraFacing() {
-//     setFacing(current => (current === 'back' ? 'front' : 'back'));
-//   }
-
-//   const handleTakePhoto =  async () => {
-//     if (cameraRef.current) {
-//         const options = {
-//             quality: 1,
-//             base64: true,
-//             exif: false,
-//         };
-//         const takedPhoto = await cameraRef.current.takePictureAsync(options);
-
-//         setPhoto(takedPhoto);
-//     }
-//   }; 
-
-//   const handleRetakePhoto = () => setPhoto(null);
-
-//   if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} />
-
-//   return (
-//     <View style={styles.container}>
-//       <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
-//         <View style={styles.buttonContainer}>
-//           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-//             <AntDesign name='retweet' size={44} color='black' />
-//           </TouchableOpacity>
-//           <TouchableOpacity style={styles.button} onPress={handleTakePhoto}>
-//             <AntDesign name='camera' size={44} color='black' />
-//           </TouchableOpacity>
-//         </View>
-//       </CameraView>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//   },
-//   camera: {
-//     flex: 1,
-//   },
-//   buttonContainer: {
-//     flex: 1,
-//     flexDirection: 'row',
-//     backgroundColor: 'transparent',
-//     margin: 64,
-//   },
-//   button: {
-//     flex: 1,
-//     alignSelf: 'flex-end',
-//     alignItems: 'center',
-//     marginHorizontal: 10,
-//     backgroundColor: 'gray',
-//     borderRadius: 10,
-//   },
-//   text: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     color: 'white',
-//   },
-// });
-
 
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Button, Linking, TouchableOpacity } from "react-native";
+import { View, Text, Button, Linking, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions, CameraFlashMode } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import { Check, Download, Image as ImageIcon, Repeat2, X, Zap, ZapOff } from "lucide-react-native";
+import { Check, CircleCheck, Download, Image as ImageIcon, Info, Repeat2, X, Zap, ZapOff } from "lucide-react-native";
 import { Image } from "expo-image";
 import { Colors } from "../../constants/Colors";
 import NotificationModal from "./NotificationModal";
 import ToastMessage from "./ToastMessage";
+import { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated'
+import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
+import ArrowNextButton from "./ArrowNextButton";
+import { pickSingleImage } from "../../lib/pickImage";
+import { createSetDay } from "../../api/setDay";
+import { uploadToS3 } from "../../api/aws";
 
 export default function CameraPrompt() {
   const [showCamera, setShowCamera] = useState(false);
@@ -236,6 +24,20 @@ export default function CameraPrompt() {
   const [uri, setUri] = useState('')
   const [showMediaPermissionPrompt, setShowMediaPermissionPrompt] = useState('')
   const [toastMessage, setToastMessage] = useState('')
+  const [stepTwo, setStepTwo] = useState(false)
+  const [inputs, setInputs] = useState({
+    caption : '',
+    production : ''
+  })
+  const [uploading, setUploading] = useState(false)
+  const [dynamicIcon, setDynamicIcon] = useState(null)
+  const keyboard = useAnimatedKeyboard();
+
+  const translateStyle = useAnimatedStyle(() => {
+    return {
+        transform: [{ translateY: -keyboard.height.value*.3}],
+    };
+    });
 
   // Permission hook
   const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
@@ -285,7 +87,7 @@ export default function CameraPrompt() {
         // if (!cameraPermission?.granted) return;
         // if (!mediaPermission?.granted) return;
         const photo = await cameraRef.current.takePictureAsync();
-        console.log("Photo captured:", photo.uri);
+        console.log("Photo captured:", photo);
         // Save to gallery (optional)
         // await MediaLibrary.createAssetAsync(photo.uri);
         setUri(photo.uri);
@@ -305,6 +107,77 @@ export default function CameraPrompt() {
     console.log('res...',res)
     if (res){
         setToastMessage("Successfully saved media")
+        setDynamicIcon(<ImageIcon size={30} color={Colors.secondary} />)
+    }
+  }
+
+  const handleStepTwo = () => {
+    if (uri){
+        setStepTwo(true)
+    }
+  }
+
+  const handleInputs = (name, value) => {
+    setInputs(prev => ({
+        ...prev,
+        [name] : value
+    }))
+  }
+
+  const handleReset = () => {
+    setUri('')
+    setStepTwo(false)
+    setInputs({
+        caption  :'',
+        production : ''
+    })
+  }
+
+  const handlePost = async () => {
+    try {
+        setUploading(true)
+        
+        const extension = uri.split('.').pop().toLowerCase(); // e.g. "jpg", "jpeg", "png"
+        const mimeTypeMap = {
+            jpg: "image/jpeg",
+            jpeg: "image/jpeg",
+            png: "image/png",
+            heic: "image/heic",
+            webp: "image/webp"
+          };
+          
+        const mimeType = mimeTypeMap[extension] || "image/jpeg";
+        const fileName = `${Date.now()}.jpg`;
+
+        const s3res = await uploadToS3(uri,fileName, mimeType )
+
+
+        if (s3res){
+            console.log(s3res)
+
+            const data = {
+                caption : inputs.caption.trim(),
+                production : inputs.production.trim(),
+                image : s3res,
+            }
+            const res = await createSetDay(data)
+            setToastMessage(res.message)
+            if (res.success){
+                setDynamicIcon( <CircleCheck size={30} color={Colors.secondary} /> )
+            } else {
+                setDynamicIcon( <Info size={30} color={Colors.secondary} /> )
+            }
+        }
+    } catch (err){
+        console.error(err)
+    } finally {
+        setInputs({
+            caption : '',
+            production : '',
+        })
+        setStepTwo(false)
+        setUri('')
+        setUploading(false)
     }
   }
 
@@ -339,7 +212,7 @@ export default function CameraPrompt() {
   // Step 3 → Permission granted → show the camera
   return (
 <>
-<ToastMessage message={toastMessage} onComplete={() => setToastMessage('')} icon={<ImageIcon size={30} color={Colors.secondary} />} />
+<ToastMessage message={toastMessage} onComplete={() => setToastMessage('')} icon={dynamicIcon} />
     { showMediaPermissionPrompt ? (
         <View className="flex-1 mb-20 relative" >
         <NotificationModal
@@ -351,6 +224,54 @@ export default function CameraPrompt() {
         />
     </View>
     ) :(
+
+    stepTwo ? (
+        <Animated.View className="flex-1 pt-10 justify-start items-center gap-3 flex flex-col" style={translateStyle}>
+
+            { uploading ? (
+                <ActivityIndicator />
+            ) : (
+
+                <View className="w-full justify-center items-center relative px-14 gap-3">
+                    <TouchableOpacity onPress={handleReset} className="h-[26px] w-[26px] rounded-full p-3 bg-primaryLight justify-center items-center absolute right-[160px] z-10 top-1" >
+                        <X color={Colors.mainGray} className="" />
+                    </TouchableOpacity>
+                    <Image
+                        source={uri}
+                        contentFit="cover"
+                        width={80}
+                        height={120}
+                        style={{overflow:'hidden', borderRadius:10, position:'relative'}}
+                    />
+                    <View className="pt-10 relative gap-3">
+                        <TextInput 
+                            value={inputs.production}
+                            onChangeText={(text) => handleInputs('caption', text) }
+                            placeholder="Production name if allowed to share (will default to 'Undisclosed' if empty)"
+                            multiline
+                            placeholderTextColor={Colors.mainGrayDark}
+                            maxLength={200}
+                            className="bg-primaryDark relative w-[300px] max-h-[75px] px-4 py-4 rounded-xl text-mainGray  justify-start items-start "
+                        />
+                        <TextInput 
+                            value={inputs.caption}
+                            onChangeText={(text) => handleInputs('caption', text) }
+                            placeholder="Caption"
+                            multiline
+                            placeholderTextColor={Colors.mainGrayDark}
+                            maxLength={200}
+                            className="bg-primaryDark relative w-[300px] min-h-[100px] max-h-[200px] px-4 py-4 rounded-xl text-mainGray  justify-start items-start "
+                        />
+                        <Text className="absolute bottom-3 right-3 text-mainGray">{inputs.caption.length} / 200</Text>
+                    </View>
+                    <View className="w-full justify-end items-end">
+                        <ArrowNextButton onPress={handlePost}/>
+                    </View>
+                </View>
+            ) }
+
+            </Animated.View>
+    ) : (
 
     <CameraView
       style={{ flex: 1, position:"relative", justifyContent:'center ', alignItems:'center', borderRadius:30, overflow:'hidden', marginHorizontal:15, marginBottom:15}}
@@ -387,7 +308,7 @@ export default function CameraPrompt() {
                 <TouchableOpacity onPress={savePhoto} className=" bg-primary opacity-50 rounded-full p-3">
                     <Download size={30} color={Colors.mainGray} />
                 </TouchableOpacity>
-                <TouchableOpacity className=" bg-primary opacity-50 rounded-full p-3">
+                <TouchableOpacity onPress={handleStepTwo} className=" bg-primary opacity-50 rounded-full p-3">
                     <Check size={30} color={Colors.mainGray} />
                 </TouchableOpacity>
                 </>
@@ -430,6 +351,8 @@ export default function CameraPrompt() {
         </View>
             
     </CameraView>
+    )
+
     )}
     </>
   );

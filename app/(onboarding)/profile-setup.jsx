@@ -47,9 +47,7 @@ const ProfileSetup = () => {
         };
     });
 
-    const counterTranslate = useAnimatedStyle(() => ({
-        transform: [{ translateY: keyboard.height.value }],
-      }));
+  
     
     
     // const {createUserData,updateCreateUserData} = useCreateContext()

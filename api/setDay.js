@@ -11,10 +11,10 @@ export const createSetDay = async (data) => {
         })
         const resData = await res.json()
         if (!res.ok) throw new Error(resData?.error || "Request failed")
-        return resData
+        return {success : true, data : resData, message : "Successfully posted your SetDay"}
     } catch (err){
         console.error(err)
-        return err
+        return {success : false, message : err?.message || "Couldn't post your SetDay"}
     }
 }
 
