@@ -74,7 +74,6 @@ export const useGetSetDaysInfinite = (userId, limit=15) => {
             if (!userId) return
             const res =  await fetch(`${nodeServer.currentIP}/set-days/infinite?userId=${userId}&cursor=null&limit=${limit}`)
             const resData = await res.json()
-            console.log('resdata...',resData)
             setData(resData.items)
             setCursor(resData.nextCursor)
             setHasMore(!!resData.nextCursor)
@@ -112,7 +111,6 @@ export const useGetSetDay = (id, replyCommentId=null) => {
             const resData = await res.json()
             if (!res.ok) throw new Error(resData?.error || "Invalid request")
             setData(resData)
-            console.log('resdata..', resData.comment)
 
             const upvotedComments = ownerUser?.commentInteractions.filter( i => {
                 return resData?.comment.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
@@ -121,8 +119,6 @@ export const useGetSetDay = (id, replyCommentId=null) => {
                 return resData?.comment.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
 
-            console.log('upvotedcomments', upvotedComments)
-            console.log('downotedcomments', downvotedComments)
             setInteractedComments( {
                 upvotes : upvotedComments,
                 downvotes : downvotedComments

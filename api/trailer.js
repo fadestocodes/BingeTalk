@@ -9,7 +9,6 @@ export const useFetchTrailers =  () => {
 
 
     const fetchTrailers = async () => {
-        console.log("FETCHING TRAILERS!")
         
         try {
             const res = await fetch (`${nodeServer.currentIP}/trailers`)

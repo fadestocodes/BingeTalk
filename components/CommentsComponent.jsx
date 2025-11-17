@@ -26,7 +26,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
 
     let dialogue, thread, review, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, setDay;
 
-    console.log('FOM COMMENT COMPONENT: posttype', postType)
 
     if (postType === 'dialogue') {
         ({ dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleDialogue(Number(dialogueId)));
@@ -36,10 +35,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
         ({ data:activity, interactedComments, commentsData, loading : isLoading, refetch, setInteractedComments, setCommentsData } = useFetchActivityId(Number(activityId)))
     } else if (postType === 'review'){
         ({ review, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useFetchReview(Number(reviewId)))
-        console.log('commentsdata', commentsData)
     } else if (postType === 'setDay'){
         ({ data:setDay, interactedComments, commentsData, loading:isLoading, refetch, setInteractedComments, setCommentsData} = useGetSetDay(Number(setDayId)))
-        console.log('commentsdata', commentsData)
 
     }
 
@@ -110,7 +107,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log('hello')
         const commentData = {
             userId : Number(userId),
             dialogueId : Number(dialogueId) || null,
@@ -125,10 +121,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
             recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list ? list.user.id : activity ? activity.user.id : setDay && setDay.user.id ,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
-        console.log('commentdata', commentData)
     
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment)
 
 
         setInput('');
@@ -338,8 +332,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
 
 
     const handleThreeDots = (item, fromReply) => {
-        console.log('from threedots', item)
-        console.log('from reply?', fromReply)
 
         const fromOwnPost = item.userId === ownerUser?.id
         router.push({
@@ -362,7 +354,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
     <SafeAreaView className=' flex-1' style={{backgroundColor:Colors.primary, borderRadius:30}} >
 
      
-        <View className='flex-1'>
+        <View className='flex-1 pt-10'>
         {fromModal && (
         <View style={{ width:55, height:7, borderRadius:10,  backgroundColor:Colors.mainGray, position:'sticky', alignSelf:'center',  marginVertical:0}} />
         )}
@@ -378,7 +370,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
          
         >
 
-        <View style={{gap:10, marginVertical:0, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
+        <View style={{gap:10, marginVertical:0, paddingTop:20, paddingHorizontal:20, paddingBottom:100}}  >
           <View className='gap-3' >
 
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
@@ -403,8 +395,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
                         const shownReplies = visibleReplies[item.id] || 0;
 
 
-                        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === item.id )
-                        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === item.id )
+                        const alreadyUpvotedComment = interactedComments?.upvotes?.some( i => i.commentId === item.id )
+                        const alreadyDownvotedComment = interactedComments?.downvotes?.some( i => i.commentId === item.id )
                         
 
                         

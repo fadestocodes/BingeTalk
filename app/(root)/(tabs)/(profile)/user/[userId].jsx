@@ -8,7 +8,6 @@ import ProfilePage from '../../../../../components/Screens/ProfilePage'
 
 const userIdPage = () => {
     const { userId } = useLocalSearchParams();
-    console.log('userid...', userId)
     const { userData:user, refetchUserFetched:refetchUser, loading:isFetchingUser } = useFetchUserProfile(  userId )
 
 

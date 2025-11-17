@@ -131,7 +131,6 @@ export const useGetRecommendation =  (params, replyCommentId) => {
                 ratings = data.movie.ratings.length > 0 && data.movie.ratings
 
                 const checkAlreadyWatched = ownerUser.watchlistItems.some( i => i.movieId === data.movie.id)
-                console.log('checking allready watched...', checkAlreadyWatched)
                 setAlreadyInWatchlist(checkAlreadyWatched)
                 
             } else if (data.tv){
@@ -139,7 +138,6 @@ export const useGetRecommendation =  (params, replyCommentId) => {
                 tmdbId = data.tv.tmdbId
                 ratings = data.tv.ratings.length > 0 && data.tv.ratings
                 const checkAlreadyWatched = ownerUser.watchlistItems.some( i => i.tvId === data.tv.id)
-                console.log('checking allready watched...', checkAlreadyWatched)
                 setAlreadyInWatchlist(checkAlreadyWatched)
             }
             const directorParams = {
@@ -147,7 +145,6 @@ export const useGetRecommendation =  (params, replyCommentId) => {
                 tmdbId
             }
             const foundDirector = await findDirectorOrCreator(directorParams)
-            console.log('found director', foundDirector)
             setDirectorOrCreator(foundDirector)
 
             const totalOverallRatings = ratings ? ratings.reduce((sum,rating) => sum + rating.rating, 0) : null
@@ -243,7 +240,6 @@ export const acceptRecommendation = async (data) => {
     try {
         if (!data.recommenderId || !data.recommendationId || !data.type) throw new Error("Invalid params")
         const { recommendationId, type} = data
-    console.log('data is', data)
 
         const response = await apiFetch(`${nodeServer.currentIP}/recommendation/${recommendationId}?status=${type}`, {
             method : 'PATCH',

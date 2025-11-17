@@ -40,19 +40,15 @@ const Notification = () => {
     
 
   const handlePress = async (item) => {
-    console.log(item)
    
     setUnreadIds( prev => prev.filter( i => i !== item.id ))
     const readNotif = await markNotifRead( item.id, notifCount, updateNotifCount )
 
     // await refetch()
-    console.log('trying to router push on notif')
     if (item?.parentActivityId){
-      console.log('right here1')
       router.push(`/activity/${item?.parentActivityId}`)
 
     } else if (item?.activityType === 'RECOMMENDATION'){
-      console.log('right here2')
 
  
       router.push({
@@ -60,114 +56,91 @@ const Notification = () => {
         params:{ type : item.movie ? item.movie.id : item.tv.id, userId : ownerUser.id }
       })
     } else if (item?.threads  && !item?.commentId){
-      console.log('right here3')
 
       router.push({
         pathname:`/threads/${item?.threads.id}`,
       })
     } else if (item?.dialogue && !item?.commentId){
-      console.log('right here4')
 
       router.push({
         pathname:`/dialogue/${item?.dialogue.id}`,
       })
     } else if (item?.listId && !item?.commentId ) {
-      console.log('right here5')
       router.push(`/list/${item?.listId}`)
 
     } else if (item?.recommendation){
-      console.log('right here6')
       router.push({
         pathname : `/user/recommendations/${item?.recommendation.id}`,
         params:{ type : item.movie ? item.movie.id : item.tv ? item.tv.id : item.recommendation.movie ? item.recommendation.movieId : item.recommendation.tvId, userId : ownerUser.id }
       })
 
     } else if (item?.comment?.parentComment?.recommendationId){
-      console.log('right here7')
 
       router.push({
         pathname : `/user/recommendations/${item?.comment.parentComment.recommendationId}`,
         params:{ type : item.comment.recommendation.movieId ?  item.comment.recommendation.movieId : item.comment.recommendation.tvId, userId : ownerUser.id }
       })
     } else if (item?.tv){
-      console.log('right here8')
 
       router.push(`/tv/${item?.tv.tmdbId}`)
     } else if (item?.movie){
-      console.log('right here9')
 
       router.push(`/movie/${item?.movie.tmdbId}`)
     } else if (item?.castCrew){
-      console.log('right here10')
 
       router.push(`/cast/${item?.castCrew.tmdbId}`)
     } else if (item?.activityType === 'FOLLOW'){
-      console.log('right here11')
 
       router.push(`/user/${item?.userId}`)
     } else if (item?.commentId && item?.comment?.dialogueId){
-      console.log('right here12')
 
       router.push({
         pathname:`/dialogue/${item?.comment.dialogueId}`,
         params:{ replyCommentId: item?.comment.id}
       })
     }else if (item?.comment?.parentComment && item?.comment?.parentComment?.threadId){
-      console.log('right here13')
 
       router.push({
         pathname:`/threads/${item?.comment.parentComment.threadId}`,
         params:{ replyCommentId: item?.comment.parentComment.id}
       })
     } else if (item?.comment?.parentComment && item?.comment?.parentComment?.dialogueId){
-      console.log('right here14')
 
       router.push({
         pathname:`/dialogue/${item?.comment.parentComment.dialogueId}`,
         params:{ replyCommentId: item?.comment.parentComment.id}
       })
     } else if (item?.comment?.parentComment && item?.comment?.parentComment?.listId)  {
-      console.log('right here15')
 
-      console.log("overhereee")
       router.push({
         pathname:`/list/${item?.comment.parentComment.listId}`,
         params:{ replyCommentId: item?.comment.parentComment.id}
       })
     } else if (item?.commentId && item?.comment?.threadId){
-      console.log('right here16')
 
       router.push({
         pathname:`/threads/${item?.comment.threadId}`,
         params:{ replyCommentId: item?.comment.id}
       })
     } else if (item?.commentId && item?.comment?.listId){
-      console.log('right here17')
-
-      console.log("righthereee")
       router.push({
         pathname:`/list/${item?.comment.listId}`,
         params:{ replyCommentId: item?.comment.id}
       })
     } else if (item?.comment?.recommendationId){
-      console.log('here on 17.5')
       router.push({
         pathname : `/user/recommendations/${item.comment.recommendationId}`,
         params:{ type : item.comment.recommendation.movieId ?  item.comment.recommendation.movieId :  item.comment.recommendation.tvId, userId : ownerUser.id }
       })
     }  else if(item?.comment?.activityIdCommentedOn){
-      console.log('right here18')
 
       router.push(`activity/${item?.comment.activityIdCommentedOn}`)
     } else if (item?.comment?.parentComment?.activityIdCommentedOn){
-      console.log('right here19')
 
       router.push(`activity/${item?.comment.parentComment.activityIdCommentedOn}`)
     } else {
-      console.log("NOTHINGHERE")
 
     }
-    console.log('somethign probably failed')
   }
 
   const handleFollowBack = async (checkFollow, item) => {

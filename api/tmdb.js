@@ -326,7 +326,6 @@ export const findDirectorOrCreator = async (params) => {
       body : JSON.stringify( params )
     })
     const data = await response.json()
-    console.log("FOUNDDIRECTOR". data)
     return data
   } catch (err){
     console.log(err)

@@ -47,4 +47,6 @@ export const AppleIcon = (props) => <FontAwesome name="apple" {...props} />;
 export const PlaylistAdd = (props) => <MaterialCommunityIcons name="playlist-plus" {...props} />;
 export const PlaylistCheck = (props) => <MaterialIcons name="playlist-add-check" {...props} />;
 export const PlaylistMinus = (props) => <MaterialCommunityIcons name="playlist-minus" {...props} />;
+export const DirectorChairIcon = (props) => <MaterialCommunityIcons name="chair-rolling" {...props} />;
+export const ClapperboardIcon = (props) => <FontAwesome6 name="clapperboard" {...props} />;
 

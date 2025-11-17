@@ -10,7 +10,6 @@ const markBadgeNotificationSeen = async (userId, notifId) => {
 
 
     try {
-        console.log(`userid: ${userId}, notifId: ${notifId}`)
         if (!userId || !notifId) throw new Error("Invalid parameters")
         const response = await fetch(`${nodeServer.currentIP}/user/${userId}/badge-notification/${notifId}`, {
             method : "PATCH",

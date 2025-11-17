@@ -14,6 +14,7 @@ import ArrowNextButton from "./ArrowNextButton";
 import { pickSingleImage } from "../../lib/pickImage";
 import { createSetDay } from "../../api/setDay";
 import { uploadToS3 } from "../../api/aws";
+import { maybeAskForReview } from "../../lib/maybeAskForReview";
 
 export default function CameraPrompt() {
   const [showCamera, setShowCamera] = useState(false);
@@ -87,7 +88,6 @@ export default function CameraPrompt() {
         // if (!cameraPermission?.granted) return;
         // if (!mediaPermission?.granted) return;
         const photo = await cameraRef.current.takePictureAsync();
-        console.log("Photo captured:", photo);
         // Save to gallery (optional)
         // await MediaLibrary.createAssetAsync(photo.uri);
         setUri(photo.uri);
@@ -98,13 +98,10 @@ export default function CameraPrompt() {
   };
 
   const savePhoto = async () => {
-    console.log('mediapermission', mediaPermission)
     if (!mediaPermission.granted){
-        console.log('here')
         setShowMediaPermissionPrompt(true)
     }
     const res = await MediaLibrary.createAssetAsync(uri);
-    console.log('res...',res)
     if (res){
         setToastMessage("Successfully saved media")
         setDynamicIcon(<ImageIcon size={30} color={Colors.secondary} />)
@@ -153,7 +150,6 @@ export default function CameraPrompt() {
 
 
         if (s3res){
-            console.log(s3res)
 
             const data = {
                 caption : inputs.caption.trim(),
@@ -178,6 +174,7 @@ export default function CameraPrompt() {
         setStepTwo(false)
         setUri('')
         setUploading(false)
+        await maybeAskForReview()
     }
   }
 

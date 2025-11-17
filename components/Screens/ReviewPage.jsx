@@ -36,7 +36,6 @@ const ReviewScreen = () => {
 
     const { review, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useFetchReview(Number(reviewId), Number(replyCommentId))
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
-    console.log('THEREVIEW', review)
 
 
 
@@ -309,8 +308,6 @@ const ReviewScreen = () => {
     }
 
     const handleThreeDots = (item, fromReply) => {
-        console.log('from threedots', item)
-        console.log('from reply?', fromReply)
 
         const fromOwnPost = item.userId === ownerUser?.id
         router.push({

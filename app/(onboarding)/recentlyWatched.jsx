@@ -20,7 +20,6 @@ const RecentlyWatched = () => {
     const [uploading, setUploading] = useState(false)
     const {user} = useGetUser()
     const router = useRouter()
-    console.log('user from here', user)
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';

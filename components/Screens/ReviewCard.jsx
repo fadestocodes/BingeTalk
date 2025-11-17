@@ -72,7 +72,6 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
             if (fromHome){
                 router.push(`(home)/review/${item.id}`)
             } else {
-                console.log('itemmm', item)
                 router.push(`/review/${item.id}`)
             }
         }
@@ -120,7 +119,6 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
                 description,
                 recipientId : item.user.id
             }
-            console.log("DATAFORREVIEWINTERACTION", data)
             const updatedReview = await reviewInteraction(data)
             refetchOwner();
         }
@@ -139,7 +137,6 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
     
         const handleComment = (item) => {
             refetchOwner()
-            console.log('COMMENT ON REVIEW', item)
           
             if (fromHome){
                 router.push({
@@ -184,7 +181,7 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
     
       return (
         <View className='w-full' >
-                        <TouchableOpacity disabled={isReviewPage} onPress={()=>{console.log('from review page!...');handleReviewPress(item)}}  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
+                        <TouchableOpacity disabled={isReviewPage} onPress={()=>{handleReviewPress(item)}}  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
                             <View className='gap-3 '>
                                 <View className='gap-3'>
                                     <View className='flex-row w-full gap-2 justify-between items-center '>

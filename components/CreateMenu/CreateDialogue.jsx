@@ -83,7 +83,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
       
         mentions.forEach( mention => {
             if (!input.includes(mention.pascalName)){
-                console.log(' the mentino to remove is ', mention.pascalName)
+                (' the mentino to remove is ', mention.pascalName)
             }
         }  )
         setMentions(prev => prev.filter( item => input.includes(item.pascalName) ) )
@@ -121,7 +121,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
         const urlMatch = text.match(urlPattern);
         if (urlMatch) {
-            console.log('url match!',urlMatch)
             let normalizedURL = ''
             let url = urlMatch[0];  // Get the matched URL
           if (!/^https?:\/\//i.test(url)) {
@@ -136,7 +135,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
         }
 
         normalizedURL = new URL(url).toString();
-        console.log('normalized url ', normalizedURL)
           await handleURLPreview(normalizedURL)
 
 
@@ -146,8 +144,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
 
     const handlePost = async () => {
-        console.log('trying to post...')
-        console.log('tagsss', tags)
 
         const validationResults = createDialogueSchema.safeParse( {content:input} )
         if (!validationResults.success) {
@@ -161,7 +157,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
         setUploadingPost(true);
         const mentionsForPrisma = await Promise.all(
             dialogueItems.map(async (mention) => {
-                // console.log('MENTIONWHILECREATING', mention)
                 const type = mention.media_type;
                 const mentionType = mention.media_type === 'movie' ? 'MOVIE' : mention.media_type === 'tv' ? 'TV' : 'CASTCREW'
                 const tmdbId = mention.id;
@@ -181,7 +176,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
                 try {
                     const entity = await findOrCreateEntity(type, movieData, castData);
-                    console.log("EACHENTITY", entity)
                     return {
                       userId,
                       tmdbId,
@@ -198,7 +192,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             })
           ).catch((err)=>{
           })
-        // console.log('tag name', tags[0].name)
         const postData = {
             userId,
             content : input.trim(),
@@ -207,9 +200,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             image,
             url : url.link || null
         }
-        console.log('POSTDATA', postData)
         const newPost = await createDialogue(postData); 
-        console.log("POSTRESPONSE", newPost)
 
         setMessage(newPost.message)
         setUploadingPost(false);
@@ -232,7 +223,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
     
 
     const handleLinkPress = async () => {
-        console.log('trying to open link')
         const supported = await Linking.canOpenURL(url.link);
         if (supported) {
             await Linking.openURL(url.link); // Opens in default browser

@@ -139,10 +139,7 @@ const addToListModal = () => {
     }
 
     const handleInputLayout = (event) => {
-        // const { y, height } = event.nativeEvent.layout
-        // console.log(`y is: ${y}, height is: ${height}`)
-        // Get the position of the TextInput relative to the parent and set the height for translation
-        // setInputHeight(y + height)
+      
 
             inputRef.current.measureInWindow((x, y, width, height) => {
               setInputHeight(y + height); // Set the height as the combined value of y and height

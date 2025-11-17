@@ -13,7 +13,6 @@ export const checkCriticBadgeProgress = async (reviewId, userId) => {
             body : JSON.stringify({reviewId, userId})
         })
         const result = await response.json()
-        console.log('result', result)
         if (!response.ok){
             throw new Error("Unexpected error")
         }

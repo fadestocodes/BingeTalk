@@ -86,7 +86,6 @@ const ProfileSetup = () => {
 
 
     const handleInputs = async ( name, value ) => {
-        console.log(name,value)
         setInputs(prev => ({
         ...prev,
         [name]: value

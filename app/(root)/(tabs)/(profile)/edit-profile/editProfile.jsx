@@ -21,14 +21,14 @@ const editProfile = () => {
     const {user} = useGetUser()
     const {userFull:fetchedUser, refetch} = useGetUserFull(user?.id)
     const router = useRouter();
-    console.log('fetched user...', fetchedUser)
     const [ image, setImage ] = useState(fetchedUser?.profilePic);
     const [ loadingImage, setLoadingImage] = useState(false) 
     const [ inputs, setInputs ] = useState({
         firstName : fetchedUser?.firstName || '',
         lastName : fetchedUser?.lastName || '',
         bio : fetchedUser?.bio || '',
-        bioLink : fetchedUser?.bioLink || ''
+        bioLink : fetchedUser?.bioLink || '',
+        accountType : fetchedUser?.accountType || ''
     })
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -81,8 +81,6 @@ const editProfile = () => {
     }
 
     const handleSave = async () => {
-        console.log("handling save")
-        console.log('inputs biuo link', inputs.bioLink)
 
         let normalizedURL = ''
         

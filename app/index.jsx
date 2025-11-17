@@ -221,13 +221,12 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
 import { Redirect } from "expo-router";
-import { View, Text, TouchableOpacity, Platform } from "react-native";
+import { View, Text, TouchableOpacity, Platform, ActivityIndicator } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Colors } from "../constants/Colors";
 import * as Notifications from "expo-notifications";
-import * as StoreReview from "expo-store-review";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import Animated, { Easing, withTiming, useSharedValue } from "react-native-reanimated";
@@ -238,26 +237,7 @@ import IntroComponent from "../components/IntroScreen";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const REVIEW_KEY = "last_review_prompt";
-const REVIEWED_KEY = "user_reviewed";
-const DAYS_BEFORE_NEXT_PROMPT = 7;
 
-async function maybeAskForReview() {
-  const alreadyReviewed = await AsyncStorage.getItem(REVIEWED_KEY);
-  if (alreadyReviewed) return;
-
-  const lastPrompt = await AsyncStorage.getItem(REVIEW_KEY);
-  const now = Date.now();
-
-  if (!lastPrompt || now - parseInt(lastPrompt, 10) > DAYS_BEFORE_NEXT_PROMPT * 86400000) {
-    const canShow = await StoreReview.hasAction();
-    if (canShow) {
-      await StoreReview.requestReview();
-      await AsyncStorage.setItem(REVIEW_KEY, now.toString());
-      await AsyncStorage.setItem(REVIEWED_KEY, "true");
-    }
-  }
-}
 
 // ✅ Custom hook version of your notification setup
 function useInitializeNotifications(router) {
@@ -294,7 +274,6 @@ export default function Welcome() {
 
   const [expoPushToken, setExpoPushToken] = useState(null);
   const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
-  console.log("projectId resolved:", projectId);
 
   const logoOpacity = useSharedValue(0);
   const logoTranslateY = useSharedValue(60);
@@ -322,8 +301,6 @@ export default function Welcome() {
 
         const token = await Notifications.getExpoPushTokenAsync({ projectId });
         const pushToken = token?.data ?? token; // token could be string directly
-        console.log('token...', token)
-        console.log('push token...', pushToken)
 
         const existingToken = await AsyncStorage.getItem(`${pushToken}-${userSimple.id}`)
         if (existingToken) {
@@ -339,7 +316,6 @@ export default function Welcome() {
           token: token.data,
           deviceType: Platform.OS,
         });
-        console.log('response trying to post push token...', res)
 
         await AsyncStorage.setItem(`${pushToken}-${userSimple.id}`, pushToken)
 
@@ -349,9 +325,15 @@ export default function Welcome() {
     };
 
     getPushNotificationPermissions();
-    maybeAskForReview();
   }, [userSimple, projectId]);
 
+
+  if (!userSimple) return <ActivityIndicator />
+
+  if (userSimple && !userSimple.accountType){
+    return <Redirect href ="(onboarding)/step1?noAccountType=true" />
+  }
+  
   if (userSimple) {
     return <Redirect href="(home)/homeIndex" />;
   }

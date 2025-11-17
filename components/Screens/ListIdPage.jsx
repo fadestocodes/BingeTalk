@@ -65,7 +65,6 @@ const ListIdScreen = () => {
 
 
     const handleInteraction =  async (type, item) => {
-        console.log(item)
         if (type === 'upvotes'){
             setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
             if (already.upvoted){
@@ -106,16 +105,13 @@ const ListIdScreen = () => {
             description,
             recipientId : item.user.id
         }
-        console.log('data', data)
         const updatedList = await listInteraction(data)
-        console.log('updatedlist', updatedList)
         refetch();
     }
 
     
 
     const handlePress = (item) => {
-        console.log('listitempressed', item)
         
         if ( item.movie ){
             router.push(`/movie/${item.movie.tmdbId}`)
@@ -175,9 +171,7 @@ const ListIdScreen = () => {
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
     
-        console.log('commentData,', commentData)
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment)
         setInput('');
         setReplyingTo(null)
         setReplying(false)
@@ -197,10 +191,8 @@ const ListIdScreen = () => {
         if ( type === 'upvotes' ){
             description = `upvoted your comment "${comment.content}"`
             if (isAlready){
-                console.log("CURRENTINTERACTEDCOMMENTS", interactedComments)
                 setInteractedComments(prev => {
                     const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
-                    console.log('NEWINTERCTEDCOMMENTS',updatedUpvotes )
                     return {
                         ...prev,
                         upvotes: updatedUpvotes
@@ -376,17 +368,13 @@ const ListIdScreen = () => {
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
-        console.log("INTERACTED COMMENT DATA", updatedComment)
         
         
     }
 
     const handleThreeDots = (item, fromReply) => {
-        console.log('from threedots', item)
-        console.log('from reply?', fromReply)
 
         const fromOwnPost = list?.user?.id === ownerUser?.id
-        console.log('fromOwnPOSTTT', fromOwnPost)
         router.push({
             pathname:'/postOptions',
             params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : list?.id, postUserId : item.userId, postType : 'LIST'}

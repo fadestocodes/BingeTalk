@@ -6,7 +6,6 @@ import { Colors } from '../../constants/Colors'
 export default function AuthRoutesLayout() {
   
   const {isSignedIn} = useCheckSignedIn()
-  console.log(isSignedIn)
 
   if (isSignedIn) {
     return <Redirect href='/' />

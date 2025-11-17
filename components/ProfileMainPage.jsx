@@ -185,7 +185,7 @@ import { useGetUser, useGetUserFull } from '../api/auth'
                 <RefreshControl
                 tintColor={Colors.secondary}
                 refreshing={isFetchingUser}
-                onRefresh={()=>{console.log('refreshinguser...');refetchUser(); refetchFeed()}} 
+                onRefresh={()=>{refetchUser(); refetchFeed()}} 
                 />
                 }
             onEndReached={()=> {

@@ -30,6 +30,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { getYear } from '../../../../lib/formatDate';
 import { markMovieWatchlist } from '../../../../api/movie';
 import { markTVWatchlist } from '../../../../api/tv';
+import SetDayCard from '../../../../components/SetDayCard';
 
 
 // import { ratingToReview } from '../../constants/Images' 
@@ -53,12 +54,10 @@ const homeIndex = () => {
     const [ loading, setLoading ] = useState(true);
     // const [ hasMore, setHasMore ] = useState(true);
     const [ hasMoreFeed, setHasMoreFeed ] = useState(true)
-    const [ hasMoreThreads, setHasMoreThreads ] = useState(true)
-    const [ hasMoreRotations, setHasMoreRotations ] = useState(true)
+    const [ hasMoreSetDays, setHasMoreSetDays ] = useState(true)
     // const [ cursor, setCursor ] = useState(null);
     const [ feedCursor, setFeedCursor ] = useState(null);
-    const [ threadCursor, setThreadCursor ] = useState(null);
-    const [ rotationCursor, setRotationCursor ] = useState(null);
+    const [ setDaysCursor, setSetDaysCursor ] = useState(null);
     const [ unreadNotifs, setUnreadNotifs ]  = useState([])
     const flatListRef = useRef(null);
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -71,7 +70,7 @@ const homeIndex = () => {
 
 
     const getFeed = async () => {
-      if (!hasMoreFeed && !hasMoreThreads &&!hasMoreRotations  )return 
+      if (!hasMoreFeed && !hasMoreSetDays  )return 
 
         try {
           setLoading(true)
@@ -82,16 +81,13 @@ const homeIndex = () => {
           console.log('error fetchign notifs')
         }
         try {
-            const request = await apiFetch(`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=${feedCursor}&threadCursor=${threadCursor}&rotationCursor=${rotationCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreThreads=${hasMoreThreads}&hasMoreRotations=${hasMoreRotations}`);
+            const request = await apiFetch(`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=${feedCursor}&setDaysCursor=${setDaysCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreSetDays=${hasMoreSetDays}`);
             const response = await request.json();
             setData( prev => [ ...prev, ...response.items ] );
             setFeedCursor(response.nextFeedCursorServer)
-            setThreadCursor(response.nextThreadCursorServer)
-            setRotationCursor(response.nextRotationCursorServer)
-            // setHasMore(!!response.hasMore)
-            setHasMoreFeed(response.hasMoreFeedServer)
-            setHasMoreThreads(response.hasMoreThreadsServer)
-            setHasMoreRotations(response.hasMoreRotationsServer)
+            setSetDaysCursor(response.nextSetDaysCursorServer)
+            setHasMoreFeed(!!response.nextFeedCursorServer)
+            setHasMoreSetDays(!!response.nextSetDaysCursorServer)
 
 
         } catch (err) {
@@ -108,18 +104,13 @@ const homeIndex = () => {
         const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
         const unread = notifsData.filter( item => item.isRead === false)
         setUnreadNotifs(unread)
-        const request = await apiFetch (`${nodeServer.currentIP}/feed?limit=15&feedCursor=null&threadCursor=null&rotationCursor=null&hasMoreFeed=true&hasMoreThreads=true&hasMoreRotations=true`);
+        const request = await apiFetch(`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=null&setDaysCursor=null&hasMoreFeed=true&hasMoreSetDays=true`);
         const response = await request.json();
-        console.log('responsehere',request.status)
         setData( response.items );
         setFeedCursor(response.nextFeedCursorServer)
-        setThreadCursor(response.nextThreadCursorServer)
-        setRotationCursor(response.nextRotationCursor)
-        // setHasMore(!!response.hasMore)
-        setHasMoreFeed(response.hasMoreFeedServer)
-        setHasMoreThreads(response.hasMoreThreadsServer)
-        setHasMoreRotations(response.hasMoreRotations)
-
+        setSetDaysCursor(response.nextSetDaysCursorServer)
+        setHasMoreFeed(!!response.nextFeedCursorServer)
+        setHasMoreSetDays(!!response.nextSetDaysCursorServer)
 
     } catch (err) {
         console.log(err)
@@ -151,7 +142,7 @@ const homeIndex = () => {
 
     useEffect(() => {
         if (ownerUser){
-          getFeed()
+          refetchFeed()
         }
         checkWhatsNew()
         
@@ -192,7 +183,6 @@ const homeIndex = () => {
       } else if (item.feedFrom === 'threadFromWatched' || item.feedFrom === 'threadFromRotations'){
         router.push(`(home)/threads/${item.id}`)
       } else if (item.review){
-        console.log('tryingtorouterpush')
         router.push(`(home)/review/${item.id}`)
       }
     } 
@@ -241,6 +231,10 @@ const homeIndex = () => {
       if (item.tv){
         router.push(`/tv/${item.tv.tmdbId}`)
       }
+    }
+
+    const handleSetDayPress = (item) => {
+      router.push(`/setDay/${item.id}`)
     }
 
 
@@ -307,7 +301,7 @@ const homeIndex = () => {
                     <RefreshControl
                       tintColor={Colors.secondary}
                       refreshing={loading}
-                      onRefresh={refetchFeed}
+                      onRefresh={selected === 'Feed' ? refetchFeed : selected === "Watchlist" ? refetchWatchlist : selected === 'Interested' && refetchInterested}
                     />
                   }
                   removeClippedSubviews
@@ -323,7 +317,7 @@ const homeIndex = () => {
 
                   return (
                     selected === 'Feed' ? (
-                      item.feedFrom === 'activity' && (
+                      item.feedFrom === 'activity' ? (
                         <View>
                           {item.postType === 'dialogue' ? (
                             <TouchableOpacity onPress={() => { refetchOwner(); handlePress(item); }}>
@@ -338,11 +332,18 @@ const homeIndex = () => {
                               <ReviewCard review={item.review} fromHome={true} isBackground={true} />
                             </TouchableOpacity>
                           ) : (
+                          
                             <TouchableOpacity onPress={() => { refetchOwner(); router.push(`(home)/activity/${item.id}`); }}>
                               <ActivityCard2 activity={item} fromHome={true} isBackground={true} />
                             </TouchableOpacity>
                           )}
                         </View>
+                      ) : (
+                        item.feedFrom === 'setDays' && (
+                          <TouchableOpacity onPress={()=>handleSetDayPress(item)}>
+                            <SetDayCard setDay={item} isBackground={true} fromHome={true}  />
+                          </TouchableOpacity>
+                        )
                       )
                     ) : (
                       <TouchableOpacity onPress={()=>{console.log('form other',item);handleTitlePress(item)}} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>

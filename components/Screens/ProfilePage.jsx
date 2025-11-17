@@ -85,7 +85,6 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
         }
         if (isFollowing){
             const unfollow = await unfollowUser( followData )
-            console.log('unfollow res...', unfollow)
             setFollowCounts(prev => ({
                 ...prev,
                 followers : prev.followers - 1,
@@ -98,7 +97,6 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             }))
         }
         setIsFollowing(prev => !prev)
-        console.log('from  here...')
     }
     
     const handleEditProfile = () => {
@@ -194,10 +192,10 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                     <View className='gap-0 flex flex-col '>
                         <View className='flex flex-row gap-3 justify-center items-end'>
                             <Text style={{ alignSelf: 'baseline' }}  className='text-secondary font-pbold text-3xl '>{userFetched.firstName}{userFetched?.lastName && ` ${userFetched.lastName}`}</Text>
-                            { isFilmmaker ? (
+                            { userFetched?.accountType === 'FILMMAKER' && userFetched?.filmRole?.role ? (
                                 <Text style={{ alignSelf: 'baseline', lineHeight: 24 }}
                                 className='text-mainGray font-semibold'>{unparseDept(userFetched.filmRole.role)}</Text>
-                            ):(
+                            ): userFetched?.accountType === 'FILMLOVER' && (
                                 <Text style={{ alignSelf: 'baseline', lineHeight: 24 }}
                                 className='text-mainGray font-semibold'>Film Lover</Text>
                             )}

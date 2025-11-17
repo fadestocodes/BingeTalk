@@ -188,7 +188,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
 
         let levelUpData = null
         if (conversationalistProgression?.hasLeveledUp){
-            console.log('🎊 Congrats you leveled up the Conversationalist badge!')
+            ('🎊 Congrats you leveled up the Conversationalist badge!')
             levelUpData = {
                 badgeType: 'CONVERSATIONALIST',
                 level: `${conversationalistProgression.newLevel}`,

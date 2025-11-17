@@ -329,13 +329,10 @@ export const useFetchRecentlyWatched = (userId) => {
         const getWatchlistItems =  async (  ) => {
             // if ( !hasMore  ) return
             if (!hasMore) return;
-            console.log('userid', userId)
 
             try {
                 const response = await apiFetch (`${nodeServer.currentIP}/user/watchlist?userId=${userId}&cursor=${cursor}&limit=${limit}`)
                 const result = await response.json();
-                console.log('result', result)
-                console.log('data', data)
                 setData(prev => [...prev, ...result.items]);
                 setCursor(result.nextCursor)
                 setHasMore( !!result.nextCursor )
@@ -510,11 +507,9 @@ export const useGetRecommendationsReceived = (userId, limit=15) => {
             
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            console.log('result', result.items)
             // setData(reset ? result.items : prev => [...prev, ...result.items]);
             const resultFiltered = result.items.filter(i =>  i.status === 'PENDING')
 
-            console.log('pending length...', resultFiltered.length)
             setData( prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
             setHasMore( !!result.nextCursor )
@@ -934,11 +929,9 @@ export const useGetFollowingListInfinite = (userId, limit) => {
                 ...i,
                 alreadyFollowing : isFollowingId.includes( i?.follower?.id ) 
             }) )
-            console.log('check follwoign resutsl', checkFollowResults)
             setData(prev => [...prev,...checkFollowResults])
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
-            console.log('has more?', !!results.nextCursor)
            
 
         } catch (Err){
@@ -1038,7 +1031,6 @@ export const useGetUserRatings = (userId, limit) => {
         try {
             const request = await apiFetch(`${nodeServer.currentIP}/user/ratings?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const response = await request.json()
-            console.log('responsehere', response)
             setData(prev => [...prev, ...response.items])
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
@@ -1074,7 +1066,6 @@ export const findUniqueRotations = async () => {
     try {
         const res = await apiFetch(`${nodeServer.currentIP}/user/unique-rotations`)
         const data = await res.json()
-        console.log("UNIQUROTATIONS", data)
         return data
     } catch(err){
         console.log(err)
@@ -1441,5 +1432,24 @@ export const updateLocalUserData = async (data) => {
 
     } catch(err){
         console.error(err)
+    }
+}
+
+
+export const updateAccountType = async (data) => {
+
+    try {
+        const res = await apiFetch(`${nodeServer.currentIP}/user/account-type`, {
+            method : 'PATCH',
+            headers : {'Content-type' : 'application/json'},
+            body : JSON.stringify(data)
+        })
+        const resData = await res.json()
+        if (!res.ok) throw new Error(resData?.error || "Invalid response")
+            
+        return {success : true, user : resData}
+    } catch (err){
+        console.error(err)
+        return {success :false}
     }
 }

@@ -143,13 +143,11 @@ const EditListScreen = () => {
         const validationResults = createListSchema.safeParse( { ...inputs,  listTitle: inputs.title } )
         if (!validationResults.success) {
             const errorObj = validationResults.error.format();
-            console.log(errorObj)
             setErrors(errorObj.listTitle._errors[0] )
             return 
             } else {
               setErrors(null)
             }
-            console.log('madeithere')
 
         const postData = {
             title : inputs.title.trim() ,
@@ -159,7 +157,6 @@ const EditListScreen = () => {
             listId : list.id
 
         }
-        console.log('postdataforupdatelist', postData)
         const newList = await updateList(postData)
         setSearchQuery('')
         setMessage(newList.message)

@@ -22,6 +22,7 @@ import { useGetUser } from '../../api/auth';
 
 import { useNotificationCountContext } from '@/lib/NotificationCountContext';
 import ToastMessage from '../ui/ToastMessage';
+import { maybeAskForReview } from '../../lib/maybeAskForReview';
 
 
 const RecommendationListScreen = () => {
@@ -128,6 +129,9 @@ const RecommendationListScreen = () => {
             setToastIcon(< Trash2 color={Colors.secondary} size={30} />)
             setToastMessage("Removed recommendation")
         }
+
+        await maybeAskForReview()
+
         
     }
 
@@ -149,10 +153,11 @@ const RecommendationListScreen = () => {
         removeReceivedItems(item)
 
         if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
-            console.log('from this block', pendingRecsNotifCount)
             updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
-            console.log('made it here...')
         }
+
+        await maybeAskForReview()
+
        
     }
 
@@ -181,6 +186,7 @@ const RecommendationListScreen = () => {
         
 
         await checkTastemakerBadge(item.recommenderId)
+        await maybeAskForReview()
         
 
     }
@@ -210,7 +216,7 @@ const RecommendationListScreen = () => {
                         <Text className=' font-pmedium' style={{ color : tab==='accepted' ? Colors.primary : 'white' }}>Accepted</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>{setTab('pending') }} style={{ borderRadius:15, backgroundColor:tab==='pending' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
-                        <Text className=' font-pmedium' style={{ color : tab==='pending' ? Colors.primary : 'white' }}>Pending</Text>
+                        <Text className=' font-pmedium' style={{ color : tab==='pending' ? Colors.primary : 'white' }}>Pending{recommendationsReceived.length > 0 && ` (${recommendationsReceived.length})`}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>{setTab('sent') }} style={{ borderRadius:15, backgroundColor:tab==='sent' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
                         <Text className=' font-pmedium' style={{ color : tab==='sent' ? Colors.primary : 'white' }}>Sent</Text>
