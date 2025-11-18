@@ -346,7 +346,6 @@ export const checkExistingUser = async (checkData) => {
 
 
 export const signInAppleAuth = async (data) => {
-  // console.log('createuserdata', createUserData)
   try {
     ('data to login', data)
     if (!data?.email){
@@ -361,18 +360,10 @@ export const signInAppleAuth = async (data) => {
       body : JSON.stringify(data)
     })
     if (res.status === 202) {
-      // const appleId = await AsyncStorage.setItem('appleId', data.appleId || '');
-      // console.log('appleId...', appleId)
       await AsyncStorage.setItem('apple-email', data.email || '');
       await AsyncStorage.setItem('apple-fullName', JSON.stringify(data.fullName || {}));
       
-      // updateCreateUserData({
-      //   ...createUserData,
-      //   appleId : data.appleId,
-      //   email : data.email,
-      //   firstName : data?.fullName?.givenName ,
-      //   lastName : data?.fullName?.familyName
-      // })
+     
       return { status: 202, data: responseData }
     };
     if (!res.ok) throw new Error("Error trying to login with apple auth")

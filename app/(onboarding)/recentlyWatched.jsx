@@ -85,7 +85,6 @@ const RecentlyWatched = () => {
                             showsVerticalScrollIndicator={false}
                             keyExtractor={item=>item.id}
                             renderItem={({item}) => {
-                                // console.log(item)
                                 const isWatched = watched.some( i => i.id === item.id )
                                 return (
                                     <View className='flex flex-row gap-5 justify-between items-center w-full'>

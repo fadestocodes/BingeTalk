@@ -40,13 +40,13 @@ const ShareProfileCard = forwardRef(({ user, setDaysData, totalWorked=0 ,loading
             />
 
         </View>
-        <View style={{flexDirection:'row', gap:15, justifyContent:'center', alignItems:'flex-end'}} >
+        <View style={{flexDirection:'row', gap:10, justifyContent:'center', alignItems:'flex-end'}} >
             <Text style={styles.name}>{user.firstName} {user.lastName || ''}</Text>
             { user?.accountType === 'FILMMAKER' && user?.filmRole?.role ? (
-                <Text style={{ alignSelf: 'baseline', lineHeight: 24 , color:Colors.mainGray, fontWeight:'bold'}}
+                <Text style={{ alignSelf: 'baseline', lineHeight: 10 ,fontSize:10, color:Colors.mainGray, fontWeight:'bold'}}
                 >{unparseDept(user.filmRole.role)}</Text>
             ): user?.accountType === 'FILMLOVER' && (
-                <Text style={{ alignSelf: 'baseline', lineHeight: 24 , color:Colors.mainGray, fontWeight:'bold'}}
+                <Text style={{ alignSelf: 'baseline', lineHeight: 10 ,fontSize:10, color:Colors.mainGray, fontWeight:'bold'}}
                 >Film Lover</Text>
             )}
         </View>
@@ -141,7 +141,7 @@ const ShareProfileCard = forwardRef(({ user, setDaysData, totalWorked=0 ,loading
               
           {/* </LinearGradient> */}
            
-          <View className="justify-center items-end w-full flex flex-row gap-1  flex-wrap">
+          {/* <View className="justify-center items-end w-full flex flex-row gap-1  flex-wrap">
 
             <Text style={{ fontFamily: 'Bebas-Neue', color: 'white', fontSize: 9, lineHeight: 9, alignSelf:'baseline' }}>
                 profile page for
@@ -187,6 +187,18 @@ const ShareProfileCard = forwardRef(({ user, setDaysData, totalWorked=0 ,loading
                     contentFit='cover'
                 />
                 
+                </View> */}
+            <View className='justify-center items-center flex flex-col '>
+                <Text className='text-newDarkGray font-pmedium text-sm'>Follow me on</Text>
+                <Image 
+                    source={require('../../assets/images/bingeable-text-black.png')}
+                    style={{tintColor:Colors.newDarkGray, width:120, height:20, objectFit:'cover' }}
+                />
+                <Image 
+                    source={require('../../assets/images/icon-adaptive.png')}
+                    style={{width:35, height:35, tintColor:Colors.newDarkGray, marginTop:10}}
+                    contentFit='cover'
+                />
             </View>
             </View>
     </ViewShot>
@@ -204,9 +216,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   avatar: {  borderRadius: 50, marginBottom: 12, width:100, height:100 },
-  name: { fontSize: 26, fontWeight: 'bold', color: Colors.secondary, alignSelf:'baseline' },
+  name: { fontSize: 20, fontWeight: 'bold', color: Colors.secondary, alignSelf:'baseline' },
   username: { fontSize: 14, color: 'white', marginBottom: 12, fontWeight:'bold' },
-  bio: { fontSize: 14, color: Colors.mainGray, marginBottom: 16, textAlign: 'left' , fontFamily:'Courier'},
+  bio: { fontSize: 12, color: Colors.mainGray, marginBottom: 8, textAlign: 'left' , fontFamily:'Courier'},
 });
 
 export default ShareProfileCard;

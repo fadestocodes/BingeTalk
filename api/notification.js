@@ -86,7 +86,6 @@ export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCoun
     try {
         const notifications = await apiFetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
         const response = await notifications.json();
-        // console.log('NOTIFRESPONSE', response)
         const unreadNotifs = response.filter(i => i.isRead === false)
         updateNotifCount(unreadNotifs.length)
         return response

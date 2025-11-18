@@ -38,7 +38,6 @@ export const checkHistorianBadgeProgress = async (tmdbObj, type, userId) => {
             throw new Error('Unexpected error')
         }
         const result = await response.json()
-        console.log('resultfrom historain progress', result)
         return result.data
 
     } catch (err){

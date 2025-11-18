@@ -34,22 +34,7 @@ const resetPassword = () => {
 
 
   const create = async () => {
-    // console.log('hello from create')
-    // await signIn
-    // ?.create({
-    //   strategy: 'reset_password_email_code',
-    //   identifier: emailAddress,
-    // })
-    // .then((_) => {
-    //   setSuccessfulCreation(true)
-    //   setError('')
-    // })
-    // .catch((err) => {
-    //   const longMessage =
-    //   err?.errors?.[0]?.longMessage || err?.message || 'Unknown error';
-    // console.error('error:', longMessage);
-    //   setError(longMessage)
-    // })
+    
     setLoading(true)
     const emailRes  = await checkEmail(emailAddress)
     if (emailRes && emailRes?.available) {

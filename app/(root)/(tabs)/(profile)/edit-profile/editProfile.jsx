@@ -84,15 +84,7 @@ const editProfile = () => {
 
     const handleInputChange = async ( name, text ) => {
 
-        // if ( name === 'bioLink'){
-        //     const results = urlSchema.safeParse( inputs.bioLink )
-        //     // console.log('results from validation', results)
-        //     if (!results.success){
-        //         const errorObj = results.error.format();
-        //         setError(errorObj._errors[0])
-        //         console.log('errorObj', errorObj)
-        //     }
-        // }
+     
         setInputs( prev => ({
             ...prev,
             [name] : text
