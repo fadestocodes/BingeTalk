@@ -328,7 +328,6 @@ export default function Welcome() {
   }, [userSimple, projectId]);
 
 
-  if (!userSimple) return <ActivityIndicator />
 
   if (userSimple && !userSimple.accountType){
     return <Redirect href ="(onboarding)/step1?noAccountType=true" />

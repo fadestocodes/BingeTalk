@@ -29,7 +29,8 @@ export default {
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
         },
-        "NSAllowsArbitraryLoadsInWebContent": true
+        "NSAllowsArbitraryLoadsInWebContent": true,
+       
       } 
     },
     "android": {
@@ -49,6 +50,25 @@ export default {
     },
     "plugins": [
       "expo-apple-authentication",
+      "expo-build-properties",
+      [
+        "react-native-share",
+        {
+          "ios": [
+            "fb",
+            "instagram",
+            "twitter",
+            "tiktoksharesdk",
+          ],
+          "android": [
+            "com.facebook.katana",
+            "com.instagram.android",
+            "com.twitter.android",
+            "com.zhiliaoapp.musically",
+          ],
+          "enableBase64ShareAndroid": true
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",

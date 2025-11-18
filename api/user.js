@@ -73,7 +73,7 @@ export const updateUser = async ( params, email ) => {
 
         await AsyncStorage.setItem('user-data', formatted)
 
-        return {success:true, data:response}; 
+        return {success:true, data:response.simplifiedUser}; 
     } catch (err) {
         console.log(err)
         return {success:false}

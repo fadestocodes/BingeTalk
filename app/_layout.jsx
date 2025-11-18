@@ -78,6 +78,17 @@ export default Sentry.wrap(function RootLayout() {
     "Geist-SemiBold": require("../assets/fonts/Geist-SemiBold.ttf"),
     "Geist-Thin": require("../assets/fonts/Geist-Thin.ttf"),
     "Courier" : require("../assets/fonts/Courier.ttf"),
+    "SFMovie-Bold" : require("../assets/fonts/SFMovieBold.ttf"),
+    "SFMovie-Oblique" : require("../assets/fonts/SFMovieOblique.ttf"),
+    "SFMovie-BoldOblique" : require("../assets/fonts/SFMovieBoldOblique.ttf"),
+    "SFMovie-Condensed" : require("../assets/fonts/SFMovieCondensed.ttf"),
+    "SFMovie-CondensedBold" : require("../assets/fonts/SFMovieCondensedBold.ttf"),
+    "SFMovie-CondensedOblique" : require("../assets/fonts/SFMovieCondensedOblique.ttf"),
+    "SFMovie-CondensedBoldOblique" : require("../assets/fonts/SFMovieCondensedBoldOblique.ttf"),
+    "SFMovie" : require("../assets/fonts/SFMovie.ttf"),
+    'Bebas-Neue' : require("../assets/fonts/BebasNeue-Regular.ttf"),
+    'Bebas-Neue-Light' : require("../assets/fonts/BebasNeue-Light.ttf"),
+    'Bebas-Neue-Bold' : require("../assets/fonts/BebasNeue-Bold.ttf"),
   });
   
   const router = useRouter()

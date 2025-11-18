@@ -15,6 +15,8 @@ import { pickSingleImage } from "../../lib/pickImage";
 import { createSetDay } from "../../api/setDay";
 import { uploadToS3 } from "../../api/aws";
 import { maybeAskForReview } from "../../lib/maybeAskForReview";
+import * as ImagePicker from 'expo-image-picker';
+
 
 export default function CameraPrompt() {
   const [showCamera, setShowCamera] = useState(false);
@@ -60,11 +62,19 @@ export default function CameraPrompt() {
         if (assets.assets.length > 0) {
           setLatestPhoto(assets.assets[0].uri);
         }
-      }
+    }
+    if (!cameraPermission?.granted) {
+      await requestCameraPermission();
+    }
+  
+    // if (!mediaPermission?.granted) {
+    //   await requestMediaPermission();
+    // }
 
 
     })();
   }, []);
+
 
   const handleFlashToggle = () => {
     const flashModes = ['off', 'on', 'auto']
@@ -178,6 +188,32 @@ export default function CameraPrompt() {
     }
   }
 
+  const handleLibraryPicker = async () => {
+    // Request permission
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    console.log(status)
+    if (status !== 'granted') {
+        setShowMediaPermissionPrompt(true)
+        return
+    } else {
+        setShowMediaPermissionPrompt(false)
+    }
+  
+    // Launch picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'], 
+        allowsEditing: true,
+        quality: 1,
+    });
+
+    
+    if (!result.canceled) {
+      // result.assets = [{ uri: 'file://…' }]
+      const picked = result.assets[0].uri;
+      setUri(picked); // assuming you already have setImage
+    }
+  };
+
   // Loading permission state
   if (!cameraPermission) {
     return <Text>Loading...</Text>;
@@ -214,7 +250,7 @@ export default function CameraPrompt() {
         <View className="flex-1 mb-20 relative" >
         <NotificationModal
             showLogo={true}
-            title="Media permission is required."
+            title="Media permissions are required."
             description="Turn on permissions to access your Photos"
             yesText="Go To Settings"
             handleYes={()=>Linking.openSettings()}
@@ -241,9 +277,10 @@ export default function CameraPrompt() {
                         style={{overflow:'hidden', borderRadius:10, position:'relative'}}
                     />
                     <View className="pt-10 relative gap-3">
+                        <Text className='text-mainGrayLight text-sm text-start'>* Be careful not to include any sensitive production details. When in doubt, check with Production first!</Text>
                         <TextInput 
                             value={inputs.production}
-                            onChangeText={(text) => handleInputs('caption', text) }
+                            onChangeText={(text) => handleInputs('production', text) }
                             placeholder="Production name if allowed to share (will default to 'Undisclosed' if empty)"
                             multiline
                             placeholderTextColor={Colors.mainGrayDark}
@@ -311,7 +348,7 @@ export default function CameraPrompt() {
                 </>
             ) : (
             <>
-            <TouchableOpacity className="opacity-70">
+            <TouchableOpacity onPress={handleLibraryPicker} className="opacity-70">
                 { latestPhoto ? (
                     <Image 
                         source={latestPhoto}

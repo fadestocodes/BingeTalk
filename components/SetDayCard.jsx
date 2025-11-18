@@ -428,7 +428,9 @@ const SetDayCard = ({ setDay, refetch, isBackground, fromHome }) => {
                     />
                     <Text className='text-mainGrayDark   ' >@{setDay.user.username}</Text>
                 </TouchableOpacity>
-                <ClapperboardIcon  color={Colors.mainGrayDark2} size={20} />
+                <View style={{ position: "absolute", left: "50%", transform: [{ translateX: -10 }] }}>
+                    <ClapperboardIcon color={Colors.mainGrayDark2} size={20} />
+                </View>                
                 <Text className='text-mainGrayDark '>{formatDateNotif(setDay.createdAt)}</Text>
 
             </View>

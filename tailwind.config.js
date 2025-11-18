@@ -35,7 +35,14 @@ module.exports = {
         pbold: ["Geist-Bold", "sans-serif"],
         pextrabold: ["Geist-ExtraBold", "sans-serif"],
         pblack: ["Geist-Black", "sans-serif"],
-        pcourier : ["Courier","Courier-New", "serif"]
+        pcourier : ["Courier","Courier-New", "serif"],
+        sfmovie : ["SFMovie", "serif"],
+        sfmovieBold : ["SFMovie-Bold", "serif"],
+        sfmovieCondensed : ["SFMovie-Condensed", "serif"],
+        sfmovieOblique : ["SFMovie-Oblique", "serif"],
+        bebas : ["Bebas-Neue", "serif"],
+        bebasLight : ["Bebas-Neue-Light", "serif"],
+        bebasBold : ["Bebas-Neue-Bold", "serif"],
       },
       fontSize: {
         custom: ['15px','16px'], // 15px font size with a 20px line height (close to `leading-5`)
