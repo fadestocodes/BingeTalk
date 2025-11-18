@@ -43,7 +43,6 @@ export const fetchUsersLists = async ( userId ) => {
     try {
         const request = await apiFetch(`${nodeServer.currentIP}/list/user?userId=${userId}`)
         const response = await request.json()
-        // console.log('Fetched users lists', response)
         return response
     } catch (err) {
         console.log(err)

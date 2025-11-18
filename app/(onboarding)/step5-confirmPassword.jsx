@@ -94,11 +94,9 @@ const step5 = () => {
             countryCode: signUpData.countryCode,
 
         }
-        console.log('aobut ot create user with this data', createUserData)
 
         setUploading(true)
         const newUser = await checkVerificationCodeToCreateUser(createUserData)
-        console.log('new user', newUser)
         setUploading(false)
         if (newUser.success) {
             router.replace('(onboarding)/recentlyWatched')

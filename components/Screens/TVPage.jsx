@@ -204,7 +204,7 @@ const TVPage = () => {
                 setMessage('Marked as Watched')
             }
         }
-        refetchOwnerUser();
+        await refetchOwner();
 
         const checkHistorian = await checkHistorianBadgeProgress(movie,'TV', ownerUser?.id)
         console.log('checkhistorian', checkHistorian)
@@ -243,7 +243,7 @@ const TVPage = () => {
                 setMessage('Added to Watchlist')
             }
         }
-        refetchOwnerUser();
+        await refetchOwner();
         setButtonPressed('')
 
     }

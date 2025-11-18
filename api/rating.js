@@ -60,7 +60,6 @@ export const useGetTitleRatings = (data) => {
         try {
             const response = await apiFetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=${cursor}&take=${limit}`)
             const ratingsData = await response.json()
-            console.log("RATINGSSSDATA", ratingsData.data)
             setRatings( prev => [...prev, ...ratingsData.data] )
             setRatings(ratingsData.data)
             setCursor(ratingsData.nextCursor)
@@ -79,13 +78,11 @@ export const useGetTitleRatings = (data) => {
                 }
                 
                 const tmdbId = type === 'MOVIE' ? ratingsData.data[0].movie.tmdbId : type === 'TV' ? ratingsData.data[0].tv.tmdbId : null
-                console.log('TMDBIDDDD', tmdbId)
                 const directorParams = {
                     type,
                     tmdbId 
                 }
                 const foundDirector = await findDirector(directorParams)
-                console.log("FOUNDDIRECTORRR", foundDirector)
                 setDirector(foundDirector)
             }
 

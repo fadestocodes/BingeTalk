@@ -46,7 +46,6 @@ const step1 = () => {
         const results = signupNameSchema.safeParse( { ...signUpData, [name] : value } )
         if (!results.success) {
             const errorObj = results.error.format();
-            console.log(errorObj)
             setErrors( prev => ({
                 ...prev,
                 firstName: errorObj.firstName ? errorObj.firstName._errors : [],

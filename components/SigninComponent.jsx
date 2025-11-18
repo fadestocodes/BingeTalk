@@ -26,7 +26,6 @@ const SigninComponent = () => {
   const [userInfo, setUserInfo] = useState(null)
   const router= useRouter()
   const {createUserData, updateCreateUserData} = useCreateContext()
-  console.log('createUserdata', createUserData)
   
   const IS_DEV = process.env.NODE_ENV === 'development'
   
@@ -34,7 +33,6 @@ const SigninComponent = () => {
   const APPLE_REDIRECT_URI = AuthSession.makeRedirectUri({
     scheme: IS_DEV ? "bingeable-dev" : "bingeable",
   });
-  console.log('redirect URI', APPLE_REDIRECT_URI)
 
   const appleDiscovery = {
     authorizationEndpoint: 'https://appleid.apple.com/auth/authorize',
@@ -60,7 +58,6 @@ const SigninComponent = () => {
   );
 
   useEffect(() => {
-    console.log(response);
     if (response?.type === "success") {
       const checkUser = async () => {
         const googleUser = await getUserInfoGoogle(response.authentication.accessToken)      
@@ -77,7 +74,6 @@ const SigninComponent = () => {
           oauthProvider : 'GOOGLE',
           oauthId : googleUser.id
         }
-        console.log('check dataa', checkData)
         const statusCode = await checkExistingUser(checkData)
         if (statusCode.status === 202) {
           // No user with this oauth, create user then log them in
@@ -119,7 +115,6 @@ const SigninComponent = () => {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-      console.log('Signed in with apple', credential)
       const signInData = {
         appleId : credential?.user || createUserData.appleId,
         email : credential?.email || createUserData.email ,
@@ -132,9 +127,7 @@ const SigninComponent = () => {
         firstName : signInData?.fullName?.givenName,
         lastName : signInData?.fullName?.familyName
       })
-      console.log('create user data...', createUserData)
       const res = await signInAppleAuth(signInData)
-      console.log('res here', res)
       if (res?.status === 202){
         // Create user onboard
         router.replace({
@@ -171,7 +164,7 @@ const SigninComponent = () => {
         />
       </View>
      
-      <TouchableOpacity onPress={()=>{console.log('pressed');promptAsync()}} className='w-[300px] h-[50px] px-4 py-3 rounded-2xl bg-black flex flex-row justify-center items-center gap-3 relative'>
+      <TouchableOpacity onPress={()=>{promptAsync()}} className='w-[300px] h-[50px] px-4 py-3 rounded-2xl bg-black flex flex-row justify-center items-center gap-3 relative'>
         <GoogleColor width={18} height={18}/>
         <Text className='text-white font-semibold'>Continue with Google</Text>
       </TouchableOpacity>

@@ -157,7 +157,6 @@ export const deleteReview = async (params) => {
 export const fetchTrendingReviews = async () => {
     try {
         const res = await fetch(`${nodeServer.currentIP}/review/trending`)
-        console.log('RESSSS status code', res.status)
         if (res.ok){
             console.log("RES IS OKAYYY")
         }

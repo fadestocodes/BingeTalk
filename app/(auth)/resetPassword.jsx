@@ -34,25 +34,9 @@ const resetPassword = () => {
 
 
   const create = async () => {
-    // console.log('hello from create')
-    // await signIn
-    // ?.create({
-    //   strategy: 'reset_password_email_code',
-    //   identifier: emailAddress,
-    // })
-    // .then((_) => {
-    //   setSuccessfulCreation(true)
-    //   setError('')
-    // })
-    // .catch((err) => {
-    //   const longMessage =
-    //   err?.errors?.[0]?.longMessage || err?.message || 'Unknown error';
-    // console.error('error:', longMessage);
-    //   setError(longMessage)
-    // })
+    
     setLoading(true)
     const emailRes  = await checkEmail(emailAddress)
-    console.log('emailRes...',emailRes)
     if (emailRes && emailRes?.available) {
       setEmailError("You haven't created an account with that email address yet.")
     } else if (emailRes ){
@@ -65,16 +49,12 @@ const resetPassword = () => {
 
   const reset = async () => {
     
-    console.log('hello from reset')
     if (newPassword !== newPasswordConfirm) return
-    console.log('trying to reset password...')
     const params = {
       email : emailAddress,
       password : newPasswordConfirm
     }
-    console.log('params...', params)
     const res = await resetUserPassword(params)
-    console.log('res...',res)
     if (res?.success){
       router.replace('/')
     }
@@ -116,8 +96,6 @@ const resetPassword = () => {
 
 const handleVerificationChange = async (text, index) => {
   const newCode = [...code];
-  console.log('newcode : ...code', newCode)
-  console.log('overall code', code)
 
   if (text.length > 1) {
       // Handle paste: distribute characters
@@ -125,19 +103,16 @@ const handleVerificationChange = async (text, index) => {
       for (let i = 0; i < pastedText.length; i++) {
       newCode[i] = pastedText[i];
       }
-      console.log('setting new code with: ', newCode)
       setCode(newCode);
       verificationInputs.current[Math.min(pastedText.length - 1, length - 1)].focus();
   } else {
       // Normal single-character input
       newCode[index] = text;
-      console.log('setting new code with: ', newCode[index])
 
       setCode(newCode);
 
       // Move to next input if current has a value
       if (text && index < length - 1) {
-        console.log("should be logging here")
       verificationInputs.current[index + 1].focus();
       }
   }
@@ -146,7 +121,6 @@ const handleVerificationChange = async (text, index) => {
   if (newCode.every((char) => char !== '')) {
       // setFinalCode(Number(newCode.join('')))
       const finalCodeInput = newCode.join('');
-      console.log('finalcode input...',finalCodeInput)
       setFinalCode(finalCodeInput)
       // onVerifyPress( finalCode );
       // reset()      
@@ -155,9 +129,7 @@ const handleVerificationChange = async (text, index) => {
         email : emailAddress,
         code : finalCodeInput
       }
-      console.log("check valid code...")
       const isValidCode = await checkVerificationCodeToCreateUser(dataToReset, true)
-      console.log('isValidCode...',isValidCode)
       if (isValidCode.success){
         setWhichStep('stepThree')
       }
@@ -165,16 +137,11 @@ const handleVerificationChange = async (text, index) => {
   };
   
   const handleCodeCheck = async () => {
-    console.log('handling code check')
-    console.log("ifnal code...", finalCode)
     const dataToReset = {
       email : emailAddress,
       code : finalCode
     }
-    console.log('data to reset', dataToReset)
-    console.log("check valid code...")
     const isValidCode = await checkVerificationCodeToCreateUser(dataToReset, true)
-    console.log('isValidCode...',isValidCode)
     if (isValidCode.success){
       setWhichStep('stepThree')
     }
@@ -184,16 +151,13 @@ const handleVerificationChange = async (text, index) => {
 
   const handleFocus = (index) => {
     // Ensure the cursor goes to the end when focusing an input field
-    console.log("index", index)
     const refInput = verificationInputs.current[index];
-    console.log('code[index]', code)
     if (refInput) {
     refInput.setSelection(code[index].length, code[index].length); // Move cursor to the end
     }
 };
 
   const handleKeyPress = ({ nativeEvent }, index) => {
-    console.log('from keyPress')
   if (nativeEvent.key === 'Backspace' && !code[index] && index > 0) {
       verificationInputs.current[index - 1].focus();
   }
@@ -204,7 +168,6 @@ const handleVerificationChange = async (text, index) => {
     if (name === 'confirmPassword'){
       setNewPasswordConfirm( value) 
       const results = signupConfirmPasswordSchema(newPassword).safeParse( {confirmPassword:value} )
-      console.log('validation results', results)
       if (!results.success) {
           const errorObj = results.error.format();
           setValidationErrors( prev => ({
@@ -222,11 +185,9 @@ const handleVerificationChange = async (text, index) => {
       setNewPassword(value)
       setPasswordError('')
       const results = signupPasswordSchema.safeParse( {password : value} )
-      console.log('validation results', results)
 
       if (!results.success) {
           const errorObj = results.error.format();
-          console.log(errorObj)
           setValidationErrors( prev => ({
               ...prev,
               newPassword: errorObj.password ? errorObj.password._errors : undefined,
@@ -250,7 +211,6 @@ const handleVerificationChange = async (text, index) => {
       email : emailAddress 
     }
     const res = await checkNewPassword(params)
-    console.log('res,,,', res)
     if (res?.status === 400){
       setPasswordError(res.message)
     } else if (res.success){

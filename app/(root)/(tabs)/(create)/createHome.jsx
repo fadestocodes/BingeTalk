@@ -10,9 +10,10 @@ import debounce from 'lodash.debounce'
 import { getYear } from '../../../../lib/formatDate'
 import { DraggableGrid } from 'react-native-draggable-grid';
 import { useRouter } from 'expo-router'
-import { createCategories } from '../../../../lib/CategoryOptions'
+import { createCategories, createCategoriesFilmlover, createCategoriesFilmmaker } from '../../../../lib/CategoryOptions'
 import { useCreateContext } from '../../../../lib/CreateContext'
 import { useGetUser, useGetUserFull } from '../../../../api/auth'
+import CameraPrompt from '../../../../components/ui/CameraPrompt'
 
 const CreateHome = () => {
     const {user} = useGetUser()
@@ -136,7 +137,6 @@ const CreateHome = () => {
       }
 
     const renderItem = (item) => {
-        // console.log('RENDERINGITEM', item)
         return (
           <View className=' justify-start items-center relative '
             style={{ width:'auto', height:170,  marginHorizontal:0, marginVertical:0, overflow:'hidden' }}
@@ -163,7 +163,7 @@ const CreateHome = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS uses padding, Android uses height
         style={{ flex: 1 }}
     >
-    <SafeAreaView className='bg-primary h-full w-full  '  style={{ paddingBottom:0 }} >
+    <SafeAreaView edges={['top']} className='bg-primary h-full w-full  '  style={{ paddingBottom:0 }} >
     
     <View className='w-full  pt-3 px-6 gap-5'>
         <View className="">
@@ -175,20 +175,27 @@ const CreateHome = () => {
         </View>
 
         <View className='w-full my-3'>
-        <FlatList
-          horizontal
-          data={createCategories}
-          keyExtractor={(item,index) => index}
-          contentContainerStyle={{ gap:10 }}
-          renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setDialogueItems([]); setListItems([]); updateUrl({link:'',image:'',titel:'',subtitle:''}); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
-              <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
+            <FlatList
+            horizontal
+            data={user.accountType === 'FILMLOVER' ? createCategoriesFilmlover :  createCategoriesFilmmaker}
+            keyExtractor={(item,index) => index}
+            contentContainerStyle={{ gap:10 }}
+            renderItem={({item}) => (
+                <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setDialogueItems([]); setListItems([]); updateUrl({link:'',image:'',titel:'',subtitle:''}); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+                <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
+                </TouchableOpacity>
+            )}
+            />
+        </View>
 
-      </View>
+    </View>
+    
+    {/* { selected === 'SetDay' && (
+        <View className='flex-1 h-full'>
+            <CameraPrompt />
+        </View>
+    ) } */}
+
       { resultsOpen ? (
         <View className='w-full h-full justify-center items-center' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary}} >
                     { dialogueMaxError && (
@@ -273,7 +280,11 @@ const CreateHome = () => {
 
                 
          </View>
-        ) : (
+        ) : selected === 'SetDay' ? (
+            <View className='flex-1 '>
+                <CameraPrompt />
+            </View>
+        ) :(
             <>
             
             <ScrollView scrollEnabled={ createType === 'Showcase' ? false : true }  nestedScrollEnabled={true} onPress={Keyboard.dismiss}  className="relative w-full pt-6 gap-3" contentContainerStyle={{alignItems:'center' , justifyContent : 'center', gap:10, paddingBottom:200}}>

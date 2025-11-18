@@ -1,6 +1,7 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { apiFetch } from './auth';
+import { maybeAskForReview } from '../lib/maybeAskForReview';
 
 export const createComment = async ( commentData ) => {
     try {
@@ -16,6 +17,8 @@ export const createComment = async ( commentData ) => {
         return newComment;
     } catch (err) {
         console.log(err)
+    } finally {
+        await maybeAskForReview()
     }
 }
 

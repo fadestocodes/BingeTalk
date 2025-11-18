@@ -18,7 +18,7 @@ const commentsModalFromHome = () => {
     postType = 'review'
   }
   return (
-    <CommentsComponent postType={postType} dialogueId={dialogueId} threadId={threadId} listId={listId}  activityId={activityId} reviewId={reviewId}/>
+    <CommentsComponent postType={postType} dialogueId={dialogueId} threadId={threadId} listId={listId}  activityId={activityId} reviewId={reviewId} fromModal={true}/>
   )
 }
 

@@ -51,10 +51,8 @@ const PostOptions = () => {
             data.commentId = Number(postId)
             deleted = await deleteComment(data)
         } else if (postType === 'REVIEW'){
-            console.log('trying to delete review')
             data.reviewId = Number(postId)
             deleted = await deleteReview(data)
-            console.log('deleted', deleted)
         }
         setToastMessage(deleted.message)
 
@@ -62,7 +60,6 @@ const PostOptions = () => {
             id : Number(postId),
             postType 
         } )
-        console.log('updaed post to remove ', )
 
         setIsStep1(true)
         setIsPressedButton(null)

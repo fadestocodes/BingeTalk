@@ -47,9 +47,7 @@ const ProfileSetup = () => {
         };
     });
 
-    const counterTranslate = useAnimatedStyle(() => ({
-        transform: [{ translateY: keyboard.height.value }],
-      }));
+  
     
     
     // const {createUserData,updateCreateUserData} = useCreateContext()
@@ -88,7 +86,6 @@ const ProfileSetup = () => {
 
 
     const handleInputs = async ( name, value ) => {
-        console.log(name,value)
         setInputs(prev => ({
         ...prev,
         [name]: value

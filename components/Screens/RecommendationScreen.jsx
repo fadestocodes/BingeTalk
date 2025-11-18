@@ -32,12 +32,10 @@ const RecommendationScreen = () => {
     const [ searchResults, setSearchResults ] = useState([])
 
     const { DBmovieId, DBtvId, DBcastId } = useLocalSearchParams();
-    // console.log(`searchparams: ${DBmovieId}, ${DBtvId}` )
    
     const useGetAllMutuals = async () => {
         const mutuals = await getAllMutuals(ownerUser.id);
         const filtered = mutuals.filter(i => i.id !== ownerUser.id)
-        console.log('filtered mutuals', filtered)
         setMutuals(filtered)
     }
 
@@ -164,7 +162,6 @@ const RecommendationScreen = () => {
                             keyExtractor = { item => item.id }
                             contentContainerStyle={{ gap:20, paddingVertical:30 }}
                             renderItem = { ({item, index}) => {
-                                console.log('SERAECH RESULT', item)
                                 const alreadySent = ownerUser.recommendationSender.some(element => {
                                     if (element.recipientId !== item.id) return false;
                                     if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
@@ -202,11 +199,8 @@ const RecommendationScreen = () => {
                             keyExtractor = { item => item.id }
                             contentContainerStyle={{ gap:20, paddingVertical:30 }}
                             renderItem = { ({item, index}) => {
-                                console.log('ITEM IS ', item)
-                                console.log('MOVIEID', DBmovieId)
                                 const alreadySent = ownerUser.recommendationSender.some(element => {
-                                    console.log('ELEMENT IS', element)
-                                    if (element.recipientId !== item.following.id){console.log('FROM OVER FHERE'); return false};
+                                    if (element.recipientId !== item.following.id){ return false};
                                     if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
                                     if (element.type === 'TV') return element.tvId === Number(DBtvId);
                                     if (element.type === 'CAST') return element.castId === Number(DBcastId)

@@ -52,7 +52,6 @@ const addURLModal = () => {
 
         const urlMatch = text.match(urlPattern);
         if (urlMatch) {
-            console.log('url match!',urlMatch)
             setLoadingImage(true)
 
             let normalizedURL = ''

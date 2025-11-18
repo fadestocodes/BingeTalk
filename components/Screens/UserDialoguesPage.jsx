@@ -7,7 +7,6 @@ import { Colors } from '../../constants/Colors'
 import { useRouter } from 'expo-router'
 
 const UserDialoguesPage = ({dialogues, refetchDialogues, fetchMoreDialogues, hasMore, loading}) => {
-    console.log("IDs:", dialogues.map(d => d.id))
     const router = useRouter()
 
     if (!dialogues) {

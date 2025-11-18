@@ -212,7 +212,6 @@ const MoviePage = () => {
         const checkHistorian = await checkHistorianBadgeProgress(movie,'MOVIE', ownerUser?.id)
         let levelUpData = null
         if (checkHistorian?.hasLeveledUp){
-            console.log('🎊 Congrats you leveled up the Historian badge!')
             levelUpData = {
                 badgeType: 'HISTORIAN',
                 level: `${checkHistorian.newLevel}`,
@@ -221,7 +220,6 @@ const MoviePage = () => {
 
         const checkAuteur = await checkAuteurBadge(movie, ownerUser?.id)
         if (checkAuteur.hasLeveledUp){
-            console.log('🎊 Congrats you leveled up the Auteur badge!')
             levelUpData = {
                 badgeType: 'AUTEUR',
                 level: `${checkAuteur.newLevel}`,
@@ -264,7 +262,6 @@ const MoviePage = () => {
 
 
     const handleRecommendation = () => {
-        console.log('MOVIEPAGE DBmovieId', DBmovieId)
         router.push({
             pathname : '/recommendationModal',
             params: { DBmovieId }

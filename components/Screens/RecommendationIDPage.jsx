@@ -15,6 +15,7 @@ import { PlaylistAdd, PlaylistMinus } from '../../assets/icons/icons'
 import { useFetchOwnerUser } from '../../api/user'
 import { avatarFallbackCustom } from '../../lib/fallbackImages'
 import { avatarFallbackCustomCustom, moviePosterFallback } from '../../constants/Images'
+import ToastMessage from '../ui/ToastMessage'
 
 
 const RecommendationPage = () => {
@@ -145,7 +146,6 @@ const handlePostComment =  async ({ parentId = null }) => {
     }
 
     const newComment = await createComment( commentData );
-    console.log("NEW COMMENT ON RECOMMENDATION", newComment)
     setInput('');
     setReplyingTo(null)
     setReplying(false)
@@ -339,7 +339,6 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
         recipientId : comment.user.id
     }
     const updatedComment = await commentInteraction(data)
-    console.log('UPDATEDCOMMNT', updatedComment)
     
     
   }
@@ -362,7 +361,6 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
   }
 
   const handleAddToWatchlist = async (item) => {
-    console.log('trying to handle add to wathclist')
     // setStatus('ACCEPTED')
     const data = {
         recommenderId : item.recommenderId,
@@ -372,9 +370,7 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
         tvId : item?.tv ? item.tv.id : null
     }
         setStatus('ACCEPTED')
-        console.log('the data...', data)
         const res = await acceptRecommendation(data)
-        console.log('adding to wathclist raesults...' ,res)
         if (res?.success){
             setToastIcon(< PlaylistAdd color={Colors.secondary} size={30} />)
             setToastMessage("Accepted recommendation and added to your Watchlist")
@@ -382,7 +378,6 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
 
         if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
             updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
-            console.log('updated pending notifs ', pendingRecsNotifCount)
         }
 
         await checkTastemakerBadge(item.recommenderId)
@@ -400,7 +395,6 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
           tvId : item?.tv ? item.tv.id : null
       }
       const res = await acceptRecommendation(data)
-      console.log('declining recommendation...' ,res)
       setStatus('DECLINED')
 
         if (res?.success){
@@ -411,9 +405,7 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
         removeReceivedItems(item)
 
         if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
-            console.log('from this block', pendingRecsNotifCount)
             updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
-            console.log('made it here...')
         }
 
   }

@@ -20,7 +20,6 @@ const RecentlyWatched = () => {
     const [uploading, setUploading] = useState(false)
     const {user} = useGetUser()
     const router = useRouter()
-    console.log('user from here', user)
 
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
@@ -86,7 +85,6 @@ const RecentlyWatched = () => {
                             showsVerticalScrollIndicator={false}
                             keyExtractor={item=>item.id}
                             renderItem={({item}) => {
-                                // console.log(item)
                                 const isWatched = watched.some( i => i.id === item.id )
                                 return (
                                     <View className='flex flex-row gap-5 justify-between items-center w-full'>

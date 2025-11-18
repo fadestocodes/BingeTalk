@@ -1,11 +1,11 @@
-import { ActivityIndicator, StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView , RefreshControl, Linking} from 'react-native'
-import React, {useState, useEffect} from 'react'
+import { ActivityIndicator, StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView , RefreshControl, Linking,Platform,   InteractionManager} from 'react-native'
+import React, {useState, useEffect, useRef} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useGetUser, useGetUserFull } from '../../api/auth'
 import { Image } from 'expo-image'
 import { avatarFallbackCustom, moviePosterFallback } from '../../constants/Images'
 import { parseDept, unparseDept } from '../../lib/parseFilmDept'
-import { ChevronRight, Link, MapPin } from 'lucide-react-native'
+import { ChevronRight, Link, MapPin, ShareIcon } from 'lucide-react-native'
 import { Colors } from '../../constants/Colors'
 import DialogueCard from '../DialogueCard'
 import ArrowNextButton from '../ui/ArrowNextButton'
@@ -16,6 +16,15 @@ import ListCard from '../ListCard'
 import { useRouter } from 'expo-router'
 import { followUser, unfollowUser } from '../../api/user'
 import { badges } from '../../constants/BadgeIcons'
+import SetDaysGraph from '../SetDaysGraph'
+import { useGetSetDayGraph } from '../../api/setDay'
+import ViewShot,{ captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
+// import ShareProfileCard from '../ui/ShareProfileCard'
+import { shareToInstagramStory } from '../../lib/shareToIGStories'
+import Share from "react-native-share";
+import ShareProfileCard from '../../components/ui/ShareProfileCard'
+
 
 
 const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
@@ -30,22 +39,43 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
         followers : userFetched?.followers?.length,
         following : userFetched?.following?.length
     })
+    const {data:setDaysGraphData, refetch:refetchSetDaysGraphData, loading: loadingSetDaysGraphData} = useGetSetDayGraph(userFetched?.id)
+    const shareRef = useRef();  
+    const viewShotRef = useRef(null);
+    const [hasInstagramInstalled, setHasInstagramInstalled] = useState(false); // State to track if Instagram is installed on user's device or not
 
 
+    const [hiddenShareView, setHiddenShareView] = useState(null)
+    const [isSharing, setIsSharing] = useState(false);
 
     const [ isFollowing, setIsFollowing ] = useState(null)
 
     useEffect(()=>{
+
         const checkFollow = userFetched?.followers.some( item => item.followingId === ownerUser?.id );
         const userBlockList = ownerUser?.blockedUsers
         const alreadyBlocking = userBlockList?.some( item => item?.userBeingBlocked === userFetched?.id  )
         setIsBlocking(alreadyBlocking)
-    if (checkFollow){
-        setIsFollowing(true);
+        if (checkFollow){
+            setIsFollowing(true);
+            
+        } else {
+            setIsFollowing(false)
+        }
+        if (Platform.OS === "ios") {
+        // If platform is IOS then check if instagram is installed on the user's device using the `Linking.canOpenURL` API
+            Linking.canOpenURL("instagram://").then((val) =>
+            setHasInstagramInstalled(val),
+            );
 
-    } else {
-        setIsFollowing(false)
-    }
+
+        } else {
+        // Else check on android device if instagram is installed in user's device using the `Share.isPackageInstalled` API
+            Share.isPackageInstalled("com.instagram.android").then(
+            ({ isInstalled }) => setHasInstagramInstalled(isInstalled),
+            );
+            
+        }
     }, [userFetched, ownerUser])
 
     const isOwnersPage = userFetched.id === ownUserSimple?.id
@@ -84,7 +114,6 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
         }
         if (isFollowing){
             const unfollow = await unfollowUser( followData )
-            console.log('unfollow res...', unfollow)
             setFollowCounts(prev => ({
                 ...prev,
                 followers : prev.followers - 1,
@@ -97,7 +126,6 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             }))
         }
         setIsFollowing(prev => !prev)
-        console.log('from  here...')
     }
     
     const handleEditProfile = () => {
@@ -157,12 +185,129 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             params : { listType, userId : userFetched.id }
         })
     }
+
+    const handleGraphPress = () => {
+        router.push({
+            pathname:`/user/setDays`,
+            params : {userId : userFetched.id}
+        })
+    }
+
+    // const handleShareProfile = async () => {
+    //     try {
+    //       const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
+    //       const res = await Sharing.shareAsync(uri, { mimeType: 'image/png' });
+    //       console.log('uri', uri)
+    //       console.log('res', res)
+
+    //     } catch (e) {
+    //       console.log(e);
+    //     }
+    // };
+
+  const handleShareProfile = async () => {
+    if (!userFetched) return;
+
+    if (!shareRef.current) return;
+
+
+
+
+    try {
+      const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
+
+      const data = {
+        appId: "1546768846366888", // Note: replace this with your own appId from facebook developer account, it won't work without it. (https://developers.facebook.com/docs/development/register/)
+        stickerImage: uri,
+        social: Share.Social.INSTAGRAM_STORIES,
+        backgroundBottomColor: "#0e1010", // You can use any hexcode here and below
+        backgroundTopColor: "#0e1010",
+        // backgroundImage: '...', // This field is optional like the other fields (except appId) and you have to put a base64 encoded image here if you want to use it!
+      }
+        await shareToInstagramStory(data, hasInstagramInstalled)
+      //   await Sharing.shareAsync(uri, { mimeType: 'image/png' }); 
+    //   console.log('Shared:', uri)
+    } catch (e) {
+      console.log('Capture failed:', e);
+    }
+
+    setShareVisible(false);
+  };
+
+//   const handleShareProfile = async () => {
+//     if (!userFetched) return;
+
+//     if (!viewShotRef.current) return console.log('Ref not ready!');
+
+
+//     const { default: ShareProfileCard } = await import('../../components/ui/ShareProfileCard');
+//     const shareRef = React.createRef();
+
+//     const shareView = (
+//         <ShareProfileCard ref={shareRef} user={userFetched} setDaysData={setDaysGraphData.graphData}/>
+//       );    
+
+//       setHiddenShareView(shareView);
+
+
+
+//       await new Promise(resolve => requestAnimationFrame(resolve));
+
+//       try {
+//         const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
+//         await Share.shareSingle({
+//           appId: 'YOUR_FACEBOOK_APP_ID',
+//           stickerImage: uri,
+//           social: Share.Social.INSTAGRAM_STORIES,
+//         });
+//       } catch (e) {
+//         console.log('Capture failed:', e);
+//       }
+    
+//       setHiddenShareView(null); // remove from UI after sharing
+//     };
+
+
+//     try {
+//       const uri = await captureRef(viewShotRef, { format: 'png', quality: 1 });
+
+//       const data = {
+//         appId: "1546768846366888", // Note: replace this with your own appId from facebook developer account, it won't work without it. (https://developers.facebook.com/docs/development/register/)
+//         stickerImage: uri,
+//         social: Share.Social.INSTAGRAM_STORIES,
+//         backgroundBottomColor: "#0e1010", // You can use any hexcode here and below
+//         backgroundTopColor: "#0e1010",
+//         // backgroundImage: '...', // This field is optional like the other fields (except appId) and you have to put a base64 encoded image here if you want to use it!
+//       }
+//       console.log('data', data)
+//       console.log('hasInstagraminstalled', hasInstagramInstalled)
+//         await shareToInstagramStory(data, hasInstagramInstalled)
+//       //   await Sharing.shareAsync(uri, { mimeType: 'image/png' }); 
+//     //   console.log('Shared:', uri)
+//     } catch (e) {
+//       console.log('Capture failed:', e);
+//     }
+
+//     setShareVisible(false);
+//   };
+
+   
+
     
     if (!userFetched ){
         return <ActivityIndicator/>
     }
     return (
     <SafeAreaView className='bg-primary flex-1'  edges={['top']}>
+
+            {/* {hiddenShareView && ( */}
+            <View style={{ position: 'absolute', top: -9999 }}>
+                {/* {hiddenShareView} */}
+                <ShareProfileCard ref={shareRef} user={userFetched} setDaysData={setDaysGraphData} totalWorked = {setDaysGraphData?.totalWorked} />
+            </View>
+            {/* )} */}
+
+     
         <ScrollView 
             refreshControl={
                 <RefreshControl
@@ -172,11 +317,11 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             }
             showsVerticalScrollIndicator={false} 
         >
-            <View className='px-6 h-full pt-4  justify-center items-center '>
+            <View  className='px-6 h-full  justify-center items-center '>
 
             <View className='flex flex-col justify-center items-start gap-3 w-full pb-24'>
-
-                <View className='flex flex-col gap-3 justify-center items-start mb-10'>
+            <View  style={{ backgroundColor:Colors.primary, borderRadius:30,  flexDirection: 'column', gap: 12, justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                <View className='flex flex-col gap-3 justify-center items-start mb-4 w-full'>
                     <Image
                         source={{ uri: userFetched?.profilePic  || avatarFallbackCustom}}
                         height={100}
@@ -186,10 +331,10 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                     <View className='gap-0 flex flex-col '>
                         <View className='flex flex-row gap-3 justify-center items-end'>
                             <Text style={{ alignSelf: 'baseline' }}  className='text-secondary font-pbold text-3xl '>{userFetched.firstName}{userFetched?.lastName && ` ${userFetched.lastName}`}</Text>
-                            { isFilmmaker ? (
+                            { userFetched?.accountType === 'FILMMAKER' && userFetched?.filmRole?.role ? (
                                 <Text style={{ alignSelf: 'baseline', lineHeight: 24 }}
                                 className='text-mainGray font-semibold'>{unparseDept(userFetched.filmRole.role)}</Text>
-                            ):(
+                            ): userFetched?.accountType === 'FILMLOVER' && (
                                 <Text style={{ alignSelf: 'baseline', lineHeight: 24 }}
                                 className='text-mainGray font-semibold'>Film Lover</Text>
                             )}
@@ -207,13 +352,13 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                         </View>
                     </View>
                     {userFetched?.bio && ( 
-                        <Text className='text-mainGrayLight opacity-50 font-pcourier'>{userFetched?.bio}</Text> 
+                        <Text className='text-mainGrayDark  font-pcourier'>{userFetched?.bio}</Text> 
                     )} 
                     <View className='flex flex-col items-start justify-center gap-3 pt-3 '>
-                        { (userFetched?.city || userFetched?.country) && (
+                        { ( userFetched?.locationFormatted ||  userFetched?.city || userFetched?.country) && (
                             <View className='flex flex-row gap-2'>
                                 <MapPin  size={16} color={Colors.newLightGray} />
-                                <Text className='text-mainGray text-md'>{userFetched?.city ? `${userFetched.city}, ${userFetched.country}` : userFetched?.country && userFetched.country}</Text>
+                                <Text className='text-mainGray text-md'>{ userFetched?.locationFormatted ? userFetched.locationFormatted : userFetched?.city ? `${userFetched.city}, ${userFetched.country}` : userFetched?.country && userFetched.country}</Text>
                             </View>
                         ) }
                         { userFetched?.bioLink && (
@@ -269,15 +414,35 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                             <TouchableOpacity onPress={handleBadgePress } style={{ paddingVertical:10, paddingHorizontal:10,  backgroundColor:Colors.primaryDark, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}> 
                                     <Text className='' style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray}}>Badges</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity onPress={handleShareProfile } style={{ paddingVertical:10, paddingHorizontal:10,  backgroundColor:Colors.primaryDark, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}> 
+                                    <ShareIcon color={Colors.mainGray}/>
+                            </TouchableOpacity>
 
                         </View>
                     ) }
                 </View>
 
+                    {setDaysGraphData?.totalWorked > 0 && (
+
+                        <View >
+                            {loadingSetDaysGraphData?.graphData ? (
+                                <ActivityIndicator />
+                            ) : (
+                            <View className=' flex flex-col w-full justify-start items-center gap-3'>
+                                <TouchableOpacity onPress={handleGraphPress} className='flex flex-row gap-1 self-start items-center'>
+                                        <Text className='text-mainGray font-bold text-xl '>SetDays</Text>
+                                    <Text className='text-mainGrayDark  text-sm  pt-1'>({setDaysGraphData.totalWorked} days worked in the last 365 days)</Text>
+                                </TouchableOpacity>
+                                    <SetDaysGraph data={setDaysGraphData.graphData} loading={loadingSetDaysGraphData} refetch={refetchSetDaysGraphData} />
+                            </View>
+                            )}
+                        </View>
+                    )}
+
                     
                     {/* Recently Watched */}
                     {userFetched?.userWatchedItems?.length > 0 && (
-                    <View className=' h-[150px] w-full'>
+                    <View className=' h-[130px] w-full'>
                         <View className='gap-2'>
                             <TouchableOpacity onPress={handleMoreRecentlyWatched}>
                                 <Text className='text-mainGray font-bold text-xl '>Recently Watched</Text>
@@ -305,9 +470,11 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                         </View>
                     )}
 
+                    </View>
+
                 
                 {/* Dialogues */}
-                <View className='flex-1 gap-3 w-full'>
+                <View className='flex-1 gap-3  w-full'>
                     {userFetched?.dialogues && (
                         <View className='gap-2 justify-start items-start  flex flex-col'>
                             <Text className='text-mainGray font-bold text-xl '>Dialogues  ({userFetched._count.dialogues})</Text>

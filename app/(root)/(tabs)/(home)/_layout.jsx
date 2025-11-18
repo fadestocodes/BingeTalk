@@ -15,6 +15,7 @@ const HomeLayout = () => {
       <Stack.Screen name='activity' options={{headerShown : false}} />
       <Stack.Screen name='dialogue' options={{headerShown : false}} />
       <Stack.Screen name='list' options={{headerShown : false}} />
+      <Stack.Screen name='setDay' options={{headerShown : false}} />
       <Stack.Screen name='user' options={{headerShown : false}} />
       <Stack.Screen name='notification' options={{headerShown : false}} />
       <Stack.Screen name='markNotifReadModal'  options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:400  , borderRadius:30, backgroundColor:Colors.primary }}} />

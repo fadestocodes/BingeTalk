@@ -27,7 +27,7 @@ export const useGetFeed = ( userId, limit ) => {
 
     useEffect(() => {
         getFeed()
-    }, [])
+    }, [userId])
 
     return { data, loading, hasMore, refetch : getFeed }
 }
