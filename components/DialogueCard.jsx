@@ -274,7 +274,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                     <View className='flex gap-2 justify-center items-center'>
                         
                         <View className='justify-center items-center gap-0'>
-                            <Text className='text-secondary font-pcourier uppercase text-lg' >{userDB.firstName}</Text>
+                            <Text className='text-mainGray font-pcourier uppercase text-lg' >{userDB.firstName}</Text>
                         </View>
                         
                     </View>

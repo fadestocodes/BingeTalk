@@ -7,7 +7,7 @@ import { useCheckBadgeNotifications, useCheckTastemakerProgress, useGetAuteurPro
 import { unparseDept } from '../../lib/parseFilmDept'
 import { LinearGradient } from 'expo-linear-gradient';
 import BadgePill from '../ui/BadgePill'
-import { ArrowLeftIcon, BackIcon } from '../../assets/icons/icons'
+import { ArrowLeftIcon, BackIcon, CloseIcon } from '../../assets/icons/icons'
 import { ArrowLeft } from 'lucide-react-native'
 import { Colors } from '../../constants/Colors'
 import { router, useRouter } from 'expo-router'
@@ -41,6 +41,7 @@ const UserBadgesPage = () => {
   })
 
   const router = useRouter()
+  const [ showDetails, setShowDetails ] = useState('')
  
 
 
@@ -82,20 +83,100 @@ const UserBadgesPage = () => {
 
   }, [user, criticProgression, historianProgression, curatorProgression, auteurProgression, conversationalistProgression, peoplesChoiceProgression,tastemakerProgression ])
 
+
+  const handleDetails = (userBadge, badgeMapData , type, currLevel,nextLevel,progressData,image) => {
+
+
+    setShowDetails({
+      userBadge,
+      type,
+      currLevel,
+      nextLevel,
+      image,
+      progressData,
+      badgeMapData
+
+    })
+  }
   
 
   if (!userFull || loadingProgressions) return <ActivityIndicator />
   
   return (
-    <SafeAreaView className='bg-primary w-full h-full'>
+    <SafeAreaView edges={['top']} className='bg-primary w-full h-full'>
         <ScrollView showsVerticalScrollIndicator={false} >
-            <View className='items-center justify-center w-full'>
-              <View className='self-start justify-start items-start w-full px-10 pt-0 gap-6'>
+            <View className='items-center justify-start w-full gap-3 px-6'>
+              <View className='self-start justify-start items-start w-full  pt-0 gap-6'>
                 <TouchableOpacity onPress={()=>router.back()}>
                   <BackIcon color={Colors.mainGray} size={26} />
                 </TouchableOpacity>
                 <Text className='text-white text-3xl font-pbold self-start '>Badges</Text>
               </View>
+
+              { showDetails ? (
+                <View style={{}} className={`bg-primaryLight px-6 rounded-2xl justify-center items-center gap-3 relative w-full py-10  `}>
+                  <TouchableOpacity onPress={()=>setShowDetails('')} className='absolute top-5 right-5 bg-primary rounded-full'>
+                    <CloseIcon size={20} color={Colors.mainGray} />
+                  </TouchableOpacity>
+                  { showDetails.currLevel !== 'NONE' && (
+                        <BadgePill level={showDetails.currLevel} />
+                    )}
+                  <Image
+                      source={ showDetails.image}
+                      width={110}
+                      height={120}
+                      contentFit='contain'
+                      style={{ overflow:'hidden'}}
+                  />
+                  <View className='gap-3 w-full  justift-center items-center'>
+                      <Text className='text-white font-bold text-center text-2xl'>{unparseDept(showDetails.type)}</Text>
+                      <Text className='text-mainGray  text-start'>{showDetails.badgeMapData.description}</Text>
+                      {/* <View className='h-[2px] bg-newDarkGray w-full mt-4' /> */}
+
+
+
+
+                    <View className='bg-primary rounded-xl py-10 px-4 w-full mt-6 justify-center items-center'>
+                      { showDetails.currLevel !== 'GOLD' ? (
+                        <View className='flex flex-col gap-1 justify-center items-center pt-0'>
+                          <Text className='text-mainGray self-start font-pbold '>Progress until {showDetails.nextLevel}:</Text>
+                          <Text className='text-mainGray  self-start'>{showDetails.badgeMapData.levels[showDetails.nextLevel].levelDescription}</Text>
+                        </View>
+                      ) : (
+                        <Text className='text-mainGray self-center  font-pbold'>All levels unlocked!</Text>
+                      )}
+
+                      {Array.from({ length: showDetails?.progressData?.numTotalRequirements || 1 }).map((_, i) => {
+                        
+                        return (
+                          <View key={i} className='flex-row flex gap-3  items-center w-full self-start px-4 pt-4'>
+                            <>
+                            { showDetails.currLevel !== 'GOLD' && (
+                              <Text className='text-mainGray  '>{showDetails.progressData.currentlyAt[i]} / {showDetails.progressData.toNextLevel[i]}</Text>
+                            ) }
+                            <View style={{}} className='w-[160px] rounded-full bg-newDarkGray h-[10px] relative '>
+                              <View style={{width:showDetails.currLevel === 'GOLD' ? '100%'  :`${Math.floor((showDetails?.progressData?.currentlyAt[i]/showDetails?.progressData?.toNextLevel[i])*100) || 3}%`}} className={`${showDetails.currLevel === 'GOLD' ? 'bg-secondary' : 'bg-secondary'} rounded-full h-[10px] absolute `} />
+                            </View>
+
+                            </>
+                           
+
+                        </View>
+                      )}
+                    )}
+
+                    </View>
+
+                    <Text>
+
+                    </Text>
+
+                    </View>
+
+                </View>
+              ) : (
+
+
               <FlatList
                 data={badgeIconMap}
                 scrollEnabled={false}
@@ -116,7 +197,7 @@ const UserBadgesPage = () => {
                     percentage = 100
                   } 
                   return (
-                  <TouchableOpacity className={`bg-primaryLight w-[160px] min-h-[250px] px-2 rounded-2xl justify-center items-center gap-3 relative ${userBadge ? 'opacity-100' : 'opacity-30'}  ${item.currentLevel === 'NONE' ? 'opacity-20' : ''} `}>
+                  <TouchableOpacity onPress={()=>handleDetails(userBadge,item ,item.type, currLevel,nextLevel, progressData,userBadge ? item.levels[userBadge.badgeLevel].uri : item.levels.BRONZE.uri )} className={`bg-primaryLight w-[160px] min-h-[250px] px-2 rounded-2xl justify-center items-center gap-3 relative ${userBadge ? 'opacity-100' : 'opacity-30'}  ${item.currentLevel === 'NONE' ? 'opacity-20' : ''} `}>
                     { currLevel !== 'NONE' && (
                         <BadgePill level={currLevel} />
                     )}
@@ -130,7 +211,7 @@ const UserBadgesPage = () => {
 
 
                       {/* <View className={`w-[60px] h-[60px] rounded-full bg-primary ${item.currentLevel === 'NONE' ? 'opacity-40' : ''}`} /> */}
-                    <View className='gap-3'>
+                    <View className='gap-3 w-full px-2 justify-center items-center'>
                       <Text className='text-white font-bold text-center'>{unparseDept(item.type)}</Text>
 
 
@@ -146,12 +227,12 @@ const UserBadgesPage = () => {
                       {Array.from({ length: progressData?.numTotalRequirements || 1 }).map((_, i) => {
 
                       return (
-                        <View key={i} className='flex-row flex gap-3 justify-center items-center'>
+                        <View key={i} className='flex-row flex gap-2 justify-start w-full  items-center'>
                             <>
                             { currLevel !== 'GOLD' && (
                               <Text className='text-mainGray text-xs '>{progressData.currentlyAt[i]} / {progressData.toNextLevel[i]}</Text>
                             ) }
-                            <View style={{}} className='w-[90px] rounded-full bg-primary h-[10px] relative'>
+                            <View style={{width:80}} className='w-[80px] rounded-full bg-primary h-[10px] relative'>
                               <View style={{width:currLevel === 'GOLD' ? '100%'  :`${Math.floor((progressData?.currentlyAt[i]/progressData?.toNextLevel[i])*100) || 3}%`}} className={`${currLevel === 'GOLD' ? 'bg-secondary' : 'bg-secondary'} rounded-full h-[10px] absolute `} />
                             </View>
                             </>
@@ -169,6 +250,8 @@ const UserBadgesPage = () => {
                   
               
               />
+              ) }
+
             </View>
         </ScrollView>
     </SafeAreaView>
