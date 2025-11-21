@@ -1,112 +1,166 @@
-import { View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity} from 'react-native'
-import React from 'react'
-import { badges } from '../../constants/BadgeIcons'
+import { View, Text, SafeAreaView, ScrollView, FlatList, TouchableOpacity, ActivityIndicator} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { badgeIconMap, badges } from '../../constants/BadgeIcons'
 import { Image } from 'expo-image'
+import { useGetUser, useGetUserFull } from '../../api/auth'
+import { useCheckBadgeNotifications, useCheckTastemakerProgress, useGetAuteurProgression, useGetBadges, useGetConversationalistProgression, useGetCriticProgression, useGetCuratorProgression, useGetHistorianProgression, useGetPeoplesChoiceProgression } from '../../api/user'
+import { unparseDept } from '../../lib/parseFilmDept'
+import { LinearGradient } from 'expo-linear-gradient';
+import BadgePill from '../ui/BadgePill'
+import { ArrowLeftIcon, BackIcon } from '../../assets/icons/icons'
+import { ArrowLeft } from 'lucide-react-native'
+import { Colors } from '../../constants/Colors'
+import { router, useRouter } from 'expo-router'
+
 
 const UserBadgesPage = () => {
+  const levels = ["NONE", "BRONZE", "SILVER", "GOLD"]
 
-  const fakeBadges = [
-    {
-      name : 'The Critic',
-      unlockedLevel : "NONE",
-      progressCompleted : 3,
-      progressNeeded  :10,
-      currentLevel: 'BRONZE',
-      icon : badges.criticGold
-    },
-    {
-      name : 'The Tastemaker',
-      unlockedLevel : "NONE",
-      progressCompleted : 1,
-      progressNeeded  :20,
-      currentLevel: 'NONE',
-      icon : badges.tastemakerBronze
+  const {user} = useGetUser()
+  const {userFull} = useGetUserFull(user?.id)
 
-    }, {
-      name : 'The Historian',
-      unlockedLevel : "NONE",
-      progressCompleted : 19,
-      progressNeeded  :25,
-      currentLevel: 'BRONZE',
-      icon : ''
+  const {criticProgression} = useGetCriticProgression(user?.id)
+  const {historianProgression} = useGetHistorianProgression(user?.id)
+  const {curatorProgression} = useGetCuratorProgression(user?.id)
+  const {auteurProgression} = useGetAuteurProgression(user?.id)
+  const {conversationalistProgression} = useGetConversationalistProgression(user?.id)
+  const {badgeNotifications} = useCheckBadgeNotifications(user?.id)
+  const {peoplesChoiceProgression} = useGetPeoplesChoiceProgression(user?.id)
+  const {progress: tastemakerProgression} = useCheckTastemakerProgress(user?.id)
+  const {badgeList} = useGetBadges(user?.id)
 
-    }, 
-    {
-      name : "The People's Choice",
-      unlockedLevel : "NONE",
-      progressCompleted : 13,
-      progressNeeded  :25,
-      currentLevel: 'GOLD',
-      icon : ''
+  const [loadingProgressions, setLoadingProgressions] = useState(true)
+  const [ allProgressions, setAllProgressions ] = useState({
+    CRITIC : '',
+    HISTORIAN : '',
+    CURATOR : '',
+    AUTEUR : '',
+    CONVERSATIONALIST : '',
+    PEOPLES_CHOICE : '',
+    TASTEMAKER : ''
+  })
 
-    },
-    {
-      name : 'The Conversationalist',
-      unlockedLevel : "NONE",
-      progressCompleted : 15,
-      progressNeeded  :18,
-      currentLevel: 'BRONZE',
-      icon : badges.conversationalistSilver
+  const router = useRouter()
+ 
 
-    },
-    {
-      name : 'The Auteur',
-      unlockedLevel : "NONE",
-      progressCompleted : 12,
-      progressNeeded  :21,
-      currentLevel: 'NONE',
-      icon : ''
-    },
-    {
-      name : "The People's Choice",
-      unlockedLevel : "NONE",
-      progressCompleted : 13,
-      progressNeeded  :25,
-      currentLevel: 'NONE',
-      icon : ''
-      
-    },
-    
 
-  ]
+  const [tastemakerBadgeProgress, setTastemakerProgress] = useState('')
+
+  useEffect(()=>{
+    if (
+      !criticProgression ||
+      !historianProgression ||
+      !curatorProgression ||
+      !auteurProgression ||
+      !conversationalistProgression ||
+      !peoplesChoiceProgression ||
+      !tastemakerProgression
+    ) return;
+
+    try {
+      setLoadingProgressions(true)
+      setAllProgressions(prev => ({
+        ...prev,
+        CRITIC : criticProgression?.untilNextLevel,
+        HISTORIAN : historianProgression?.untilNextLevel,
+        CURATOR : curatorProgression?.untilNextLevel,
+        AUTEUR : auteurProgression?.untilNextLevel,
+        CONVERSATIONALIST : conversationalistProgression,
+        TASTEMAKER : tastemakerProgression,
+        PEOPLES_CHOICE : peoplesChoiceProgression?.untilNextLevel
+      }))
+
+    } catch (e){
+      console.error(e)
+    }finally {
+      setLoadingProgressions(false)
+
+    }
+
+
+
+
+  }, [user, criticProgression, historianProgression, curatorProgression, auteurProgression, conversationalistProgression, peoplesChoiceProgression,tastemakerProgression ])
+
+  
+
+  if (!userFull || loadingProgressions) return <ActivityIndicator />
+  
   return (
     <SafeAreaView className='bg-primary w-full h-full'>
         <ScrollView showsVerticalScrollIndicator={false} >
             <View className='items-center justify-center w-full'>
-              <Text className='text-white text-3xl font-pbold'>UserBadgesPage</Text>
+              <View className='self-start justify-start items-start w-full px-10 pt-0 gap-6'>
+                <TouchableOpacity onPress={()=>router.back()}>
+                  <BackIcon color={Colors.mainGray} size={26} />
+                </TouchableOpacity>
+                <Text className='text-white text-3xl font-pbold self-start '>Badges</Text>
+              </View>
               <FlatList
-                data={fakeBadges}
+                data={badgeIconMap}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item,index) => index}
-                contentContainerStyle ={{flexWrap:'wrap', display:'flex', flexDirection:'row',width:'100%', gap:15, justifyContent:'start', alignItems:'center', paddingBottom:100, paddingTop:100}}
+                contentContainerStyle ={{flexWrap:'wrap', display:'flex', flexDirection:'row',width:'100%', gap:15, justifyContent:'start', alignItems:'center', paddingBottom:100, paddingTop:20}}
                 renderItem={({item}) => {
-                  const percentage = Math.floor((item.progressCompleted/item.progressNeeded)*100)
+                  const userBadge = userFull?.unlockedBadges?.find( userBadge => userBadge.badgeType === item.type )
+                  const currIndex = userBadge ? levels.indexOf(userBadge?.badgeLevel) : 0
+                  const currLevel = userBadge?.badgeLevel || 'NONE'
+                  const nextLevel = levels[currIndex + 1] || null
+                  let percentage
+                  const progressData = allProgressions[item.type]
+
+                  console.log("currLevel...", currLevel)
+
+                  if (userBadge?.badgeLevel === 'GOLD') {
+                    percentage = 100
+                  } 
                   return (
-                  <TouchableOpacity className={`bg-primaryLight w-[160px] h-[230px] px-4 rounded-2xl justify-center items-center gap-3 relative ${item.currentLevel === 'NONE' ? 'opacity-20' : ''} `}>
-                    { item.currentLevel !== 'NONE' && (
-                      <Text className='bg-secondary rounded-full px-2 py-1 text-primary text-xs absolute left-3 top-3'>{item.currentLevel}</Text>
+                  <TouchableOpacity className={`bg-primaryLight w-[160px] min-h-[250px] px-2 rounded-2xl justify-center items-center gap-3 relative ${userBadge ? 'opacity-100' : 'opacity-30'}  ${item.currentLevel === 'NONE' ? 'opacity-20' : ''} `}>
+                    { currLevel !== 'NONE' && (
+                        <BadgePill level={currLevel} />
                     )}
-                    { item?.icon ? ( 
                       <Image
-                          source={item.icon}
+                          source={ userBadge ? item.levels[userBadge.badgeLevel].uri : item.levels.BRONZE.uri}
                           width={60}
-                          height={60}
+                          height={70}
                           contentFit='contain'
-                      
                           style={{ overflow:'hidden'}}
                       />
 
-                    ) : ( 
 
-                      <View className={`w-[60px] h-[60px] rounded-full bg-primary ${item.currentLevel === 'NONE' ? 'opacity-40' : ''}`} />
-                    )}
+                      {/* <View className={`w-[60px] h-[60px] rounded-full bg-primary ${item.currentLevel === 'NONE' ? 'opacity-40' : ''}`} /> */}
                     <View className='gap-3'>
-                      <Text className='text-mainGray font-bold'>{item.name}</Text>
-                      <Text className='text-mainGray text-sm '>{item.progressCompleted}/{item.progressNeeded} until next level</Text>
-                      <View style={{}} className='w-[110px] rounded-full bg-primary h-[10px] relative'>
-                        <View style={{width:`${percentage}%`}} className='bg-newLightGray rounded-full h-[10px] absolute ' />
-                      </View>
+                      <Text className='text-white font-bold text-center'>{unparseDept(item.type)}</Text>
+
+
+
+                      { currLevel !== 'GOLD' ? (
+                        <View className='flex flex-col gap-1 justify-center items-center'>
+                          <Text className='text-mainGray text-sm '>Progress until {nextLevel}</Text>
+                        </View>
+                      ) : (
+                        <Text className='text-mainGray text-sm font-bold'>All levels unlocked!</Text>
+                      )}
+
+                      {Array.from({ length: progressData?.numTotalRequirements || 1 }).map((_, i) => {
+
+                      return (
+                        <View key={i} className='flex-row flex gap-3 justify-center items-center'>
+                            <>
+                            { currLevel !== 'GOLD' && (
+                              <Text className='text-mainGray text-xs '>{progressData.currentlyAt[i]} / {progressData.toNextLevel[i]}</Text>
+                            ) }
+                            <View style={{}} className='w-[90px] rounded-full bg-primary h-[10px] relative'>
+                              <View style={{width:currLevel === 'GOLD' ? '100%'  :`${Math.floor((progressData?.currentlyAt[i]/progressData?.toNextLevel[i])*100) || 3}%`}} className={`${currLevel === 'GOLD' ? 'bg-secondary' : 'bg-secondary'} rounded-full h-[10px] absolute `} />
+                            </View>
+                            </>
+                           
+
+                        </View>
+                      )}
+                    )}
+
                     </View>
               
                   </TouchableOpacity>

@@ -16,6 +16,7 @@ import { ThreeDotsIcon } from '../assets/icons/icons'
 import { avatarFallbackCustom } from '../constants/Images'
 import SetDayIcon from './ui/SetDayIcon'
 import { FeSpotLight } from 'react-native-svg'
+import Username from './ui/Username'
 
 
 const SetDayCard = ({ setDay, refetch, isBackground, fromHome }) => {
@@ -426,8 +427,8 @@ const SetDayCard = ({ setDay, refetch, isBackground, fromHome }) => {
                         contentFit='cover'
                         style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                     />
-                    <Text className='text-mainGrayDark   ' >@{setDay.user.username}</Text>
-                </TouchableOpacity>
+                    <Username size='sm' user={setDay.user} color={Colors.mainGrayDark2} reverse={true}/>
+                    </TouchableOpacity>
                 <View style={{ position: "absolute", left: "50%", transform: [{ translateX: -10 }] }}>
                     <ClapperboardIcon color={Colors.mainGrayDark2} size={20} />
                 </View>                

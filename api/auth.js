@@ -7,6 +7,7 @@ import jwtDecode from 'jwt-decode';
 import { useRouter } from 'expo-router';
 import { router } from 'expo-router';
 import { useCreateContext } from '@/lib/CreateContext';
+import { badgeIconMap } from '@/constants/BadgeIcons';
 
 
 // Token storage helpers
@@ -230,6 +231,7 @@ export const useCheckSignedIn =  () => {
 export const useGetUserFull = (id) => {
     const [userFull, setUserFull] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [ displayBadgeIcon, setDisplayBadgeIcon  ] = useState('')
 
 
     const getUserFull = async () => {
@@ -254,6 +256,19 @@ export const useGetUserFull = (id) => {
             }
             const userData = await res.json()
             setUserFull(userData)
+
+            let displayBadge = ''
+            let uri = ''
+            if (userData?.displayBadge){
+              displayBadge = badgeIconMap.find( i => i.type === userData.displayBadge.badgeType)
+              uri = displayBadge.levels[userData.displayBadge.badgeLevel].uri
+            } else if (userData?.unlockedBadges?.length > 0){
+                displayBadge = badgeIconMap.find( i => i.type === userData.unlockedBadges[0].badgeType)
+                uri = displayBadge.levels[userData.unlockedBadges[0].badgeLevel].uri
+            }
+            if (uri){
+                setDisplayBadgeIcon(uri)
+            }
         }catch (err){
             console.error(err)
         } finally {
@@ -265,7 +280,7 @@ export const useGetUserFull = (id) => {
         getUserFull()
     }, [id])
 
-    return {userFull, loading, refetch: getUserFull}
+    return {userFull, loading, refetch: getUserFull, displayBadgeIcon}
 }
 
 export const useSignOutUser = () => {

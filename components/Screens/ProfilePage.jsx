@@ -24,13 +24,15 @@ import * as Sharing from 'expo-sharing';
 import { shareToInstagramStory } from '../../lib/shareToIGStories'
 import Share from "react-native-share";
 import ShareProfileCard from '../../components/ui/ShareProfileCard'
+import { badgeIconMap } from '../../constants/BadgeIcons'
+import Username from '../ui/Username'
 
 
 
 const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
 
     const {user:ownUserSimple} = useGetUser()
-    const {userFull : ownerUser} = useGetUserFull(ownUserSimple?.id)
+    const {userFull : ownerUser, displayBadgeIcon} = useGetUserFull(ownUserSimple?.id)
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
@@ -49,6 +51,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
     const [isSharing, setIsSharing] = useState(false);
 
     const [ isFollowing, setIsFollowing ] = useState(null)
+
 
     useEffect(()=>{
 
@@ -76,6 +79,8 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             );
             
         }
+        
+        
     }, [userFetched, ownerUser])
 
     const isOwnersPage = userFetched.id === ownUserSimple?.id
@@ -339,17 +344,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                 className='text-mainGray font-semibold'>Film Lover</Text>
                             )}
                         </View>
-                        <View className='flex flex-row justify-start items-center  gap-2'>
-                            <Image
-                                source={badges.conversationalistBronze}
-                                width={30}
-                                height={30}
-                                contentFit='cover'
-                            
-                                style={{ overflow:'hidden'}}
-                            />
-                            <Text className='text-white font-bold text-lg  '>@{userFetched.username}</Text>
-                        </View>
+                        <Username user={userFetched} size='md' bold={true}  />
                     </View>
                     {userFetched?.bio && ( 
                         <Text className='text-mainGrayDark  font-pcourier'>{userFetched?.bio}</Text> 

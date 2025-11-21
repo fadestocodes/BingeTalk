@@ -69,6 +69,8 @@ export const updateUser = async ( params, email ) => {
         const response = await request.json();
         if (!request.ok) return {success:false}
 
+        console.log('responsedata', response.simplifiedUser)
+
         const formatted = JSON.stringify(response.simplifiedUser)
 
         await AsyncStorage.setItem('user-data', formatted)
@@ -1127,7 +1129,6 @@ export const useGetCriticProgression = (userId) => {
                 throw new Error(criticResult.message || "Error fetching progression data for Critic badge")
             }
             const criticProgressionData = criticResult.data
-            console.log(`Critic (${criticProgressionData.nextLevel}) progression: ${criticProgressionData?.untilNextLevel.currentlyAt} / ${criticProgressionData?.untilNextLevel.toNextLevel} `)
             setCriticProgression(criticProgressionData)
 
     
@@ -1165,7 +1166,6 @@ export const useGetHistorianProgression = (userId) => {
             }
             const historianProgressionData = historianResult.data
             // console.log('historianprogresion', historianProgressionData)
-            console.log(`Historian (${historianProgressionData.nextLevel}) progression: ${historianProgressionData?.untilNextLevel.currentlyAt} / ${historianProgressionData?.untilNextLevel.toNextLevel} `)
             setHistorianProgression(historianProgressionData)
 
     
@@ -1204,7 +1204,6 @@ export const useGetCuratorProgression = (userId) => {
             }
             const curatorProgressionData = curatorResult.data
             // console.log('historianprogresion', curatorProgressionData)
-            console.log(`Curator (${curatorProgressionData.nextLevel}) progression: ${curatorProgressionData?.untilNextLevel.currentlyAt} / ${curatorProgressionData?.untilNextLevel.toNextLevel} `)
             setCuratorProgression(curatorProgressionData)
 
     
@@ -1242,7 +1241,6 @@ export const useGetAuteurProgression = (userId) => {
             }
             const auteurProgressionData = auteurResult.data
             // console.log('historianprogresion', auteurProgressionData)
-            console.log(`Auteur (${auteurProgressionData.nextLevel}) progression: ${auteurProgressionData?.untilNextLevel.currentlyAt} / ${auteurProgressionData?.untilNextLevel.toNextLevel} `)
             setAuteurProgression(auteurProgressionData)
 
     
@@ -1274,15 +1272,19 @@ export const useGetConversationalistProgression = (userId) => {
             setError('')
             const conversationalistResponse = await apiFetch(`${nodeServer.currentIP}/user/${userId}/conversationalist-badge-progression`)
             const conversationalistResult = await conversationalistResponse.json()
+            if (conversationalistResponse.status === 202) {
+                setConversationalistProgression({})
+                return
+            }
 
             if (!conversationalistResponse.ok){
                 throw new Error(conversationalistResult.message || "Error fetching progression data for conversationalist badge")
             }
+
             const conversationalistProgressionData = conversationalistResult.data
-            // console.log('historianprogresion', conversationalistProgressionData)
-            console.log(`Conversationalist (${conversationalistProgressionData?.nextLevel}) progression: ${conversationalistProgressionData?.untilNextLevel.currentlyAt.comments} / ${conversationalistProgressionData?.untilNextLevel.toNextLevel.comments} 
-                & ${conversationalistProgressionData?.untilNextLevel.currentlyAt.reposts} / ${conversationalistProgressionData?.untilNextLevel.toNextLevel.reposts}  `)
-            setConversationalistProgression(conversationalistProgressionData)
+            console.log('coversationalistprogressioresujlt', conversationalistResult)
+            console.log('coversationalistprogressiondata', conversationalistResult.data)
+            setConversationalistProgression(conversationalistProgressionData.progress)
 
     
         } catch (err){
@@ -1319,7 +1321,6 @@ export const useGetPeoplesChoiceProgression = (userId) => {
             }
             const peoplesChoiceProgressionData = peoplesChoiceResult.data
             // console.log('historianprogresion', peoplesChoiceProgressionData)
-            console.log(`peoplesChoice (${peoplesChoiceProgressionData?.nextLevel}) progression: ${peoplesChoiceProgressionData?.untilNextLevel.currentlyAt} / ${peoplesChoiceProgressionData?.untilNextLevel.toNextLevel}`)
             setPeoplesChoiceProgression(peoplesChoiceProgressionData)
 
     
@@ -1381,6 +1382,39 @@ export const useCheckBadgeNotifications = (userId) => {
 
     return { badgeNotifications, loading, error, refetchBadgeNotifications : checkBadgeNotifications }
 }
+
+export const useCheckTastemakerProgress = (userId) => {
+    const [progress, setProgress] = useState('')
+    const [loading, setLoading] = useState(true)
+
+    const checkTastemakerProgress = async () => {
+        try {
+            setLoading(true)
+            const res = await apiFetch(`${nodeServer.currentIP}/badge/tastemaker`, {
+                method : "POST",
+                headers : {'Content-type' : 'application/json'},
+                body : JSON.stringify({userId})
+            })
+            const resData = await res.json()
+            if (!res.ok) throw new Error("Invalid response")
+            console.log(resData.data.progress)
+        setProgress(resData.data.progress)
+        } catch (err){
+            console.error(err)
+        } finally{
+            setLoading(false``)
+        }
+
+    }
+
+    useEffect(() => {
+        checkTastemakerProgress()
+    }, [userId])
+
+    return {progress, loading}
+
+}
+
 
 export const markBadgeNotificationSeen = async ( badgeId) => {
 

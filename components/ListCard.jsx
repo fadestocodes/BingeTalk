@@ -11,6 +11,7 @@ import { listInteraction } from '../api/list'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 import { useGetUser, useGetUserFull } from '../api/auth'
+import Username from './ui/Username'
 
 const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) => {
 
@@ -197,7 +198,8 @@ const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) 
                                     contentFit='cover'
                                     style={{ width:25, height :25, borderRadius:50 }}
                                     />
-                                    <Text className='text-mainGrayDark'>@{item.user.username}</Text>
+                                    <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                                     </TouchableOpacity>
                                 </View>
                                 <Text className='text-mainGrayDark'>{formatDate(item.createdAt)}</Text>

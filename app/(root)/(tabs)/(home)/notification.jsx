@@ -17,6 +17,7 @@ import { notificationFilterCategories } from '../../../../lib/CategoryOptions'
 import { avatarFallback } from '../../../../lib/fallbackImages';
 import { avatarFallbackCustom } from '../../../../constants/Images';
 import { useGetUser, useGetUserFull } from '../../../../api/auth';
+import Username from '../../../../components/ui/Username';
 
 const Notification = () => {
 
@@ -255,7 +256,9 @@ const Notification = () => {
                     style={{ width:30, height:30, borderRadius:50 }}
                     contentFit='cover'
                   />
-                  <Text className='text-mainGrayDark'>@{item.user.username}</Text>
+                  {/* <Text className='text-mainGrayDark'>@{item.user.username}</Text> */}
+                  <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                 </TouchableOpacity>
                 <Text className='text-mainGrayDark'>{ formatDateNotif(item.createdAt)}</Text>
               </View>

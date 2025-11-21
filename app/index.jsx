@@ -234,6 +234,7 @@ import { fetchUser } from "../api/user";
 import { postPushToken } from "../api/notification";
 import { useGetUser, useGetUserFull } from "../api/auth";
 import IntroComponent from "../components/IntroScreen";
+import BadgeLevelUpModal from "../components/BadgeLevelUpModal";
 
 WebBrowser.maybeCompleteAuthSession();
 

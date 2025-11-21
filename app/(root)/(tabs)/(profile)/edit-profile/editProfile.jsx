@@ -18,6 +18,7 @@ import { autocompleteLocationSearch } from '../../../../../api/location'
 import { ArrowLeft, ChevronDown, Clapperboard, Popcorn } from 'lucide-react-native'
 import { filmRoles } from '../../../../../lib/FilmDeptRoles'
 import { parseDept, unparseDept } from '../../../../../lib/parseFilmDept'
+import { badgeIconMap } from '../../../../../constants/BadgeIcons'
 
 
 
@@ -35,7 +36,8 @@ const editProfile = () => {
         accountType : fetchedUser?.accountType || '',
         location : fetchedUser?.locationFormatted || "",
         filmRole : '',
-        filmDept : ''
+        filmDept : '',
+        displayBadgeData : ''
     })
     const [shouldAnimate, setShouldAnimate] = useState(false);
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -47,7 +49,9 @@ const editProfile = () => {
     const [ showFilmDept, setShowFilmDept ] = useState(false)
     const [ hasSelectedDept, setHasSelectedDept ] = useState(false)
     const [selectedFilmDept, setSelectedFilmDept] = useState('')
-
+    const [ displayBadgeIcon, setDisplayBadgeIcon ] = useState('')
+    const [showBadgeDropdown, setShowBadgeDropdown] = useState(false)
+    const [unlockedBadges, setUnlockedBadges] = useState([])
 
 
 
@@ -65,6 +69,20 @@ const editProfile = () => {
           });
       
           setImage(fetchedUser.profilePic || null);
+          
+          let displayBadge = ''
+          let uri = ''
+          if (fetchedUser?.displayBadge){
+              displayBadge = badgeIconMap.find( i => i.type === fetchedUser.displayBadge.badgeType)
+              uri = displayBadge.levels[fetchedUser.displayBadge.badgeLevel].uri
+          } else if (fetchedUser?.unlockedBadges?.length > 0){
+              displayBadge = badgeIconMap.find( i => i.type === fetchedUser.unlockedBadges[0].badgeType)
+              uri = displayBadge.levels[fetchedUser.unlockedBadges[0].badgeLevel].uri
+              setUnlockedBadges(fetchedUser.unlockedBadges)
+          }
+          if (uri){
+              setDisplayBadgeIcon(uri)
+          }
         }
       }, [fetchedUser]);
 
@@ -190,11 +208,14 @@ const editProfile = () => {
             locationFormatted : selectedLocation.locationFormatted,
             accountType : inputs.accountType,
             filmRole : inputs.filmRole,
-            filmDept : inputs.filmDept
+            filmDept : inputs.filmDept,
+            displayBadgeData : inputs.displayBadgeData
 
         }
         const updatedUser = await updateUser( params , fetchedUser?.email);
         if (updatedUser.success){
+            console.log('updateduser', updatedUser.data)
+            
             updateUserContext(updatedUser.data)
         }
         
@@ -260,6 +281,25 @@ const editProfile = () => {
         setShowFilmDept(false)
         setHasSelectedDept(false)
     }
+    
+    const handleDisplayBadgeSelect = (item) => {
+        console.log('item', item)
+
+        setInputs(prev => ({
+            ...prev,
+            displayBadgeData : item
+        }))
+
+        let displayBadge = ''
+        let uri = ''
+        displayBadge = badgeIconMap.find( i => i.type === item.badgeType)
+        uri = displayBadge.levels[item.badgeLevel].uri
+        if (uri){
+            setDisplayBadgeIcon(uri)
+        }
+        setShowBadgeDropdown(false)
+    }
+
 
       if (!fetchedUser){
         return (
@@ -561,7 +601,7 @@ const editProfile = () => {
                                 contentContainerStyle={{gap:20, paddingTop:30, paddingBottom:30,paddingLeft:20, paddingRight:20, width:'100%', justifyContent:'', alignItems:''}}
                                 renderItem={({item}) => (
                                     <TouchableOpacity onPress={() => handleDeptSelect(item)} style={{width:'100%'}} className='  '>
-                                        <Text className='font-bold text-newLightGray text-xl'>{item.emoji} {item.name} ({item.numRoles})</Text>
+                                        <Text className='font-bold text-newLightGray text-lg'>{item.emoji} {item.name} ({item.numRoles})</Text>
                                     </TouchableOpacity>
                 
                                 )}
@@ -574,6 +614,67 @@ const editProfile = () => {
 
                 </View>
                 ) }
+                <View className='w-full' style={{paddingHorizontal:20, paddingVertical:0}} >
+                {/* { errors?.location && (
+                            <View >
+                                <Text className='text-red-400 text-sm text-start'>{`* ${errors.location}`}</Text>
+                            </View>
+                        )
+                            
+                        } */}
+                    <View className='flex-row justify-start items-center w-full'>
+
+                        <Text className='text-mainGray font-semibold text-sm' style={{ width:65, paddingHorizontal:0, paddingVertical:8 }} >Display Badge: </Text>
+                        <View className='relative py-3 justify-start items-center' style={{ width:270 }}  >
+
+                            <View className='bg-primaryDark text-mainGray rounded-2xl px-4 py-4 h-[50px]  justify-center items-center'>
+                                { displayBadgeIcon ? (
+                                    <View className='w-[100px] h-full justify-center items-center'>
+                                        <Image
+                                            source={displayBadgeIcon}
+                                            width={30}
+                                            height={35}
+                                            contentFit='contain'
+                                            style={{ overflow:'hidden'}}
+                                        />
+                                    </View>
+                                ) : (
+                                    <Text>No unlocked Badges</Text>
+                                ) }
+                            </View>
+                            <TouchableOpacity disabled={ fetchedUser?.unlockedBadges?.length < 1 } onPress={() => setShowBadgeDropdown(!showBadgeDropdown)} className='absolute top-6 right-2 bg-primary rounded-full p-1'>
+                                <ChevronDown color={Colors.newLightGray} size={20}/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                        { showBadgeDropdown && fetchedUser?.unlockedBadges?.length > 0 && (
+                        <View className='gap-5  bg-primaryLight rounded-xl px-4 py-4 justify-center items-start'>
+
+                            <FlatList 
+                                data={fetchedUser.unlockedBadges}
+                                keyExtractor={item => item.id}
+                                contentContainerStyle={{ justifyContent:'center', alignItems:'flex-start', gap:10, paddingHorizontal:15 }}
+                                scrollEnabled={false}
+                                renderItem={({item}) => {
+                                    const correspondingBadge = badgeIconMap.find(i => i.type === item.badgeType)
+                                    const iconUri = correspondingBadge.levels[item.badgeLevel].uri
+                                    return (
+                                    <TouchableOpacity onPress={()=>handleDisplayBadgeSelect(item)} className='flex flex-row gap-3 justify-center items-center'>
+                                         <Image
+                                            source={iconUri}
+                                            width={30}
+                                            height={40}
+                                            contentFit='contain'
+                                            style={{ overflow:'hidden'}}
+                                        />
+                                        <Text className='text-mainGray font-bold text-lg'>{unparseDept(item.badgeType)} ({unparseDept(item.badgeLevel)})</Text>
+                                    </TouchableOpacity>
+                                )}}
+                            
+                            />
+                        </View>
+                        ) }
+                    </View>
 
                 
 

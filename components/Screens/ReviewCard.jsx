@@ -17,6 +17,7 @@ import { reviewInteraction } from '../../api/review'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
 import { useGetUser, useGetUserFull } from '../../api/auth'
+import Username from '../ui/Username'
 
 const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isReviewPage, isBackground, isReposted}) => {
         const {user} = useGetUser()
@@ -195,7 +196,7 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
                                                 contentFit='cover'
                                                 style={{ width:25, height :25, borderRadius:50 }}
                                                 />
-                                                <Text className='text-mainGrayDark'>@{item.user.username}</Text>
+                                                <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
 
                                             </TouchableOpacity>
                                         </View>

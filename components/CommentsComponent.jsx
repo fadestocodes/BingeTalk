@@ -19,6 +19,7 @@ import { checkConversationalistBadge } from '../api/badge'
 import { useGetUser, useGetUserFull } from '../api/auth'
 import { useFetchReview } from '../api/review'
 import { useGetSetDay } from '../api/setDay'
+import Username from './ui/Username'
 
 const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, activityId, setDayId, fromModal}) => {
 
@@ -414,7 +415,9 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
-                                        <Text className='text-mainGrayDark' >@{item.user.username}</Text>
+
+                                        <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                                     </View>
                                     <Text className='text-mainGrayDark '>{formatDateNotif(item.createdAt)}</Text>
                                 </View>
@@ -466,7 +469,9 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
-                                        <Text className='text-mainGrayDark   ' >@{reply.user.username}</Text>
+
+                                        <Username size='sm' user={reply.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                                     </View>
                                     <Text className='text-mainGrayDark '>{formatDateNotif(reply.createdAt)}</Text>
                                 </View>

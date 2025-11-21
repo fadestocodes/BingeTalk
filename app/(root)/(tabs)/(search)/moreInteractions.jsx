@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View , TouchableOpacity, ActivityIndicator} from 'react-native'
 import React, {useState} from 'react'
 import { Colors } from '../../../../constants/Colors'
 import { ProgressCheckIcon } from '../../../../assets/icons/icons'
@@ -20,8 +20,8 @@ const moreInteractions = () => {
     const {user} = useGetUser()
     const {userFull:ownerUser, refetch} = useGetUserFull(user?.id)
     
-    const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
-    const alreadyWatching = ownerUser.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
+    const alreadyInterested = ownerUser?.interestedItems?.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
+    const alreadyWatching = ownerUser?.currentlyWatchingItems?.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
 
 
     const handleInterested = async (  ) => {
@@ -69,6 +69,8 @@ const moreInteractions = () => {
             params : { tmdbId, DBtvId, DBMovieId }
         })
     }
+
+    if (!ownerUser) return <ActivityIndicator />
 
 
 

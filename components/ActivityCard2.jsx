@@ -1,3 +1,4 @@
+
 import { StyleSheet, Text, View , TouchableOpacity, FlatList} from 'react-native'
 import React, {act, useEffect, useState} from 'react'
 import { Image } from 'expo-image'
@@ -12,6 +13,7 @@ import { likeActivity, activityInteraction, useFetchActivityId } from '../api/ac
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 import { useGetUser, useGetUserFull } from '../api/auth'
+import Username from './ui/Username'
 
 const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground}) => {
 
@@ -21,7 +23,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
 
 
     const {user} = useGetUser()
-    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+    const {userFull:ownerUser, refetch:refetchOwner, displayBadgeIcon}= useGetUserFull(user?.id)
 
     const { refetch } = useFetchActivityId(activity?.id)
 
@@ -179,7 +181,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                 contentFit='cover'
                 style={{ width:30, height:30, borderRadius:50 }}
             />
-            <Text className='text-mainGrayDark '>@{activity.user.username}</Text>
+            <Username size='sm' user={activity.user} color={Colors.mainGrayDark2} reverse={true}/>
             </TouchableOpacity>
             <Text className='  text-mainGrayDark'>{formatDateNotif(activity.createdAt)}</Text>
         </View>

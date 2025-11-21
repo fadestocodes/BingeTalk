@@ -19,6 +19,7 @@ import { avatarFallbackCustom } from '../constants/Images'
 import { checkConversationalistBadge } from '../api/badge'
 import { useBadgeContext } from '../lib/BadgeModalContext'
 import { useGetUser, useGetUserFull } from '../api/auth'
+import Username from './ui/Username'
 
 
 const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
@@ -257,8 +258,8 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                             />
-                            <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
-                            </TouchableOpacity>
+                    <Username size='sm' user={userDB} color={Colors.mainGrayDark2} reverse={true}/>
+                    </TouchableOpacity>
                         </View>
                     <Text className='text-mainGrayDark '>{formatDateNotif(dialogue.createdAt)}</Text>
                     
