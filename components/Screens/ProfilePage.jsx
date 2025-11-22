@@ -14,7 +14,7 @@ import { getYear } from '../../lib/formatDate'
 import { Star, UserPen, CircleUserRound, UserPlus , UserCheck} from 'lucide-react-native'
 import ListCard from '../ListCard'
 import { useRouter } from 'expo-router'
-import { followUser, unfollowUser } from '../../api/user'
+import { followUser, unfollowUser, useCheckBadgeNotifications, useGetAuteurProgression, useGetBadges, useGetConversationalistProgression, useGetCriticProgression, useGetCuratorProgression, useGetHistorianProgression, useGetPeoplesChoiceProgression } from '../../api/user'
 import { badges } from '../../constants/BadgeIcons'
 import SetDaysGraph from '../SetDaysGraph'
 import { useGetSetDayGraph } from '../../api/setDay'
@@ -51,6 +51,15 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
     const [isSharing, setIsSharing] = useState(false);
 
     const [ isFollowing, setIsFollowing ] = useState(null)
+
+    const {criticProgression} = useGetCriticProgression(ownerUser?.id)
+    const {historianProgression} = useGetHistorianProgression(ownerUser?.id)
+    const {curatorProgression} = useGetCuratorProgression(ownerUser?.id)
+    const {auteurProgression} = useGetAuteurProgression(ownerUser?.id)
+    const {conversationalistProgression} = useGetConversationalistProgression(ownerUser?.id)
+    const {badgeNotifications} = useCheckBadgeNotifications(ownerUser?.id)
+    const {peoplesChoiceProgression} = useGetPeoplesChoiceProgression(ownerUser?.id)
+    const {badgeList} = useGetBadges(ownerUser?.id)
 
 
     useEffect(()=>{

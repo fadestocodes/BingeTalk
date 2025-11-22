@@ -130,6 +130,10 @@ const RecommendationListScreen = () => {
             setToastMessage("Removed recommendation")
         }
 
+        if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
+            updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
+        }
+
         await maybeAskForReview()
 
         
