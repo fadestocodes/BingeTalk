@@ -47,6 +47,7 @@ const UserBadgesPage = () => {
 
   const [tastemakerBadgeProgress, setTastemakerProgress] = useState('')
 
+
   useEffect(()=>{
     if (
       !criticProgression ||
@@ -77,6 +78,7 @@ const UserBadgesPage = () => {
       setLoadingProgressions(false)
 
     }
+
 
 
 
@@ -115,7 +117,7 @@ const UserBadgesPage = () => {
 
               { showDetails ? (
                 <View style={{}} className={`bg-primaryLight px-6 rounded-2xl justify-center items-center gap-3 relative w-full py-10  `}>
-                  <TouchableOpacity onPress={()=>setShowDetails('')} className='absolute top-5 right-5 bg-primary rounded-full'>
+                  <TouchableOpacity onPress={()=>setShowDetails('')} className='absolute top-5 right-5 bg-primary rounded-full p-2'>
                     <CloseIcon size={20} color={Colors.mainGray} />
                   </TouchableOpacity>
                   { showDetails.currLevel !== 'NONE' && (
@@ -149,18 +151,13 @@ const UserBadgesPage = () => {
                       {Array.from({ length: showDetails?.progressData?.numTotalRequirements || 1 }).map((_, i) => {
                         
                         return (
-                          <View key={i} className='flex-row flex gap-3  items-center w-full self-start px-4 pt-4'>
-                            <>
+                          <View key={i} className='flex-row flex gap-3  items-center w-full justify-center  px-4 pt-4'>
                             { showDetails.currLevel !== 'GOLD' && (
                               <Text className='text-mainGray  '>{showDetails.progressData.currentlyAt[i]} / {showDetails.progressData.toNextLevel[i]}</Text>
                             ) }
-                            <View style={{}} className='w-[160px] rounded-full bg-newDarkGray h-[10px] relative '>
-                              <View style={{width:showDetails.currLevel === 'GOLD' ? '100%'  :`${Math.floor((showDetails?.progressData?.currentlyAt[i]/showDetails?.progressData?.toNextLevel[i])*100) || 3}%`}} className={`${showDetails.currLevel === 'GOLD' ? 'bg-secondary' : 'bg-secondary'} rounded-full h-[10px] absolute `} />
+                            <View style={{}} className='w-[160px] rounded-full bg-newDarkGray h-[10px] relative overflow-hidden '>
+                              <View style={{width:showDetails.currLevel === 'GOLD' ? '100%'  :`${Math.floor((showDetails?.progressData?.currentlyAt[i]/showDetails?.progressData?.toNextLevel[i])*100) || 3}%`}} className={`${showDetails.currLevel === 'GOLD' ? 'bg-secondary' : 'bg-secondary'} rounded-full h-[10px] absolute inset-y-0 left-0 ` } />
                             </View>
-
-                            </>
-                           
-
                         </View>
                       )}
                     )}
@@ -188,14 +185,8 @@ const UserBadgesPage = () => {
                   const currIndex = userBadge ? levels.indexOf(userBadge?.badgeLevel) : 0
                   const currLevel = userBadge?.badgeLevel || 'NONE'
                   const nextLevel = levels[currIndex + 1] || null
-                  let percentage
                   const progressData = allProgressions[item.type]
-
-                  console.log("currLevel...", currLevel)
-
-                  if (userBadge?.badgeLevel === 'GOLD') {
-                    percentage = 100
-                  } 
+ 
                   return (
                   <TouchableOpacity onPress={()=>handleDetails(userBadge,item ,item.type, currLevel,nextLevel, progressData,userBadge ? item.levels[userBadge.badgeLevel].uri : item.levels.BRONZE.uri )} className={`bg-primaryLight w-[160px] min-h-[250px] px-2 rounded-2xl justify-center items-center gap-3 relative ${userBadge ? 'opacity-100' : 'opacity-30'}  ${item.currentLevel === 'NONE' ? 'opacity-20' : ''} `}>
                     { currLevel !== 'NONE' && (
@@ -227,12 +218,12 @@ const UserBadgesPage = () => {
                       {Array.from({ length: progressData?.numTotalRequirements || 1 }).map((_, i) => {
 
                       return (
-                        <View key={i} className='flex-row flex gap-2 justify-start w-full  items-center'>
+                        <View key={i} className='flex-row flex gap-2 justify-center w-full  items-center'>
                             <>
                             { currLevel !== 'GOLD' && (
                               <Text className='text-mainGray text-xs '>{progressData.currentlyAt[i]} / {progressData.toNextLevel[i]}</Text>
                             ) }
-                            <View style={{width:80}} className='w-[80px] rounded-full bg-primary h-[10px] relative'>
+                            <View style={{width:80}} className='w-[80px] rounded-full bg-primary h-[10px] relative overflow-hidden'>
                               <View style={{width:currLevel === 'GOLD' ? '100%'  :`${Math.floor((progressData?.currentlyAt[i]/progressData?.toNextLevel[i])*100) || 3}%`}} className={`${currLevel === 'GOLD' ? 'bg-secondary' : 'bg-secondary'} rounded-full h-[10px] absolute `} />
                             </View>
                             </>

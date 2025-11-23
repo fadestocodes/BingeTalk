@@ -426,7 +426,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                     ) }
                 </View>
 
-                    {setDaysGraphData?.totalWorked > 0 && (
+                    {setDaysGraphData?.totalWorked >= 0 && userFetched?.accountType === 'FILMMAKER' && (
 
                         <View >
                             {loadingSetDaysGraphData?.graphData ? (
@@ -479,7 +479,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                 
                 {/* Dialogues */}
                 <View className='flex-1 gap-3  w-full'>
-                    {userFetched?.dialogues && (
+                    {userFetched?.dialogues?.length > 0 && (
                         <View className='gap-2 justify-start items-start  flex flex-col'>
                             <Text className='text-mainGray font-bold text-xl '>Dialogues  ({userFetched._count.dialogues})</Text>
                             <FlatList

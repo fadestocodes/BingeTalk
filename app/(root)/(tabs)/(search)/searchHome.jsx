@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable, Animated, Dimensions , useWindowDimensions} from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable, Animated, Dimensions , useWindowDimensions, ActivityIndicator} from 'react-native'
 import { Image } from 'expo-image'
 import React, {useEffect, useState, useRef} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -25,6 +25,8 @@ import { fetchTrendingReviews } from '../../../../api/review'
 import ReviewCard from '../../../../components/Screens/ReviewCard'
 import { NotebookPen } from 'lucide-react-native'
 import { badges } from '../../../../constants/BadgeIcons'
+import Username from '../../../../components/ui/Username'
+import { useGetUser } from '../../../../api/auth'
 
 
 
@@ -32,6 +34,7 @@ import { badges } from '../../../../constants/BadgeIcons'
 const SearchPage = () => {
 
   const [query, setQuery] = useState('');
+  const {user:ownerUser} = useGetUser()
   const [results, setResults] = useState([])
   const [ inFocus, setInFocus ] = useState(false);
   const [ discoverPage , setDiscoverPage ] = useState(true);
@@ -90,7 +93,9 @@ const SearchPage = () => {
       try {
         if ( searchingFor === 'users' ) {
           const response = await searchUsers(text);
-          setResults(response.users);
+          const usersList = response.users
+          const filtered = usersList.filter( i => i.id !== ownerUser.id)
+          setResults(filtered);
         } else if (searchingFor==='titles') {
           const response = await searchAll(text);
           // console.log('response is ', response)
@@ -219,6 +224,8 @@ const SearchPage = () => {
     router.push(`/user/${item.id}`)
   }
 
+  if(!ownerUser) return <ActivityIndicator />
+
 
   return (
 
@@ -271,6 +278,8 @@ const SearchPage = () => {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
+
+          const badgeIcon = item?.displayBadge 
           return (
           <>
           <View className=' w-full   '>
@@ -290,13 +299,15 @@ const SearchPage = () => {
                 </View>
                 { searchingFor === 'users' ? (
                   <View  className='flex flex-row flex-wrap flex-1  justify-start items-center gap-1'>
-                    <Image 
+                    <Username size='sm' user={item} color={Colors.mainGrayDark2} reverse={true}/>
+
+                    {/* <Image 
                       source={badges.tastemakerBronze}
                       width={23}
                       height={23}
                       contentFit='contain'
                     />
-                    <Text className='text-mainGray text-sm pr-3 font-medium'>@{item.username}</Text>
+                    <Text className='text-mainGray text-sm pr-3 font-medium'>@{item.username}</Text> */}
                   </View>
                 ) : (
 

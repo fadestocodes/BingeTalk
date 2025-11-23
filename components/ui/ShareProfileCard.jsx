@@ -78,7 +78,7 @@ const ShareProfileCard = forwardRef(({ user, setDaysData, totalWorked=0 ,loading
             </View>
         </View>
     </View>
-            {setDaysData?.totalWorked > 0 &&  (
+            {setDaysData?.totalWorked >= 0 && user.accountType === 'FILMMAKER' && (
             <View style={{ height:'auto', width:'100%', paddingBottom:20}}>
                 <View  className='flex flex-row gap-1 self-start items-center'>
                         <Text className='text-mainGray font-bold text-xl '>SetDays</Text>
@@ -208,6 +208,8 @@ const ShareProfileCard = forwardRef(({ user, setDaysData, totalWorked=0 ,loading
 const styles = StyleSheet.create({
   container: {
     flex:1,
+    minWidth:350,
+    minHeight:600,
     flexDirection:'column',
     padding: 24,
     backgroundColor: Colors.primary,

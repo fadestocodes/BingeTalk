@@ -77,6 +77,8 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "
 import {Image} from 'expo-image'
 import {badgeIconMap} from '../constants/BadgeIcons'
 import { Colors } from "@/constants/Colors";
+import { parseDept, unparseDept } from '../lib/parseFilmDept'
+
 
 export default function BadgeLevelUpModal({ visible, onClose, badgeType, level }) {
   const confettiRef = useRef(null);
@@ -147,7 +149,7 @@ export default function BadgeLevelUpModal({ visible, onClose, badgeType, level }
         />
         <Text style={{ fontSize: 24, fontWeight: "bold" , color:Colors.mainGray, paddingTop:20}}>🎉 Congratulations!</Text>
         <Text style={{ textAlign: "start", marginTop: 10, color:Colors.mainGray, paddingHorizontal:10 }}>
-          You’ve unlocked the <Text style={{ fontWeight: "bold" }}>{level}</Text> level for the <Text style={{ fontWeight: "bold" }}>{badgeType}</Text> badge!{level !== 'GOLD' && ' Go to your Badges page to see how to unlock the next level'}
+          You’ve unlocked the <Text style={{ fontWeight: "bold" }}>{unparseDept(level)}</Text> level for the <Text style={{ fontWeight: "bold" }}>{unparseDept(badgeType)}</Text> badge!{level !== 'GOLD' && ' Go to your Badges page to see how to unlock the next level'}
         </Text>
         <Text className="text-mainGray px-10"></Text>
         <Pressable

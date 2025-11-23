@@ -14,6 +14,7 @@ import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 import { useGetUser, useGetUserFull } from '../api/auth'
 import Username from './ui/Username'
+import { badgeIconMap } from '../constants/BadgeIcons'
 
 const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground}) => {
 
@@ -26,6 +27,8 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
     const {userFull:ownerUser, refetch:refetchOwner, displayBadgeIcon}= useGetUserFull(user?.id)
 
     const { refetch } = useFetchActivityId(activity?.id)
+
+    const [ badgeImage, setBadgeImage ] = useState('')
 
 
     // const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
@@ -70,6 +73,12 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                 count : activity?.reposts
             } 
         })
+
+        if (activity.activityType === 'BADGE'){
+            const badgeData = badgeIconMap.find( i => i.type === activity.badge.badgeType)
+            console.log('badgedata',badgeData)
+            setBadgeImage(badgeData.levels[activity.badge.badgeLevel].uri)
+        }
 
     }, [activity, ownerUser])
 
@@ -209,7 +218,15 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                         style ={{ width:'100%', height:150, borderRadius:15}}
                 />
             </TouchableOpacity>
-        ):null }
+        ): badgeImage && (
+            <Image
+                source={ badgeImage}
+                width={110}
+                height={120}
+                contentFit='contain'
+                style={{ overflow:'hidden', alignSelf:'center'}}
+            />
+        ) }
 
         { activity?.currentRotation?.length > 0 && (
             <View style={{ flexDirection:'row', gap:15, justifyContent:'center', alignItems:'center', width:'100%' }}>

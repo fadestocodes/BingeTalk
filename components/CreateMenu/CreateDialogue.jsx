@@ -317,7 +317,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                  
             </View>
             <View style={{position:"relative", alignItems:'center', justifyContent:'center', width:'100%', zIndex:10}}>
-                <Text className='font-pcourier uppercase text-lg text-secondary ' >{userDB.firstName}</Text>
+                <Text className='font-pcourier uppercase text-lg text-mainGray ' >{userDB.firstName}</Text>
             </View>
        
 

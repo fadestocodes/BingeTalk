@@ -25,7 +25,7 @@ import ToastMessage from '../ui/ToastMessage';
 import { maybeAskForReview } from '../../lib/maybeAskForReview';
 
 
-const RecommendationListScreen = () => {
+const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
     const {userId} = useLocalSearchParams();
     const {user} = useGetUser()
     const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(user?.id)
@@ -49,6 +49,7 @@ const RecommendationListScreen = () => {
           refetchReceived()
         }, [])
       )
+
 
 
     
@@ -229,6 +230,15 @@ const RecommendationListScreen = () => {
                         <Text className=' font-pmedium' style={{ color : tab==='declined' ? Colors.primary : 'white' }}>Declined</Text>
                 </TouchableOpacity>
             </View>
+
+            { undeterminedAndFlagged && (
+                <View className='w-full flex flex-row justify-center items-center gap-3 bg-primaryDark p-4 rounded-xl'>
+                    <Text className='text-mainGray w-[70%]'>Turn on Notifications so you don't miss out when your friends send you recs!</Text>
+                    <TouchableOpacity onPress={handleYes} className='bg-newDarkGray px-3 py-2 rounded-lg'>
+                        <Text className='text-secondary font-bold '>Turn on</Text>
+                    </TouchableOpacity>
+                </View>
+            ) }
 
 
             {  tab === 'pending' ? (

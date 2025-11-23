@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { useGetUser, useGetUserFull } from '../../../../api/auth'
 import RecommendationListScreen from '../../../../components/Screens/RecommendationListScreen'
@@ -10,7 +10,7 @@ import {  useAnimatedStyle } from 'react-native-reanimated'
 
 
 const recsHome = () => {
-    const {showModal, handleNoCustomPrompt, handleYesCustomPrompt} =  useCheckNotificationPrompt()
+    const {showModal, handleNoCustomPrompt, handleYesCustomPrompt, undeterminedAndFlagged, loading} =  useCheckNotificationPrompt()
     const translateY = useSharedValue(50); // start below
     const opacity = useSharedValue(0);
 
@@ -33,9 +33,10 @@ const recsHome = () => {
     }));
 
 
+    if (loading) return <ActivityIndicator />
   return (
-    <View  className='flex-1 relative'>
-        <RecommendationListScreen />
+    <View  className=' relative w-full h-full'>
+        <RecommendationListScreen undeterminedAndFlagged={undeterminedAndFlagged} handleYes={handleYesCustomPrompt}/>
         { showModal && (
             <Animated.View style={[translateStyle, { position: 'absolute', inset: 0 }]}>
                 <NotificationPromptUI handleNo={handleNoCustomPrompt} handleYes={handleYesCustomPrompt} />

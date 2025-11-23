@@ -32,7 +32,7 @@ const Notification = () => {
   useFocusEffect(
     useCallback(() => {
       refetch() // refetch from server
-    }, [])
+    }, [user?.id])
   )
   
   const router = useRouter()
@@ -177,7 +177,7 @@ const Notification = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' style={{}}>
-      {  loading || !ownerUser  ? (
+      {  loading || !ownerUser || !user  ? (
         <View className='h-full justify-center items-center'>
           <ActivityIndicator />
         </View>

@@ -6,6 +6,7 @@ import { useNotificationCountContext } from '@/lib/NotificationCountContext';
 import { apiFetch, useGetUser, useGetUserFull } from './auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications'
+import { Linking } from 'react-native';
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     console.log('recipient id is ',recipientId)
@@ -45,8 +46,9 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     }
 
     useEffect(() => {
-        getAllNotifs()
-    }, [recipientId])
+        if (!recipientId || !ownerUser) return
+        refetch()
+    }, [recipientId, ownerUser])
 
 
     const refetch = async () => {
@@ -159,6 +161,8 @@ export const useGetAllNotifRead = async (limit) => {
 export const useCheckNotificationPrompt = () => {
 
     const [showModal, setShowModal] = useState('')
+    const [ undeterminedAndFlagged, setUndeterminedAndFlagged ] = useState(null)
+    const [loading, setLoading] = useState(true)
 
 
     const checkNotificationPrompt = async () => {
@@ -166,26 +170,37 @@ export const useCheckNotificationPrompt = () => {
         console.log('checking notifi....')
         const { status, granted, canAskAgain } = await Notifications.getPermissionsAsync();
         console.log('status...',status)
-        if (status !== 'undetermined'){
+        if (status === 'granted' ){
             console.log('os notif setting is not undetermined, so iether granted or denied or undefined...',status)
+            return
+        } 
+       
+        const flag = await AsyncStorage.getItem('hasPromptedNotif')
+        console.log('flag status..', flag)
+        if (flag && flag === 'true') {
+            console.log('setting undeterminedAndFlagged to true')
+            setUndeterminedAndFlagged(true)
             return
         }
 
-        const flag = await AsyncStorage.getItem('hasPromptedNotif')
-        console.log('flag status..', flag)
-        if (flag && flag === 'true') return
-
         setShowModal(true)
+        setUndeterminedAndFlagged(false)
         
         
     }
     
     const handleYesCustomPrompt = async () => {
         console.log('trying to turn on notifs...')
-        const { status } = await Notifications.requestPermissionsAsync();
+        const { status  } = await Notifications.requestPermissionsAsync();
         console.log('status', status)
+        if (status === 'denied'){
+           Linking.openSettings()
+           setUndeterminedAndFlagged(false)
+           return 
+        }
         await AsyncStorage.setItem('hasPromptedNotif', 'true')
         setShowModal('')
+        setUndeterminedAndFlagged(false)
         console.log('done...')
     }
     
@@ -199,9 +214,11 @@ export const useCheckNotificationPrompt = () => {
 
 
     useEffect(()=> {
+        setLoading(true)
         checkNotificationPrompt()
+        setLoading(false)
     }, [])
 
-    return {showModal, setShowModal, handleYesCustomPrompt, handleNoCustomPrompt}
+    return {showModal, setShowModal, handleYesCustomPrompt, handleNoCustomPrompt, undeterminedAndFlagged, loading}
 
 }
