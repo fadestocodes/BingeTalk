@@ -20,6 +20,7 @@ import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
 import { checkConversationalistBadge } from '../../api/badge'
 import { useBadgeContext } from '../../lib/BadgeModalContext'
+import Username from '../ui/Username'
 
 
 
@@ -397,7 +398,10 @@ const DialogueScreen = () => {
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
-                                        <Text className='text-mainGrayDark' >@{item.user.username}</Text>
+
+                                        <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
+
+                                        
                                     </TouchableOpacity>
                                     <Text className='text-mainGrayDark '>{formatDate(item.createdAt)}</Text>
                                 </View>
@@ -453,7 +457,9 @@ const DialogueScreen = () => {
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
-                                        <Text className='text-mainGrayDark   ' >@{reply.user.username}</Text>
+
+                                        <Username size='sm' user={reply.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                                     </TouchableOpacity>
                                     <Text className='text-mainGrayDark '>{formatDate(reply.createdAt)}</Text>
                                 </View>

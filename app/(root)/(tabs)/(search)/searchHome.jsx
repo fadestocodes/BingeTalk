@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable, Animated, Dimensions , useWindowDimensions} from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable, Animated, Dimensions , useWindowDimensions, ActivityIndicator} from 'react-native'
 import { Image } from 'expo-image'
 import React, {useEffect, useState, useRef} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -24,6 +24,9 @@ import { avatarFallbackCustom } from '../../../../constants/Images'
 import { fetchTrendingReviews } from '../../../../api/review'
 import ReviewCard from '../../../../components/Screens/ReviewCard'
 import { NotebookPen } from 'lucide-react-native'
+import { badges } from '../../../../constants/BadgeIcons'
+import Username from '../../../../components/ui/Username'
+import { useGetUser } from '../../../../api/auth'
 
 
 
@@ -31,6 +34,7 @@ import { NotebookPen } from 'lucide-react-native'
 const SearchPage = () => {
 
   const [query, setQuery] = useState('');
+  const {user:ownerUser} = useGetUser()
   const [results, setResults] = useState([])
   const [ inFocus, setInFocus ] = useState(false);
   const [ discoverPage , setDiscoverPage ] = useState(true);
@@ -89,7 +93,9 @@ const SearchPage = () => {
       try {
         if ( searchingFor === 'users' ) {
           const response = await searchUsers(text);
-          setResults(response.users);
+          const usersList = response.users
+          const filtered = usersList.filter( i => i.id !== ownerUser.id)
+          setResults(filtered);
         } else if (searchingFor==='titles') {
           const response = await searchAll(text);
           // console.log('response is ', response)
@@ -218,6 +224,8 @@ const SearchPage = () => {
     router.push(`/user/${item.id}`)
   }
 
+  if(!ownerUser) return <ActivityIndicator />
+
 
   return (
 
@@ -270,6 +278,8 @@ const SearchPage = () => {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
+
+          const badgeIcon = item?.displayBadge 
           return (
           <>
           <View className=' w-full   '>
@@ -287,9 +297,24 @@ const SearchPage = () => {
                   <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray   pr-3 font-pbold'>{ searchingFor === 'users' ? `${item.firstName} ${item.lastName}`  :  item.media_type === 'movie' ? item.title : item.name }</Text>
 
                 </View>
-                <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray text-sm  pr-3 font-pmedium'>{ searchingFor === 'users' ? `@${item.username}` : item.media_type === 'person' 
+                { searchingFor === 'users' ? (
+                  <View  className='flex flex-row flex-wrap flex-1  justify-start items-center gap-1'>
+                    <Username size='sm' user={item} color={Colors.mainGrayDark2} reverse={true}/>
+
+                    {/* <Image 
+                      source={badges.tastemakerBronze}
+                      width={23}
+                      height={23}
+                      contentFit='contain'
+                    />
+                    <Text className='text-mainGray text-sm pr-3 font-medium'>@{item.username}</Text> */}
+                  </View>
+                ) : (
+
+                <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray text-sm  pr-3 font-pmedium'>{ item.media_type === 'person' 
                 ? `Known for ${item.known_for_department}` : item.media_type === 'movie' ? `Released ${getYear(item.release_date)}` 
                 : `First aired ${getYear(item.first_air_date)}` }</Text>
+                ) }
               </View>
             </TouchableOpacity>
           </View>

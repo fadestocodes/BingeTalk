@@ -16,6 +16,7 @@ import { createComment } from '../../api/comments'
 import { listInteraction } from '../../api/list'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../../constants/Images'
+import Username from '../ui/Username'
 
 
 const ListIdScreen = () => {
@@ -414,7 +415,8 @@ const ListIdScreen = () => {
             contentFit='cover'
             style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
         />
-        <Text className='text-mainGray'>Curated by @{list.user.username}</Text>
+        <Username size='sm' user={list.user} color={Colors.mainGrayDark2} reverse={true}/>
+
 
 
         </TouchableOpacity>

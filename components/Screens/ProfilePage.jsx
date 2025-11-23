@@ -14,7 +14,8 @@ import { getYear } from '../../lib/formatDate'
 import { Star, UserPen, CircleUserRound, UserPlus , UserCheck} from 'lucide-react-native'
 import ListCard from '../ListCard'
 import { useRouter } from 'expo-router'
-import { followUser, unfollowUser } from '../../api/user'
+import { followUser, unfollowUser, useCheckBadgeNotifications, useGetAuteurProgression, useGetBadges, useGetConversationalistProgression, useGetCriticProgression, useGetCuratorProgression, useGetHistorianProgression, useGetPeoplesChoiceProgression } from '../../api/user'
+import { badges } from '../../constants/BadgeIcons'
 import SetDaysGraph from '../SetDaysGraph'
 import { useGetSetDayGraph } from '../../api/setDay'
 import ViewShot,{ captureRef } from 'react-native-view-shot';
@@ -23,13 +24,15 @@ import * as Sharing from 'expo-sharing';
 import { shareToInstagramStory } from '../../lib/shareToIGStories'
 import Share from "react-native-share";
 import ShareProfileCard from '../../components/ui/ShareProfileCard'
+import { badgeIconMap } from '../../constants/BadgeIcons'
+import Username from '../ui/Username'
 
 
 
 const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
 
     const {user:ownUserSimple} = useGetUser()
-    const {userFull : ownerUser} = useGetUserFull(ownUserSimple?.id)
+    const {userFull : ownerUser, displayBadgeIcon} = useGetUserFull(ownUserSimple?.id)
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
@@ -48,6 +51,16 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
     const [isSharing, setIsSharing] = useState(false);
 
     const [ isFollowing, setIsFollowing ] = useState(null)
+
+    const {criticProgression} = useGetCriticProgression(ownerUser?.id)
+    const {historianProgression} = useGetHistorianProgression(ownerUser?.id)
+    const {curatorProgression} = useGetCuratorProgression(ownerUser?.id)
+    const {auteurProgression} = useGetAuteurProgression(ownerUser?.id)
+    const {conversationalistProgression} = useGetConversationalistProgression(ownerUser?.id)
+    const {badgeNotifications} = useCheckBadgeNotifications(ownerUser?.id)
+    const {peoplesChoiceProgression} = useGetPeoplesChoiceProgression(ownerUser?.id)
+    const {badgeList} = useGetBadges(ownerUser?.id)
+
 
     useEffect(()=>{
 
@@ -75,6 +88,8 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
             );
             
         }
+        
+        
     }, [userFetched, ownerUser])
 
     const isOwnersPage = userFetched.id === ownUserSimple?.id
@@ -338,7 +353,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                 className='text-mainGray font-semibold'>Film Lover</Text>
                             )}
                         </View>
-                        <Text className='text-white font-bold text-lg  '>@{userFetched.username}</Text>
+                        <Username user={userFetched} size='md' bold={true}  />
                     </View>
                     {userFetched?.bio && ( 
                         <Text className='text-mainGrayDark  font-pcourier'>{userFetched?.bio}</Text> 
@@ -411,7 +426,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                     ) }
                 </View>
 
-                    {setDaysGraphData?.totalWorked > 0 && (
+                    {setDaysGraphData?.totalWorked >= 0 && userFetched?.accountType === 'FILMMAKER' && (
 
                         <View >
                             {loadingSetDaysGraphData?.graphData ? (
@@ -464,7 +479,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                 
                 {/* Dialogues */}
                 <View className='flex-1 gap-3  w-full'>
-                    {userFetched?.dialogues && (
+                    {userFetched?.dialogues?.length > 0 && (
                         <View className='gap-2 justify-start items-start  flex flex-col'>
                             <Text className='text-mainGray font-bold text-xl '>Dialogues  ({userFetched._count.dialogues})</Text>
                             <FlatList

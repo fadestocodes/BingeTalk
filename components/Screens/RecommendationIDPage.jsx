@@ -16,6 +16,7 @@ import { useFetchOwnerUser } from '../../api/user'
 import { avatarFallbackCustom } from '../../lib/fallbackImages'
 import { avatarFallbackCustomCustom, moviePosterFallback } from '../../constants/Images'
 import ToastMessage from '../ui/ToastMessage'
+import { useNotificationCountContext } from '../../lib/NotificationCountContext'
 
 
 const RecommendationPage = () => {
@@ -34,6 +35,8 @@ const RecommendationPage = () => {
     const [ replying, setReplying ] = useState(false)
     const [ toastMessage, setToastMessage ] = useState(null)
     const [ toastIcon, setToastIcon ] = useState(null)
+    const { pendingRecsNotifCount, updatePendingRecsNotifCount } = useNotificationCountContext()
+
 
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
@@ -464,6 +467,10 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
     if (res?.success){
         setToastIcon(< Trash2 color={Colors.secondary} size={30} />)
         setToastMessage("Removed recommendation")
+    }
+
+    if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
+        updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
     }
     
 }

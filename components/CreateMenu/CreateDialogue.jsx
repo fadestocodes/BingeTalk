@@ -26,6 +26,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../../constants/Images'
 import { useGetUser, useGetUserFull } from '../../api/auth'
+import Username from '../ui/Username'
 
 
 const toPascalCase = (str) => {
@@ -299,7 +300,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                             />
-                            <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
+                            <Username size='sm' user={userDB} color={Colors.mainGrayDark2} reverse={true}/>
+
                         </View>
                     <Text className='text-mainGrayDark '>{formatDate(new Date())}</Text>
                     
@@ -315,7 +317,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                  
             </View>
             <View style={{position:"relative", alignItems:'center', justifyContent:'center', width:'100%', zIndex:10}}>
-                <Text className='font-pcourier uppercase text-lg text-secondary ' >{userDB.firstName}</Text>
+                <Text className='font-pcourier uppercase text-lg text-mainGray ' >{userDB.firstName}</Text>
             </View>
        
 

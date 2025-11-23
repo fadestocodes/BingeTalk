@@ -177,7 +177,7 @@ const CreateHome = () => {
         <View className='w-full my-3'>
             <FlatList
             horizontal
-            data={user.accountType === 'FILMLOVER' ? createCategoriesFilmlover :  createCategoriesFilmmaker}
+            data={ownerUser.accountType === 'FILMLOVER' ? createCategoriesFilmlover :  createCategoriesFilmmaker}
             keyExtractor={(item,index) => index}
             contentContainerStyle={{ gap:10 }}
             renderItem={({item}) => (

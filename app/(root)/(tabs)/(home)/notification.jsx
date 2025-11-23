@@ -17,6 +17,7 @@ import { notificationFilterCategories } from '../../../../lib/CategoryOptions'
 import { avatarFallback } from '../../../../lib/fallbackImages';
 import { avatarFallbackCustom } from '../../../../constants/Images';
 import { useGetUser, useGetUserFull } from '../../../../api/auth';
+import Username from '../../../../components/ui/Username';
 
 const Notification = () => {
 
@@ -31,7 +32,7 @@ const Notification = () => {
   useFocusEffect(
     useCallback(() => {
       refetch() // refetch from server
-    }, [])
+    }, [user?.id])
   )
   
   const router = useRouter()
@@ -176,7 +177,7 @@ const Notification = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary' style={{}}>
-      {  loading || !ownerUser  ? (
+      {  loading || !ownerUser || !user  ? (
         <View className='h-full justify-center items-center'>
           <ActivityIndicator />
         </View>
@@ -255,7 +256,9 @@ const Notification = () => {
                     style={{ width:30, height:30, borderRadius:50 }}
                     contentFit='cover'
                   />
-                  <Text className='text-mainGrayDark'>@{item.user.username}</Text>
+                  {/* <Text className='text-mainGrayDark'>@{item.user.username}</Text> */}
+                  <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                 </TouchableOpacity>
                 <Text className='text-mainGrayDark'>{ formatDateNotif(item.createdAt)}</Text>
               </View>

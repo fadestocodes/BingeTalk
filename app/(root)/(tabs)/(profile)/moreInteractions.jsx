@@ -17,8 +17,8 @@ const moreInteractions = () => {
     const {user} = useGetUser()
     const {userFull:ownerUser, refetch} = useGetUserFull(user?.id)
     
-    const alreadyInterested = ownerUser.interestedItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
-    const alreadyWatching = ownerUser.currentlyWatchingItems.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
+    const alreadyInterested = ownerUser?.interestedItems?.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
+    const alreadyWatching = ownerUser?.currentlyWatchingItems?.some( item => item.tvId === Number(DBtvId) || item.movieId === Number(DBMovieId) )
     const [ message, setMessage ] = useState(null)
     const [ toastIcon, setToastIcon ] = useState(null)
 

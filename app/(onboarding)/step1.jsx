@@ -46,7 +46,7 @@ const step1 = () => {
         } else {
             router.push({
                 params: { oauthProvider},
-                pathname :  selected === 'FILMMAKER' ? '(onboarding)/film-role' : '(onboarding)/step-2'
+                pathname :  selected === 'FILMMAKER' ? '(onboarding)/film-role' : '(onboarding)/profile-setup'
             })
         }
     }

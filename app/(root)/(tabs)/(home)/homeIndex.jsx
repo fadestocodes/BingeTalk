@@ -24,8 +24,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import WhatsNewModal from '../../../../components/Screens/WhatsNewModal';
 import { avatarFallbackCustom } from '../../../../constants/Images';
-import { apiFetch, useGetUser, useGetUserFull } from '../../../../api/auth';
-import { deleteInterested, useGetInterestedItems, useGetWatchlistItems } from '../../../../api/user';
+import { apiFetch, clearAuthTokens, useGetUser, useGetUserFull, useSignOutUser } from '../../../../api/auth';
+import { deleteInterested, useCheckBadgeNotifications, useGetAuteurProgression, useGetBadges, useGetConversationalistProgression, useGetCriticProgression, useGetCuratorProgression, useGetHistorianProgression, useGetInterestedItems, useGetPeoplesChoiceProgression, useGetWatchlistItems } from '../../../../api/user';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getYear } from '../../../../lib/formatDate';
 import { markMovieWatchlist } from '../../../../api/movie';
@@ -62,7 +62,18 @@ const homeIndex = () => {
     const flatListRef = useRef(null);
     const [scrollPosition, setScrollPosition] = useState(0);
     const [ shouldShowWhatsNew, setShouldShowWhatsNew ] = useState(false)
-    
+
+    const {criticProgression} = useGetCriticProgression(user?.id)
+    const {historianProgression} = useGetHistorianProgression(user?.id)
+    const {curatorProgression} = useGetCuratorProgression(user?.id)
+    const {auteurProgression} = useGetAuteurProgression(user?.id)
+    const {conversationalistProgression} = useGetConversationalistProgression(user?.id)
+    const {badgeNotifications} = useCheckBadgeNotifications(user?.id)
+    const {peoplesChoiceProgression} = useGetPeoplesChoiceProgression(user?.id)
+    const {badgeList} = useGetBadges(user?.id)
+
+    const {signOutUser} = useSignOutUser()
+
 
     const WHATS_NEW_KEY = 'ALREADY_SHOWN_WHATS_NEW';
     const CURRENT_APP_VERSION = Constants.expoConfig.version     // e.g., '1.3.0'
@@ -141,6 +152,8 @@ const homeIndex = () => {
 
 
     useEffect(() => {
+      
+      
         if (ownerUser){
           refetchFeed()
         }

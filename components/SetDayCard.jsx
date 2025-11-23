@@ -16,6 +16,7 @@ import { ThreeDotsIcon } from '../assets/icons/icons'
 import { avatarFallbackCustom } from '../constants/Images'
 import SetDayIcon from './ui/SetDayIcon'
 import { FeSpotLight } from 'react-native-svg'
+import Username from './ui/Username'
 
 
 const SetDayCard = ({ setDay, refetch, isBackground, fromHome }) => {
@@ -419,6 +420,9 @@ const SetDayCard = ({ setDay, refetch, isBackground, fromHome }) => {
         >
         <View className={`${isBackground ? 'px-0' : 'px-6'}w-full flex pb-[0px] justify-center items-center  `}>
         <View className='justify-center items-center gap-3  pb-6 w-full'>
+                <View  style={{ }}>
+                    <ClapperboardIcon color={Colors.mainGrayDark2} size={20} />
+                </View>                
             <View className='flex flex-row justify-between items-center w-full'>
                 <TouchableOpacity className='self-start' onPress={()=>router.push(`/user/${setDay.user.id}`)} style={{ flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}>
                     <Image
@@ -426,11 +430,8 @@ const SetDayCard = ({ setDay, refetch, isBackground, fromHome }) => {
                         contentFit='cover'
                         style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                     />
-                    <Text className='text-mainGrayDark   ' >@{setDay.user.username}</Text>
-                </TouchableOpacity>
-                <View style={{ position: "absolute", left: "50%", transform: [{ translateX: -10 }] }}>
-                    <ClapperboardIcon color={Colors.mainGrayDark2} size={20} />
-                </View>                
+                    <Username size='sm' user={setDay.user} color={Colors.mainGrayDark2} reverse={true}/>
+                    </TouchableOpacity>
                 <Text className='text-mainGrayDark '>{formatDateNotif(setDay.createdAt)}</Text>
 
             </View>
