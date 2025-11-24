@@ -66,7 +66,7 @@ const step1 = () => {
             <TouchableOpacity onPress={()=>handleSelect('FILMLOVER')} style={{backgroundColor: selected === 'FILMLOVER' ?  Colors.primaryLight : 'none'}} className='px-6 gap-2 rounded-3xl h-[150px] border-2 border-primaryLight justify-center items-center'>
                 <View className='flex flex-row gap-2 justify-center items-center'>
                     <PopcornIcon size={25} color={Colors.mainGray} />
-                    <Text className='text-newLightGray font-bold text-lg'>Film lover</Text>
+                    <Text className='text-newLightGray font-bold text-lg'>Film Lover</Text>
                 </View>
                 <Text className='text-newLightGray'>I enjoy watching films/shows and just want to use features like sending recommendations, tracking my watches, etc.</Text>
             </TouchableOpacity>

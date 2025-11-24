@@ -8,7 +8,6 @@ import { formatDate, getYear } from '../../lib/formatDate'
 const SetDaysPage = () => {
     const {userId} = useLocalSearchParams()
     const {data, loading, refetch, fetchMore, hasMore} = useGetSetDaysInfinite(Number(userId))
-    console.log('data', data)
     const router = useRouter()
     
     const handleIdPress = (item) => {

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Button, Linking, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions, CameraFlashMode } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import { Check, CircleCheck, Download, Image as ImageIcon, Info, Repeat2, X, Zap, ZapOff } from "lucide-react-native";
+import { Check, CircleCheck, Download, Image as ImageIcon, Info, Maximize2, Minimize2, Repeat2, X, Zap, ZapOff } from "lucide-react-native";
 import { Image } from "expo-image";
 import { Colors } from "../../constants/Colors";
 import NotificationModal from "./NotificationModal";
@@ -34,6 +34,8 @@ export default function CameraPrompt() {
   })
   const [uploading, setUploading] = useState(false)
   const [dynamicIcon, setDynamicIcon] = useState(null)
+  const [orientation, setOrientation] = useState('landscape')
+
   const keyboard = useAnimatedKeyboard();
 
   const translateStyle = useAnimatedStyle(() => {
@@ -214,6 +216,14 @@ export default function CameraPrompt() {
     }
   };
 
+  const handleOrientation = () => {
+    if (orientation === 'landscape') {
+        setOrientation('portrait')
+    } else {
+        setOrientation('landscape')
+    }
+  }
+
   // Loading permission state
   if (!cameraPermission) {
     return <Text>Loading...</Text>;
@@ -266,16 +276,19 @@ export default function CameraPrompt() {
             ) : (
 
                 <View className="w-full justify-center items-center relative px-14 gap-3">
-                    <TouchableOpacity onPress={handleReset} className="h-[26px] w-[26px] rounded-full p-3 bg-primaryLight justify-center items-center absolute right-[160px] z-10 top-1" >
-                        <X color={Colors.mainGray} className="" />
-                    </TouchableOpacity>
-                    <Image
-                        source={uri}
-                        contentFit="cover"
-                        width={80}
-                        height={120}
-                        style={{overflow:'hidden', borderRadius:10, position:'relative'}}
-                    />
+                    <View className="bg-black rounded-xl overflow-hidden relative h-[120px] w-[80px]">
+                        <TouchableOpacity onPress={handleReset} className="h-[26px] w-[26px] rounded-full p-3 bg-primaryLight justify-center items-center absolute right-1 z-10 top-1" >
+                            <X color={Colors.mainGray} className="" />
+                        </TouchableOpacity>
+                        <Image
+                            source={uri}
+                            contentFit={orientation === 'landscape' ? 'contain' : 'cover'}
+                            width={80}
+                            height={120}
+                            style={{overflow:'hidden', borderRadius:10, position:'relative'}}
+                        />
+
+                    </View>
                     <View className="pt-10 relative gap-3">
                         <Text className='text-mainGrayLight text-sm text-start'>* Be careful not to include any sensitive production details. When in doubt, check with Production first!</Text>
                         <TextInput 
@@ -316,12 +329,19 @@ export default function CameraPrompt() {
        
 
        {uri && (
-        <View className="flex-1 w-full h-full">
+        <View className="flex-1 bg-black w-full h-full">
             <Image
                 source={uri}
                 style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-                contentFit="cover"
+                contentFit={orientation === 'landscape' ? 'contain' : 'cover'}
             />
+            <TouchableOpacity onPress={handleOrientation} className=" self-center rounded-xl mt-4 p-2 bg-primaryLight opacity-50 ">
+                { orientation === 'landscape' ? (
+                    <Maximize2 color={Colors.mainGray}/>
+                ) : (
+                    <Minimize2 color={Colors.mainGray}/>
+                ) }
+            </TouchableOpacity>
             
         </View>
         

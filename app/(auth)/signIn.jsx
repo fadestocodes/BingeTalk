@@ -47,7 +47,6 @@ export default function Page() {
 
   const onSignInPress = async () => {
     const res = await loginLocal(emailAddress, password)
-    console.log('login res',res)
     if (res.error){
       setValidationErrors(res.error)
     } else {

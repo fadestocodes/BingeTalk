@@ -90,7 +90,7 @@ const MoviePage = () => {
                     setVideoId(trailer)
                 }
             } catch (err) {
-                console.log("Couldn't find youtube trailer", err)
+                console.error("Couldn't find youtube trailer", err)
             }
             const credits = res.credits;
             if (credits) {

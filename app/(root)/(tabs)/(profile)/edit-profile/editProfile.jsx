@@ -214,7 +214,6 @@ const editProfile = () => {
         }
         const updatedUser = await updateUser( params , fetchedUser?.email);
         if (updatedUser.success){
-            console.log('updateduser', updatedUser.data)
             
             updateUserContext(updatedUser.data)
         }
@@ -283,7 +282,6 @@ const editProfile = () => {
     }
     
     const handleDisplayBadgeSelect = (item) => {
-        console.log('item', item)
 
         setInputs(prev => ({
             ...prev,
