@@ -93,9 +93,7 @@ const RatingModalPage = () => {
             setMessage('Successfully posted rating')
             if (postedRating.review){
                 const criticBadgeProgress = await checkCriticBadgeProgress(postedRating.id, ownerUser?.id)
-                console.log('Criticbadgeprogress', criticBadgeProgress)
                 if (criticBadgeProgress?.hasLeveledUp){
-                    console.log('🎊 Congrats you leveled up the Critic badge!')
                     levelUpData = {
                         badgeType: 'CRITIC',
                         level: `${criticBadgeProgress.newLevel}`,

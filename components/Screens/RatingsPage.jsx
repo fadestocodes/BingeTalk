@@ -101,7 +101,7 @@ const RatingsPage = () => {
           keyExtractor={(item,index) => index}
           contentContainerStyle={{ gap:10 , paddingTop:15}}
           renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>{setSelected(item);console.log('SELECTED', item) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+            <TouchableOpacity onPress={()=>{setSelected(item); }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
               <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
             </TouchableOpacity>
           )}

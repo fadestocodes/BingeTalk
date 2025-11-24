@@ -207,10 +207,8 @@ const TVPage = () => {
         await refetchOwner();
 
         const checkHistorian = await checkHistorianBadgeProgress(movie,'TV', ownerUser?.id)
-        console.log('checkhistorian', checkHistorian)
         let levelUpData = null
         if (checkHistorian?.hasLeveledUp){
-            console.log('🎊 Congrats you leveled up the Historian badge!')
             levelUpData = {
                 badgeType: 'HISTORIAN',
                 level: `${checkHistorian.newLevel}`

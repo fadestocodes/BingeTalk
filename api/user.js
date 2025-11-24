@@ -1097,7 +1097,6 @@ export const useGetBadges = (userId) => {
             }
             const badgeData = result.data
             setBadgeList(badgeData)
-            console.log('hello from use get badges...')
 
         } catch (err){
             console.error(err)
@@ -1131,7 +1130,6 @@ export const useGetCriticProgression = (userId) => {
             if (!criticResponse.ok){
                 throw new Error(criticResult.message || "Error fetching progression data for Critic badge")
             }
-            console.log('hello from use get critic...')
             const criticProgressionData = criticResult.data
             setCriticProgression(criticProgressionData)
 
@@ -1170,7 +1168,6 @@ export const useGetHistorianProgression = (userId) => {
             }
             const historianProgressionData = historianResult.data
             // console.log('historianprogresion', historianProgressionData)
-            console.log('hello from use get historian...')
 
             setHistorianProgression(historianProgressionData)
 
@@ -1210,7 +1207,6 @@ export const useGetCuratorProgression = (userId) => {
             }
             const curatorProgressionData = curatorResult.data
             // console.log('historianprogresion', curatorProgressionData)
-            console.log('hello from use get curator...')
 
             setCuratorProgression(curatorProgressionData)
 
@@ -1249,7 +1245,6 @@ export const useGetAuteurProgression = (userId) => {
             }
             const auteurProgressionData = auteurResult.data
             // console.log('historianprogresion', auteurProgressionData)
-            console.log('hello from use get autuer...')
 
             setAuteurProgression(auteurProgressionData)
 
@@ -1294,7 +1289,6 @@ export const useGetConversationalistProgression = (userId) => {
             const conversationalistProgressionData = conversationalistResult.data
             // console.log('coversationalistprogressioresujlt', conversationalistResult)
             // console.log('coversationalistprogressiondata', conversationalistResult.data)
-            console.log('hello from use get conversatinoalist...')
 
             setConversationalistProgression(conversationalistProgressionData.progress)
 
@@ -1333,7 +1327,6 @@ export const useGetPeoplesChoiceProgression = (userId) => {
             }
             const peoplesChoiceProgressionData = peoplesChoiceResult.data
             // console.log('historianprogresion', peoplesChoiceProgressionData)
-            console.log('hello from use get peoples hcoice...')
 
             setPeoplesChoiceProgression(peoplesChoiceProgressionData)
 
@@ -1370,19 +1363,15 @@ export const useCheckBadgeNotifications = (userId) => {
             if (!response.ok) throw new Error("Unexpected error")
             const result = await response.json()
             const notifs = result.data.badgeNotifications
-            console.log(result.message)
             setBadgeNotifications(notifs)
             if (notifs.length > 0) {
                 // Push each notification into the modal queue
 
                 notifs.forEach(n => {
-                    console.log('notif in queue', n)
-                    console.log('userId for badge queue', userId)
                     showBadgeModal(n.badgeType, n.badgeLevel, n.id, userId)
                 });
             }
 
-            console.log('hello from check badge notifs...')
 
         } catch (err){
             console.error(err)
@@ -1415,7 +1404,6 @@ export const useCheckTastemakerProgress = (userId) => {
             const resData = await res.json()
             if (!res.ok) throw new Error("Invalid response")
             // console.log(resData.data.progress)
-            console.log('hello from use get tastemaker...')
 
         setProgress(resData.data.progress)
         } catch (err){
@@ -1439,7 +1427,6 @@ export const markBadgeNotificationSeen = async ( badgeId) => {
 
 
     try {
-        console.log(`userid: ${userId}, badgeId: ${badgeId}`)
         if (!userId || !badgeId) throw new Error("Invalid parameters")
         const response = await apiFetch(`${nodeServer.currentIP}/user/${userId}/badge-notification/${badgeId}`, {
             method : "PATCH",
@@ -1449,7 +1436,6 @@ export const markBadgeNotificationSeen = async ( badgeId) => {
             body : JSON.stringify({userId, badgeId})
         })
         if (!response.ok) throw new Error("Unexpected error")
-            console.log('marked badge notif as seen')
         
     } catch(err){
         console.error(err)
@@ -1469,7 +1455,6 @@ export const updateWatchedBatch = async (data) => {
             return false
         }
         const resData = await res.json()
-        console.log('resdata...',resData)
         return true
     } catch(err){
         console.error(err)

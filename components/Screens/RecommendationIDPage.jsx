@@ -694,7 +694,7 @@ const handleCommentInteraction =  async (type, comment, isAlready, parentId) => 
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={()=>{console.log('REPLY OBJECT', item);handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
+                                    <TouchableOpacity onPress={()=>{handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
                                     <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
                                         <ThumbsUp  size={20} color={ alreadyUpvotedReply ? Colors.secondary : Colors.mainGray} />
                                             <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedReply ? Colors.secondary : Colors.mainGray}}>{reply.upvotes}</Text>

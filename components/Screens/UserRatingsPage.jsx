@@ -112,7 +112,7 @@ const UserRatingsPage = () => {
                 return(
                 <View>
                    <View className="flex-row justify-between items-center gap-2">
-                        <TouchableOpacity  onPress={()=>{console.log("PRESSEDRATING",item);handlePress(item)}} className='flex-row gap-2 justify-center items-center'>
+                        <TouchableOpacity  onPress={()=>{handlePress(item)}} className='flex-row gap-2 justify-center items-center'>
                             <View className='flex-row gap-3 justify-center items-center'>
                                 <Image
                                 source={{ uri: `${posterURL}${item.movie ? item.movie.posterPath : item.tv && item.tv.posterPath }` }}

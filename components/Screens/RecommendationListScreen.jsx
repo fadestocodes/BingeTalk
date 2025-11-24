@@ -186,7 +186,6 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
         
         if (pendingRecsNotifCount && pendingRecsNotifCount > 0){
             updatePendingRecsNotifCount( pendingRecsNotifCount - 1 )
-            console.log('updated pending notifs ', pendingRecsNotifCount)
         }
         
 

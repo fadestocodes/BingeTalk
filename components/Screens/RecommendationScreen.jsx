@@ -184,7 +184,7 @@ const RecommendationScreen = () => {
                                                 <Text className='text-mainGray text-sm'>@{item.username}</Text>
                                             </View>
                                         </View>
-                                        <TouchableOpacity onPress={()=>{console.log(item) ;handleRecommendation({item, alreadySent, isMutual: false })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
+                                        <TouchableOpacity onPress={()=>{handleRecommendation({item, alreadySent, isMutual: false })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
                                             <Handshake color={ alreadySent ? Colors.secondary  : Colors.primary} size={22} />
                                             {/* <Text className='text-primary text-sm font-pbold'>send rec.</Text> */}
                                         </TouchableOpacity>

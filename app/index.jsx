@@ -252,7 +252,6 @@ function useInitializeNotifications(router) {
     });
 
     const foreground = Notifications.addNotificationReceivedListener((notification) => {
-      console.log("Foreground notification:", notification);
     });
 
     const background = Notifications.addNotificationResponseReceivedListener((response) => {
@@ -305,7 +304,6 @@ export default function Welcome() {
 
         const existingToken = await AsyncStorage.getItem(`${pushToken}-${userSimple.id}`)
         if (existingToken) {
-          console.log('token already saved in async storage...')
           return
         }
 
@@ -321,7 +319,7 @@ export default function Welcome() {
         await AsyncStorage.setItem(`${pushToken}-${userSimple.id}`, pushToken)
 
       } catch (error) {
-        console.log("Error getting push token", error);
+        console.error("Error getting push token", error);
       }
     };
 

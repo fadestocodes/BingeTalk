@@ -76,7 +76,6 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
 
         if (activity.activityType === 'BADGE'){
             const badgeData = badgeIconMap.find( i => i.type === activity.badge.badgeType)
-            console.log('badgedata',badgeData)
             setBadgeImage(badgeData.levels[activity.badge.badgeLevel].uri)
         }
 

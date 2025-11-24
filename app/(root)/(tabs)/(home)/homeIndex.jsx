@@ -88,8 +88,8 @@ const homeIndex = () => {
           const notifsData = await getAllNotifs( ownerUser?.id, null , true, updateNotifCount )
           const unread = notifsData.filter( item => item.isRead === false)
           setUnreadNotifs(unread)
-        } catch {
-          console.log('error fetchign notifs')
+        } catch (e) {
+          console.error('error fetchign notifs', e)
         }
         try {
             const request = await apiFetch(`${nodeServer.currentIP}/feed?userId=${ownerUser?.id}&limit=15&feedCursor=${feedCursor}&setDaysCursor=${setDaysCursor}&hasMoreFeed=${hasMoreFeed}&hasMoreSetDays=${hasMoreSetDays}`);
@@ -359,7 +359,7 @@ const homeIndex = () => {
                         )
                       )
                     ) : (
-                      <TouchableOpacity onPress={()=>{console.log('form other',item);handleTitlePress(item)}} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
+                      <TouchableOpacity onPress={()=>{handleTitlePress(item)}} className='gap-10 relative' style={{ backgroundColor:Colors.mainGrayDark, borderRadius:15, height:150, overflow:'hidden' }}>
                       <Image
                           style={{
                           width: '100%',
