@@ -247,7 +247,7 @@ const Notification = () => {
               const unread = unreadIds.includes( item.id )
             
             return (
-            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full justify-start items-start' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: unread ? 1 : 0.6  }}>
+            <TouchableOpacity  onPress={()=>handlePress(item)} className='w-full justify-start items-start' style={{ backgroundColor:Colors.mainGrayDark, padding:15, borderRadius:15, minHeight:110, gap:15, opacity: unread ? 1 : 0.3  }}>
               <View className='flex-row gap-2 justify-between items-center w-full'>
                 <TouchableOpacity onPress={()=>router.push(`user/${item.user.id}`)} className='flex-row gap-2 justify-center items-center'>
 

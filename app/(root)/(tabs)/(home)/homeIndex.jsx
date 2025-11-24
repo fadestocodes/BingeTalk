@@ -135,7 +135,7 @@ const homeIndex = () => {
 
      
       
-      if ( CURRENT_APP_VERSION === '1.3.0' && (!alreadyShown || (alreadyShown && alreadyShown !== CURRENT_APP_VERSION) )){
+      if ( CURRENT_APP_VERSION === '2.0.0' && (!alreadyShown || (alreadyShown && alreadyShown !== CURRENT_APP_VERSION) )){
         
         setShouldShowWhatsNew(true)
       } 
