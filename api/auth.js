@@ -232,6 +232,7 @@ export const useGetUserFull = (id) => {
     const [userFull, setUserFull] = useState(null)
     const [loading, setLoading] = useState(true)
     const [ displayBadgeIcon, setDisplayBadgeIcon  ] = useState('')
+    const {signOutUser} = useSignOutUser()
 
 
     const getUserFull = async () => {
@@ -252,7 +253,8 @@ export const useGetUserFull = (id) => {
                 body : JSON.stringify({id})
             })
             if (!res.ok){
-                throw new Error ("Couldn't get full user data")
+                await signOutUser()
+                // throw new Error ("Couldn't get full user data")
             }
             const userData = await res.json()
             setUserFull(userData)
@@ -291,20 +293,16 @@ export const useSignOutUser = () => {
 
     const signOutUser = async () => {
         try {
-            const refreshToken = await getRefreshToken()
-            if (refreshToken){
               const res = await apiFetch(`${nodeServer.currentIP}/user/sign-out`, {
                 method : 'POST',
                 headers : {
                   'Content-type' : 'application/json'
-                },
-                body:JSON.stringify({token:refreshToken})
+                }
               })
               if (!res.ok){
                 throw new Error("Error signing out user")
               }
 
-            }
             await clearAuthTokens()
             updateUser(null)
             await AsyncStorage.removeItem('user-data')

@@ -87,7 +87,6 @@ export const checkConversationalistBadge = async ( userId) => {
         })
         if (!response.ok) throw new Error("Unexpected error")
         const result = await response.json()
-        console.log('checking conversationslit badge', result?.data)
         return result.data
 
     } catch(err){

@@ -130,7 +130,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     } 
 
     useEffect(()=>{
-       
+            if(!ownerUser) return
             fetchDialogue();
     }, [ownerUser, dialogueId])
 

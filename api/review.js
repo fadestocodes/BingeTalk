@@ -58,6 +58,7 @@ export const useFetchReview = (reviewId, replyCommentId) => {
     }
 
     useEffect(()=>{
+        if (!ownerUser) return
         fetchReview();
     }, [ownerUser, reviewId])
 

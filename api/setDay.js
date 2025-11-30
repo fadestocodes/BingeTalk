@@ -144,6 +144,7 @@ export const useGetSetDay = (id, replyCommentId=null) => {
     }
 
     useEffect(() => {
+        if (!ownerUser) return
         getSetDay()
     }, [id, ownerUser])
 

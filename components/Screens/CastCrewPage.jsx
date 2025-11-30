@@ -202,7 +202,7 @@ const CastIdPage = () => {
           </View>
         </View>
         
-        <View className="buttons flex gap-4 w-full items-center mb-6">
+        {/* <View className="buttons flex gap-4 w-full items-center mb-6">
 
           <TouchableOpacity onPress={() => handleAddToFav()}  >
               <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyFav ? 'transparent' :  Colors.secondary }} >
@@ -218,7 +218,7 @@ const CastIdPage = () => {
               </View>
           </TouchableOpacity>
          
-          </View>
+          </View> */}
 
 
           <View style={{paddingBottom:70}} >

@@ -4,7 +4,7 @@ import { apiFetch } from './auth';
 export const uploadToS3 = async ( fileUri, fileName, fileType ) => {
   
     try {
-      const response = await apiFetch (`${nodeServer.currentIP}/aws/s3-upload`, {
+      const response = await fetch (`${nodeServer.currentIP}/aws/s3-upload`, {
         method : 'POST',
         headers : {
           'Content-Type' : 'application/json'

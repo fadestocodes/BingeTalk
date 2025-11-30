@@ -345,9 +345,9 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                     <View className='gap-0 flex flex-col '>
                         <View className='flex flex-row gap-3 justify-center items-end'>
                             <Text style={{ alignSelf: 'baseline' }}  className='text-secondary font-pbold text-3xl '>{userFetched.firstName}{userFetched?.lastName && ` ${userFetched.lastName}`}</Text>
-                            { userFetched?.accountType === 'FILMMAKER' && userFetched?.filmRole?.role ? (
+                            { userFetched?.accountType === 'FILMMAKER' ? (
                                 <Text style={{ alignSelf: 'baseline', lineHeight: 24 }}
-                                className='text-mainGray font-semibold'>{unparseDept(userFetched.filmRole.role)}</Text>
+                                className='text-mainGray font-semibold'>{unparseDept(userFetched?.filmRole?.role) || 'Filmmaker'}</Text>
                             ): userFetched?.accountType === 'FILMLOVER' && (
                                 <Text style={{ alignSelf: 'baseline', lineHeight: 24 }}
                                 className='text-mainGray font-semibold'>Film Lover</Text>

@@ -21,14 +21,6 @@ export const newRecommendation = async (data) => {
     }
 }
 
-export const mySentRecommendations = async (userId) => {
-    try {
-        const request = await apiFetch(`${nodeServer.currentIP}/`)
-    } catch (err){
-        console.log(err)
-        
-    }
-}
 
 export const deleteRecommendation = async (data) => {
     try {
@@ -162,6 +154,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
 
     }
     useEffect(() => {
+        if (!ownerUser) return
         getRecommendation()
     }, [ownerUser])
 

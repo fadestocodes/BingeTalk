@@ -17,6 +17,7 @@ import { CloseIcon } from '../../assets/icons/icons'
 import {  createOauthUser, useGetUser } from '../../api/auth'
 import { useCreateContext } from '../../lib/CreateContext'
 import { useSignUpContext } from '../../lib/SignUpContext'
+import { pickSingleImage } from '../../lib/pickImage'
 // import {useCreateContext} from '../../lib/CreateContext'
 
 
@@ -46,6 +47,7 @@ const ProfileSetup = () => {
             transform: [{ translateY: -keyboard.height.value * .6}],
         };
     });
+    const [loadingImage, setLoadingImage] = useState(false)
 
   
     
@@ -238,6 +240,11 @@ const ProfileSetup = () => {
         }
 
     }
+
+
+    const handleImageUpload = () => {
+        pickSingleImage( setProfilePicUrl, setLoadingImage );
+    }
   
 
   return (
@@ -265,13 +272,23 @@ const ProfileSetup = () => {
          <View  className='px-10 pt-20 gap-3 w-full flex-1'>
             <Text className='text-3xl font-bold text-white pb-10'>Let's setup your profile</Text>
             <View className=''>
-                <TouchableOpacity>
-                    <Image
-                        source={{ uri:  avatarFallbackCustom }}
-                        contentFit='cover'
-                        style={{ width:60, height:60, borderRadius:50 }}
-                    />
-                </TouchableOpacity>
+
+                { loadingImage ? (
+                        <View style = {{ width:'100%', height:250, position:'absolute', top:0 }} >
+                            <ActivityIndicator></ActivityIndicator>
+                        </View>
+                    ) : (
+                        <TouchableOpacity onPress={handleImageUpload}>
+                            <Image
+                            source={{ uri: profilePicUrl || avatarFallbackCustom}}
+                            height={75}
+                            width={75}
+                            placeholder={avatarFallbackCustom}
+                            style={{borderRadius:50}}
+                            />
+                        </TouchableOpacity>
+                ) }
+                
                 <View className='gap-10 pt-10'>
 
 

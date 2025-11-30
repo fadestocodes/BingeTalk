@@ -136,17 +136,20 @@ const SearchPage = () => {
   const refreshData = async () => {
     setRefreshing(true)
     try {
-      const [trendingData, upcomingData, trendingTVData, trendingMovieData] = await Promise.all([
+      const [trendingData, upcomingData, trendingTVData, trendingMovieData, trendingReviewData] = await Promise.all([
         getTrending(),
         getUpcoming(),
         getTrendingTV(),
-        getTrendingMovie()
+        getTrendingMovie(),
+        fetchTrendingReviews()
       ]);
       setFlatListCategories({
         trending : trendingData.results,
         upcomingMovies : upcomingData.results,
         trendingTV : trendingTVData.results,
-        trendingMovie : trendingMovieData.results
+        trendingMovie : trendingMovieData.results,
+        trendingReviews : trendingReviewData
+
 
       }) 
       const trendingDialoguesResponse = await getRecentDialogues(5);

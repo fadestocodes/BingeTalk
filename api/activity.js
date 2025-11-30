@@ -51,7 +51,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
     const fetchActivityId = async () => {
         try {   
             setLoading(true)
-            const request = await apiFetch(`${nodeServer.currentIP}/activity?id=${id}`)
+            const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
             const activity = await request.json();
             setData(activity);
             const upvotedComments = ownerUser?.commentInteractions.filter( i => {
@@ -84,6 +84,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
     } 
 
     useEffect(()=>{
+            if(!ownerUser) return
             fetchActivityId()
     }, [id, ownerUser])
 
@@ -108,7 +109,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
         // await refetchOwner()
         // fetchActivityId()
         try {   
-            const request = await apiFetch(`${nodeServer.currentIP}/activity?id=${id}`)
+            const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
             const activity = await request.json();
             setData(activity);
             const upvotedComments = ownerUser.commentInteractions.filter( i => {

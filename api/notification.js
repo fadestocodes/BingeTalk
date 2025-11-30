@@ -32,7 +32,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
 
-            const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
+            const isFollowingId = response.items.filter( notif => ownerUser?.following?.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
             setIsFollowingIds(prev=> [...prev, ...isFollowingId])
             const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
             setUnreadIds( prev => [ ...prev, ...unreadIds ] )
@@ -60,7 +60,7 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
 
-            const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
+            const isFollowingId = response.items.filter( notif => ownerUser?.following?.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
             setIsFollowingIds(isFollowingId)
             const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
             setUnreadIds( unreadIds  )
@@ -167,18 +167,13 @@ export const useCheckNotificationPrompt = () => {
 
     const checkNotificationPrompt = async () => {
 
-        console.log('checking notifi....')
         const { status, granted, canAskAgain } = await Notifications.getPermissionsAsync();
-        console.log('status...',status)
         if (status === 'granted' ){
-            console.log('os notif setting is not undetermined, so iether granted or denied or undefined...',status)
             return
         } 
        
         const flag = await AsyncStorage.getItem('hasPromptedNotif')
-        console.log('flag status..', flag)
         if (flag && flag === 'true') {
-            console.log('setting undeterminedAndFlagged to true')
             setUndeterminedAndFlagged(true)
             return
         }
@@ -190,9 +185,7 @@ export const useCheckNotificationPrompt = () => {
     }
     
     const handleYesCustomPrompt = async () => {
-        console.log('trying to turn on notifs...')
         const { status  } = await Notifications.requestPermissionsAsync();
-        console.log('status', status)
         if (status === 'denied'){
            Linking.openSettings()
            setUndeterminedAndFlagged(false)
@@ -201,14 +194,11 @@ export const useCheckNotificationPrompt = () => {
         await AsyncStorage.setItem('hasPromptedNotif', 'true')
         setShowModal('')
         setUndeterminedAndFlagged(false)
-        console.log('done...')
     }
     
     const handleNoCustomPrompt = async () => {
-        console.log('trying to turn off notifs...')
         await AsyncStorage.setItem('hasPromptedNotif', 'true')
         setShowModal('')
-        console.log('done...')
     }
 
 

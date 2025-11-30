@@ -351,7 +351,7 @@ export const useCustomFetchSingleList = ( listId, replyCommentId ) => {
     } 
 
     useEffect(()=>{
-       
+            if (!ownerUser) return
             fetchList();
     }, [ ownerUser, listId])
 

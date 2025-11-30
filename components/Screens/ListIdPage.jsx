@@ -511,8 +511,8 @@ const ListIdScreen = () => {
                         const shownReplies = visibleReplies[item.id] || 0;
 
 
-                        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === item.id )
-                        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === item.id )
+                        const alreadyUpvotedComment = interactedComments?.upvotes?.some( i => i.commentId === item.id )
+                        const alreadyDownvotedComment = interactedComments?.downvotes?.some( i => i.commentId === item.id )
                         
 
                         
@@ -572,8 +572,8 @@ const ListIdScreen = () => {
 { item.replies.length > 0 && (
                             <>
                             { item.replies.slice(0, shownReplies).map((reply) => {
-                                const alreadyUpvotedReply = interactedComments.upvotes.some( i => i.commentId === reply.id )
-                                const alreadyDownvotedReply = interactedComments.downvotes.some( i => i.commentId === reply.id )
+                                const alreadyUpvotedReply = interactedComments?.upvotes?.some( i => i.commentId === reply.id )
+                                const alreadyDownvotedReply = interactedComments?.downvotes?.some( i => i.commentId === reply.id )
                                 return (
 
 

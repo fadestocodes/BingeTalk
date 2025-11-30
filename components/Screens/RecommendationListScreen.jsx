@@ -239,14 +239,11 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                 </View>
             ) }
 
+            <View className='h-full w-full'>
 
             {  tab === 'pending' ? (
                 < View className='w-full' >
-                { recommendationsReceived.length < 1 ? (
-                    <View>
-                        <Text className='text-mainGray text-center text-xl font-pmedium' >(No pending recommendations)</Text>
-                    </View>
-                ) : (
+               
 
                     <FlatList
                         refreshControl={<RefreshControl
@@ -256,6 +253,9 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                             />
                         }
                         scrollEnabled={true}
+                        ListHeaderComponent={ recommendationsReceived?.length < 1 && (
+                            <Text className='text-mainGray text-center text-xl font-pmedium' >(No pending recommendations)</Text>
+                        ) }
                         data={recommendationsReceived}
                         keyExtractor={(item,index) => `${item.id}-${index}`}
                         contentContainerStyle={{ width:'100%', gap:10, paddingBottom:100 }}
@@ -333,18 +333,13 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                                 </TouchableOpacity>
                         )}}
                     />
-                )  }
 
 
                 </View>
 
             ) : tab === 'sent' ? (
                 <View className='w-full'>
-                                    { recommendationsSent.length < 1 ? (
-                    <View>
-                        <Text className='text-mainGray text-center text-xl font-pmedium' >(No sent recommendations)</Text>
-                    </View>
-                ) : (
+                    
 
                     <FlatList
                     refreshControl={<RefreshControl
@@ -352,7 +347,9 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                         refreshing={loading}
                         tintColor={Colors.secondary}
                         />}
-
+                        ListHeaderComponent={ recommendationsSent?.length < 1 && (
+                            <Text className='text-mainGray text-center text-xl font-pmedium' >(No sent recommendations)</Text>
+                        ) }
                         scrollEnabled={true}
                         data={recommendationsSent}
                         keyExtractor={(item,index) => `${item.id}-${index}`}
@@ -423,7 +420,7 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                                 </TouchableOpacity>
                             )}}
                         />
-                    )  }
+                  
 
                 </View>
             ) : tab === 'accepted' ? (
@@ -433,7 +430,9 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                         refreshing={loading}
                         tintColor={Colors.secondary}
                         />}
-    
+                        ListHeaderComponent={ acceptedRecommendations?.length < 1 && (
+                            <Text className='text-mainGray text-center text-xl font-pmedium' >(No accepted recommendations)</Text>
+                        ) }
                         scrollEnabled={true}
                         data={acceptedRecommendations}
                         keyExtractor={(item,index) => `${item.id}-${index}`}
@@ -512,7 +511,9 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                         refreshing={loading}
                         tintColor={Colors.secondary}
                         />}
-        
+                        ListHeaderComponent={ declinedRecommendations?.length < 1 && (
+                            <Text className='text-mainGray text-center text-xl font-pmedium' >(No declined recommendations)</Text>
+                        ) }
                         scrollEnabled={true}
                         data={declinedRecommendations}
                         keyExtractor={(item,index) => `${item.id}-${index}`}
@@ -585,6 +586,7 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                         />
             )
         }
+            </View>
 
 
             <View style={{ paddingTop:20 }}>

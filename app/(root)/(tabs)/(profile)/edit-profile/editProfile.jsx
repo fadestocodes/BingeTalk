@@ -232,7 +232,7 @@ const editProfile = () => {
 
     const handleImageUpload = () => {
         pickSingleImage( setImage, setLoadingImage );
-      }
+    }
 
     const handleAccountType = (type) => {
         if (inputs.accountType === 'FILMMAKER' && type === 'FILMLOVER'){
