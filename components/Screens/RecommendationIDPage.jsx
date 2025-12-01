@@ -21,8 +21,6 @@ import { useNotificationCountContext } from '../../lib/NotificationCountContext'
 
 const RecommendationPage = () => {
     const { type, recommendationId , userId, replyCommentId} = useLocalSearchParams()
-    // const { user : clerkUser } = useUser()
-    // const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
     const data = {
         id : recommendationId,
         userId : Number(userId)

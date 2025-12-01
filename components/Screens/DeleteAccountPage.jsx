@@ -3,19 +3,19 @@ import React, { useState } from 'react'
 import { Colors } from '../../constants/Colors'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { deleteUser } from '../../api/user'
-import { useClerk, useUser } from '@clerk/clerk-expo'
+import { useSignOutUser } from '../../api/auth'
 
 
 const DeleteAccountPage = () => {
     const [ whichStep, setWhichStep ] = useState('one')
-    const { signOut } = useClerk();
     const {userId} = useLocalSearchParams()
+    const {signOutUser} = useSignOutUser()
     const router = useRouter()
 
     const handleDelete = async () => {
         
         const deletedUser = await deleteUser({userId})
-        await signOut()
+        await signOutUser()
         router.replace('/')
     }
 

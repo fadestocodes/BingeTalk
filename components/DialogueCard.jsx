@@ -270,11 +270,11 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                             <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:15}} >{tag.tagName}</Text>
                         </View>
                     ) : null}
-                <View className='my-0 justify-center items-center  flex flex-col gap-3 '>
+                <View className='my-0 justify-center items-center  flex flex-col gap-3 w-full'>
                     <View className='flex gap-2 justify-center items-center'>
                         
                         <View className='justify-center items-center gap-0'>
-                            <Text className='text-mainGray font-pcourier uppercase text-lg' >{userDB.firstName}</Text>
+                            <Text className='text-mainGray font-pcourier uppercase text-lg ' >{userDB.firstName}</Text>
                         </View>
                         
                     </View>

@@ -426,14 +426,14 @@ export const useGetRecommendationsSent = (userId, limit=15) => {
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
     const getRecommendationsSent =  async ( reset = false ) => {
-        if ( !hasMore && !reset ) return
+        if ( !hasMore ) return
 
      
         try {
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
             const resultFiltered = result.items.filter(i => i.movie || i.tv)
-            setData(reset ? resultFiltered : prev => [...prev, ...resultFiltered]);
+            setData(prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
             // cursorRef.current = result.nextCursor;
             setHasMore( !!result.nextCursor )
@@ -444,7 +444,8 @@ export const useGetRecommendationsSent = (userId, limit=15) => {
     }
     
     useEffect(() => {
-        getRecommendationsSent();
+        if (!userId) return
+        refetch();
     }, [ userId]);
 
     const refetch =  async () => {
@@ -503,14 +504,13 @@ export const useGetRecommendationsReceived = (userId, limit=15) => {
 
 
     const getRecommendationsReceived =  async () => {
-        if ( !hasMore && !reset  ) return
+        if ( !hasMore  ) return
 
         try {
             setLoading(true)
             
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            // setData(reset ? result.items : prev => [...prev, ...result.items]);
             const resultFiltered = result.items.filter(i =>  i.status === 'PENDING')
 
             setData( prev => [...prev, ...resultFiltered]);
@@ -524,7 +524,8 @@ export const useGetRecommendationsReceived = (userId, limit=15) => {
     }
     
     useEffect(() => {
-        getRecommendationsReceived();
+        if (!userId) return
+        refetchReceived();
     }, [ userId]);
 
 
@@ -533,7 +534,6 @@ export const useGetRecommendationsReceived = (userId, limit=15) => {
             setLoading(true)
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
             const result = await response.json();
-            // setData(reset ? result.items : prev => [...prev, ...result.items]);
             const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'PENDING')
             setData(resultFiltered );
             setCursor(result.nextCursor)
@@ -560,14 +560,13 @@ export const useGetRecommendationsAccepted = (userId, limit=15) => {
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
     const getRecommendationsAccepted =  async () => {
-        if ( !hasMore && !reset  ) return
+        if ( !hasMore   ) return
 
         try {
             setLoading(true)
             
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            // setData(reset ? result.items : prev => [...prev, ...result.items]);
             const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'ACCEPTED')
             setData( prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
@@ -580,6 +579,7 @@ export const useGetRecommendationsAccepted = (userId, limit=15) => {
     }
     
     useEffect(() => {
+        if (!userId) return
         getRecommendationsAccepted();
     }, [ userId]);
 
@@ -589,7 +589,6 @@ export const useGetRecommendationsAccepted = (userId, limit=15) => {
             setLoading(true)
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
             const result = await response.json();
-            // setData(reset ? result.items : prev => [...prev, ...result.items]);
             const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'ACCEPTED')
             setData(resultFiltered );
             setCursor(result.nextCursor)
@@ -618,14 +617,13 @@ export const useGetRecommendationsDeclined = (userId, limit=15) => {
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
     const getRecommendationsDeclined =  async () => {
-        if ( !hasMore && !reset  ) return
+        if ( !hasMore  ) return
 
         try {
             setLoading(true)
             
             const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
-            // setData(reset ? result.items : prev => [...prev, ...result.items]);
             const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'DECLINED')
             setData( prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
@@ -637,7 +635,8 @@ export const useGetRecommendationsDeclined = (userId, limit=15) => {
     }
     
     useEffect(() => {
-        getRecommendationsDeclined();
+        if (!userId) return
+        refetchDeclined();
     }, [ userId]);
 
 
@@ -691,7 +690,7 @@ export const useGetInterestedItems = (userId, limit=5) => {
     
     useEffect(() => {
         if(!userId) return
-        getInterestedItems(true);
+        refetch();
     }, [ userId]);
 
     const removeItem = (item) => {
@@ -741,7 +740,8 @@ export const useGetCurrentlyWatchingItems = (userId, limit=5) => {
     }
     
     useEffect(() => {
-        getCurrentlyWatchingItems(true);
+        if (!userId) return
+        refetch();
     }, [ userId]);
 
     const removeItem = (item) => {
@@ -1389,7 +1389,7 @@ export const useCheckTastemakerProgress = (userId) => {
         } catch (err){
             console.error(err)
         } finally{
-            setLoading(false``)
+            setLoading(false)
         }
 
     }

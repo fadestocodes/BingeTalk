@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, TextInput,  Keyboard, TouchableWithoutFeedback, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, Button } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'expo-router'
-import { useUser, useSignUp } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
 import {  usernameSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams } from 'expo-router'

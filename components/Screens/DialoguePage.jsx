@@ -32,8 +32,6 @@ const DialogueScreen = () => {
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
-    // const { user : clerkUser } = useUser();
-    // const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
    
     const { dialogueId, tvId, movieId, castId }= useLocalSearchParams();
     

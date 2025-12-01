@@ -123,7 +123,6 @@ const profile2 = () => {
         try {
             const params = {
                 id : userId,
-                clerkId : user.id,
                 bio : bio.trim(),
                 bioLink,
                 profilePic : image,

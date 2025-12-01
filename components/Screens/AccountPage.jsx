@@ -10,7 +10,6 @@ import { signOutUser, useSignOutUser } from '../../api/auth'
 
 const AccountPage = () => {
     const router = useRouter()
-    // const { signOut } = useClerk();
     const {signOutUser} = useSignOutUser()
     const {userId} = useLocalSearchParams()
 

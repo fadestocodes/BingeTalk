@@ -23,8 +23,6 @@ const ListIdScreen = () => {
 
     const { listId } = useLocalSearchParams();
     const { list, refetch,isLoading, ownerUser, commentsData, setCommentsData, interactedComments, setInteractedComments, already, setAlready, interactionCounts, setInteractionCounts} = useCustomFetchSingleList(listId);
-    // const { user:clerkUser } = useUser()
-    // const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
 
 
 
