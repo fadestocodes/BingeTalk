@@ -6,7 +6,6 @@ import React, {useEffect, useState} from 'react'
 import {feed} from '../lib/fakeData'
 import { RepostIcon, UpIcon, DownIcon, PrayingHandsIcon, MessageIcon, ArrowUpIcon, ArrowDownIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
-import { useClerk, useUser } from '@clerk/clerk-expo'
 import { Redirect } from 'expo-router'
 import { useRouter } from 'expo-router'
 import { LinkIcon } from '../assets/icons/icons'
@@ -19,12 +18,12 @@ import { useFetchUser } from '../api/user'
 import { followUser, unfollowUser } from '../api/user'
 import { UserCheck, UserPlus,Send, UserPen,  LogOut, CircleUserRound } from 'lucide-react-native'; // Example icons
 import { useGetProfileFeed } from '../api/feed'
-import ThreadCard from './ThreadCard'
 import ListCard from './ListCard'
 import { usePostRemoveContext } from '../lib/PostToRemoveContext'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
 import ReviewCard from './Screens/ReviewCard'
+import { useGetUser, useGetUserFull } from '../api/auth'
  
 
     const ProfileMainPage = ( { user, refetchUser, isFetchingUser } ) => {
@@ -32,15 +31,15 @@ import ReviewCard from './Screens/ReviewCard'
     
 
 
-        const { signOut } = useClerk();
-        const { user:clerkUser } = useUser();
+        const {user:userSimple,refetch:refetchUserHook} = useGetUser()
+        const {userFull:ownerUser, loading:loadingUser} = useGetUserFull(userSimple?.id)
+
 
         const router = useRouter();
         const posterURL = 'https://image.tmdb.org/t/p/original';
-        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
-        const isOwnersProfilePage = user?.id === ownerUser?.id
+        const isOwnersProfilePage = user?.id === userSimple?.id
         const [ isFollowing, setIsFollowing ] = useState(null)
-        const { data : profileDialogues, hasMore, refetch : refetchProfileFeed, loading, removeItem } = useGetProfileFeed(user?.id, 15)
+        const { data : profileDialogues, hasMore, refetch:refetchFeed, loading, removeItem , fetchMore} = useGetProfileFeed(user?.id, 15)
         const [ followCounts, setFollowCounts ] = useState({
             followers : user?.followers?.length,
             following : user?.following?.length
@@ -151,12 +150,6 @@ import ReviewCard from './Screens/ReviewCard'
             })
         }
 
-        const handleRefresh = async () => {
-            setRefreshingPage(true)
-            await refetchUser()
-            await refetchProfileFeed()
-            setRefreshingPage(false)
-        }
 
         const handleThreeDots = () => {
             router.push({
@@ -171,12 +164,16 @@ import ReviewCard from './Screens/ReviewCard'
                 params:{userId:user.id, firstName : user.firstName}
             })
         }
+        
+        const handleBadgePress = () => {
+            router.push('/user/badges/')
+        }
 
 
   return (
 
-    <View className='w-full h-full bg-primary' style={{paddingBottom:30}}>
-        { isFetchingUser || loading ||!user  || !ownerUser ? (
+    <View className='w-full h-full bg-primary' style={{paddingBottom:0}}>
+        { !ownerUser || isFetchingUser ? (
             <View className="bg-primary w-full h-full justify-center items-center">
             <ActivityIndicator></ActivityIndicator>
         </View>
@@ -187,12 +184,12 @@ import ReviewCard from './Screens/ReviewCard'
             refreshControl={
                 <RefreshControl
                 tintColor={Colors.secondary}
-                refreshing={refreshingPage}
-                onRefresh={refetchOwner} 
+                refreshing={isFetchingUser}
+                onRefresh={()=>{refetchUser(); refetchFeed()}} 
                 />
                 }
             onEndReached={()=> {
-                    refetchProfileFeed()
+                    fetchMore()
             }}
             initialNumToRender={10}
             windowSize={8}
@@ -298,6 +295,9 @@ import ReviewCard from './Screens/ReviewCard'
                         <CircleUserRound color={Colors.mainGray} size={16}/>
                                 <Text className='' style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray}}>Account</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={handleBadgePress } style={{ paddingVertical:6, paddingHorizontal:10, borderWidth:1.5, borderColor:Colors.mainGray, borderRadius:10, flexDirection:'row', gap:5, justifyContent:'center', alignItems:'center' }}> 
+                                <Text className='' style={{fontWeight:'bold', fontFamily:'Geist-Medium' ,color:Colors.mainGray}}>Badges</Text>
+                        </TouchableOpacity>
 
                     </View>
                     ) :(
@@ -331,7 +331,8 @@ import ReviewCard from './Screens/ReviewCard'
     
                 </View>
             )}
-            contentContainerStyle={{gap:15}}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{gap:15, paddingBottom:100}}
             renderItem={({item}) => {
                 // console.log("FLATLISTITEM", item)
             return (

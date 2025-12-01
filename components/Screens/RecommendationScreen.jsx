@@ -3,7 +3,7 @@ import { Image } from 'expo-image'
 import React, {useEffect, useState, useRef} from 'react'
 import { newRecommendation } from '../../api/recommendation'
 import { Colors } from '../../constants/Colors'
-import { useUser } from '@clerk/clerk-expo'
+
 import { getAllMutuals, searchUsers, useFetchOwnerUser } from '../../api/user'
 import { BackIcon, CloseIcon } from '../../assets/icons/icons'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -13,12 +13,14 @@ import ToastMessage from '../ui/ToastMessage'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
 import debounce from 'lodash.debounce'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 const RecommendationScreen = () => {
 
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch, loading:isLoading}= useGetUserFull(user?.id)
+    
     const [ mutuals, setMutuals ] = useState([])
     const [ loadingMutuals, setLoadingMutuals ] = useState(false)
     const [ message , setMessage ] = useState(null)
@@ -30,11 +32,11 @@ const RecommendationScreen = () => {
     const [ searchResults, setSearchResults ] = useState([])
 
     const { DBmovieId, DBtvId, DBcastId } = useLocalSearchParams();
-    // console.log(`searchparams: ${DBmovieId}, ${DBtvId}` )
    
     const useGetAllMutuals = async () => {
-        const mutuals = await getAllMutuals(ownerUser?.id);
-        setMutuals(mutuals)
+        const mutuals = await getAllMutuals(ownerUser.id);
+        const filtered = mutuals.filter(i => i.id !== ownerUser.id)
+        setMutuals(filtered)
     }
 
     useEffect(()=>{
@@ -46,7 +48,7 @@ const RecommendationScreen = () => {
         } finally{
             setLoadingMutuals(false)
         }
-    },[])
+    },[ownerUser])
 
 
     const keyboard = useAnimatedKeyboard(); 
@@ -110,7 +112,8 @@ const RecommendationScreen = () => {
 
     const handleSearch = debounce(async (text) => {
         const searchResultsData = await searchUsers(text)
-        setSearchResults(searchResultsData.users)
+        const excludeOwnName = searchResultsData.users.filter(i => i.id !== ownerUser.id)
+        setSearchResults(excludeOwnName)
 
     }, 300)
 
@@ -159,7 +162,6 @@ const RecommendationScreen = () => {
                             keyExtractor = { item => item.id }
                             contentContainerStyle={{ gap:20, paddingVertical:30 }}
                             renderItem = { ({item, index}) => {
-                                console.log('SERAECH RESULT', item)
                                 const alreadySent = ownerUser.recommendationSender.some(element => {
                                     if (element.recipientId !== item.id) return false;
                                     if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
@@ -182,7 +184,7 @@ const RecommendationScreen = () => {
                                                 <Text className='text-mainGray text-sm'>@{item.username}</Text>
                                             </View>
                                         </View>
-                                        <TouchableOpacity onPress={()=>{console.log(item) ;handleRecommendation({item, alreadySent, isMutual: false })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
+                                        <TouchableOpacity onPress={()=>{handleRecommendation({item, alreadySent, isMutual: false })}}  style={{ opacity : alreadySent ? 0.5 : null, backgroundColor: alreadySent ? Colors.primary : Colors.secondary, borderWidth:2, borderColor:Colors.secondary , paddingHorizontal:20, paddingVertical:6, borderRadius:15, flexDirection:'row', gap:10, justifyContent:'center', alignItems:'center'}}>
                                             <Handshake color={ alreadySent ? Colors.secondary  : Colors.primary} size={22} />
                                             {/* <Text className='text-primary text-sm font-pbold'>send rec.</Text> */}
                                         </TouchableOpacity>
@@ -197,11 +199,8 @@ const RecommendationScreen = () => {
                             keyExtractor = { item => item.id }
                             contentContainerStyle={{ gap:20, paddingVertical:30 }}
                             renderItem = { ({item, index}) => {
-                                console.log('ITEM IS ', item)
-                                console.log('MOVIEID', DBmovieId)
                                 const alreadySent = ownerUser.recommendationSender.some(element => {
-                                    console.log('ELEMENT IS', element)
-                                    if (element.recipientId !== item.following.id){console.log('FROM OVER FHERE'); return false};
+                                    if (element.recipientId !== item.following.id){ return false};
                                     if (element.type === 'MOVIE') return element.movieId === Number(DBmovieId);
                                     if (element.type === 'TV') return element.tvId === Number(DBtvId);
                                     if (element.type === 'CAST') return element.castId === Number(DBcastId)

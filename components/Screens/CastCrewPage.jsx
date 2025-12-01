@@ -14,11 +14,10 @@ import DialogueCard from '../DialogueCard'
 import { addCastToFav, useFetchCastMentions } from '../../api/castCrew'
 import { fetchPersonFromDB } from '../../api/castCrew'
 import { useQueryClient } from '@tanstack/react-query';
-import ThreadCard from '../ThreadCard'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import ToastMessage from '../ui/ToastMessage'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 
@@ -27,8 +26,10 @@ const CastIdPage = () => {
     const params = useLocalSearchParams();
     const castId = params.castId;
     const router = useRouter();
-    const { user:clerkUser } = useUser()
-    const { data:ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
+    
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch, loading:isLoading}= useGetUserFull(user?.id)
+
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
     const [dropdownMenu, setDropdownMenu] = useState(false);
@@ -165,7 +166,7 @@ const CastIdPage = () => {
 
 
   return (
-    <SafeAreaView className='h-full pb-24 bg-primary'>
+    <SafeAreaView className='h-full  bg-primary'>
       <ToastMessage message={toastMesage} onComplete={()=>setToastMessage(null)} icon={<CastCrewIcon size ={30} color={Colors.secondary} />}   />
     <ScrollView 
      refreshControl={
@@ -201,7 +202,7 @@ const CastIdPage = () => {
           </View>
         </View>
         
-        <View className="buttons flex gap-4 w-full items-center mb-6">
+        {/* <View className="buttons flex gap-4 w-full items-center mb-6">
 
           <TouchableOpacity onPress={() => handleAddToFav()}  >
               <View  className='border-2 rounded-3xl border-secondary bg-secondary p-2 w-96 items-center flex-row gap-3 justify-center' style={{ backgroundColor: alreadyFav ? 'transparent' :  Colors.secondary }} >
@@ -217,7 +218,7 @@ const CastIdPage = () => {
               </View>
           </TouchableOpacity>
          
-          </View>
+          </View> */}
 
 
           <View style={{paddingBottom:70}} >
@@ -309,24 +310,6 @@ const CastIdPage = () => {
                 />
             </View>
 
-
-            <View className='w-full border-t-[1px] border-mainGrayDark my-5 items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
-            <FlatList
-                        scrollEnabled={false}
-                        data={threads}
-                        keyExtractor={(item)=>item.id}
-                        contentContainerStyle={{ }}
-                        ListHeaderComponent={(
-                            <Text className='text-white font-pbold   text-center text-lg mb-3'>Threads</Text>
-                        )}
-                        renderItem={({item}) => {
-                            return (
-                            <TouchableOpacity onPress={()=>threadsPress(item.id)} style={{gap:10, borderRadius:10, backgroundColor:Colors.mainGrayDark, paddingTop:15, marginBottom:15 ,paddingBottom:20, paddingHorizontal:20}}  >
-                                <ThreadCard thread={item} refetch={ fetchData} ></ThreadCard>
-                            </TouchableOpacity>
-                        )}}
-                    />
-            <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200 my-5' style={{borderColor:Colors.mainGrayDark}}/>
 
           </View>
       </View>

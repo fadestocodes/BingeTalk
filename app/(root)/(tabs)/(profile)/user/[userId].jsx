@@ -2,26 +2,29 @@ import { StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ProfileHomepage from '../../../../../components/Screens/UserPage'
 import { useLocalSearchParams } from 'expo-router'
-import { useFetchUser } from '../../../../../api/user'
+import { useFetchUser, useFetchUserProfile } from '../../../../../api/user'
 import { fetchUser } from '../../../../../api/user'
+import ProfilePage from '../../../../../components/Screens/ProfilePage'
 
 const userIdPage = () => {
     const { userId } = useLocalSearchParams();
+    const { userData:user, refetchUserFetched:refetchUser, loading:isFetchingUser } = useFetchUserProfile(  userId )
 
-    const { data:user, refetch:refetchUser, isFetching:isFetchingUser } = useFetchUser( { id : Number(userId)} )
+
+
+  if (!user || isFetchingUser){
+    return(
+
+      <View className='h-full w-full bg-primary justify-center items-center'>
+        <ActivityIndicator />
+      </View>
+    ) 
+  }
    
 
 
   return (
-    < View className='w-full h-full bg-primary' >
-    { !user ? (
-      <View className='h-full justify-center items-center'>
-      <ActivityIndicator />
-      </View>
-    ) : (
-      <ProfileHomepage user={user} refetchUser={refetchUser} isFetchingUser={isFetchingUser}  />
-    ) }
-  </View>
+        <ProfilePage userFetched={user} refetchUserFetched={refetchUser} isFetchingUser={isFetchingUser}  />
   )
 }
 

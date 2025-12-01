@@ -9,7 +9,7 @@ import { reportPost } from '../../api/report'
 import ToastMessage from '../ui/ToastMessage'
 import { useGetProfileFeed } from '../../api/feed'
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
-import { deleteThread } from '../../api/thread'
+
 import { deleteList } from '../../api/list'
 import { deleteComment } from '../../api/comments'
 import { deleteReview } from '../../api/review'
@@ -44,20 +44,15 @@ const PostOptions = () => {
            
             data.dialogueId = Number(postId)
             deleted = await deleteDialogue(data)
-        } else if (postType === 'THREAD'){
-            data.threadId = Number(postId)
-            deleted = await deleteThread(data)
-        } else if (postType === 'LIST'){
+        }  else if (postType === 'LIST'){
             data.listId = Number(postId)
             deleted = await deleteList(data)
         } else if (postType === 'COMMENT' || postType === 'REPLY'){
             data.commentId = Number(postId)
             deleted = await deleteComment(data)
         } else if (postType === 'REVIEW'){
-            console.log('trying to delete review')
             data.reviewId = Number(postId)
             deleted = await deleteReview(data)
-            console.log('deleted', deleted)
         }
         setToastMessage(deleted.message)
 
@@ -65,7 +60,6 @@ const PostOptions = () => {
             id : Number(postId),
             postType 
         } )
-        console.log('updaed post to remove ', )
 
         setIsStep1(true)
         setIsPressedButton(null)

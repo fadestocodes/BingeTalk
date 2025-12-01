@@ -3,7 +3,6 @@ import React, {useState, useEffect} from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCustomFetchSingleList , updateList} from '../../api/list'
 import { Colors } from '../../constants/Colors'
-import { useUser } from '@clerk/clerk-expo'
 import { BackIcon, CloseIcon, TVIcon, FilmIcon, PersonIcon } from '../../assets/icons/icons'
 import { useFetchOwnerUser } from '../../api/user'
 import { searchAll } from '../../api/tmdb'
@@ -15,12 +14,16 @@ import { getYear } from '../../lib/formatDate'
 import { createListSchema } from '../../lib/zodSchemas'
 import ToastMessage from '../ui/ToastMessage'
 import { moviePosterFallback } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 const EditListScreen = () => {
     const { listId } = useLocalSearchParams()
-    const { user:clerkUser } = useUser()
-    const { data: ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress})
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser}= useGetUserFull(user?.id)
+
     const { list  } = useCustomFetchSingleList(listId)
     const [ inputs, setInputs ] = useState({
         title : list?.title || '',
@@ -140,13 +143,11 @@ const EditListScreen = () => {
         const validationResults = createListSchema.safeParse( { ...inputs,  listTitle: inputs.title } )
         if (!validationResults.success) {
             const errorObj = validationResults.error.format();
-            console.log(errorObj)
             setErrors(errorObj.listTitle._errors[0] )
             return 
             } else {
               setErrors(null)
             }
-            console.log('madeithere')
 
         const postData = {
             title : inputs.title.trim() ,
@@ -156,7 +157,6 @@ const EditListScreen = () => {
             listId : list.id
 
         }
-        console.log('postdataforupdatelist', postData)
         const newList = await updateList(postData)
         setSearchQuery('')
         setMessage(newList.message)

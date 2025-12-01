@@ -1,10 +1,12 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { SignOutButton, useAuth, useUser } from '@clerk/clerk-react'
+
 import React, {useState, useCallback, useEffect, useRef} from 'react'
 import { node } from '@sentry/core';
 import { useBadgeContext } from '@/lib/BadgeModalContext';
-
+import {apiFetch, useGetUser,useGetUserFull} from '../api/auth'
+import { useNotificationCountContext } from '@/lib/NotificationCountContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const checkUsername = async ( username ) => {
     try {
@@ -52,11 +54,12 @@ export const addUser =  async ( { firstName, lastName, email, username } ) => {
 export const updateUser = async ( params, email ) => {
     // const queryClient = useQueryClient();
 
+
     try {
 
 
 
-        const request = await fetch(`${nodeServer.currentIP}/user/update-user`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/update-user`, {
             method : 'PUT',
             headers : {
                 'Content-Type' : 'application/json'
@@ -64,16 +67,24 @@ export const updateUser = async ( params, email ) => {
             body : JSON.stringify( params )
         })
         const response = await request.json();
+        if (!request.ok) return {success:false}
 
-        return response; 
+        console.log('responsedata', response.simplifiedUser)
+
+        const formatted = JSON.stringify(response.simplifiedUser)
+
+        await AsyncStorage.setItem('user-data', formatted)
+
+        return {success:true, data:response.simplifiedUser}; 
     } catch (err) {
         console.log(err)
+        return {success:false}
     }
 }
 
 export const updateRotation =  async ( userId, rotationItems, listItemObj  ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/current-rotation`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/current-rotation`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -137,6 +148,32 @@ export const useFetchOwnerUser = (email) => {
     });
 }
 
+export const useFetchUserProfile = (id)=>{
+    const [userData, setUserData] = useState('')
+    const [loading, setLoading] = useState(true)
+    
+    const fetchUserProfile = async () => {
+        try {
+            setLoading(true)
+            const res = await fetch(`${nodeServer.currentIP}/user/profile/${id}`)
+            if (!res.ok) throw new Error("Bad request")
+            const resData = await res.json()
+            setUserData(resData.user)
+        } catch(err){
+            console.error(err)
+        }finally{
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        if (!id) return 
+        fetchUserProfile()
+    },[id])
+
+    return {userData, loading, refetchUserFetched:fetchUserProfile}
+}
+
 // export const useFetchOwnerUser = (email) => {
 //     const [ data, setData ]  = useState(null)
 //     const [ isLoading, setIsLoading ]  = useState(true)
@@ -177,6 +214,7 @@ export const searchUsers = async ( query ) => {
     try {
         const request = await fetch (`${nodeServer.currentIP}/user/search-all?query=${query}`)
         const response = await request.json();
+        console.log('serach user results...', response)
         return response;
     } catch (err) {
         console.log(err)
@@ -185,7 +223,7 @@ export const searchUsers = async ( query ) => {
 
 export const followUser = async ( followData ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/follow`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/follow`, {
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -201,7 +239,7 @@ export const followUser = async ( followData ) => {
 
 export const unfollowUser = async ( followData ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/unfollow`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/unfollow`, {
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -215,7 +253,7 @@ export const unfollowUser = async ( followData ) => {
     }
 }
 
-export const useRecentlyWatched = (userId, limit=5) => {
+export const useRecentlyWatched = (userId, limit=15) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
@@ -283,7 +321,7 @@ export const useFetchRecentlyWatched = (userId) => {
 
 
 
-    export const useGetWatchlistItems = (userId, limit=5) => {
+    export const useGetWatchlistItems = (userId, limit=15) => {
         const [ data, setData  ]= useState([])
         const [ cursor, setCursor ] = useState(null)
         // const cursorRef = useRef(null); 
@@ -294,7 +332,6 @@ export const useFetchRecentlyWatched = (userId) => {
         const getWatchlistItems =  async (  ) => {
             // if ( !hasMore  ) return
             if (!hasMore) return;
-
 
             try {
                 const response = await fetch (`${nodeServer.currentIP}/user/watchlist?userId=${userId}&cursor=${cursor}&limit=${limit}`)
@@ -309,8 +346,10 @@ export const useFetchRecentlyWatched = (userId) => {
         }
         
         useEffect(() => {
+            if(!userId) return
             getWatchlistItems();
-        }, [ ]);
+
+        }, [ userId]);
         
         const refetch =  async () => {
             try {
@@ -378,7 +417,7 @@ export const useFetchRecommended = (userId) => {
     })
 }
 
-export const useGetRecommendationsSent = (userId, limit=5) => {
+export const useGetRecommendationsSent = (userId, limit=15) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
@@ -391,7 +430,7 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
 
      
         try {
-            const response = await fetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
             const resultFiltered = result.items.filter(i => i.movie || i.tv)
             setData(reset ? resultFiltered : prev => [...prev, ...resultFiltered]);
@@ -410,7 +449,7 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
 
     const refetch =  async () => {
         try {
-            const response = await fetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=null&limit=${limit}`)
+            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/sent?userId=${userId}&cursor=null&limit=${limit}`)
             const result = await response.json();
             const resultFiltered = result.items.filter(i => i.movie || i.tv)
             setData( resultFiltered );
@@ -431,7 +470,30 @@ export const useGetRecommendationsSent = (userId, limit=5) => {
 
 }
 
-export const useGetRecommendationsReceived = (userId, limit=5) => {
+export const useGetPendingRecNotifCount = (userId) => {
+
+    const {pendingRecsNotifCount, updatePendingRecsNotifCount} = useNotificationCountContext()
+
+    const getPendingNotifCount = async () => {
+        try {
+            const res = await apiFetch(`${nodeServer.currentIP}/notifications/pending-recs`)
+            if (!res?.ok || !res) return
+            const data = await res.json()
+            const pendingCount = data.pendingCount
+            updatePendingRecsNotifCount(pendingCount)
+        } catch (err){
+            console.error(err)
+        }
+    }
+
+    useEffect(() => {
+        getPendingNotifCount()
+    }, [userId, pendingRecsNotifCount])
+
+    return {}
+}
+
+export const useGetRecommendationsReceived = (userId, limit=15) => {
     const [ data, setData  ]= useState([])
     const [ cursor, setCursor ] = useState(null)
     // const cursorRef = useRef(null); 
@@ -439,19 +501,22 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
     const [ hasMore, setHasMore ] = useState(true)
     const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
 
+
     const getRecommendationsReceived =  async () => {
         if ( !hasMore && !reset  ) return
 
         try {
             setLoading(true)
             
-            const response = await fetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const result = await response.json();
             // setData(reset ? result.items : prev => [...prev, ...result.items]);
-            const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'PENDING')
+            const resultFiltered = result.items.filter(i =>  i.status === 'PENDING')
+
             setData( prev => [...prev, ...resultFiltered]);
             setCursor(result.nextCursor)
             setHasMore( !!result.nextCursor )
+
         } catch (err) {
             console.log(err)
         }
@@ -466,7 +531,7 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
     const refetchReceived =  async () => {
         try {
             setLoading(true)
-            const response = await fetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
+            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
             const result = await response.json();
             // setData(reset ? result.items : prev => [...prev, ...result.items]);
             const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'PENDING')
@@ -483,6 +548,120 @@ export const useGetRecommendationsReceived = (userId, limit=5) => {
         setData( prev => prev.filter( element => element.id !== item.id ) )
     }
     return { data, hasMore, loading, refetchReceived  , fetchMoreReceived: getRecommendationsReceived, removeReceivedItems    }
+
+}
+
+export const useGetRecommendationsAccepted = (userId, limit=15) => {
+    const [ data, setData  ]= useState([])
+    const [ cursor, setCursor ] = useState(null)
+    // const cursorRef = useRef(null); 
+    const [ loading, setLoading ] = useState(true)
+    const [ hasMore, setHasMore ] = useState(true)
+    const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
+
+    const getRecommendationsAccepted =  async () => {
+        if ( !hasMore && !reset  ) return
+
+        try {
+            setLoading(true)
+            
+            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+            const result = await response.json();
+            // setData(reset ? result.items : prev => [...prev, ...result.items]);
+            const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'ACCEPTED')
+            setData( prev => [...prev, ...resultFiltered]);
+            setCursor(result.nextCursor)
+            setHasMore( !!result.nextCursor )
+
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+    }
+    
+    useEffect(() => {
+        getRecommendationsAccepted();
+    }, [ userId]);
+
+
+    const refetchAccepted =  async () => {
+        try {
+            setLoading(true)
+            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
+            const result = await response.json();
+            // setData(reset ? result.items : prev => [...prev, ...result.items]);
+            const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'ACCEPTED')
+            setData(resultFiltered );
+            setCursor(result.nextCursor)
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+
+    const removeAcceptedItem = (item) => {
+        setData( prev => prev.filter( element => element.id !== item.id ) )
+    }
+    return { data, hasMore, loading, refetchAccepted  , fetchMoreAccepted: getRecommendationsAccepted, removeAcceptedItem    }
+
+}
+
+export const useGetRecommendationsDeclined = (userId, limit=15) => {
+    const [ data, setData  ]= useState([])
+    const [ cursor, setCursor ] = useState(null)
+    // const cursorRef = useRef(null); 
+    const [ loading, setLoading ] = useState(true)
+    const [ hasMore, setHasMore ] = useState(true)
+    const [ isFetchingNext ,setIsFetchingNext ] = useState(false)
+
+    const getRecommendationsDeclined =  async () => {
+        if ( !hasMore && !reset  ) return
+
+        try {
+            setLoading(true)
+            
+            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+            const result = await response.json();
+            // setData(reset ? result.items : prev => [...prev, ...result.items]);
+            const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'DECLINED')
+            setData( prev => [...prev, ...resultFiltered]);
+            setCursor(result.nextCursor)
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+    }
+    
+    useEffect(() => {
+        getRecommendationsDeclined();
+    }, [ userId]);
+
+
+    const refetchDeclined =  async () => {
+        try {
+            setLoading(true)
+            const response = await apiFetch (`${nodeServer.currentIP}/user/recommendations/received?userId=${userId}&cursor=null&limit=${limit}`)
+            const result = await response.json();
+            const resultFiltered = result.items.filter(i => (i.movie || i.tv) && i.status === 'DECLINED')
+            setData(resultFiltered );
+            setCursor(result.nextCursor)
+            setHasMore( !!result.nextCursor )
+        } catch (err) {
+            console.log(err)
+        }
+        setLoading(false)
+    }
+
+
+
+    const removeDeclineItem = (item) => {
+        setData( prev => prev.filter( element => element.id !== item.id ) )
+    }
+    return { data, hasMore, loading, refetchDeclined  , fetchMoreDeclined: getRecommendationsDeclined, removeDeclineItem    }
 
 }
 
@@ -511,6 +690,7 @@ export const useGetInterestedItems = (userId, limit=5) => {
     }
     
     useEffect(() => {
+        if(!userId) return
         getInterestedItems(true);
     }, [ userId]);
 
@@ -617,7 +797,7 @@ export const getAllMutuals = async (userId) => {
 
 export const deleteWatchedItem = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/recently-watched/delete`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/recently-watched/delete`, {
             method:'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -633,7 +813,7 @@ export const deleteWatchedItem = async (data) => {
 
 export const deleteCurrentlyWatching = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/currently-watching/delete`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/currently-watching/delete`, {
             method:'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -649,7 +829,7 @@ export const deleteCurrentlyWatching = async (data) => {
 
 export const deleteInterested = async (data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/interested/delete`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/interested/delete`, {
             method:'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -665,8 +845,10 @@ export const deleteInterested = async (data ) => {
 
 
 export const useGetFollowersListInfinite = (userId, limit) => {
-    const { user:clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+ 
+    const {user} = useGetUser()
+    const {userFull:ownerUser}= useGetUserFull(user?.id)
+
     const [ data, setData ] = useState([])
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore,setHasMore ] = useState(true)
@@ -701,8 +883,9 @@ export const useGetFollowersListInfinite = (userId, limit) => {
     }
 
     useEffect(() => {
+        if(!userId || !ownerUser) return
         getFollowersListInfinite()
-    },[])
+    },[userId, ownerUser])
 
     const refetch = async () => {
         try {
@@ -728,8 +911,10 @@ export const useGetFollowersListInfinite = (userId, limit) => {
 }
 
 export const useGetFollowingListInfinite = (userId, limit) => {
-    const { user:clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+  
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser}= useGetUserFull(user?.id)
     const [ data, setData ] = useState([])
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore,setHasMore ] = useState(true)
@@ -750,7 +935,6 @@ export const useGetFollowingListInfinite = (userId, limit) => {
             setData(prev => [...prev,...checkFollowResults])
             setCursor(results.nextCursor)
             setHasMore(!!results.nextCursor)
-            console.log('has more?', !!results.nextCursor)
            
 
         } catch (Err){
@@ -762,8 +946,9 @@ export const useGetFollowingListInfinite = (userId, limit) => {
     }
 
     useEffect(() => {
+        if (!userId || !ownerUser) return
         getFollowingListInfinite()
-    },[userId])
+    },[userId, ownerUser])
 
     const refetch = async () => {
         try {
@@ -789,7 +974,7 @@ export const useGetFollowingListInfinite = (userId, limit) => {
 
 export const deleteUser = async (data) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/user/delete-account`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/user/delete-account`, {
             method : 'POST',
             headers: {
                 'Content-type' : 'application/json'
@@ -803,7 +988,7 @@ export const deleteUser = async (data) => {
 
 export const blockUser = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/block-user`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/block-user`, {
             method : "POST",
             headers: {
                 'Content-type' : 'application/json'
@@ -817,26 +1002,6 @@ export const blockUser = async (data) => {
     }
 }
 
-export const useCheckBlock = (params) => {
-    const [ data , setData ] = useState([])
-    const [ loading, setLoading ] = useState(true)
-
-
-    const checkBlock = async () => {
-        try {
-            const user = await fetch(`${nodeServer.currentIP}/user`, {
-                method:'POST',
-                headers:{
-                    'Content-type' : 'application/json'
-                },
-                body: JSON.stringify(params)
-            })
-
-        } catch (err){
-            console.log(err)
-        }
-    }
-}
 
 export const useGetUserRatings = (userId, limit) => {
     const [ data, setData ] = useState([])
@@ -849,7 +1014,6 @@ export const useGetUserRatings = (userId, limit) => {
         try {
             const request = await fetch(`${nodeServer.currentIP}/user/ratings?userId=${userId}&cursor=${cursor}&limit=${limit}`)
             const response = await request.json()
-            console.log('responsehere', response)
             setData(prev => [...prev, ...response.items])
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
@@ -885,7 +1049,6 @@ export const findUniqueRotations = async () => {
     try {
         const res = await fetch(`${nodeServer.currentIP}/user/unique-rotations`)
         const data = await res.json()
-        console.log("UNIQUROTATIONS", data)
         return data
     } catch(err){
         console.log(err)
@@ -914,6 +1077,7 @@ export const useGetBadges = (userId) => {
             }
             const badgeData = result.data
             setBadgeList(badgeData)
+
         } catch (err){
             console.error(err)
             setError(err.message)
@@ -940,15 +1104,13 @@ export const useGetCriticProgression = (userId) => {
         try {
             setIsLoading(true)
             setError('')
-            const criticResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/critic-badge-progression`)
+            const criticResponse = await apiFetch(`${nodeServer.currentIP}/user/${userId}/critic-badge-progression`)
             const criticResult = await criticResponse.json()
 
             if (!criticResponse.ok){
                 throw new Error(criticResult.message || "Error fetching progression data for Critic badge")
             }
             const criticProgressionData = criticResult.data
-            // console.log('criticprogresion', criticProgressionData)
-            console.log(`Critic (${criticProgressionData.nextLevel}) progression: ${criticProgressionData?.untilNextLevel.currentlyAt} / ${criticProgressionData?.untilNextLevel.toNextLevel} `)
             setCriticProgression(criticProgressionData)
 
     
@@ -978,7 +1140,7 @@ export const useGetHistorianProgression = (userId) => {
         try {
             setIsLoading(true)
             setError('')
-            const historianResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/historian-badge-progression`)
+            const historianResponse = await apiFetch(`${nodeServer.currentIP}/user/${userId}/historian-badge-progression`)
             const historianResult = await historianResponse.json()
 
             if (!historianResponse.ok){
@@ -986,7 +1148,7 @@ export const useGetHistorianProgression = (userId) => {
             }
             const historianProgressionData = historianResult.data
             // console.log('historianprogresion', historianProgressionData)
-            console.log(`Historian (${historianProgressionData.nextLevel}) progression: ${historianProgressionData?.untilNextLevel.currentlyAt} / ${historianProgressionData?.untilNextLevel.toNextLevel} `)
+
             setHistorianProgression(historianProgressionData)
 
     
@@ -1017,7 +1179,7 @@ export const useGetCuratorProgression = (userId) => {
         try {
             setIsLoading(true)
             setError('')
-            const curatorResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/curator-badge-progression`)
+            const curatorResponse = await apiFetch(`${nodeServer.currentIP}/user/${userId}/curator-badge-progression`)
             const curatorResult = await curatorResponse.json()
 
             if (!curatorResponse.ok){
@@ -1025,7 +1187,7 @@ export const useGetCuratorProgression = (userId) => {
             }
             const curatorProgressionData = curatorResult.data
             // console.log('historianprogresion', curatorProgressionData)
-            console.log(`Curator (${curatorProgressionData.nextLevel}) progression: ${curatorProgressionData?.untilNextLevel.currentlyAt} / ${curatorProgressionData?.untilNextLevel.toNextLevel} `)
+
             setCuratorProgression(curatorProgressionData)
 
     
@@ -1055,7 +1217,7 @@ export const useGetAuteurProgression = (userId) => {
         try {
             setIsLoading(true)
             setError('')
-            const auteurResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/auteur-badge-progression`)
+            const auteurResponse = await apiFetch(`${nodeServer.currentIP}/user/${userId}/auteur-badge-progression`)
             const auteurResult = await auteurResponse.json()
 
             if (!auteurResponse.ok){
@@ -1063,7 +1225,7 @@ export const useGetAuteurProgression = (userId) => {
             }
             const auteurProgressionData = auteurResult.data
             // console.log('historianprogresion', auteurProgressionData)
-            console.log(`Auteur (${auteurProgressionData.nextLevel}) progression: ${auteurProgressionData?.untilNextLevel.currentlyAt} / ${auteurProgressionData?.untilNextLevel.toNextLevel} `)
+
             setAuteurProgression(auteurProgressionData)
 
     
@@ -1093,17 +1255,22 @@ export const useGetConversationalistProgression = (userId) => {
         try {
             setIsLoading(true)
             setError('')
-            const conversationalistResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/conversationalist-badge-progression`)
+            const conversationalistResponse = await apiFetch(`${nodeServer.currentIP}/user/${userId}/conversationalist-badge-progression`)
             const conversationalistResult = await conversationalistResponse.json()
+            if (conversationalistResponse.status === 202) {
+                setConversationalistProgression({})
+                return
+            }
 
             if (!conversationalistResponse.ok){
                 throw new Error(conversationalistResult.message || "Error fetching progression data for conversationalist badge")
             }
+
             const conversationalistProgressionData = conversationalistResult.data
-            // console.log('historianprogresion', conversationalistProgressionData)
-            console.log(`Conversationalist (${conversationalistProgressionData?.nextLevel}) progression: ${conversationalistProgressionData?.untilNextLevel.currentlyAt.comments} / ${conversationalistProgressionData?.untilNextLevel.toNextLevel.comments} 
-                & ${conversationalistProgressionData?.untilNextLevel.currentlyAt.reposts} / ${conversationalistProgressionData?.untilNextLevel.toNextLevel.reposts}  `)
-            setConversationalistProgression(conversationalistProgressionData)
+            // console.log('coversationalistprogressioresujlt', conversationalistResult)
+            // console.log('coversationalistprogressiondata', conversationalistResult.data)
+
+            setConversationalistProgression(conversationalistProgressionData.progress)
 
     
         } catch (err){
@@ -1132,7 +1299,7 @@ export const useGetPeoplesChoiceProgression = (userId) => {
         try {
             setIsLoading(true)
             setError('')
-            const peoplesChoiceResponse = await fetch(`${nodeServer.currentIP}/user/${userId}/peoples-choice-badge-progression`)
+            const peoplesChoiceResponse = await apiFetch(`${nodeServer.currentIP}/user/${userId}/peoples-choice-badge-progression`)
             const peoplesChoiceResult = await peoplesChoiceResponse.json()
 
             if (!peoplesChoiceResponse.ok){
@@ -1140,7 +1307,7 @@ export const useGetPeoplesChoiceProgression = (userId) => {
             }
             const peoplesChoiceProgressionData = peoplesChoiceResult.data
             // console.log('historianprogresion', peoplesChoiceProgressionData)
-            console.log(`peoplesChoice (${peoplesChoiceProgressionData?.nextLevel}) progression: ${peoplesChoiceProgressionData?.untilNextLevel.currentlyAt} / ${peoplesChoiceProgressionData?.untilNextLevel.toNextLevel}`)
+
             setPeoplesChoiceProgression(peoplesChoiceProgressionData)
 
     
@@ -1172,21 +1339,20 @@ export const useCheckBadgeNotifications = (userId) => {
             setLoading(true)
             setError("")
             if (!userId) return
-            const response = await fetch(`${nodeServer.currentIP}/user/${userId}/badge-notification`)
+            const response = await apiFetch(`${nodeServer.currentIP}/user/${userId}/badge-notification`)
             if (!response.ok) throw new Error("Unexpected error")
             const result = await response.json()
             const notifs = result.data.badgeNotifications
-            console.log(result.message)
             setBadgeNotifications(notifs)
             if (notifs.length > 0) {
                 // Push each notification into the modal queue
 
                 notifs.forEach(n => {
-                    console.log('notif in queue', n)
-                    console.log('userId for badge queue', userId)
                     showBadgeModal(n.badgeType, n.badgeLevel, n.id, userId)
                 });
             }
+
+
         } catch (err){
             console.error(err)
         } finally {
@@ -1203,13 +1369,46 @@ export const useCheckBadgeNotifications = (userId) => {
     return { badgeNotifications, loading, error, refetchBadgeNotifications : checkBadgeNotifications }
 }
 
+export const useCheckTastemakerProgress = (userId) => {
+    const [progress, setProgress] = useState('')
+    const [loading, setLoading] = useState(true)
+
+    const checkTastemakerProgress = async () => {
+        try {
+            setLoading(true)
+            const res = await apiFetch(`${nodeServer.currentIP}/badge/tastemaker`, {
+                method : "POST",
+                headers : {'Content-type' : 'application/json'},
+                body : JSON.stringify({userId})
+            })
+            const resData = await res.json()
+            if (!res.ok) throw new Error("Invalid response")
+            // console.log(resData.data.progress)
+
+        setProgress(resData.data.progress)
+        } catch (err){
+            console.error(err)
+        } finally{
+            setLoading(false``)
+        }
+
+    }
+
+    useEffect(() => {
+        checkTastemakerProgress()
+    }, [userId])
+
+    return {progress, loading}
+
+}
+
+
 export const markBadgeNotificationSeen = async ( badgeId) => {
 
 
     try {
-        console.log(`userid: ${userId}, badgeId: ${badgeId}`)
         if (!userId || !badgeId) throw new Error("Invalid parameters")
-        const response = await fetch(`${nodeServer.currentIP}/user/${userId}/badge-notification/${badgeId}`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/user/${userId}/badge-notification/${badgeId}`, {
             method : "PATCH",
             headers : {
                 'Content-type' : 'application/json'
@@ -1217,10 +1416,57 @@ export const markBadgeNotificationSeen = async ( badgeId) => {
             body : JSON.stringify({userId, badgeId})
         })
         if (!response.ok) throw new Error("Unexpected error")
-            console.log('marked badge notif as seen')
         
     } catch(err){
         console.error(err)
     }
 }
 
+export const updateWatchedBatch = async (data) => {
+    try {
+        const res = await apiFetch(`${nodeServer.currentIP}/user/update-hasWatched/batch`, {
+            method : 'POST',
+            headers : {
+                'Content-type' : 'application/json'
+            },
+            body : JSON.stringify(data)
+        })
+        if (!res.ok) {
+            return false
+        }
+        const resData = await res.json()
+        return true
+    } catch(err){
+        console.error(err)
+        return false
+    }
+}
+
+export const updateLocalUserData = async (data) => {
+    try {
+        const userJSON = JSON.stringify(data)
+        await AsyncStorage.setItem('user-data', userJSON);
+
+    } catch(err){
+        console.error(err)
+    }
+}
+
+
+export const updateAccountType = async (data) => {
+
+    try {
+        const res = await apiFetch(`${nodeServer.currentIP}/user/account-type`, {
+            method : 'PATCH',
+            headers : {'Content-type' : 'application/json'},
+            body : JSON.stringify(data)
+        })
+        const resData = await res.json()
+        if (!res.ok) throw new Error(resData?.error || "Invalid response")
+            
+        return {success : true, user : resData}
+    } catch (err){
+        console.error(err)
+        return {success :false}
+    }
+}

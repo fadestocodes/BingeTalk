@@ -9,6 +9,8 @@ import { checkUsername } from '../../api/user'
 import debounce from 'lodash.debounce'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
 import { useSignUpContext } from '../../lib/SignUpContext'
+import ArrowNextButton from '../../components/ui/ArrowNextButton'
+import ArrowBackButton from '../../components/ui/ArrowBackButton'
 
 
 const step2 = () => {
@@ -73,14 +75,18 @@ const handleInputs = ( name, value ) => {
 }
 
 
-const onSetup2Press = () => {
-  router.push('/step3-email');
+const onSetup2Press = async () => {
+  const res = await checkUsername(signUpData.username)
+  if (res.available){
+    setUsernameTakenError('')
+    router.push('/step3-email');
+  }
 }
 
 
 
   return (
-    <SafeAreaView className='w-full h-full   bg-primary' style ={{height:'100%', width:'100%' , justifyContent:'center', alignItems:'center'}}>
+    <SafeAreaView className='w-full h-full flex-1 flex  bg-primary' style ={{height:'100%', width:'100%' , justifyContent:'center', alignItems:'center'}}>
       <KeyboardAvoidingView
         style={{ flex: 1, width:'100%', height:'100%' }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -126,9 +132,14 @@ const onSetup2Press = () => {
               onChangeText={(text) => handleInputs('username', text)}
             />
 
-              <TouchableOpacity onPress={onSetup2Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.username || !!usernameTakenError } >
+              {/* <TouchableOpacity onPress={onSetup2Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.username || !!usernameTakenError } >
                 <Text className='text-secondary text-lg font-psemibold self-center'>Next</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
+
+              <View className='pt-10 flex-row self-center gap-3'>
+                <ArrowBackButton onPress={()=>router.back()} />
+                <ArrowNextButton onPress={onSetup2Press} disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.username || !!usernameTakenError }/>
+              </View>
               </Animated.View>
             </View>
             </View>

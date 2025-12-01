@@ -1,5 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react';
+import { apiFetch } from './auth';
 
 export const findOrCreateEntity = async (type, movieData, castData) => {
     let entity;
@@ -7,7 +8,7 @@ export const findOrCreateEntity = async (type, movieData, castData) => {
     if (type === 'movie') {
        
         try {
-            entity = await fetch (`${nodeServer.currentIP}/movie/find-or-create`, {
+            entity = await apiFetch (`${nodeServer.currentIP}/movie/find-or-create`, {
                 method : 'POST',
                 headers : {
                     'Content-type' : 'application/json'
@@ -15,14 +16,13 @@ export const findOrCreateEntity = async (type, movieData, castData) => {
                 body:JSON.stringify({movieData})
             })
             const response = await entity.json();
-            console.log("CREATINGMOVIEENTITY", response)
             return response
         } catch (err) {
             console.log(err)
         }
     } else if (type === 'tv') {
         try {
-            entity = await fetch (`${nodeServer.currentIP}/tv/find-or-create`, {
+            entity = await apiFetch (`${nodeServer.currentIP}/tv/find-or-create`, {
                 method : 'POST',
                 headers : {
                     'Content-type' : 'application/json'
@@ -36,7 +36,7 @@ export const findOrCreateEntity = async (type, movieData, castData) => {
         }
     } else if (type === 'person') {
         try {
-            entity = await fetch (`${nodeServer.currentIP}/person/find-or-create`, {
+            entity = await apiFetch (`${nodeServer.currentIP}/person/find-or-create`, {
                 method : 'POST',
                 headers : {
                     'Content-type' : 'application/json'
@@ -62,12 +62,12 @@ export const useGetMovieOrTvFromDB = (params) => {
 
         try {
             if (DBmovieId){
-                const res = await fetch(`${nodeServer.currentIP}/movie?DBmovieId=${DBmovieId}`)
+                const res = await apiFetch(`${nodeServer.currentIP}/movie?DBmovieId=${DBmovieId}`)
                 const data = await res.json()
                 setMovie(data)
                 setTv(null)
             } else if (DBtvId){
-                const res = await fetch(`${nodeServer.currentIP}/tv?DBmovieId=${DBmovieId}`)
+                const res = await apiFetch(`${nodeServer.currentIP}/tv?DBmovieId=${DBmovieId}`)
                 const data = await res.json()
                 setTv(data)
                 setMovie(null)

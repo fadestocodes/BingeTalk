@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react"
-import { useUser } from "@clerk/clerk-expo"
-import { useFetchOwnerUser } from "./user"
+
+
 import * as nodeServer from '../lib/ipaddresses'
+import { apiFetch, useGetUser, useGetUserFull } from "./auth"
 
 
 export const useFetchReview = (reviewId, replyCommentId) => {
     const [ review, setReview ] = useState('')
-    const { user : clerkUser }  = useUser()
-    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+    
     const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
     const [ interactedComments, setInteractedComments ] = useState({
@@ -55,6 +58,7 @@ export const useFetchReview = (reviewId, replyCommentId) => {
     }
 
     useEffect(()=>{
+        if (!ownerUser) return
         fetchReview();
     }, [ownerUser, reviewId])
 
@@ -121,7 +125,7 @@ export const useFetchReview = (reviewId, replyCommentId) => {
 
 export const reviewInteraction = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/review/interact`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/review/interact`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -137,7 +141,7 @@ export const reviewInteraction = async (data) => {
 
 export const deleteReview = async (params) => {
     try {
-        const res = await fetch(`${nodeServer.currentIP}/review`, {
+        const res = await apiFetch(`${nodeServer.currentIP}/review`, {
             method : 'DELETE', 
             headers : {
                 "Content-type" : 'application/json'
@@ -154,10 +158,6 @@ export const deleteReview = async (params) => {
 export const fetchTrendingReviews = async () => {
     try {
         const res = await fetch(`${nodeServer.currentIP}/review/trending`)
-        console.log('RESSSS status code', res.status)
-        if (res.ok){
-            console.log("RES IS OKAYYY")
-        }
         const data = await res.json()
         return data.data
     } catch (err) {

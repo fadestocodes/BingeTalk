@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable, Animated, Dimensions , useWindowDimensions} from 'react-native'
+import { StyleSheet, Text, View, ScrollView, FlatList,TextInput, TouchableOpacity, Keyboard, RefreshControl, Touchable, Animated, Dimensions , useWindowDimensions, ActivityIndicator} from 'react-native'
 import { Image } from 'expo-image'
 import React, {useEffect, useState, useRef} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -24,6 +24,9 @@ import { avatarFallbackCustom } from '../../../../constants/Images'
 import { fetchTrendingReviews } from '../../../../api/review'
 import ReviewCard from '../../../../components/Screens/ReviewCard'
 import { NotebookPen } from 'lucide-react-native'
+import { badges } from '../../../../constants/BadgeIcons'
+import Username from '../../../../components/ui/Username'
+import { useGetUser } from '../../../../api/auth'
 
 
 
@@ -31,6 +34,7 @@ import { NotebookPen } from 'lucide-react-native'
 const SearchPage = () => {
 
   const [query, setQuery] = useState('');
+  const {user:ownerUser} = useGetUser()
   const [results, setResults] = useState([])
   const [ inFocus, setInFocus ] = useState(false);
   const [ discoverPage , setDiscoverPage ] = useState(true);
@@ -51,7 +55,6 @@ const SearchPage = () => {
   })
   const [ searchingFor, setSearchingFor ] = useState('users')
   const [ trendingDialogues, setTrendingDialogues ] = useState(null)
-  const [ uniqueRotations, setUniqueRotations  ] = useState(null)
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -73,7 +76,7 @@ const SearchPage = () => {
       listener: (event) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const index = Math.round(offsetX / (ITEM_WIDTH + SPACING));
-        console.log('INDEXRIGHTNOW', index)
+
         setCurrentIndex(index);
       },
     }
@@ -90,7 +93,9 @@ const SearchPage = () => {
       try {
         if ( searchingFor === 'users' ) {
           const response = await searchUsers(text);
-          setResults(response.users);
+          const usersList = response.users
+          const filtered = usersList.filter( i => i.id !== ownerUser.id)
+          setResults(filtered);
         } else if (searchingFor==='titles') {
           const response = await searchAll(text);
           // console.log('response is ', response)
@@ -131,23 +136,24 @@ const SearchPage = () => {
   const refreshData = async () => {
     setRefreshing(true)
     try {
-      const [trendingData, upcomingData, trendingTVData, trendingMovieData] = await Promise.all([
+      const [trendingData, upcomingData, trendingTVData, trendingMovieData, trendingReviewData] = await Promise.all([
         getTrending(),
         getUpcoming(),
         getTrendingTV(),
-        getTrendingMovie()
+        getTrendingMovie(),
+        fetchTrendingReviews()
       ]);
       setFlatListCategories({
         trending : trendingData.results,
         upcomingMovies : upcomingData.results,
         trendingTV : trendingTVData.results,
-        trendingMovie : trendingMovieData.results
+        trendingMovie : trendingMovieData.results,
+        trendingReviews : trendingReviewData
+
 
       }) 
       const trendingDialoguesResponse = await getRecentDialogues(5);
       setTrendingDialogues(trendingDialoguesResponse);
-      const uniqueRotationsData = await findUniqueRotations()
-      setUniqueRotations(uniqueRotationsData)
     } catch (err) {
       console.log('Error fetching all categories',err)
     } finally{
@@ -174,8 +180,6 @@ const SearchPage = () => {
         const trendingDialoguesResponse = await getRecentDialogues(5);
         setTrendingDialogues(trendingDialoguesResponse);
 
-        const uniqueRotationsData = await findUniqueRotations()
-        setUniqueRotations(uniqueRotationsData)
         
 
       } catch (err) {
@@ -223,10 +227,12 @@ const SearchPage = () => {
     router.push(`/user/${item.id}`)
   }
 
+  if(!ownerUser) return <ActivityIndicator />
+
 
   return (
 
-    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary pb-24 pt-3 px-5 relative' >
+    <SafeAreaView className='flex justify-start items-center w-full h-full bg-primary  pt-3 px-5 relative'  edges={['top']} >
       
       <View className='justify-center items-center'>
       <View className=' flex-row gap-4  w-full px-8 justify-center items-center relative'>
@@ -271,10 +277,12 @@ const SearchPage = () => {
         data = {results}
         scrollEnabled={ !discoverPage ? true : false }
         style ={{ width:'100%'}}
-        contentContainerStyle={{paddingBottom:100}}
+        contentContainerStyle={{paddingBottom:0}}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => {
+
+          const badgeIcon = item?.displayBadge 
           return (
           <>
           <View className=' w-full   '>
@@ -292,9 +300,24 @@ const SearchPage = () => {
                   <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray   pr-3 font-pbold'>{ searchingFor === 'users' ? `${item.firstName} ${item.lastName}`  :  item.media_type === 'movie' ? item.title : item.name }</Text>
 
                 </View>
-                <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray text-sm  pr-3 font-pmedium'>{ searchingFor === 'users' ? `@${item.username}` : item.media_type === 'person' 
+                { searchingFor === 'users' ? (
+                  <View  className='flex flex-row flex-wrap flex-1  justify-start items-center gap-1'>
+                    <Username size='sm' user={item} color={Colors.mainGrayDark2} reverse={true}/>
+
+                    {/* <Image 
+                      source={badges.tastemakerBronze}
+                      width={23}
+                      height={23}
+                      contentFit='contain'
+                    />
+                    <Text className='text-mainGray text-sm pr-3 font-medium'>@{item.username}</Text> */}
+                  </View>
+                ) : (
+
+                <Text   style={{ flex: 1, flexWrap: 'wrap' }} className='text-mainGray text-sm  pr-3 font-pmedium'>{ item.media_type === 'person' 
                 ? `Known for ${item.known_for_department}` : item.media_type === 'movie' ? `Released ${getYear(item.release_date)}` 
                 : `First aired ${getYear(item.first_air_date)}` }</Text>
+                ) }
               </View>
             </TouchableOpacity>
           </View>
@@ -321,7 +344,7 @@ const SearchPage = () => {
           scrollEventThrottle={16}
 
         >
-          <View className='flex gap-6 w-full h-full'>
+          <View className='flex  gap-6 w-full h-full'>
             
             <View className='gap-3 flex items-start w-full' style={{height:200}} >
               <TouchableOpacity onPress={()=> { router.push('/movie/discover') }} style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
@@ -361,14 +384,14 @@ const SearchPage = () => {
                 
                 />
             </View>
-            <InView className='gap-3 flex items-start w-full h-[260px] overflow-hidden'  
+            
+            {/* <InView className='gap-3 flex items-start w-full h-[260px] overflow-hidden'  
               style={{ height: 260, overflow: "hidden" }}
               onChange={(inView) => {console.log('Inview:', inView); setVideosInView(inView)}}
             >
               <TouchableOpacity disabled style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <Popcorn   size={20} color={Colors.mainGray}/>
                   <Text className='text-mainGray font-pbold text-xl '>Recent Trailers</Text>
-                  {/* <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} /> */}
               </TouchableOpacity>
                 <FlatList
                   data={trailers}
@@ -390,7 +413,7 @@ const SearchPage = () => {
                   onScroll={onScroll}
                   scrollEventThrottle={16}
                 />
-            </InView>
+            </InView> */}
 
             <View className='gap-3'>
               <TouchableOpacity className='gap-2 items-center justify-start flex flex-row'>
@@ -414,32 +437,6 @@ const SearchPage = () => {
                 )}
               />
             </View>
-
-            <View className='gap-3' style={{paddingBottom:100}}>
-            <View className='gap-3 flex items-start w-full' style={{}} >
-              <TouchableOpacity style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
-                < Fingerprint size={20} color={Colors.mainGray}/>
-                <Text className='text-mainGray font-pbold text-xl '>Cinematic DNA</Text>
-                {/* <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} /> */}
-              </TouchableOpacity>
-            </View>
-
-            <FlatList
-              data={uniqueRotations}
-              horizontal
-              keyExtractor={(item,index) => item.id}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{gap:15}}
-              renderItem={({item}) => (
-                <TouchableOpacity onPress={()=>handleProfileCard(item)}>
-                  <ProfileCard  user={item}/>
-                </TouchableOpacity>
-              )}
-            />
-
-
-            </View>
-           
           </View>
         </IOScrollView>
         ) }

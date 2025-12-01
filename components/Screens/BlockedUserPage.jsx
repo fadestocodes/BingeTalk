@@ -4,17 +4,18 @@ import { Image } from 'expo-image'
 import { Colors } from '../../constants/Colors'
 import { BackIcon } from '../../assets/icons/icons'
 import { useRouter } from 'expo-router'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { blockUser } from '../../api/user'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 const BlockedUserPage = () => {
     const router = useRouter()
-    const {user:clerkUser} = useUser()
-    const { data: ownerUser, refetch, isLoading} = useFetchOwnerUser({email: clerkUser.emailAddresses[0].emailAddress})
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch, loading:isLoading}= useGetUserFull(user?.id)
     const [ blockedUsers, setBlockedUsers ] = useState([])
 
     useEffect(() => {

@@ -10,14 +10,14 @@ import { ListChecks, FastForward } from "lucide-react-native";
 import { Colors } from "../../constants/Colors";
 import { swipeMovieInterested } from "../../api/movie";
 import { swipeTVInterested } from "../../api/tv";
-import { useUser } from "@clerk/clerk-expo";
-import { useFetchOwnerUser } from "../../api/user";
+
 import { MessageIcon, SwipeIcon } from "../../assets/icons/icons";
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from "react-native-reanimated";
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
 import { BackIcon } from "../../assets/icons/icons";
 import { createComment } from "../../api/comments";
 import { listInteraction } from "../../api/list";
+import { useGetUser, useGetUserFull } from "../../api/auth";
 
 
 
@@ -32,9 +32,10 @@ const TinderSwipeCard = ( { listItems, creator, listId, listObj} ) => {
 
   const [ swipeMessage, setSwipeMessage  ] = useState(null)
   const [toastIcon, setToastIcon] = useState(<SwipeIcon color={Colors.secondary} size={30}/>);
-  const { user : clerkUser } = useUser()
-  const { data : ownerUser } = useFetchOwnerUser({email : clerkUser.emailAddresses[0].emailAddress})
 
+  const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
+  
   const keyboard = useAnimatedKeyboard();
   const translateStyle = useAnimatedStyle(() => {
     return {

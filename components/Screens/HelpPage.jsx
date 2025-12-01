@@ -11,7 +11,7 @@ const HelpPage = () => {
 
 <View className='gap-3 '>
     <Text className='text-white font-pbold text-3xl'>Help</Text>
-    <Text className='text-white'>For support please reach out via email: fadestocodes@gmail.com</Text>
+    <Text className='text-white'>For support please reach out via email: hello@bingeable.app</Text>
   
 </View>
 </View>

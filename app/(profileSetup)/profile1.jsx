@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, TextInput,  Keyboard, TouchableWithoutFeedback, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, ActivityIndicator, Image, ImageBackground } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { useRouter } from 'expo-router'
-import { useUser, useSignUp } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
 import { signupSchema, signupConfirmPasswordSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams } from 'expo-router'
@@ -12,13 +11,14 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { useUserDB } from '../../lib/UserDBContext'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
 import { useSignUpContext } from '../../lib/SignUpContext'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 
 
 const profile1 = () => {
 
-    const { user } = useUser();
+    const {user} = useGetUser()
     const { signUpData, updateSignUpData } = useSignUpContext()
 
     const router = useRouter()

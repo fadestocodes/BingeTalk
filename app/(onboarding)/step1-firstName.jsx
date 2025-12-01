@@ -1,11 +1,13 @@
 import { StyleSheet, Text, View, TextInput,  Keyboard, TouchableWithoutFeedback, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, Button } from 'react-native'
 import React, {useState, useEffect, useRef} from 'react'
-import { useUser, useSignUp } from '@clerk/clerk-expo'
+
 import { Colors } from '../../constants/Colors'
 import { signupNameSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import Animated, { Easing, withTiming, useSharedValue, withDelay } from 'react-native-reanimated';
 import { useSignUpContext } from '../../lib/SignUpContext'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import ArrowNextButton from '../../components/ui/ArrowNextButton'
 
 
 
@@ -27,6 +29,8 @@ const step1 = () => {
   
       inputOpacity.value = withDelay(800, withTiming(1, { duration: 400, easing: Easing.ease }));
       inputTranslateY.value = withDelay(800, withTiming(0, { duration: 400, easing: Easing.ease }));
+
+
     }, []);
   
    
@@ -42,7 +46,6 @@ const step1 = () => {
         const results = signupNameSchema.safeParse( { ...signUpData, [name] : value } )
         if (!results.success) {
             const errorObj = results.error.format();
-            console.log(errorObj)
             setErrors( prev => ({
                 ...prev,
                 firstName: errorObj.firstName ? errorObj.firstName._errors : [],
@@ -59,7 +62,9 @@ const step1 = () => {
 
 
     const onSetup1Press = () => {
-        router.push('/step2-username');
+        router.push({
+          pathname : '/step2-username'
+        });
     }
         
   
@@ -118,9 +123,12 @@ const step1 = () => {
               onChangeText={(text) => handleInputs('lastName', text)}
             />
        
-            <TouchableOpacity onPress={onSetup1Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.firstName || !signUpData.lastName  } >
+            {/* <TouchableOpacity onPress={onSetup1Press}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.firstName || !signUpData.lastName  } >
               <Text className='text-secondary text-lg font-psemibold self-center'>Next</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <View className='self-center pt-10'>
+              <ArrowNextButton onPress={onSetup1Press} disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.firstName || !signUpData.lastName} />
+            </View>
             </Animated.View>
     </View>
 

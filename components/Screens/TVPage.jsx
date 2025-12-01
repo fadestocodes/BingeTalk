@@ -18,17 +18,17 @@ import DialogueCard from '../DialogueCard'
 import { useFetchTVThreads } from '../../api/tv'
 import { fetchTVFromDB } from '../../api/tv'
 // import { useQueryClient, useQuery } from '@tanstack/react-query';
-import ThreadCard from '../ThreadCard'
 import { useGetTVById } from '../../api/tmdb'
 import { fetchTVThreads, useGetTVThreads } from '../../api/tv'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
-import { useUser } from '@clerk/clerk-expo'
+
 import { useFetchOwnerUser } from '../../api/user'
 import { markTVWatch } from '../../api/tv'
 import ToastMessage from '../ui/ToastMessage'
 import { moviePosterFallback } from '../../constants/Images'
 import { useBadgeContext } from '../../lib/BadgeModalContext'
 import { checkHistorianBadgeProgress } from '../../api/badge'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 
@@ -63,8 +63,10 @@ const TVPage = () => {
     const [ tvRatings, setTVRatings ] = useState([])
    
 
-    const { user:clerkUser } = useUser();
-    const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+
     const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchTVMentions( tvId );
 
     const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.tvId === Number(DBtvId) )
@@ -74,7 +76,7 @@ const TVPage = () => {
     const alreadyRated = tvRatings?.some( item => item.tvId === Number(DBtvId) && item.userId === ownerUser?.id )
     const ownerRating = tvRatings?.find( item => item.userId === ownerUser?.id && item.tvId === Number(DBtvId) ) || 'N/A'
     const followersAndFollowingIds = ownerUser?.followers.map(item => item.followerId ).concat(ownerUser?.followers.map(f => f.followingId))
-    const friendsRatingList = tvRatings?.filter( item => followersAndFollowingIds.includes(item.userId) && item.userId !== ownerUser?.id )
+    const friendsRatingList = tvRatings?.filter( item => followersAndFollowingIds?.includes(item.userId) && item.userId !== ownerUser?.id )
     const totalFriendsRatings = friendsRatingList.reduce((sum, rating) => sum + rating.rating, 0);
     const averageFriendsRating = friendsRatingList.length > 0 ? (totalFriendsRatings / friendsRatingList.length ).toFixed(1): 'N/A';
     const totalOverallRatings = tvRatings?.reduce((sum,rating) => sum + rating.rating, 0)
@@ -202,13 +204,11 @@ const TVPage = () => {
                 setMessage('Marked as Watched')
             }
         }
-        refetchOwnerUser();
+        await refetchOwner();
 
         const checkHistorian = await checkHistorianBadgeProgress(movie,'TV', ownerUser?.id)
-        console.log('checkhistorian', checkHistorian)
         let levelUpData = null
         if (checkHistorian?.hasLeveledUp){
-            console.log('🎊 Congrats you leveled up the Historian badge!')
             levelUpData = {
                 badgeType: 'HISTORIAN',
                 level: `${checkHistorian.newLevel}`
@@ -241,7 +241,7 @@ const TVPage = () => {
                 setMessage('Added to Watchlist')
             }
         }
-        refetchOwnerUser();
+        await refetchOwner();
         setButtonPressed('')
 
     }
@@ -502,7 +502,7 @@ const TVPage = () => {
                         contentContainerStyle={{ gap:15, marginTop:10 }}
                         renderItem = {({item}) => (
                             <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
-                                <DialogueCard dialogue={item.dialogue}  refetch={refetchMentionsThreads} isBackground={true} ></DialogueCard>
+                                <DialogueCard dialogue={item.dialogue}  refetch={refetchMentions} isBackground={true} ></DialogueCard>
                             </TouchableOpacity>
                         )}
                         />

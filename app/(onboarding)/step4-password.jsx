@@ -1,10 +1,11 @@
   import { StyleSheet, Text, View, TextInput,  Keyboard, TouchableWithoutFeedback, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, Button } from 'react-native'
 import React, {useState, useRef} from 'react'
-import { useUser, useSignUp } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
 import { signupSchema, signupPasswordSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useSignUpContext } from '../../lib/SignUpContext'
+import ArrowBackButton from '../../components/ui/ArrowBackButton'
+import ArrowNextButton from '../../components/ui/ArrowNextButton'
 
 
 const step4 = () => {
@@ -72,10 +73,13 @@ const step4 = () => {
               style={{ color:'white', fontSize:18, backgroundColor:Colors.mainGrayDark, paddingVertical:10, width:300, paddingHorizontal:15, borderRadius:10   }}
               onChangeText={(text) => handleInputs('password', text)}
             />
-       
-            <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.password  } >
-              <Text className='text-secondary text-lg font-psemibold'>Continue</Text>
-            </TouchableOpacity>
+
+
+            <View className='pt-10 self-center flex flex-row gap-3'>
+                <ArrowBackButton onPress={()=>router.back()} />
+                <ArrowNextButton onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0) || !signUpData.password } />
+            </View>
+            
             </>
     </View>
     </TouchableWithoutFeedback>

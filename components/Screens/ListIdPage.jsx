@@ -8,7 +8,6 @@ import { formatDate, getYear } from '../../lib/formatDate'
 import { BackIcon, ThreeDotsIcon, CloseIcon, MessageIcon } from '../../assets/icons/icons'
 import { ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react-native'
 import { RepostIcon } from '../../assets/icons/icons'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
@@ -17,6 +16,7 @@ import { createComment } from '../../api/comments'
 import { listInteraction } from '../../api/list'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../../constants/Images'
+import Username from '../ui/Username'
 
 
 const ListIdScreen = () => {
@@ -49,7 +49,7 @@ const ListIdScreen = () => {
   
     
     const animatedStyle = useAnimatedStyle(() => ({
-      bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+      bottom: withTiming(keyboard.height.value-80, { duration: 0 }),
     }));
 
     
@@ -66,7 +66,6 @@ const ListIdScreen = () => {
 
 
     const handleInteraction =  async (type, item) => {
-        console.log(item)
         if (type === 'upvotes'){
             setAlready(prev => ({...prev, upvoted : !prev.upvoted}))
             if (already.upvoted){
@@ -107,16 +106,13 @@ const ListIdScreen = () => {
             description,
             recipientId : item.user.id
         }
-        console.log('data', data)
         const updatedList = await listInteraction(data)
-        console.log('updatedlist', updatedList)
         refetch();
     }
 
     
 
     const handlePress = (item) => {
-        console.log('listitempressed', item)
         
         if ( item.movie ){
             router.push(`/movie/${item.movie.tmdbId}`)
@@ -176,9 +172,7 @@ const ListIdScreen = () => {
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
     
-        console.log('commentData,', commentData)
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment)
         setInput('');
         setReplyingTo(null)
         setReplying(false)
@@ -198,10 +192,8 @@ const ListIdScreen = () => {
         if ( type === 'upvotes' ){
             description = `upvoted your comment "${comment.content}"`
             if (isAlready){
-                console.log("CURRENTINTERACTEDCOMMENTS", interactedComments)
                 setInteractedComments(prev => {
                     const updatedUpvotes = prev.upvotes.filter(i => i.commentId !== comment.id);
-                    console.log('NEWINTERCTEDCOMMENTS',updatedUpvotes )
                     return {
                         ...prev,
                         upvotes: updatedUpvotes
@@ -377,17 +369,13 @@ const ListIdScreen = () => {
             recipientId : comment.user.id
         }
         const updatedComment = await commentInteraction(data)
-        console.log("INTERACTED COMMENT DATA", updatedComment)
         
         
     }
 
     const handleThreeDots = (item, fromReply) => {
-        console.log('from threedots', item)
-        console.log('from reply?', fromReply)
 
         const fromOwnPost = list?.user?.id === ownerUser?.id
-        console.log('fromOwnPOSTTT', fromOwnPost)
         router.push({
             pathname:'/postOptions',
             params: { fromOwnPost : fromOwnPost ? 'true' : 'false', ownerId : ownerUser?.id, postType : fromReply ? 'REPLY' : 'COMMENT', postId : list?.id, postUserId : item.userId, postType : 'LIST'}
@@ -427,7 +415,8 @@ const ListIdScreen = () => {
             contentFit='cover'
             style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
         />
-        <Text className='text-mainGray'>Curated by @{list.user.username}</Text>
+        <Username size='sm' user={list.user} color={Colors.mainGrayDark2} reverse={true}/>
+
 
 
         </TouchableOpacity>
@@ -522,8 +511,8 @@ const ListIdScreen = () => {
                         const shownReplies = visibleReplies[item.id] || 0;
 
 
-                        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === item.id )
-                        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === item.id )
+                        const alreadyUpvotedComment = interactedComments?.upvotes?.some( i => i.commentId === item.id )
+                        const alreadyDownvotedComment = interactedComments?.downvotes?.some( i => i.commentId === item.id )
                         
 
                         
@@ -583,8 +572,8 @@ const ListIdScreen = () => {
 { item.replies.length > 0 && (
                             <>
                             { item.replies.slice(0, shownReplies).map((reply) => {
-                                const alreadyUpvotedReply = interactedComments.upvotes.some( i => i.commentId === reply.id )
-                                const alreadyDownvotedReply = interactedComments.downvotes.some( i => i.commentId === reply.id )
+                                const alreadyUpvotedReply = interactedComments?.upvotes?.some( i => i.commentId === reply.id )
+                                const alreadyDownvotedReply = interactedComments?.downvotes?.some( i => i.commentId === reply.id )
                                 return (
 
 
@@ -612,7 +601,7 @@ const ListIdScreen = () => {
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={()=>{console.log('REPLY OBJECT', item);handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
+                                    <TouchableOpacity onPress={()=>{handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
                                     <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
                                         <ThumbsUp  size={20} color={ alreadyUpvotedReply ? Colors.secondary : Colors.mainGray} />
                                             <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedReply ? Colors.secondary : Colors.mainGray}}>{reply.upvotes}</Text>
@@ -726,7 +715,7 @@ const styles = StyleSheet.create({
       backgroundColor: Colors.primary,
       position: 'absolute',
       bottom:100,
-      height:200,
+      height:150,
       left: 0,
       right: 0,
       paddingBottom: 50,

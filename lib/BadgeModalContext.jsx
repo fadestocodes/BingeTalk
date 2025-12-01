@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import BadgeLevelUpModal from "../components/BadgeLevelUpModal";
 import * as nodeServer from '../lib/ipaddresses'
+import { apiFetch } from "@/api/auth";
 
 
 const BadgeContext = createContext();
@@ -10,16 +11,17 @@ const markBadgeNotificationSeen = async (userId, notifId) => {
 
 
     try {
-        console.log(`userid: ${userId}, notifId: ${notifId}`)
         if (!userId || !notifId) throw new Error("Invalid parameters")
-        const response = await fetch(`${nodeServer.currentIP}/user/${userId}/badge-notification/${notifId}`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/user/${userId}/badge-notification/${notifId}`, {
             method : "PATCH",
             headers : {
                 'Content-type' : 'application/json'
             },
             body : JSON.stringify({userId, notifId})
         })
-        if (!response.ok) throw new Error("Unexpected error")
+        const data = await response.json()
+        console.log('data', data)
+        if (!response.ok) return
         
     } catch(err){
         console.error(err)
@@ -60,7 +62,7 @@ export const BadgeModalProvider = ({ children }) => {
 
     const handleModalClose = async () => {
         setTimeout(async () => {
-            if (badgeModal?.notifId){
+            if (badgeModal?.notifId && userId){
                 await markBadgeNotificationSeen(userId, badgeModal.notifId )
             }
             setBadgeModal(prev => ({ ...prev, visible: false }));

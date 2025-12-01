@@ -1,10 +1,11 @@
 
 import * as nodeServer from '../lib/ipaddresses'
+import { apiFetch } from './auth'
 
 export const checkCriticBadgeProgress = async (reviewId, userId) => {
     if (!reviewId || !userId) return 
     try {
-        const response = await fetch(`${nodeServer.currentIP}/badge/critic`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/badge/critic`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -12,7 +13,6 @@ export const checkCriticBadgeProgress = async (reviewId, userId) => {
             body : JSON.stringify({reviewId, userId})
         })
         const result = await response.json()
-        console.log('result', result)
         if (!response.ok){
             throw new Error("Unexpected error")
         }
@@ -26,7 +26,7 @@ export const checkHistorianBadgeProgress = async (tmdbObj, type, userId) => {
     try {
         if (!tmdbObj || !userId) throw new Error ("Invalid parameters") 
         
-        const response = await fetch(`${nodeServer.currentIP}/badge/historian`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/badge/historian`, {
             method : "POST",
             headers : {
                 'Content-type' : 'application/json'
@@ -38,7 +38,6 @@ export const checkHistorianBadgeProgress = async (tmdbObj, type, userId) => {
             throw new Error('Unexpected error')
         }
         const result = await response.json()
-        console.log('resultfrom historain progress', result)
         return result.data
 
     } catch (err){
@@ -59,7 +58,7 @@ export const checkCuratorBadge = async (likedByUserId, ownerUserId) => {
 export const checkAuteurBadge = async (movieObj, userId) => {
     try {
         if (!movieObj || !userId) throw new Error("Invalid parameters")
-        const response = await fetch(`${nodeServer.currentIP}/badge/auteur`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/badge/auteur`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -79,7 +78,7 @@ export const checkAuteurBadge = async (movieObj, userId) => {
 export const checkConversationalistBadge = async ( userId) => {
     try {
         if (!userId) throw new Error("Invalid parameters")
-        const response = await fetch(`${nodeServer.currentIP}/badge/conversationalist`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/badge/conversationalist`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -88,7 +87,6 @@ export const checkConversationalistBadge = async ( userId) => {
         })
         if (!response.ok) throw new Error("Unexpected error")
         const result = await response.json()
-        console.log('checking conversationslit badge', result?.data)
         return result.data
 
     } catch(err){
@@ -99,7 +97,7 @@ export const checkConversationalistBadge = async ( userId) => {
 export const checkTastemakerBadge = async (recommenderId) => {
     try {
         if (!recommenderId) throw new Error("Invalid recommenderId")
-        const response = await fetch(`${nodeServer.currentIP}/badge/tastemaker`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/badge/tastemaker`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'

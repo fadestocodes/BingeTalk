@@ -1,5 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import React, {useState, useEffect} from 'react'
+import { apiFetch } from './auth';
 
 
 export const useGetFeed = ( userId, limit ) => {
@@ -12,7 +13,7 @@ export const useGetFeed = ( userId, limit ) => {
         if (!hasMore) return
         try {
             setLoading(true);
-            const request = await fetch (`${nodeServer.currentIP}/feed?userId=${userId}&limit=${limit}&cursor=${cursor}`);
+            const request = await apiFetch (`${nodeServer.currentIP}/feed?userId=${userId}&limit=${limit}&cursor=${cursor}`);
             const response = await request.json();
             setData( prev => [ ...prev, ...response.items ] );
             setCursor(response.nextCursor)
@@ -26,7 +27,7 @@ export const useGetFeed = ( userId, limit ) => {
 
     useEffect(() => {
         getFeed()
-    }, [])
+    }, [userId])
 
     return { data, loading, hasMore, refetch : getFeed }
 }
@@ -50,10 +51,9 @@ export const useGetProfileFeed = (userId, limit) => {
 
     const getProfileFeed = async () => {
         if (!hasMore.dialogue && !hasMore.thread && !hasMore.list) return
-        if (isFetching) return 
         try {
-            setIsFetching(true)
-            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&reviewCursor=${cursors.review}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreReviews=${hasMore.review}&hasMoreLists=${hasMore.list}`)
+            setLoading(true)
+            const response = await apiFetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=${cursors.dialogue}&reviewCursor=${cursors.review}&listCursor=${cursors.list}&hasMoreDialogues=${hasMore.dialogue}&hasMoreReviews=${hasMore.review}&hasMoreLists=${hasMore.list}`)
             const results = await response.json()
             setData(prev => ([...prev, ...results.items]))
             setHasMore({
@@ -71,7 +71,6 @@ export const useGetProfileFeed = (userId, limit) => {
         } catch (err){
             console.log(err)
         } finally {
-            setIsFetching(false)
             setLoading(false)
         }
     }
@@ -85,10 +84,10 @@ export const useGetProfileFeed = (userId, limit) => {
     }
 
     const refetch = async () => {
-        if (isFetching) return
         try {
-            setIsFetching(true)
-            const response = await fetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&reviewCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreReviews=true&hasMoreLists=true`)
+            setLoading(true)
+
+            const response = await apiFetch(`${nodeServer.currentIP}/feed/profile-page?id=${userId}&limit=${limit}&dialogueCursor=null&reviewCursor=null&listCursor=null&hasMoreDialogues=true&hasMoreReviews=true&hasMoreLists=true`)
             const results = await response.json()
             setData(results.items)
             setHasMore({
@@ -96,21 +95,19 @@ export const useGetProfileFeed = (userId, limit) => {
                 review : !!results.nextReviewCursor,
                 list : !!results.nextListCursor
             })
-            setCursors(prev => ({
-                ...prev,
+            setCursors({
                 dialogue : results.nextDialogueCursor,
                 review : results.nextReviewCursor,
                 list : results.nextListCursor
-            }))
+            })
 
         } catch (err){
             console.log(err)
         } finally {
-            setIsFetching(false)
             setLoading(false)
 
         }
     }
 
-    return { data, loading, hasMore, cursors, refetch  , removeItem} 
+    return { data, loading, hasMore, cursors, refetch ,fetchMore:getProfileFeed , removeItem} 
 }

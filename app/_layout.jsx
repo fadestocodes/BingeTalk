@@ -10,8 +10,6 @@ import { Slot } from "expo-router"
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Colors } from '@/constants/Colors';
-import { ClerkProvider, ClerkLoaded, useUser, useClerk } from '@clerk/clerk-expo'
-import {tokenCache} from '@/cache'
 import { UserDBProvider } from '../lib/UserDBContext'
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '../lib/tanStackClient'; // Import the query client
@@ -26,7 +24,7 @@ import {SignUpProvider} from '../lib/SignUpContext'
 import * as Sentry from '@sentry/react-native';
 import Constants from 'expo-constants';
 import {BadgeModalProvider} from '../lib/BadgeModalContext'
-
+import {UserProvider} from '@/lib/UserContext'
 
 
 
@@ -80,6 +78,17 @@ export default Sentry.wrap(function RootLayout() {
     "Geist-SemiBold": require("../assets/fonts/Geist-SemiBold.ttf"),
     "Geist-Thin": require("../assets/fonts/Geist-Thin.ttf"),
     "Courier" : require("../assets/fonts/Courier.ttf"),
+    "SFMovie-Bold" : require("../assets/fonts/SFMovieBold.ttf"),
+    "SFMovie-Oblique" : require("../assets/fonts/SFMovieOblique.ttf"),
+    "SFMovie-BoldOblique" : require("../assets/fonts/SFMovieBoldOblique.ttf"),
+    "SFMovie-Condensed" : require("../assets/fonts/SFMovieCondensed.ttf"),
+    "SFMovie-CondensedBold" : require("../assets/fonts/SFMovieCondensedBold.ttf"),
+    "SFMovie-CondensedOblique" : require("../assets/fonts/SFMovieCondensedOblique.ttf"),
+    "SFMovie-CondensedBoldOblique" : require("../assets/fonts/SFMovieCondensedBoldOblique.ttf"),
+    "SFMovie" : require("../assets/fonts/SFMovie.ttf"),
+    'Bebas-Neue' : require("../assets/fonts/BebasNeue-Regular.ttf"),
+    'Bebas-Neue-Light' : require("../assets/fonts/BebasNeue-Light.ttf"),
+    'Bebas-Neue-Bold' : require("../assets/fonts/BebasNeue-Bold.ttf"),
   });
   
   const router = useRouter()
@@ -101,8 +110,7 @@ export default Sentry.wrap(function RootLayout() {
 
   return (
     
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey} >
-      <ClerkLoaded>
+        <UserProvider>
         <QueryClientProvider client={queryClient}>
       <BadgeModalProvider>
           <SignUpProvider>
@@ -115,12 +123,12 @@ export default Sentry.wrap(function RootLayout() {
           <StatusBar
             backgroundColor={Colors.mainGray}
           />
-          <Stack  >
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(root)" options={{headerShown: false}} />
-            <Stack.Screen name="(auth)" options={{headerShown: false}} />
-            <Stack.Screen name="(onboarding)" options={{headerShown: false}} />
-            <Stack.Screen name="(profileSetup)" options={{headerShown: false}} />
+          <Stack  screenOptions={{contentStyle: { backgroundColor: '#171717' }}} >
+            <Stack.Screen name="index" options={{ headerShown: false,contentStyle: { backgroundColor: '#171717' } }} />
+            <Stack.Screen name="(root)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
+            <Stack.Screen name="(auth)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
+            <Stack.Screen name="(onboarding)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
+            <Stack.Screen name="(profileSetup)" options={{headerShown: false,contentStyle: { backgroundColor: '#171717' }}} />
             <Stack.Screen name="+not-found" />
           </Stack>
           </GestureHandlerRootView>
@@ -132,7 +140,7 @@ export default Sentry.wrap(function RootLayout() {
           </SignUpProvider>
           </BadgeModalProvider> 
         </QueryClientProvider>
-      </ ClerkLoaded >
-    </ClerkProvider >
+        </UserProvider>
+
   );
 });

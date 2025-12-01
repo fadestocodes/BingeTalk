@@ -1,6 +1,6 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { SignOutButton, useAuth } from '@clerk/clerk-react'
+
 import { useState, useEffect } from 'react';
 
 
@@ -121,7 +121,7 @@ export const GetNowPlaying = async () => {
   
   export const getTrending = async () => {
     try {
-      const response = await fetch(`${nodeServer.currentIP}/tmdb/trending/all`);
+      const response = await fetch(`${nodeServer.currentIP}/tmdb/trending/recents`);
       const data = await response.json();
       return data
     } catch (err) {
@@ -182,25 +182,25 @@ export const GetNowPlaying = async () => {
   }
 
 
-export const useTMDBHook = ( fetchFunction, keyName ) => {
+// export const useTMDBHook = ( fetchFunction, keyName ) => {
 
-    const { getToken } = useAuth();
-    // const queryClient = useQueryClient(); // Get query client
+//     const { getToken } = useAuth();
+//     // const queryClient = useQueryClient(); // Get query client
 
-    return useQuery({
-        queryKey: [keyName],
-        queryFn: async () => {
-            if (typeof fetchFunction !== 'function') {
-                throw new Error('fetchFunction must be a function');
-            }
-            const token = await getToken();
-            return fetchFunction(token);
-        },
-        staleTime: 1000 * 60 * 10, // Cache for 5 minutes
-        enabled: !!fetchFunction, // Ensures query runs when component mounts
-        refetchOnWindowFocus: true, // Auto refetch when app regains focus
-    });
-}
+//     return useQuery({
+//         queryKey: [keyName],
+//         queryFn: async () => {
+//             if (typeof fetchFunction !== 'function') {
+//                 throw new Error('fetchFunction must be a function');
+//             }
+//             const token = await getToken();
+//             return fetchFunction(token);
+//         },
+//         staleTime: 1000 * 60 * 10, // Cache for 5 minutes
+//         enabled: !!fetchFunction, // Ensures query runs when component mounts
+//         refetchOnWindowFocus: true, // Auto refetch when app regains focus
+//     });
+// }
 
 
 export const useGetTrendingMoviesInfinite = () => {
@@ -315,7 +315,7 @@ export const useGetUpcomingMovies = () => {
   return { upcomingMovies, refetch : getUpcomingMovies }
 }
 
-export const findDirector = async (params) => {
+export const findDirectorOrCreator = async (params) => {
   const { type, tmdbId } = params
   try {
     const response = await fetch(`${nodeServer.currentIP}/tmdb/find-director`, {
@@ -326,7 +326,6 @@ export const findDirector = async (params) => {
       body : JSON.stringify( params )
     })
     const data = await response.json()
-    console.log("FOUNDDIRECTOR". data)
     return data
   } catch (err){
     console.log(err)

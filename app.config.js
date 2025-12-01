@@ -13,6 +13,7 @@ export default {
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
+      "usesAppleSignIn": true,
       "associatedDomains": [
         "webcredentials:bingeable.app"
       ],
@@ -28,8 +29,9 @@ export default {
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
         },
-        "NSAllowsArbitraryLoadsInWebContent": true
-      }
+        "NSAllowsArbitraryLoadsInWebContent": true,
+       
+      } 
     },
     "android": {
       "adaptiveIcon": {
@@ -47,6 +49,26 @@ export default {
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-apple-authentication",
+      "expo-build-properties",
+      [
+        "react-native-share",
+        {
+          "ios": [
+            "fb",
+            "instagram",
+            "twitter",
+            "tiktoksharesdk",
+          ],
+          "android": [
+            "com.facebook.katana",
+            "com.instagram.android",
+            "com.twitter.android",
+            "com.zhiliaoapp.musically",
+          ],
+          "enableBase64ShareAndroid": true
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",

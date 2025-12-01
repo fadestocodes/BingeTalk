@@ -9,7 +9,6 @@ import { useFetchTVFromDB, useGetTVFromDB } from '../../api/tv'
 import { Colors } from '../../constants/Colors'
 import { getYear } from '../../lib/formatDate'
 import { createRating } from '../../api/rating'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../api/user'
 import ToastMessage from '../../components/ui/ToastMessage'
 import { Star } from 'lucide-react-native'
@@ -23,6 +22,7 @@ import { reviewTraits } from '../../lib/tagOptions'
 import { useGetMovieOrTvFromDB } from '../../api/db'
 import { checkCriticBadgeProgress } from '../../api/badge'
 import {useBadgeContext} from '../../lib/BadgeModalContext'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 const RatingModalPage = () => {
     const { DBmovieId, DBtvId,  DBcastId, prevRating } = useLocalSearchParams();
@@ -31,8 +31,11 @@ const RatingModalPage = () => {
     const [ isStepOne, setIsStepOne ] = useState(true)
     // const [ prevRating, setPrevRating ] = useState(null)
     const [ review, setReview ] = useState('')
-    const { user: clerkUser } = useUser()
-    const { data: ownerUser } = useFetchOwnerUser({ email :clerkUser?.emailAddresses[0].emailAddress })
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser}= useGetUserFull(user?.id)
+
     const [ message, setMessage ] = useState(null)
     const [imageLoading, setImageLoading] = useState(true); // Track loading state
     const router = useRouter()
@@ -90,9 +93,7 @@ const RatingModalPage = () => {
             setMessage('Successfully posted rating')
             if (postedRating.review){
                 const criticBadgeProgress = await checkCriticBadgeProgress(postedRating.id, ownerUser?.id)
-                console.log('Criticbadgeprogress', criticBadgeProgress)
                 if (criticBadgeProgress?.hasLeveledUp){
-                    console.log('🎊 Congrats you leveled up the Critic badge!')
                     levelUpData = {
                         badgeType: 'CRITIC',
                         level: `${criticBadgeProgress.newLevel}`,

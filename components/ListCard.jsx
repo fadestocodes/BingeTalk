@@ -4,18 +4,20 @@ import { ThumbsUp, ThumbsDown, List } from 'lucide-react-native'
 import { MessageIcon, RepostIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { Colors } from '../constants/Colors'
 import { Image } from 'expo-image'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
 import { formatDate } from '../lib/formatDate'
 import { useRouter } from 'expo-router'
 import { listInteraction } from '../api/list'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
+import { useGetUser, useGetUserFull } from '../api/auth'
+import Username from './ui/Username'
 
 const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) => {
 
-    const { user:clerkUser } = useUser();
-    const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0]?.emailAddress});
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner} = useGetUserFull(user?.id)
     const posterURL = 'https://image.tmdb.org/t/p/w500';
     const router = useRouter()
     const [ alreadyInteractions, setAlreadyInteractions ] = useState({
@@ -32,10 +34,10 @@ const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) 
 
 
     useEffect(()=>{
-
-        const alreadyUpvoted = item.listInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
-        const alreadyDownvoted = item.listInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
-        const alreadyReposted = item.listInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
+        if (!item) return
+        const alreadyUpvoted = item.listInteractions?.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
+        const alreadyDownvoted = item.listInteractions?.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
+        const alreadyReposted = item.listInteractions?.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
         setAlreadyInteractions({
             upvoted: alreadyUpvoted,
             downvoted:alreadyDownvoted,
@@ -192,11 +194,12 @@ const ListCard = ({ list:item , activity, fromHome, isReposted, pressDisabled}) 
                                 ) : null}
                                     <TouchableOpacity style={{flexDirection:'row', justifyContent:'center', alignItems:'center', gap:5}} onPress={()=>handleUserPress(item)}>
                                     <Image
-                                    source ={{ uri :item.user.profilePic || avatarFallbackCustom}}
+                                    source ={{ uri :item.user?.profilePic || avatarFallbackCustom}}
                                     contentFit='cover'
                                     style={{ width:25, height :25, borderRadius:50 }}
                                     />
-                                    <Text className='text-mainGrayDark'>@{item.user.username}</Text>
+                                    <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                                     </TouchableOpacity>
                                 </View>
                                 <Text className='text-mainGrayDark'>{formatDate(item.createdAt)}</Text>

@@ -41,3 +41,12 @@ export const ThreeDotsIcon = (props) => <Entypo name="dots-three-vertical" {...p
 export const ProgressCheckIcon = (props) => <MaterialCommunityIcons name="progress-check" {...props} />;
 export const SwipeIcon = (props) => <MaterialIcons name="swipe" {...props} />;
 export const CastCrewIcon = (props) => <FontAwesome6 name="people-group" {...props} />;
+export const FacebookIcon = (props) => <Entypo name="facebook" {...props} />;
+export const GoogleIcon = (props) => <AntDesign name="google" {...props} />;
+export const AppleIcon = (props) => <FontAwesome name="apple" {...props} />;
+export const PlaylistAdd = (props) => <MaterialCommunityIcons name="playlist-plus" {...props} />;
+export const PlaylistCheck = (props) => <MaterialIcons name="playlist-add-check" {...props} />;
+export const PlaylistMinus = (props) => <MaterialCommunityIcons name="playlist-minus" {...props} />;
+export const DirectorChairIcon = (props) => <MaterialCommunityIcons name="chair-rolling" {...props} />;
+export const ClapperboardIcon = (props) => <FontAwesome6 name="clapperboard" {...props} />;
+

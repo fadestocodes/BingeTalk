@@ -3,7 +3,7 @@ import * as nodeServer from '../lib/ipaddresses'
 
 export const reportPost = async (data) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/report`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/report`, {
             method:'POST',
             headers:{
                 'Content-type': 'application/json'

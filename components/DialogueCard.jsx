@@ -5,7 +5,6 @@ import React, {useState, useEffect} from 'react'
 import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { Colors } from '../constants/Colors'
 import { useUserDB } from '../lib/UserDBContext'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchUser } from '../api/user'
 import { useRouter } from 'expo-router'
 import { fetchSingleDialogue } from '../api/dialogue'
@@ -19,17 +18,18 @@ import {avatarFallbackImage, moviePosterFallback} from '../constants/Images'
 import { avatarFallbackCustom } from '../constants/Images'
 import { checkConversationalistBadge } from '../api/badge'
 import { useBadgeContext } from '../lib/BadgeModalContext'
+import { useGetUser, useGetUserFull } from '../api/auth'
+import Username from './ui/Username'
 
 
 const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome, activity, isReposted, fromSearchHome} ) => {
-
 
     const userDB = dialogue?.user
     const posterURL = 'https://image.tmdb.org/t/p/w342';
     const router = useRouter();
     const tag = dialogue?.tag;
-    const { user: clerkUser } = useUser()
-    const { data : ownerUser, refetch: refetchOwner } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress}  )
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner} = useGetUserFull(user?.id)
     const [ url, setUrl ] = useState({
         image : '',
         title : '',
@@ -189,7 +189,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
 
         let levelUpData = null
         if (conversationalistProgression?.hasLeveledUp){
-            console.log('🎊 Congrats you leveled up the Conversationalist badge!')
+            ('🎊 Congrats you leveled up the Conversationalist badge!')
             levelUpData = {
                 badgeType: 'CONVERSATIONALIST',
                 level: `${conversationalistProgression.newLevel}`,
@@ -244,10 +244,10 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
   return (
 
    
-    <View  className=''  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
-            <View className='flex justify-center items-start  mb-1 w-full ' style={{gap:5}}>
+    <View  className='w-full'  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
+            <View className='flex flex-col  justify-center items-start  mb-1  ' style={{gap:5}}>
               
-                <View className='flex-row w-full justify-between items-center'>
+                <View className='flex-row w-full flex justify-between items-center'>
                         <View className="flex-row items-center gap-2">
                         { isReposted ? (
                     <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>    
@@ -258,8 +258,8 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                             />
-                            <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
-                            </TouchableOpacity>
+                    <Username size='sm' user={userDB} color={Colors.mainGrayDark2} reverse={true}/>
+                    </TouchableOpacity>
                         </View>
                     <Text className='text-mainGrayDark '>{formatDateNotif(dialogue.createdAt)}</Text>
                     
@@ -270,16 +270,16 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                             <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:15}} >{tag.tagName}</Text>
                         </View>
                     ) : null}
-                <View className='my-0 justify-center items-center w-full gap-3  '>
+                <View className='my-0 justify-center items-center  flex flex-col gap-3 '>
                     <View className='flex gap-2 justify-center items-center'>
                         
                         <View className='justify-center items-center gap-0'>
-                            <Text className='text-secondary font-pcourier uppercase text-lg' >{userDB.firstName}</Text>
+                            <Text className='text-mainGray font-pcourier uppercase text-lg' >{userDB.firstName}</Text>
                         </View>
                         
                     </View>
 
-                    <Text className='text-third font-pcourier  text-left w-full' numberOfLines={ fromSearchHome && 3 }> { dialogue.content } </Text>
+                    <Text className='text-third font-pcourier  text-left ' numberOfLines={ fromSearchHome && 3 }> { dialogue.content } </Text>
                     { dialogue.image && (
                         <Image 
                             source={{ uri: dialogue.image }}
@@ -298,7 +298,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                                 </TouchableOpacity>
                             </>
                         ) : (
-                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height: fromSearchHome ? 100 : 150, width:'100%', position:'relative'}}>
+                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height: fromSearchHome ? 100 : 150, width:'auto', position:'relative'}}>
                             
                             <Image
                                 source ={{ uri :url.image }}
@@ -326,7 +326,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                 </View>
                 { dialogue?.mentions?.length > 0 && (
 
-                <View className='flex-row gap-3  item-center justify-center mt-3' >
+                <View className='flex-row gap-3  item-center justify-center mt-3 ' >
                 { dialogue.mentions ? dialogue.mentions.length > 0 && dialogue.mentions.map( mention => {; return (
                     <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
                         <Image

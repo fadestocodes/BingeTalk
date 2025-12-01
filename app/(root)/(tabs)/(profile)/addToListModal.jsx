@@ -1,19 +1,20 @@
 import { ScrollView, StyleSheet, Text, View, FlatList , TouchableOpacity, TextInput, Keyboard, KeyboardAvoidingView, ActivityIndicator} from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { Colors } from '../../../../constants/Colors'
-import { useUser } from '@clerk/clerk-expo'
-import { useFetchOwnerUser } from '../../../../api/user'
 import { fetchUsersLists, useFetchUsersLists, createList, addToList } from '../../../../api/list'
 import { BackIcon, ForwardIcon } from '../../../../assets/icons/icons'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { useLocalSearchParams } from 'expo-router'
 import { fetchTVFromDB } from '../../../../api/tv'
 import { GetTVById, GetMovieById } from '../../../../api/tmdb'
+import { useGetUser, useGetUserFull } from '../../../../api/auth'
 
 
 const addToListModal = () => {
-    const { user :clerkUser } = useUser()
-    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
+    
     const { data : userLists, refetch: refetchUserLists, isFetching } = useFetchUsersLists(ownerUser?.id)
 
     const {tmdbId, DBtvId, DBMovieId} = useLocalSearchParams();
@@ -138,10 +139,7 @@ const addToListModal = () => {
     }
 
     const handleInputLayout = (event) => {
-        // const { y, height } = event.nativeEvent.layout
-        // console.log(`y is: ${y}, height is: ${height}`)
-        // Get the position of the TextInput relative to the parent and set the height for translation
-        // setInputHeight(y + height)
+      
 
             inputRef.current.measureInWindow((x, y, width, height) => {
               setInputHeight(y + height); // Set the height as the combined value of y and height

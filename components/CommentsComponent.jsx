@@ -7,9 +7,8 @@ import { CloseIcon, ThreeDotsIcon } from '../assets/icons/icons'
 import { ThumbsDown, ThumbsUp} from 'lucide-react-native'
 import { useFetchOwnerUser } from '../api/user'
 import { useCustomFetchSingleDialogue } from '../api/dialogue'
-import { useCustomFetchSingleThread } from '../api/thread'
+
 import { useCustomFetchSingleList } from '../api/list'
-import { useUser } from '@clerk/clerk-expo'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { createComment, commentInteraction } from '../api/comments'
 import { useFetchActivityId } from '../api/activity'
@@ -17,29 +16,41 @@ import { useRouter } from 'expo-router'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom } from '../constants/Images'
 import { checkConversationalistBadge } from '../api/badge'
+import { useGetUser, useGetUserFull } from '../api/auth'
+import { useFetchReview } from '../api/review'
+import { useGetSetDay } from '../api/setDay'
+import Username from './ui/Username'
 
-const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}) => {
+const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, activityId, setDayId, fromModal}) => {
 
 
 
-    let dialogue, thread, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData;
+    let dialogue, thread, review, activity, list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, setDay;
+
 
     if (postType === 'dialogue') {
         ({ dialogue, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleDialogue(Number(dialogueId)));
-    } else if (postType === 'thread') {
-        ({ thread, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleThread(Number(threadId)));
     } else if (postType === 'list'){
         ({ list, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData } = useCustomFetchSingleList(Number(listId)));
     } else if (postType === 'activity'){
         ({ data:activity, interactedComments, commentsData, loading : isLoading, refetch, setInteractedComments, setCommentsData } = useFetchActivityId(Number(activityId)))
+    } else if (postType === 'review'){
+        ({ review, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData} = useFetchReview(Number(reviewId)))
+    } else if (postType === 'setDay'){
+        ({ data:setDay, interactedComments, commentsData, loading:isLoading, refetch, setInteractedComments, setCommentsData} = useGetSetDay(Number(setDayId)))
+
     }
+
     const [ input, setInput ] = useState('')
     const inputRef = useRef(null);  
     const [ replyingTo, setReplyingTo ] = useState(null)
     const [ replying, setReplying ] = useState(false)
     const [ visibleReplies, setVisibleReplies  ] = useState({})
-    const { user : clerkUser } = useUser();
-    const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwnerUser}= useGetUserFull(user?.id)
+
     const router = useRouter()
 
 
@@ -55,7 +66,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
   
     
     const animatedStyle = useAnimatedStyle(() => ({
-      bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+      bottom: withTiming(keyboard.height.value-80, { duration: 0 }),
     }));
 
 
@@ -73,6 +84,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
             threadId : thread ? Number(thread.id) : null,
             listId : list ? Number(list.id) : null,
             activityId : activity ? Number(activity.id) : null,
+            setDayId : setDay ? Number(setDay.id) : null,
             content : item.content,
             parentId
         }
@@ -96,24 +108,22 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
 
 
     const handlePostComment =  async ({ parentId = null }) => {
-        console.log('hello')
         const commentData = {
             userId : Number(userId),
             dialogueId : Number(dialogueId) || null,
             threadId : Number(threadId) || null,
             listId : Number(listId) || null,
+            setDayId : Number(setDayId) || null,
             activityIdCommentedOn : Number(activityId) || null,
             content : input.trim(),
             parentId : replyingTo?.parentId || null,
             replyingToUserId : replyingTo?.user?.id || null,
-            description: dialogue ? `commented on your dialogue "${input}"` : thread ?  `commented on your thread "${input}"` : list ? `commented on your list "${input}"` : activity && `commented on your activity "${input}"` ,
-            recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list ? list.user.id : activity && activity.user.id ,
+            description: dialogue ? `commented on your dialogue "${input}"` : thread ?  `commented on your thread "${input}"` : list ? `commented on your list "${input}"` : activity ? `commented on your activity "${input}"` : setDay && `commented on your SetDay ${input}` ,
+            recipientId : dialogue ?  dialogue.user.id : thread ? thread.user.id : list ? list.user.id : activity ? activity.user.id : setDay && setDay.user.id ,
             replyDescription : replyingTo ? `replied to your comment "${input}"` : null,
         }
-        console.log('commentdata', commentData)
     
         const newComment = await createComment( commentData );
-        console.log('newcomment', newComment)
 
 
         setInput('');
@@ -323,8 +333,6 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
 
 
     const handleThreeDots = (item, fromReply) => {
-        console.log('from threedots', item)
-        console.log('from reply?', fromReply)
 
         const fromOwnPost = item.userId === ownerUser?.id
         router.push({
@@ -334,7 +342,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
     }
 
 
-    if ((!dialogue && !thread && !list && !activity ) || !ownerUser){ 
+    if ((!dialogue && !thread && !list && !activity && !review && !setDay ) || !ownerUser){ 
         return (
             <View className='w-full h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>
@@ -344,11 +352,13 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
 
 
   return (
-    <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary, borderRadius:30}} >
+    <SafeAreaView className=' flex-1' style={{backgroundColor:Colors.primary, borderRadius:30}} >
 
      
-        <>
-        <View style={{ width:55, height:7, borderRadius:10,  backgroundColor:Colors.mainGray, position:'sticky', alignSelf:'center',  marginVertical:30}} />
+        <View className='flex-1 pt-10'>
+        {fromModal && (
+        <View style={{ width:55, height:7, borderRadius:10,  backgroundColor:Colors.mainGray, position:'sticky', alignSelf:'center',  marginVertical:0}} />
+        )}
 
         <ScrollView className='bg-primary pt-0  relative '  style={{borderRadius:30}}
             refreshControl={
@@ -361,12 +371,12 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
          
         >
 
-        <View style={{gap:10, marginVertical:0, paddingTop:0, paddingHorizontal:20, paddingBottom:100}}  >
+        <View style={{gap:10, marginVertical:0, paddingTop:20, paddingHorizontal:20, paddingBottom:100}}  >
           <View className='gap-3' >
 
           <View className='w-full border-t-[1px] border-mainGrayDark items-center self-center shadow-md shadow-black-200' style={{borderColor:Colors.mainGrayDark}}/>
 
-                { commentsData.length > 0 ? (
+                { commentsData?.length > 0 ? (
                     <>
                     <FlatList
                     refreshControl={
@@ -386,8 +396,8 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                         const shownReplies = visibleReplies[item.id] || 0;
 
 
-                        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === item.id )
-                        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === item.id )
+                        const alreadyUpvotedComment = interactedComments?.upvotes?.some( i => i.commentId === item.id )
+                        const alreadyDownvotedComment = interactedComments?.downvotes?.some( i => i.commentId === item.id )
                         
 
                         
@@ -405,7 +415,9 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
-                                        <Text className='text-mainGrayDark' >@{item.user.username}</Text>
+
+                                        <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                                     </View>
                                     <Text className='text-mainGrayDark '>{formatDateNotif(item.createdAt)}</Text>
                                 </View>
@@ -457,7 +469,9 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                                             contentFit='cover'
                                             style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                                         />
-                                        <Text className='text-mainGrayDark   ' >@{reply.user.username}</Text>
+
+                                        <Username size='sm' user={reply.user} color={Colors.mainGrayDark2} reverse={true}/>
+
                                     </View>
                                     <Text className='text-mainGrayDark '>{formatDateNotif(reply.createdAt)}</Text>
                                 </View>
@@ -556,7 +570,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, listId, activityId}
                 )}
               </View>
             </Animated.View>
-            </>
+            </View>
 
 
     </SafeAreaView>
@@ -582,7 +596,7 @@ CommentsComponent.options = {
       backgroundColor: '#111',
       position: 'absolute',
       bottom:100,
-      height:200,
+      height:150,
       left: 0,
       right: 0,
       paddingBottom: 50,

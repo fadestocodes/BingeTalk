@@ -1,9 +1,11 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
+import { apiFetch } from './auth';
+import { maybeAskForReview } from '../lib/maybeAskForReview';
 
 export const createComment = async ( commentData ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/comment/create`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/comment/create`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -15,6 +17,8 @@ export const createComment = async ( commentData ) => {
         return newComment;
     } catch (err) {
         console.log(err)
+    } finally {
+        await maybeAskForReview()
     }
 }
 
@@ -27,7 +31,7 @@ export const useFetchSingleComment = (id) => {
      const fetchSingleComment = async () => {
         if (!id) return
         try {
-            const request = await fetch(`${nodeServer.currentIP}/comment?id=${id}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${id}`)
             const response = await request.json();
             setData( response)
     
@@ -49,7 +53,7 @@ export const useFetchSingleComment = (id) => {
 
 export const deleteComment = async (data) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/comment/delete`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/comment/delete`, {
             method:'POST',
             headers:{
                 'Content-type': 'application/json'
@@ -67,7 +71,7 @@ export const deleteComment = async (data) => {
 
 export const commentInteraction = async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/comment/interact`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/comment/interact`, {
             method : 'POST',
             headers: {
                 'Content-type' : 'application/json'

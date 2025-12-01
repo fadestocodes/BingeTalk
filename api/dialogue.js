@@ -1,15 +1,15 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { SignOutButton, useAuth, useUser } from '@clerk/clerk-react'
 import React, {useState,useEffect} from 'react';
 import { useFetchOwnerUser } from './user';
+import { apiFetch, useGetUser, useGetUserFull } from './auth';
 
 
 
 export const createDialogue = async ( postData ) => {
 
     try {
-        const request = await fetch (`${nodeServer.currentIP}/dialogue/create`, {
+        const request = await apiFetch (`${nodeServer.currentIP}/dialogue/create`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -26,7 +26,7 @@ export const createDialogue = async ( postData ) => {
 
 export const fetchDialogues = async ( userId ) => {
     try {
-        const request = await fetch (`${nodeServer.currentIP}/dialogue/fetch-all?id=${userId}`);
+        const request = await apiFetch (`${nodeServer.currentIP}/dialogue/fetch-all?id=${userId}`);
         const response = await request.json();
 
         return response
@@ -51,7 +51,7 @@ export const useFetchDialogues = ( userId ) => {
 
 export const fetchSingleDialogue =  async( dialogueId ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
+        const request = await apiFetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
         const response = await request.json();
         return response
     } catch (err) {
@@ -77,8 +77,11 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     const [ dialogue, setDialogue ] = useState(null);
     const [ isLoading, setIsLoading ] = useState(true)
     const [ error, setEror ] = useState(null)
-    const { user : clerkUser }  = useUser()
-    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []
@@ -89,7 +92,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
 
     const fetchDialogue = async () => {
         try {
-            const response = await fetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
+            const response = await apiFetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
             const fetchedDialogue = await response.json();
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
                 return fetchedDialogue.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
@@ -106,7 +109,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
             setDialogue(fetchedDialogue)
 
             if (replyCommentId){
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
 
                 const reorderedCommentsData = [
@@ -127,7 +130,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     } 
 
     useEffect(()=>{
-       
+            if(!ownerUser) return
             fetchDialogue();
     }, [ownerUser, dialogueId])
 
@@ -150,7 +153,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
     const refetch = async () => {
         await refetchOwner()
         try {
-            const response = await fetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
+            const response = await apiFetch(`${nodeServer.currentIP}/dialogue?id=${dialogueId}`);
             const fetchedDialogue = await response.json();
             const upvotedComments = ownerUser.commentInteractions.filter( i => {
                 return fetchedDialogue.comments.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
@@ -167,7 +170,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
             setDialogue(fetchedDialogue)
 
             if (replyCommentId){
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
 
                 const reorderedCommentsData = [
@@ -193,7 +196,7 @@ export const useCustomFetchSingleDialogue = ( dialogueId, replyCommentId ) => {
 
 export const dialogueInteraction = async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/dialogue/interact`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/dialogue/interact`, {
             method : 'POST',
             headers: {
                 'Content-type' : 'application/json'
@@ -209,7 +212,7 @@ export const dialogueInteraction = async ( data ) => {
 
 export const getTrendingDialogues = async (limit) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/dialogue/trending?limit=${limit}`)
+        const request = await apiFetch(`${nodeServer.currentIP}/dialogue/trending?limit=${limit}`)
         const response = await request.json();
         return response
     } catch (err) {
@@ -218,7 +221,7 @@ export const getTrendingDialogues = async (limit) => {
 }
 export const getRecentDialogues = async (limit) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=null`)
+        const request = await apiFetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=null`)
         const response = await request.json();
         return response.items
     } catch (err) {
@@ -236,7 +239,7 @@ export const useGetTrendingDialoguesInfinite = (limit, popular) => {
         if (!hasMore) return
         try {
 
-            const request = await fetch(`${nodeServer.currentIP}/dialogue/trending/infinite?limit=${limit}&cursor=${cursor}&popular=${popular}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/dialogue/trending/infinite?limit=${limit}&cursor=${cursor}&popular=${popular}`)
             const response = await request.json()
             setData(prev => [...prev, ...response.items])
             setCursor(response.nextCursor)
@@ -255,7 +258,7 @@ export const useGetTrendingDialoguesInfinite = (limit, popular) => {
     const refetch = async () => {
         try {
 
-            const request = await fetch(`${nodeServer.currentIP}/dialogue/trending/infinite?limit=${limit}&cursor=null&popular=${popular}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/dialogue/trending/infinite?limit=${limit}&cursor=null&popular=${popular}`)
             const response = await request.json()
             setData(response.items)
             setCursor(response.nextCursor)
@@ -280,7 +283,7 @@ export const useGetRecentDialoguesInfinite = (limit) => {
         if (!hasMore) return
         try {
 
-            const request = await fetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=${cursor}`)
+            const request = await apiFetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=${cursor}`)
             const response = await request.json()
             setData(prev => [...prev, ...response.items])
             setCursor(response.nextCursor)
@@ -299,7 +302,7 @@ export const useGetRecentDialoguesInfinite = (limit) => {
     const refetch = async () => {
         try {
 
-            const request = await fetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=null`)
+            const request = await apiFetch(`${nodeServer.currentIP}/dialogue/recent/infinite?limit=${limit}&cursor=null`)
             const response = await request.json()
             setData(response.items)
             setCursor(response.nextCursor)
@@ -316,7 +319,7 @@ export const useGetRecentDialoguesInfinite = (limit) => {
 
 export const deleteDialogue = async (data) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/dialogue/delete`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/dialogue/delete`, {
             method:'POST',
             headers:{
                 'Content-type': 'application/json'
@@ -328,4 +331,51 @@ export const deleteDialogue = async (data) => {
     } catch(err){
         console.log(err)
     }
+}
+
+export const useGetUserDialoguesInfinite = (userId, limit=15) => {
+
+    const [data, setData] = useState([])
+    const [loading,setLoading] = useState(true)
+    const [hasMore, setHasMore] = useState(true)
+    const [cursor, setCursor] = useState(null)
+
+    const getUserDialoguesInfinite = async () => {
+        try {
+            if (!hasMore)return
+            setLoading(true)
+            const res = await apiFetch(`${nodeServer.currentIP}/dialogue/user/${userId}?cursor=${cursor}&limit=${limit}`)
+            if (!res.ok) throw new Error('Invalid response')
+            const resData = await res.json()
+            setData(prev => [...prev, ...resData.items])
+            setCursor(resData.nextCursor)
+            setHasMore(!!resData.nextCursor)
+        } catch(err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const refetch = async () => {
+        try {
+            setLoading(true)
+            const res = await apiFetch(`${nodeServer.currentIP}/dialogue/user/${userId}?cursor=null&limit=${limit}`)
+            if (!res.ok) throw new Error('Invalid response')
+            const resData = await res.json()
+            setData(resData.items)
+            setCursor(resData.nextCursor)
+            setHasMore(!!resData.nextCursor)
+        } catch(err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        refetch()
+    }, [userId])
+
+    return {data, loading, hasMore, refetch, fetchMore:getUserDialoguesInfinite}
 }

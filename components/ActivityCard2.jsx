@@ -1,3 +1,4 @@
+
 import { StyleSheet, Text, View , TouchableOpacity, FlatList} from 'react-native'
 import React, {act, useEffect, useState} from 'react'
 import { Image } from 'expo-image'
@@ -7,20 +8,27 @@ import { ThumbsUp, ThumbsDown, Heart, MessagesSquare, MessageSquare, ListChecks 
 import { useRouter } from 'expo-router'
 import { formatDate, formatDateNotif } from '../lib/formatDate'
 import { toPascalCase } from '../lib/ToPascalCase'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../api/user'
 import { likeActivity, activityInteraction, useFetchActivityId } from '../api/activity'
 import { avatarFallback } from '../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../constants/Images'
+import { useGetUser, useGetUserFull } from '../api/auth'
+import Username from './ui/Username'
+import { badgeIconMap } from '../constants/BadgeIcons'
 
 const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground}) => {
 
     const router = useRouter()
     const posterURL = 'https://image.tmdb.org/t/p/original';
     const posterURLlow = 'https://image.tmdb.org/t/p/w500';
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser , refetch:refetchOwner} = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress }) 
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner, displayBadgeIcon}= useGetUserFull(user?.id)
+
     const { refetch } = useFetchActivityId(activity?.id)
+
+    const [ badgeImage, setBadgeImage ] = useState('')
 
 
     // const alreadyUpvoted = activity?.activityInteractions?.some( item => item.interactionType === 'UPVOTE' && item.userId === ownerUser?.id )
@@ -65,6 +73,11 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                 count : activity?.reposts
             } 
         })
+
+        if (activity.activityType === 'BADGE'){
+            const badgeData = badgeIconMap.find( i => i.type === activity.badge.badgeType)
+            setBadgeImage(badgeData.levels[activity.badge.badgeLevel].uri)
+        }
 
     }, [activity, ownerUser])
 
@@ -176,7 +189,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                 contentFit='cover'
                 style={{ width:30, height:30, borderRadius:50 }}
             />
-            <Text className='text-mainGrayDark '>@{activity.user.username}</Text>
+            <Username size='sm' user={activity.user} color={Colors.mainGrayDark2} reverse={true}/>
             </TouchableOpacity>
             <Text className='  text-mainGrayDark'>{formatDateNotif(activity.createdAt)}</Text>
         </View>
@@ -204,7 +217,15 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                         style ={{ width:'100%', height:150, borderRadius:15}}
                 />
             </TouchableOpacity>
-        ):null }
+        ): badgeImage && (
+            <Image
+                source={ badgeImage}
+                width={110}
+                height={120}
+                contentFit='contain'
+                style={{ overflow:'hidden', alignSelf:'center'}}
+            />
+        ) }
 
         { activity?.currentRotation?.length > 0 && (
             <View style={{ flexDirection:'row', gap:15, justifyContent:'center', alignItems:'center', width:'100%' }}>

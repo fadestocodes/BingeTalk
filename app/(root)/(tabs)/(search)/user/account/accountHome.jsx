@@ -3,7 +3,6 @@ import React from 'react'
 import AccountPage from '../../../../../../components/Screens/AccountPage'
 
 const account = () => {
-    console.log('hellofromaccounthome')
     
   return (
    <AccountPage />

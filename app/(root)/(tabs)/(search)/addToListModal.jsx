@@ -1,7 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, FlatList , TouchableOpacity, TextInput, Keyboard, KeyboardAvoidingView, ActivityIndicator} from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { Colors } from '../../../../constants/Colors'
-import { useUser } from '@clerk/clerk-expo'
 import { useFetchOwnerUser } from '../../../../api/user'
 import { fetchUsersLists, useFetchUsersLists, createList, addToList } from '../../../../api/list'
 import { BackIcon, ForwardIcon } from '../../../../assets/icons/icons'
@@ -9,11 +8,14 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, use
 import { useLocalSearchParams } from 'expo-router'
 import { fetchTVFromDB } from '../../../../api/tv'
 import { GetTVById, GetMovieById } from '../../../../api/tmdb'
+import { useGetUser, useGetUserFull } from '../../../../api/auth'
 
 
 const addToListModal = () => {
-    const { user :clerkUser } = useUser()
-    const { data : ownerUser, refetch } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
+    
     const { data : userLists, refetch: refetchUserLists, isFetching } = useFetchUsersLists(ownerUser?.id)
 
     const {tmdbId, DBtvId, DBMovieId} = useLocalSearchParams();

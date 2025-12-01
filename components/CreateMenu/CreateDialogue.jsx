@@ -14,7 +14,6 @@ import { addActivity } from '../../api/activity'
 import { useFetchDialogues } from '../../api/dialogue'
 import { FilmIcon, TVIcon, PersonIcon } from '../../assets/icons/icons'
 import { useFetchOwnerUser, useFetchUser } from '../../api/user'
-import { useUser } from '@clerk/clerk-expo'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useTagsContext } from '../../lib/TagsContext'
 import { formatDate } from '../../lib/formatDate'
@@ -26,6 +25,8 @@ import { useCreateContext } from '../../lib/CreateContext'
 import { LinearGradient } from 'expo-linear-gradient'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom, moviePosterFallback } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
+import Username from '../ui/Username'
 
 
 const toPascalCase = (str) => {
@@ -66,8 +67,10 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
 
     // const { userDB, updateUserDB } = useUserDB();
-    const { user } = useUser();
-    const { data:userDB, refetch: refetchUser, isFetching:isFetchingUser } = useFetchOwnerUser({email: user.emailAddresses[0].emailAddress} )
+    const {user:userDB} = useGetUser()
+    const {userFull:ownerUser, loading:refetchUser, loading:isFetchingUser} = useGetUserFull(userDB?.id)
+
+
     const { data : dialogues, refetch, isFetching } = useFetchDialogues(userDB?.id);
     const urlPattern = /(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}(?:\/[^\s]*)?/;
 
@@ -81,7 +84,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
       
         mentions.forEach( mention => {
             if (!input.includes(mention.pascalName)){
-                console.log(' the mentino to remove is ', mention.pascalName)
+                (' the mentino to remove is ', mention.pascalName)
             }
         }  )
         setMentions(prev => prev.filter( item => input.includes(item.pascalName) ) )
@@ -119,7 +122,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
         const urlMatch = text.match(urlPattern);
         if (urlMatch) {
-            console.log('url match!',urlMatch)
             let normalizedURL = ''
             let url = urlMatch[0];  // Get the matched URL
           if (!/^https?:\/\//i.test(url)) {
@@ -134,7 +136,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
         }
 
         normalizedURL = new URL(url).toString();
-        console.log('normalized url ', normalizedURL)
           await handleURLPreview(normalizedURL)
 
 
@@ -144,8 +145,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
 
     const handlePost = async () => {
-        console.log('trying to post...')
-        console.log('tagsss', tags)
 
         const validationResults = createDialogueSchema.safeParse( {content:input} )
         if (!validationResults.success) {
@@ -159,7 +158,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
         setUploadingPost(true);
         const mentionsForPrisma = await Promise.all(
             dialogueItems.map(async (mention) => {
-                // console.log('MENTIONWHILECREATING', mention)
                 const type = mention.media_type;
                 const mentionType = mention.media_type === 'movie' ? 'MOVIE' : mention.media_type === 'tv' ? 'TV' : 'CASTCREW'
                 const tmdbId = mention.id;
@@ -179,7 +177,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
 
                 try {
                     const entity = await findOrCreateEntity(type, movieData, castData);
-                    console.log("EACHENTITY", entity)
                     return {
                       userId,
                       tmdbId,
@@ -196,7 +193,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             })
           ).catch((err)=>{
           })
-        // console.log('tag name', tags[0].name)
         const postData = {
             userId,
             content : input.trim(),
@@ -205,9 +201,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
             image,
             url : url.link || null
         }
-        console.log('POSTDATA', postData)
         const newPost = await createDialogue(postData); 
-        console.log("POSTRESPONSE", newPost)
 
         setMessage(newPost.message)
         setUploadingPost(false);
@@ -230,7 +224,6 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
     
 
     const handleLinkPress = async () => {
-        console.log('trying to open link')
         const supported = await Linking.canOpenURL(url.link);
         if (supported) {
             await Linking.openURL(url.link); // Opens in default browser
@@ -307,7 +300,8 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:25, height:25 }}
                             />
-                            <Text className='text-mainGrayDark   ' >@{userDB.username}</Text>
+                            <Username size='sm' user={userDB} color={Colors.mainGrayDark2} reverse={true}/>
+
                         </View>
                     <Text className='text-mainGrayDark '>{formatDate(new Date())}</Text>
                     
@@ -323,7 +317,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                  
             </View>
             <View style={{position:"relative", alignItems:'center', justifyContent:'center', width:'100%', zIndex:10}}>
-                <Text className='font-pcourier uppercase text-lg text-secondary ' >{userDB.firstName}</Text>
+                <Text className='font-pcourier uppercase text-lg text-mainGray ' >{userDB.firstName}</Text>
             </View>
        
 
@@ -358,7 +352,7 @@ const CreateDialogue = ( {flatlistVisible, setFlatlistVisible, dialogueMaxError,
                     </View>
             </View>
             ) } 
-                    { url.image && (
+                    { url?.image && (
 
                         image ? (
                             <>

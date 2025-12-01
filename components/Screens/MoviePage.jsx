@@ -17,14 +17,13 @@ import { getMovieMentions, useFetchMovieMentions, markMovieWatch, markMovieWatch
 import DialogueCard from '../DialogueCard'
 import { fetchMovieFromDB } from '../../api/movie'
 import { useQueryClient } from '@tanstack/react-query';
-import ThreadCard from '../ThreadCard'
 import { useFetchOwnerUser } from '../../api/user'
-import { useUser } from '@clerk/clerk-expo'
 import { Eye, EyeOff, ListChecks, Handshake, Star, Ellipsis } from 'lucide-react-native'
 import { newRecommendation } from '../../api/recommendation'
 import ToastMessage from '../ui/ToastMessage'
 import { checkAuteurBadge, checkHistorianBadgeProgress } from '../../api/badge'
 import { useBadgeContext } from '../../lib/BadgeModalContext'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 
@@ -58,10 +57,11 @@ const MoviePage = () => {
     const [ buttonPressed , setButtonPressed ] = useState('')
     const [ message ,setMessage ] = useState(null)
     const {showBadgeModal} = useBadgeContext()
-
-    const {user: clerkUser} = useUser();
-    const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
-    const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
+    const {user:userSimple} = useGetUser()
+    const {userFull : ownerUser, refetch:refetchOwnerUser} = useGetUserFull(userSimple?.id)
+    // const {user: clerkUser} = useUser();
+    const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
+    // const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
     const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
     const alreadyInWatchlist = ownerUser?.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
     const [ movieRatings, setMovieRatings ] = useState([])
@@ -90,7 +90,7 @@ const MoviePage = () => {
                     setVideoId(trailer)
                 }
             } catch (err) {
-                console.log("Couldn't find youtube trailer", err)
+                console.error("Couldn't find youtube trailer", err)
             }
             const credits = res.credits;
             if (credits) {
@@ -212,7 +212,6 @@ const MoviePage = () => {
         const checkHistorian = await checkHistorianBadgeProgress(movie,'MOVIE', ownerUser?.id)
         let levelUpData = null
         if (checkHistorian?.hasLeveledUp){
-            console.log('🎊 Congrats you leveled up the Historian badge!')
             levelUpData = {
                 badgeType: 'HISTORIAN',
                 level: `${checkHistorian.newLevel}`,
@@ -221,7 +220,6 @@ const MoviePage = () => {
 
         const checkAuteur = await checkAuteurBadge(movie, ownerUser?.id)
         if (checkAuteur.hasLeveledUp){
-            console.log('🎊 Congrats you leveled up the Auteur badge!')
             levelUpData = {
                 badgeType: 'AUTEUR',
                 level: `${checkAuteur.newLevel}`,
@@ -264,7 +262,6 @@ const MoviePage = () => {
 
 
     const handleRecommendation = () => {
-        console.log('MOVIEPAGE DBmovieId', DBmovieId)
         router.push({
             pathname : '/recommendationModal',
             params: { DBmovieId }
@@ -513,7 +510,7 @@ const MoviePage = () => {
                     contentContainerStyle={{ gap:15 }}
                     renderItem = {({item}) => (
                         <TouchableOpacity onPress={()=>handleMentionPress(item)}  style={{ width:300 }}>
-                            <DialogueCard dialogue={item.dialogue} refetch={refetchMentionsThreads} isBackground={true} ></DialogueCard>
+                            <DialogueCard dialogue={item.dialogue} refetch={refetchMentions} isBackground={true} ></DialogueCard>
                         </TouchableOpacity>
                     )}
                 />

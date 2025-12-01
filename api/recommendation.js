@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import * as nodeServer from '../lib/ipaddresses'
-import { findDirector } from './tmdb';
-import { useUser } from '@clerk/clerk-expo';
+import { findDirector, findDirectorOrCreator } from './tmdb';
+
 import { useFetchOwnerUser } from './user';
+import { apiFetch, useGetUser, useGetUserFull } from './auth';
 
 export const newRecommendation = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/user/recommend-to-friend`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/user/recommend-to-friend`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -20,18 +21,10 @@ export const newRecommendation = async (data) => {
     }
 }
 
-export const mySentRecommendations = async (userId) => {
-    try {
-        const request = await fetch(`${nodeServer.currentIP}/`)
-    } catch (err){
-        console.log(err)
-        
-    }
-}
 
 export const deleteRecommendation = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/recommendation/delete`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/recommendation/delete`, {
             method : 'POST',
             headers: {
                 'Content-type' : 'application/json'
@@ -46,10 +39,30 @@ export const deleteRecommendation = async (data) => {
     }
 }
 
+export const removeRecommendationFlag = async (data) => {
+    try{
+        console.log('data',data)
+         const res = await apiFetch(`${nodeServer.currentIP}/recommendation/remove-flag`, {
+            method : 'POST',
+            headers : {
+                'Content-type' :'application/json'
+            },
+            body : JSON.stringify(data)
+         })
+         if (!res.ok) throw new Error("Bad request")
+        const resData = await res.json()
+         return {success:true}
+    } catch(err){
+        console.error(err)
+        return {success:false}
+    }
+}
+
 export const useGetRecommendation =  (params, replyCommentId) => {
     
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser, refetch :refetchOwner } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+    
     const [ recommendation, setRecommendation ] = useState('')
     const [ loading, setLoading ] = useState(true)
     const { id , userId } = params
@@ -59,16 +72,19 @@ export const useGetRecommendation =  (params, replyCommentId) => {
         downvotes : []
     })
     const [ didOwnerSend, setDidOwnerSend ] = useState(null)
-    const [ director, setDirector ] = useState('')
+    const [ directorOrCreator, setDirectorOrCreator ] = useState('')
     const [ ratings, setRatings ] = useState([])
-
+    const [ status, setStatus ] = useState('')
+    const [ alreadyInWatchlist, setAlreadyInWatchlist ] = useState('')
 
     
     const getRecommendation = async () => {
+        setLoading(true)
         try {
-            const response = await fetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
             const data = await response.json()
             setRecommendation(data)
+            setStatus(data.status)
             const ownerSent = Number(userId) === data.recommender.id
             setDidOwnerSend(ownerSent)
 
@@ -85,7 +101,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
             })
             
             if (replyCommentId){
-                const commentResponse = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const commentResponse = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await commentResponse.json();
                 
                 const reorderedCommentsData = [
@@ -105,21 +121,28 @@ export const useGetRecommendation =  (params, replyCommentId) => {
                 type = 'MOVIE'
                 tmdbId = data.movie.tmdbId
                 ratings = data.movie.ratings.length > 0 && data.movie.ratings
+
+                const checkAlreadyWatched = ownerUser.watchlistItems.some( i => i.movieId === data.movie.id)
+                setAlreadyInWatchlist(checkAlreadyWatched)
+                
             } else if (data.tv){
                 type = 'TV'
                 tmdbId = data.tv.tmdbId
                 ratings = data.tv.ratings.length > 0 && data.tv.ratings
+                const checkAlreadyWatched = ownerUser.watchlistItems.some( i => i.tvId === data.tv.id)
+                setAlreadyInWatchlist(checkAlreadyWatched)
             }
             const directorParams = {
                 type,
                 tmdbId
             }
-            const foundDirector = await findDirector(directorParams)
-            setDirector(foundDirector)
+            const foundDirector = await findDirectorOrCreator(directorParams)
+            setDirectorOrCreator(foundDirector)
 
             const totalOverallRatings = ratings ? ratings.reduce((sum,rating) => sum + rating.rating, 0) : null
             const overallRatings = ratings.length > 0 ? (totalOverallRatings / ratings.length).toFixed(1) : 'N/A'
-            setRatings(overallRatings)            
+            setRatings(overallRatings)    
+
 
 
         } catch (err){
@@ -131,6 +154,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
 
     }
     useEffect(() => {
+        if (!ownerUser) return
         getRecommendation()
     }, [ownerUser])
 
@@ -138,7 +162,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
 
         await refetchOwner()
         try {
-            const response = await fetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/recommendation?id=${id}&userId=${userId}`)
             const data = await response.json()
             setRecommendation(data)
             const ownerSent = Number(userId) === data.recommender.id
@@ -157,7 +181,7 @@ export const useGetRecommendation =  (params, replyCommentId) => {
             })
             
             if (replyCommentId){
-                const commentResponse = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const commentResponse = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await commentResponse.json();
                 
                 const reorderedCommentsData = [
@@ -202,15 +226,15 @@ export const useGetRecommendation =  (params, replyCommentId) => {
         setLoading(false)
     }
 
-    return { recommendation, ownerUser, refetch , loading, commentsData, director, ratings, interactedComments, setCommentsData, setInteractedComments, didOwnerSend }
+    return { recommendation, ownerUser, alreadyInWatchlist, setAlreadyInWatchlist, status, setStatus, refetch , loading, commentsData, directorOrCreator, ratings, interactedComments, setCommentsData, setInteractedComments, didOwnerSend }
 }
 
 export const acceptRecommendation = async (data) => {
     try {
-        if (!data.userId || !data.recommenderId || !data.recommendationId || !data.type) throw new Error("Invalid params")
-        const {userId, recommendationId} = data
+        if (!data.recommenderId || !data.recommendationId || !data.type) throw new Error("Invalid params")
+        const { recommendationId, type} = data
 
-        const response = await fetch(`${nodeServer.currentIP}/recommendation/${recommendationId}`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/recommendation/${recommendationId}?status=${type}`, {
             method : 'PATCH',
             headers : {
                 'Content-type' : 'application/json'
@@ -219,9 +243,10 @@ export const acceptRecommendation = async (data) => {
         })
         if (!response.ok) throw new Error("Unexpected error")
         const result = await response.json()
-    
+        return {success:true}
 
     } catch(err){
         console.error(err)
+        return {success:false}
     }
 }

@@ -4,20 +4,20 @@ import React, {useState, useEffect, useRef} from 'react'
 import { PeopleIcon, SlateIcon, ThreadsIcon, DownIcon, FilmIcon, TVIcon, PersonIcon, CloseIcon, BackIcon } from '../../../../assets/icons/icons'
 import { Colors } from '../../../../constants/Colors'
 import CreateDialogue from '../../../../components/CreateMenu/CreateDialogue'
-import CreateThread from '../../../../components/CreateMenu/CreateThread'
-import CreateShowcase from '../../../../components/CreateMenu/CreateShowcase'
 import CreateList from '../../../../components/CreateMenu/CreateList'
 import { searchAll } from '../../../../api/tmdb'
 import debounce from 'lodash.debounce'
 import { getYear } from '../../../../lib/formatDate'
 import { DraggableGrid } from 'react-native-draggable-grid';
-import { useUser } from '@clerk/clerk-expo'
-import { useFetchOwnerUser } from '../../../../api/user'
 import { useRouter } from 'expo-router'
-import { createCategories } from '../../../../lib/CategoryOptions'
+import { createCategories, createCategoriesFilmlover, createCategoriesFilmmaker } from '../../../../lib/CategoryOptions'
 import { useCreateContext } from '../../../../lib/CreateContext'
+import { useGetUser, useGetUserFull } from '../../../../api/auth'
+import CameraPrompt from '../../../../components/ui/CameraPrompt'
 
 const CreateHome = () => {
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
 
     const [ content, setContent ] = useState('');
     const [ menuOpen, setMenuOpen ] = useState(false);
@@ -43,8 +43,6 @@ const CreateHome = () => {
 
     const posterURL = 'https://image.tmdb.org/t/p/w500';
 
-    const {user:clerkUser} = useUser();
-    const { data : ownerUser } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0].emailAddress});
     useEffect(() => {
         if (dialogueItems.length < 4 ){
             setDialogueMaxError(null)
@@ -96,14 +94,7 @@ const CreateHome = () => {
 
 
     const handleSearchPress = (item) => {
-        if (createType === 'Thread') {
-            setSearchQuery(  `/${toPascalCase(item.name || item.title)}` )
-            setThreadObject(item)
-
-
-            setResults([]);
-            setResultsOpen(false);
-        } else if (createType === 'List') {
+        if (createType === 'List') {
             setListItems((prev) => [
                 ...prev,
                 {
@@ -146,7 +137,6 @@ const CreateHome = () => {
       }
 
     const renderItem = (item) => {
-        // console.log('RENDERINGITEM', item)
         return (
           <View className=' justify-start items-center relative '
             style={{ width:'auto', height:170,  marginHorizontal:0, marginVertical:0, overflow:'hidden' }}
@@ -173,7 +163,7 @@ const CreateHome = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS uses padding, Android uses height
         style={{ flex: 1 }}
     >
-    <SafeAreaView className='bg-primary h-full w-full  '  style={{ paddingBottom:0 }} >
+    <SafeAreaView edges={['top']} className='bg-primary h-full w-full  '  style={{ paddingBottom:0 }} >
     
     <View className='w-full  pt-3 px-6 gap-5'>
         <View className="">
@@ -181,24 +171,31 @@ const CreateHome = () => {
               {/* <LayersIcon size={30} color='white' /> */}
               <Text className='text-white font-pbold text-3xl'>Create</Text>
             </View>
-            <Text className='text-mainGray font-pmedium'>Speak your mind or create a List for the world to see!</Text>
+            {/* <Text className='text-mainGray font-pmedium'>Speak your mind or create a List for the world to see!</Text> */}
         </View>
 
         <View className='w-full my-3'>
-        <FlatList
-          horizontal
-          data={createCategories}
-          keyExtractor={(item,index) => index}
-          contentContainerStyle={{ gap:10 }}
-          renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setDialogueItems([]); setListItems([]); updateUrl({link:'',image:'',titel:'',subtitle:''}); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
-              <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
+            <FlatList
+            horizontal
+            data={ownerUser.accountType === 'FILMLOVER' ? createCategoriesFilmlover :  createCategoriesFilmmaker}
+            keyExtractor={(item,index) => index}
+            contentContainerStyle={{ gap:10 }}
+            renderItem={({item}) => (
+                <TouchableOpacity onPress={()=>{setSelected(item); setCreateType(item); setContent(''); setSearchQuery(''); setDialogueItems([]); setListItems([]); updateUrl({link:'',image:'',titel:'',subtitle:''}); setInputs({threadTitle:'', threadCaption:'', listTitle:'',listDescription:''}) }} style={{ borderRadius:15, backgroundColor:selected===item ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
+                <Text className=' font-pmedium' style={{ color : selected===item ? Colors.primary : 'white' }}>{item}</Text>
+                </TouchableOpacity>
+            )}
+            />
+        </View>
 
-      </View>
+    </View>
+    
+    {/* { selected === 'SetDay' && (
+        <View className='flex-1 h-full'>
+            <CameraPrompt />
+        </View>
+    ) } */}
+
       { resultsOpen ? (
         <View className='w-full h-full justify-center items-center' style={{ paddingTop:20, paddingHorizontal:25, borderRadius:20, backgroundColor:Colors.primary}} >
                     { dialogueMaxError && (
@@ -283,7 +280,11 @@ const CreateHome = () => {
 
                 
          </View>
-        ) : (
+        ) : selected === 'SetDay' ? (
+            <View className='flex-1 '>
+                <CameraPrompt />
+            </View>
+        ) :(
             <>
             
             <ScrollView scrollEnabled={ createType === 'Showcase' ? false : true }  nestedScrollEnabled={true} onPress={Keyboard.dismiss}  className="relative w-full pt-6 gap-3" contentContainerStyle={{alignItems:'center' , justifyContent : 'center', gap:10, paddingBottom:200}}>
@@ -295,13 +296,6 @@ const CreateHome = () => {
                 setResultsOpen={setResultsOpen} handleSearch={handleSearch} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleChange={handleChange} dialogueItems={dialogueItems}
                 dialogueMaxError={dialogueMaxError} setDialogueItems={setDialogueItems} setDialogueMaxError={setDialogueMaxError}
             />
-        ) : createType === 'Thread' ? (
-            <CreateThread threadObject={threadObject}  handleChange={handleChange} inputs={inputs} setInputs={setInputs}
-                results={results} setResults={setResults} resultsOpen={resultsOpen} setResultsOpen={setResultsOpen}
-                handleSearch={handleSearch} searchQuery={searchQuery} setSearchQuery={setSearchQuery}
-            />
-        ) : createType === 'Showcase' ? (
-            <CreateShowcase handleChange={handleChange} content={content} setContent={setContent} />
         ) : createType === 'List' && (
             <CreateList userId={userId}  handleChange={handleChange} inputs={inputs} setInputs={setInputs} setResultsOpen={setResultsOpen}
             setResults={setResults} setSearchQuery={setSearchQuery}  searchQuery={searchQuery} setListItems={setListItems} listItems={listItems} 

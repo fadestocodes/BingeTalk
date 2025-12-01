@@ -1,6 +1,7 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
+import { apiFetch } from './auth';
 
 export const fetchTVMentions = async (tvId) => {
     try {
@@ -125,7 +126,7 @@ export const useGetTVThreads = (  tvId ) => {
 
 export const markTVWatch =  async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/tv/update-hasWatched`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/tv/update-hasWatched`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -142,7 +143,7 @@ export const markTVWatch =  async ( data ) => {
 
 export const markTVInterested =  async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/tv/update-interested`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/tv/update-interested`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -158,7 +159,7 @@ export const markTVInterested =  async ( data ) => {
 
 export const markTVCurrentlyWatching =  async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/tv/update-currentlyWatching`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/tv/update-currentlyWatching`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -176,7 +177,7 @@ export const markTVWatchlist =  async ( data ) => {
     try {
 
         if (!data.tvId || !data.userId) throw new Error("Invalid params")
-        const request = await fetch(`${nodeServer.currentIP}/tv/update-watchlist`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/tv/update-watchlist`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -220,7 +221,7 @@ export const useGetTVFromDB = ( DBtvId ) => {
 
 export const swipeTVInterested = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/tv/interested/swipe`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/tv/interested/swipe`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'

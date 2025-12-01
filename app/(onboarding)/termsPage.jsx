@@ -37,7 +37,7 @@ const termsPage = () => {
       We have a zero-tolerance policy for objectionable content and abusive users. We reserve the right to remove content and suspend or ban users who violate these Terms.
     </Text>
     <Text style={styles.bodyText}>
-      Users can report inappropriate content through the app or by contacting us directly at fadestocodes@gmail.com. Reports are reviewed promptly, and action will be taken at our discretion.
+      Users can report inappropriate content through the app or by contacting us directly at hello@bingeable.app. Reports are reviewed promptly, and action will be taken at our discretion.
     </Text>
 
     <Text style={styles.subheading}>3. Content Rights</Text>
@@ -62,7 +62,7 @@ const termsPage = () => {
     <Text style={styles.bodyText}>
       If you have any questions or concerns, please contact us at:
     </Text>
-    <Text style={styles.bodyText}>Email: fadestocodes@gmail.com</Text>
+    <Text style={styles.bodyText}>Email: hello@bingeable.app</Text>
     <Text style={styles.bodyText}>Website: bingeable.app</Text>
   </ScrollView>
 );

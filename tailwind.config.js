@@ -20,8 +20,10 @@ module.exports = {
         mainGray : '#9ca3af',
         mainGrayLight:'#bfb9a6',
         mainGrayDark:'#525252',
+        newDarkGray : '#454242',
         darkGray : '#232533',
-        lightGray : '#CDCDE0'
+        lightGray : '#CDCDE0',
+        newLightGray : '#9CA3AF'
       },
       fontFamily: {
         pthin: ["Geist-Thin", "sans-serif"],
@@ -33,7 +35,14 @@ module.exports = {
         pbold: ["Geist-Bold", "sans-serif"],
         pextrabold: ["Geist-ExtraBold", "sans-serif"],
         pblack: ["Geist-Black", "sans-serif"],
-        pcourier : ["Courier","Courier-New", "serif"]
+        pcourier : ["Courier","Courier-New", "serif"],
+        sfmovie : ["SFMovie", "serif"],
+        sfmovieBold : ["SFMovie-Bold", "serif"],
+        sfmovieCondensed : ["SFMovie-Condensed", "serif"],
+        sfmovieOblique : ["SFMovie-Oblique", "serif"],
+        bebas : ["Bebas-Neue", "serif"],
+        bebasLight : ["Bebas-Neue-Light", "serif"],
+        bebasBold : ["Bebas-Neue-Bold", "serif"],
       },
       fontSize: {
         custom: ['15px','16px'], // 15px font size with a 20px line height (close to `leading-5`)

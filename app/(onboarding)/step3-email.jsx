@@ -1,12 +1,13 @@
 import { StyleSheet, Text, View, TextInput,  Keyboard, TouchableWithoutFeedback, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, Button } from 'react-native'
 import React, {useState, useRef} from 'react'
-import { useUser, useSignUp } from '@clerk/clerk-expo'
 import { Colors } from '../../constants/Colors'
 import { signupSchema, signupPasswordSchema, signupEmailSchema } from '../../lib/zodSchemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { checkEmail } from '../../api/user'
 import debounce from 'lodash.debounce'
 import { useSignUpContext } from '../../lib/SignUpContext'
+import ArrowNextButton from '../../components/ui/ArrowNextButton'
+import ArrowBackButton from '../../components/ui/ArrowBackButton'
 
 
 const step3 = () => {
@@ -50,8 +51,13 @@ const step3 = () => {
       handleEmailCheck(value);
     }
   
-    const handleContinue = () => {
-      router.push('/(onboarding)/step4-password')
+    const handleContinue = async () => {
+
+      const res = await checkEmail(signUpData.email)
+      if (res.available){
+        router.push('/(onboarding)/step4-password')
+      }
+
     }
 
     const handleTermsPress = () => {
@@ -117,10 +123,10 @@ const step3 = () => {
       <Text style={{ color: 'white' }}>.</Text>
       </View>
       </View>
-
-            <TouchableOpacity onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0)|| !signUpData.email || !!emailTakenError} >
-              <Text className='text-secondary text-lg font-psemibold'>Continue</Text>
-            </TouchableOpacity>
+        <View className='pt-10 self-center flex flex-row gap-3'>
+            <ArrowBackButton onPress={()=>router.back()} />
+            <ArrowNextButton onPress={handleContinue}   disabled={Object.values(errors).some((error) => error?.length > 0)|| !signUpData.email || !!emailTakenError} />
+        </View>
             </View>
     </TouchableWithoutFeedback>
       </ScrollView>

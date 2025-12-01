@@ -3,9 +3,10 @@ import { Link, useRouter } from 'expo-router'
 import { Text, TextInput, Button, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import React, {useState} from 'react'
 import { Colors } from '../../constants/Colors'
+import { loginLocal } from '../../api/auth'
 
 export default function Page() {
-  const { signIn, setActive, isLoaded } = useSignIn()
+  // const { signIn, setActive, isLoaded } = useSignIn()
   const router = useRouter()
 
   const [emailAddress, setEmailAddress] = React.useState('')
@@ -13,36 +14,45 @@ export default function Page() {
   const [ validationErrors, setValidationErrors ] = useState('')
 
 
-  // Handle the submission of the sign-in form
-  const onSignInPress = React.useCallback(async () => {
-    if (!isLoaded) return
+  // // Handle the submission of the sign-in form
+  // const onSignInPress = React.useCallback(async () => {
+  //   if (!isLoaded) return
 
-    // Start the sign-in process using the email and password provided
-    try {
-      const signInAttempt = await signIn.create({
-        identifier: emailAddress,
-        password,
-      })
+  //   // Start the sign-in process using the email and password provided
+  //   try {
+  //     const signInAttempt = await signIn.create({
+  //       identifier: emailAddress,
+  //       password,
+  //     })
 
-      // If sign-in process is complete, set the created session as active
-      // and redirect the user
-      if (signInAttempt.status === 'complete') {
-        await setActive({ session: signInAttempt.createdSessionId })
-        router.replace('/')
-      } else {
-        // If the status isn't complete, check why. User might need to
-        // complete further steps.
-        setValidationErrors(err.errors[0].message)
+  //     // If sign-in process is complete, set the created session as active
+  //     // and redirect the user
+  //     if (signInAttempt.status === 'complete') {
+  //       await setActive({ session: signInAttempt.createdSessionId })
+  //       router.replace('/')
+  //     } else {
+  //       // If the status isn't complete, check why. User might need to
+  //       // complete further steps.
+  //       setValidationErrors(err.errors[0].message)
 
-        console.log(JSON.stringify(signInAttempt, null, 2))
-      }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      setValidationErrors(err.errors[0].message)
-      console.log(JSON.stringify(err, null, 2));
+  //       console.log(JSON.stringify(signInAttempt, null, 2))
+  //     }
+  //   } catch (err) {
+  //     // See https://clerk.com/docs/custom-flows/error-handling
+  //     // for more info on error handling
+  //     setValidationErrors(err.errors[0].message)
+  //     console.log(JSON.stringify(err, null, 2));
+  //   }
+  // }, [isLoaded, emailAddress, password])
+
+  const onSignInPress = async () => {
+    const res = await loginLocal(emailAddress, password)
+    if (res.error){
+      setValidationErrors(res.error)
+    } else {
+      router.replace('/')
     }
-  }, [isLoaded, emailAddress, password])
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -83,7 +93,7 @@ export default function Page() {
             <Text className='text-primary text-lg font-bold w-full  text-center' style={{width:'100%'}} >Sign in</Text>
           </TouchableOpacity>
           <View className='gap-3 flex-row  justify-center items-center mt-5'>
-            <TouchableOpacity onPress={()=>router.push('/(onboarding)/step1-firstName')} style={{borderRadius:15, borderWidth:1, borderColor:'white', paddingHorizontal:10, paddingVertical:3}}>
+            <TouchableOpacity onPress={()=>router.push('/(onboarding)/step1')} style={{borderRadius:15, borderWidth:1, borderColor:'white', paddingHorizontal:10, paddingVertical:3}}>
                 <Text className='text-white  text-sm text-center' >Create an account</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>router.push('/(auth)/resetPassword')} style={{borderRadius:15, borderWidth:1, borderColor:'white', paddingHorizontal:10, paddingVertical:3}}>

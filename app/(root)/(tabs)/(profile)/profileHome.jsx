@@ -4,27 +4,26 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import ProfileHomepage from '../../../../components/Screens/UserPage'
 
-import { useUser } from '@clerk/clerk-expo'
-import { useFetchOwnerUser } from '../../../../api/user'
+
+import { useFetchOwnerUser, useFetchUserProfile } from '../../../../api/user'
+import { useGetUser, useGetUserFull } from '../../../../api/auth'
+import ProfilePage from '../../../../components/Screens/ProfilePage'
 
 const UserIDPage = () => {
-  const { user:clerkUser } = useUser();
+  const { user:userSimple, refetch } = useGetUser();
+  // const {userFull, refetch:refetchUser, loading} = useGetUserFull(userSimple?.id)
+  const {userData, refetchUserFetched,loading} = useFetchUserProfile(userSimple?.id)
 
-  const { data:user, refetch: refetchUser, isFetching: isFetchingUser } = useFetchOwnerUser( {email : clerkUser?.emailAddresses[0].emailAddress} )
-  
-  
+  if (!userData || loading){
+    return(
 
-
+      <View className='flex-1 bg-primary justify-center items-center'>
+        <ActivityIndicator />
+      </View>
+    ) 
+  }
   return (
-    <View className='bg-primary h-full'>
-      { !user ? (
-        <View className='h-full justify-center items-center'>
-        <ActivityIndicator/>
-        </View>
-      ) : (
-        <ProfileHomepage user={user} refetchUser={refetchUser} isFetchingUser={isFetchingUser}  />
-      )}
-    </View>
+      <ProfilePage userFetched={userData} refetchUserFetched={refetchUserFetched} loadingUser = {loading}/>
   )
 }
 

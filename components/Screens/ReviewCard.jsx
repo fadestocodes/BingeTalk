@@ -7,7 +7,7 @@ import { ThumbsUp, ThumbsDown, Heart, MessagesSquare, MessageSquare, ListChecks 
 import { useRouter } from 'expo-router'
 import { formatDate, formatDateNotif, getYear } from '../../lib/formatDate'
 import { toPascalCase } from '../../lib/ToPascalCase'
-import { useUser } from '@clerk/clerk-expo'
+
 import { useFetchOwnerUser } from '../../api/user'
 // import { likeActivity, activityInteraction, useFetchActivityId } from '../../api/review'
 import { likeActivity,activityInteraction, useFetchActivityId } from '../../api/activity'
@@ -16,12 +16,12 @@ import { NotebookPen } from 'lucide-react-native'
 import { reviewInteraction } from '../../api/review'
 import { avatarFallback } from '../../lib/fallbackImages'
 import { avatarFallbackCustom } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
+import Username from '../ui/Username'
 
 const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isReviewPage, isBackground, isReposted}) => {
-
-
-        const { user:clerkUser } = useUser();
-        const { data:ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email : clerkUser?.emailAddresses[0]?.emailAddress});
+        const {user} = useGetUser()
+        const {userFull:ownerUser, refetch:refetchOwner} = useGetUserFull(user?.id)
         const posterURL = 'https://image.tmdb.org/t/p/w500';
         const router = useRouter()
         const [ alreadyInteractions, setAlreadyInteractions ] = useState({
@@ -39,9 +39,9 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
     
         useEffect(()=>{
     
-            const alreadyUpvoted = item.reviewInteractions.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
-            const alreadyDownvoted = item.reviewInteractions.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
-            const alreadyReposted = item.reviewInteractions.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
+            const alreadyUpvoted = item.reviewInteractions?.some( i => i.interactionType === 'UPVOTE' && i.userId === ownerUser?.id )
+            const alreadyDownvoted = item.reviewInteractions?.some( i => i.interactionType === 'DOWNVOTE'  && i.userId === ownerUser?.id )
+            const alreadyReposted = item.reviewInteractions?.some( i => i.interactionType === 'REPOST'  && i.userId === ownerUser?.id )
             setAlreadyInteractions({
                 upvoted: alreadyUpvoted,
                 downvoted:alreadyDownvoted,
@@ -73,7 +73,6 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
             if (fromHome){
                 router.push(`(home)/review/${item.id}`)
             } else {
-                console.log('itemmm', item)
                 router.push(`/review/${item.id}`)
             }
         }
@@ -121,7 +120,6 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
                 description,
                 recipientId : item.user.id
             }
-            console.log("DATAFORREVIEWINTERACTION", data)
             const updatedReview = await reviewInteraction(data)
             refetchOwner();
         }
@@ -140,7 +138,6 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
     
         const handleComment = (item) => {
             refetchOwner()
-            console.log('COMMENT ON REVIEW', item)
           
             if (fromHome){
                 router.push({
@@ -185,7 +182,7 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
     
       return (
         <View className='w-full' >
-                        <TouchableOpacity disabled={isReviewPage} onPress={()=>handleReviewPress(item)}  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
+                        <TouchableOpacity disabled={isReviewPage} onPress={()=>{handleReviewPress(item)}}  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
                             <View className='gap-3 '>
                                 <View className='gap-3'>
                                     <View className='flex-row w-full gap-2 justify-between items-center '>
@@ -199,7 +196,7 @@ const ReviewCard = ({review:item, fromHome, cardStyle, disableCommentsModal, isR
                                                 contentFit='cover'
                                                 style={{ width:25, height :25, borderRadius:50 }}
                                                 />
-                                                <Text className='text-mainGrayDark'>@{item.user.username}</Text>
+                                                <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
 
                                             </TouchableOpacity>
                                         </View>

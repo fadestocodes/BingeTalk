@@ -1,9 +1,12 @@
-import { useUser } from '@clerk/clerk-expo';
+
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user';
 import { useNotificationCountContext } from '@/lib/NotificationCountContext';
-
+import { apiFetch, useGetUser, useGetUserFull } from './auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications'
+import { Linking } from 'react-native';
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const [ data, setData ] = useState([])
@@ -13,20 +16,22 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     const [ hasMore , setHasMore ] = useState(true);
     const [ cursor, setCursor ] = useState(null)
     const [ isFollowingIds, setIsFollowingIds ] = useState([])
-    const { user:clerkUser } = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
+
     const [ unreadIds, setUnreadIds ] = useState([])
 
     const getAllNotifs = async () => {
-        if (!hasMore || !ownerUser) return
+        
+        if (!hasMore || !ownerUser || !recipientId) return
         try {
-            const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
+            const notifications = await apiFetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=${cursor}&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(prev => [...prev, ...response.items])
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
 
-            const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
+            const isFollowingId = response.items.filter( notif => ownerUser?.following?.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
             setIsFollowingIds(prev=> [...prev, ...isFollowingId])
             const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
             setUnreadIds( prev => [ ...prev, ...unreadIds ] )
@@ -40,20 +45,21 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
     }
 
     useEffect(() => {
-        getAllNotifs()
-    }, [recipientId])
+        if (!recipientId || !ownerUser) return
+        refetch()
+    }, [recipientId, ownerUser])
 
 
     const refetch = async () => {
         try {
-            const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
+            const notifications = await apiFetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
             const response = await notifications.json();
             setData(response.items)
 
             setCursor(response.nextCursor)
             setHasMore(!!response.nextCursor)
 
-            const isFollowingId = response.items.filter( notif => ownerUser.following.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
+            const isFollowingId = response.items.filter( notif => ownerUser?.following?.some( f =>  f.followerId === notif.userId ) ).map( element => element.userId );
             setIsFollowingIds(isFollowingId)
             const unreadIds = response.items.filter( notif => notif.isRead === false ).map(i => i.id)
             setUnreadIds( unreadIds  )
@@ -79,9 +85,8 @@ export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
 
 export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCount) => {
     try {
-        const notifications = await fetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
+        const notifications = await apiFetch(`${nodeServer.currentIP}/notifications?notificationRecipientId=${recipientId}&cursor=null&limit=${limit}&fetchAll=${fetchAll}`)
         const response = await notifications.json();
-        // console.log('NOTIFRESPONSE', response)
         const unreadNotifs = response.filter(i => i.isRead === false)
         updateNotifCount(unreadNotifs.length)
         return response
@@ -93,7 +98,7 @@ export const getAllNotifs = async (recipientId, limit, fetchAll, updateNotifCoun
 
 export const markNotifRead = async (data, notifCount, updateNotifCount) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/notifications/mark-read`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/notifications/mark-read`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -110,7 +115,7 @@ export const markNotifRead = async (data, notifCount, updateNotifCount) => {
 
 export const markAllRead = async (data) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/notifications/mark-all-read`, {
+        const response = await apiFetch(`${nodeServer.currentIP}/notifications/mark-all-read`, {
             method : "POST",
             headers:{
                 'Content-type' : 'application/json'
@@ -126,7 +131,7 @@ export const markAllRead = async (data) => {
 
 export const postPushToken = async (token) => {
     try {
-        const response = await fetch(`${nodeServer.currentIP}/notifications/save-push-token`,{
+        const response = await apiFetch(`${nodeServer.currentIP}/notifications/save-push-token`,{
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -138,6 +143,7 @@ export const postPushToken = async (token) => {
         return result
     } catch (err){
         console.log(err)
+        return err
     }
 }
 
@@ -147,6 +153,61 @@ export const useGetAllNotifRead = async (limit) => {
     const [ cursor, setCursor ] = useState('null')
 
     const getAllNotifRead = async () => {
-        const response = await fetch(`${nodeServer.currentIP}/notifications/read`)
+        const response = await apiFetch(`${nodeServer.currentIP}/notifications/read`)
     }
+}
+
+export const useCheckNotificationPrompt = () => {
+
+    const [showModal, setShowModal] = useState('')
+    const [ undeterminedAndFlagged, setUndeterminedAndFlagged ] = useState(null)
+    const [loading, setLoading] = useState(true)
+
+
+    const checkNotificationPrompt = async () => {
+
+        const { status, granted, canAskAgain } = await Notifications.getPermissionsAsync();
+        if (status === 'granted' ){
+            return
+        } 
+       
+        const flag = await AsyncStorage.getItem('hasPromptedNotif')
+        if (flag && flag === 'true') {
+            setUndeterminedAndFlagged(true)
+            return
+        }
+
+        setShowModal(true)
+        setUndeterminedAndFlagged(false)
+        
+        
+    }
+    
+    const handleYesCustomPrompt = async () => {
+        const { status  } = await Notifications.requestPermissionsAsync();
+        if (status === 'denied'){
+           Linking.openSettings()
+           setUndeterminedAndFlagged(false)
+           return 
+        }
+        await AsyncStorage.setItem('hasPromptedNotif', 'true')
+        setShowModal('')
+        setUndeterminedAndFlagged(false)
+    }
+    
+    const handleNoCustomPrompt = async () => {
+        await AsyncStorage.setItem('hasPromptedNotif', 'true')
+        setShowModal('')
+    }
+
+
+
+    useEffect(()=> {
+        setLoading(true)
+        checkNotificationPrompt()
+        setLoading(false)
+    }, [])
+
+    return {showModal, setShowModal, handleYesCustomPrompt, handleNoCustomPrompt, undeterminedAndFlagged, loading}
+
 }

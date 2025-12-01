@@ -9,7 +9,7 @@ const AboutPage = () => {
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
     <ScrollView>
-<View style={{paddingHorizontal:15, paddingBottom:150, gap:12}}>
+<View style={{paddingHorizontal:15, paddingBottom:0, gap:12}}>
 <View className='gap-3 '>
      <TouchableOpacity onPress={()=>router.back()} style={{}}>
         <BackIcon size={26} color={Colors.mainGray} />

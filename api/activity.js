@@ -1,12 +1,12 @@
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-expo';
 import { useFetchOwnerUser } from './user';
+import { apiFetch, useGetUser, useGetUserFull } from './auth';
 
 
 export const addActivity = async ( activityData ) => {
     try {
-        const request = await fetch (`${nodeServer.currentIP}/activity/create`, {
+        const request = await apiFetch (`${nodeServer.currentIP}/activity/create`, {
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -22,7 +22,7 @@ export const addActivity = async ( activityData ) => {
 
 export const likeActivity = async (data) => {
     try {
-        const request = await fetch (`${nodeServer.currentIP}/activity/interact`, {
+        const request = await apiFetch (`${nodeServer.currentIP}/activity/interact`, {
             method : 'POST',
             headers:{
                 'Content-type' : 'application/json'
@@ -39,9 +39,9 @@ export const likeActivity = async (data) => {
 
 export const useFetchActivityId = (id, replyCommentId) => {
     const [ data, setData ] = useState(null)
-    const [ loading, setLoading ] = useState(true);
-    const { user : clerkUser }  = useUser()
-    const { data : ownerUser, refetch:refetchOwner } = useFetchOwnerUser({email:clerkUser.emailAddresses[0].emailAddress})
+    const [ loading, setLoading ] = useState(true)
+    const {user} = useGetUser()
+    const {userFull:ownerUser} = useGetUserFull(user?.id)
     const [ interactedComments, setInteractedComments ] = useState({
         upvotes : [],
         downvotes : []
@@ -54,10 +54,10 @@ export const useFetchActivityId = (id, replyCommentId) => {
             const request = await fetch(`${nodeServer.currentIP}/activity?id=${id}`)
             const activity = await request.json();
             setData(activity);
-            const upvotedComments = ownerUser.commentInteractions.filter( i => {
+            const upvotedComments = ownerUser?.commentInteractions.filter( i => {
                 return activity.commentsOnActivity.some( j => j.id === i.commentId && i.interactionType === 'UPVOTE' )
             } )
-            const downvotedComments = ownerUser.commentInteractions.filter( i => {
+            const downvotedComments = ownerUser?.commentInteractions.filter( i => {
                 return activity.commentsOnActivity.some( j => j.id === i.commentId && i.interactionType === 'DOWNVOTE' )
             } )
             setInteractedComments( {
@@ -65,7 +65,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
                 downvotes : downvotedComments
             })
             if (replyCommentId){
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
 
                 const reorderedCommentsData = [
@@ -84,6 +84,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
     } 
 
     useEffect(()=>{
+            if(!ownerUser) return
             fetchActivityId()
     }, [id, ownerUser])
 
@@ -122,7 +123,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
                 downvotes : downvotedComments
             })
             if (replyCommentId){
-                const request = await fetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
+                const request = await apiFetch(`${nodeServer.currentIP}/comment?id=${replyCommentId}`)
                 const replyCommentFromNotif = await request.json();
 
                 const reorderedCommentsData = [
@@ -148,7 +149,7 @@ export const useFetchActivityId = (id, replyCommentId) => {
 
 export const activityInteraction = async ( data ) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/activity/interact`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/activity/interact`, {
             method : 'POST',
             headers: {
                 'Content-type' : 'application/json'
@@ -156,7 +157,6 @@ export const activityInteraction = async ( data ) => {
             body:JSON.stringify( data )
         })
         const response = await request.json();
-        console.log('activityinteract', response)
         return response
     } catch (err) {
         console.log(err)

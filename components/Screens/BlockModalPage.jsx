@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View , TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View , TouchableOpacity, ActivityIndicator} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Colors } from '../../constants/Colors'
 import { blockUser, useFetchOwnerUser } from '../../api/user'
@@ -6,17 +6,19 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { BackIcon } from '../../assets/icons/icons'
 import { reportPost } from '../../api/report'
 import ToastMessage from '../ui/ToastMessage'
-import { useUser } from '@clerk/clerk-expo'
 import { useFocusEffect } from 'expo-router'
 import { useCallback } from 'react'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 
 
 const BlockModalPage = () => {
     const { blockedBy, userBeingBlocked } = useLocalSearchParams()
     const router = useRouter()
-    const { user:clerkUser } = useUser()
-    const { data: ownerUser, refetch } = useFetchOwnerUser({email: clerkUser.emailAddresses[0].emailAddress})
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch, loading:isLoading}= useGetUserFull(user?.id)
     const [message, setMessage] = useState(null)
     const [ isBlocking, setIsBlocking ] = useState(false)
 

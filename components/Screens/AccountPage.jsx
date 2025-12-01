@@ -4,19 +4,20 @@ import { BackIcon, ForwardIcon } from '../../assets/icons/icons'
 import { Colors } from '../../constants/Colors'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ShieldX, ChevronRight, LogOut, UserMinus, FileUser, Info, LifeBuoy, NotepadText } from 'lucide-react-native'
-import { useClerk, useUser } from '@clerk/clerk-expo'
+import { signOutUser, useSignOutUser } from '../../api/auth'
 
 
 
 const AccountPage = () => {
     const router = useRouter()
-    const { signOut } = useClerk();
+    // const { signOut } = useClerk();
+    const {signOutUser} = useSignOutUser()
     const {userId} = useLocalSearchParams()
 
 
     const handleSignOut = async () => {
         try {
-            await signOut();
+            await signOutUser();
             router.replace('/')
         } catch (err) {
             console.log(err)
@@ -55,7 +56,7 @@ const AccountPage = () => {
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
     <ScrollView   style={{paddingHorizontal:15}}>
-    <View className='w-full   px-4 gap-5' style={{paddingBottom:200}}>
+    <View className='w-full   px-4 gap-5' style={{paddingBottom:0}}>
 
           <TouchableOpacity onPress={()=>router.back()}>
             <BackIcon size={26} color={Colors.mainGray} />

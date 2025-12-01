@@ -33,7 +33,7 @@ const MovieIndex = () => {
 
   return (
     <SafeAreaView className='w-full h-full bg-primary'>
-      <View className='w-full  px-6 gap-5' style={{paddingBottom:200}}>
+      <View className='w-full  flex-1 px-6 gap-5' style={{paddingBottom:0}}>
       <TouchableOpacity onPress={()=>router.back()}>
               <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
@@ -63,7 +63,7 @@ const MovieIndex = () => {
           <FlatList
           data = { trendingMovies  }
           keyExtractor={item => item.id + new Date().getTime().toString()}
-          contentContainerStyle={{gap:15, marginTop:30}}
+          contentContainerStyle={{gap:15, marginTop:30, paddingBottom:200}}
           renderItem={({item}) => {
             
             return (
@@ -110,7 +110,7 @@ r            />
           <FlatList
           data = {  upcomingMovies  }
           keyExtractor={item => item.id + new Date().getTime().toString()}
-          contentContainerStyle={{gap:15, marginTop:30}}
+          contentContainerStyle={{gap:15, marginTop:30, paddingBottom:200}}
           renderItem={({item}) => {
             
             return (

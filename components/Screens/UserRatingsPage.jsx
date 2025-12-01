@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, SafeAreaView, Activ
 import React, { useEffect, useState} from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { fetchUser, useFetchOwnerUser, useGetUserRatings } from '../../api/user'
-import { useUser } from '@clerk/clerk-expo'
+
 import { Colors } from '../../constants/Colors'
 import { Image } from 'expo-image'
 import { BackIcon, FilmIcon, TVIcon } from '../../assets/icons/icons'
@@ -11,11 +11,14 @@ import { userRatingsCategories } from '../../lib/CategoryOptions'
 import { ThreeDotsIcon } from '../../assets/icons/icons'
 import { Star } from 'lucide-react-native'
 import { moviePosterFallback } from '../../constants/Images'
+import { useGetUser, useGetUserFull } from '../../api/auth'
 
 const UserRatingsPage = () => {
     const {userId, firstName} = useLocalSearchParams()
-    const {user : clerkUser} = useUser()
-    const { data : ownerUser } = useFetchOwnerUser({ email : clerkUser?.emailAddresses[0].emailAddress })
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser}= useGetUserFull(user?.id)
+
     const { data, refetch, loading, getMore } = useGetUserRatings(userId, 10)
 
     const [ selected, setSelected ] = useState('All')
@@ -63,11 +66,11 @@ const UserRatingsPage = () => {
 
   return (
     <SafeAreaView className="w-full h-full bg-primary">
-        <View style={{paddingHorizontal:15, paddingBottom:220}}>
+        <View className=' flex-1' style={{paddingHorizontal:15, paddingBottom:0}}>
 
         
       
-        <View className="gap-0">
+        <View  className="gap-0">
       <TouchableOpacity onPress={()=>router.back()} style={{paddingBottom:10}}>
               <BackIcon size={26} color={Colors.mainGray}/>
             </TouchableOpacity>
@@ -102,14 +105,14 @@ const UserRatingsPage = () => {
             showsVerticalScrollIndicator={false}
             data={filteredData}
             keyExtractor={item => item.id}
-            contentContainerStyle={{gap:15, paddingTop:30}}
+            contentContainerStyle={{gap:15, paddingTop:30, paddingBottom:100}}
             onEndReached={getMore}
             onEndReachedThreshold={0}
             renderItem={({item}) => {
                 return(
                 <View>
                    <View className="flex-row justify-between items-center gap-2">
-                        <TouchableOpacity  onPress={()=>{console.log("PRESSEDRATING",item);handlePress(item)}} className='flex-row gap-2 justify-center items-center'>
+                        <TouchableOpacity  onPress={()=>{handlePress(item)}} className='flex-row gap-2 justify-center items-center'>
                             <View className='flex-row gap-3 justify-center items-center'>
                                 <Image
                                 source={{ uri: `${posterURL}${item.movie ? item.movie.posterPath : item.tv && item.tv.posterPath }` }}

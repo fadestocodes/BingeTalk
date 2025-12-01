@@ -1,12 +1,13 @@
-import { useUser } from '@clerk/clerk-expo'
+
 import * as nodeServer from '../lib/ipaddresses'
 import { useState, useEffect } from 'react'
 import { useFetchOwnerUser } from './user'
 import { findDirector } from './tmdb'
+import { apiFetch, useGetUser, useGetUserFull } from './auth'
 
 export const createRating = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/rating/create`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/rating/create`, {
             method : 'POST',
             headers : {
                 'Content-type' : 'application/json'
@@ -22,7 +23,7 @@ export const createRating = async (data) => {
 
 export const deleteRating = async (data) => {
     try {
-        const request = await fetch(`${nodeServer.currentIP}/rating/delete`, {
+        const request = await apiFetch(`${nodeServer.currentIP}/rating/delete`, {
             method : "POST",
             headers:{
                 'Content-type' : 'application/json'
@@ -41,8 +42,13 @@ export const useGetTitleRatings = (data) => {
     const [ cursor, setCursor ] = useState(null)
     const [ hasMore, setHasMore ] = useState(true)
     const [ isLoading, setIsLoading ] = useState(false)
-    const { user : clerkUser } = useUser()
-    const { data : ownerUser, refetch : refetchOwner } = useFetchOwnerUser({email:clerkUser?.emailAddresses[0]?.emailAddress})
+
+
+
+
+    const {user} = useGetUser()
+    const {userFull:ownerUser, refetch:refetchOwner}= useGetUserFull(user?.id)
+
     const { ratingsId, limit} = data
     let { type } = data
     const [ friendsRatings, setFriendsRatings ] = useState([])
@@ -52,9 +58,8 @@ export const useGetTitleRatings = (data) => {
         if (!hasMore) return 
         setIsLoading(true)
         try {
-            const response = await fetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=${cursor}&take=${limit}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=${cursor}&take=${limit}`)
             const ratingsData = await response.json()
-            console.log("RATINGSSSDATA", ratingsData.data)
             setRatings( prev => [...prev, ...ratingsData.data] )
             setRatings(ratingsData.data)
             setCursor(ratingsData.nextCursor)
@@ -73,13 +78,11 @@ export const useGetTitleRatings = (data) => {
                 }
                 
                 const tmdbId = type === 'MOVIE' ? ratingsData.data[0].movie.tmdbId : type === 'TV' ? ratingsData.data[0].tv.tmdbId : null
-                console.log('TMDBIDDDD', tmdbId)
                 const directorParams = {
                     type,
                     tmdbId 
                 }
                 const foundDirector = await findDirector(directorParams)
-                console.log("FOUNDDIRECTORRR", foundDirector)
                 setDirector(foundDirector)
             }
 
@@ -103,7 +106,7 @@ export const useGetTitleRatings = (data) => {
         await refetchOwner()
         setIsLoading(true)
         try {
-            const response = await fetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=null&take=${limit}`)
+            const response = await apiFetch(`${nodeServer.currentIP}/rating/?DBratingsId=${ratingsId}&type=${type}&cursor=null&take=${limit}`)
             const ratingsData = await response.json()
 
             setRatings(ratingsData.data )
@@ -130,4 +133,53 @@ export const useGetTitleRatings = (data) => {
 
     return { ratings, isLoading, ownerUser, refetch , fetchMore : getTitleRatings, hasMore, friendsRatings, director}
 
+}
+
+
+
+export const useGetUserRatingsInfinite = (userId, limit=15) => {
+
+    const [data, setData] = useState([])
+    const [loading,setLoading] = useState(true)
+    const [hasMore, setHasMore] = useState(true)
+    const [cursor, setCursor] = useState(null)
+
+    const getUserRatingsInfinite = async () => {
+        try {
+            setLoading(true)
+            const res = await fetch(`${nodeServer.currentIP}/rating/user?userId=${userId}&cursor=${cursor}&limit=${limit}`)
+            if (!res.ok) throw new Error('Invalid response')
+            const resData = await res.json()
+            setData(prev => [...prev, resData.items])
+            setCursor(resData.nextCursor)
+            setHasMore(!!resData.nextCursor)
+        } catch(err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const refetch = async () => {
+        try {
+            setLoading(true)
+            const res = await fetch(`${nodeServer.currentIP}/rating/user?userId=${userId}&cursor=null&limit=${limit}`)
+            if (!res.ok) throw new Error('Invalid response')
+            const resData = await res.json()
+            setData(resData.items)
+            setCursor(resData.nextCursor)
+            setHasMore(!!resData.nextCursor)
+        } catch(err){
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        if (!hasMore) return
+        getUserRatingsInfinite()
+    }, [userId])
+
+    return {data, loading, hasMore, refetch, fetchMore:getUserRatingsInfinite}
 }

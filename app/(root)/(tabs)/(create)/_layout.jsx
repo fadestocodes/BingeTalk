@@ -7,7 +7,7 @@ import { TagsProvider } from '../../../../lib/TagsContext'
 const CreateLayout = () => {
   return (
     <TagsProvider>
-    <Stack  >
+    <Stack screenOptions={{contentStyle:{backgroundColor : Colors.primary}}} >
         <Stack.Screen name='createHome' options={{headerShown : false}} />
         <Stack.Screen name='tagOptionsModal'options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:200  , borderRadius:30, backgroundColor:Colors.primary }}}  />
         <Stack.Screen name='addURLModal'options={{headerShown : false, presentation:'modal', contentStyle:{  marginTop:200  , borderRadius:30, backgroundColor:Colors.primary }}}  />

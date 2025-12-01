@@ -8,11 +8,10 @@ import { ArrowDownIcon, UpIcon, DownIcon, ArrowUpIcon, MessageIcon, HeartIcon, C
 import { formatDate } from '../../lib/formatDate'
 import { GestureDetector, Gesture} from 'react-native-gesture-handler';
 import { commentInteraction, createComment, fetchSingleComment, useFetchSingleComment } from '../../api/comments'
-import { useUser } from '@clerk/clerk-expo'
+
 import { useFetchOwnerUser } from '../../api/user'
 import { useQueryClient, useQuery } from '@tanstack/react-query'
 import { ThumbsDown, ThumbsUp } from 'lucide-react-native';
-import ThreadCard from '../ThreadCard'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, withSpring, useAnimatedKeyboard } from 'react-native-reanimated';
 import { usePostRemoveContext } from '../../lib/PostToRemoveContext'
 import { useFetchReview } from '../../api/review'
@@ -32,13 +31,11 @@ const ReviewScreen = () => {
     const [ visibleReplies, setVisibleReplies  ] = useState({})
     // const { user : clerkUser } = useUser();
     // const { data: ownerUser, refetch:refetchOwnerUser } = useFetchOwnerUser({ email : clerkUser.emailAddresses[0].emailAddress })
-   
-    const userId = ownerUser?.id
+  
     const { reviewId, tvId, movieId, castId }= useLocalSearchParams();
 
     const { review, ownerUser, interactedComments, commentsData, isLoading, refetch, setInteractedComments, setCommentsData, removeItem} = useFetchReview(Number(reviewId), Number(replyCommentId))
     const { postToRemove, updatePostToRemove } = usePostRemoveContext()
-    console.log('THEREVIEW', review)
 
 
 
@@ -48,7 +45,7 @@ const ReviewScreen = () => {
   
     
     const animatedStyle = useAnimatedStyle(() => ({
-      bottom: withTiming(keyboard.height.value-20, { duration: 0 }),
+      bottom: withTiming(keyboard.height.value-80, { duration: 0 }),
     }));
 
     useEffect(()=>{
@@ -311,8 +308,6 @@ const ReviewScreen = () => {
     }
 
     const handleThreeDots = (item, fromReply) => {
-        console.log('from threedots', item)
-        console.log('from reply?', fromReply)
 
         const fromOwnPost = item.userId === ownerUser?.id
         router.push({
@@ -324,7 +319,7 @@ const ReviewScreen = () => {
 
 
   return (
-    <SafeAreaView className='h-full pb-32 relative' style={{backgroundColor:Colors.primary}} >
+    <SafeAreaView className='h-full  relative' style={{backgroundColor:Colors.primary}} >
        
        { isLoading || !ownerUser ? (
             <View className='h-full justify-center items-center bg-primary'>
@@ -364,8 +359,8 @@ const ReviewScreen = () => {
                         const shownReplies = visibleReplies[item.id] || 0;
 
 
-                        const alreadyUpvotedComment = interactedComments.upvotes.some( i => i.commentId === item.id )
-                        const alreadyDownvotedComment = interactedComments.downvotes.some( i => i.commentId === item.id )
+                        const alreadyUpvotedComment = interactedComments?.upvotes?.some( i => i.commentId === item.id )
+                        const alreadyDownvotedComment = interactedComments?.downvotes?.some( i => i.commentId === item.id )
                         
 
                         
@@ -425,8 +420,8 @@ const ReviewScreen = () => {
 { item.replies.length > 0 && (
                             <>
                             { item.replies.slice(0, shownReplies).map((reply) => {
-                                const alreadyUpvotedReply = interactedComments.upvotes.some( i => i.commentId === reply.id )
-                                const alreadyDownvotedReply = interactedComments.downvotes.some( i => i.commentId === reply.id )
+                                const alreadyUpvotedReply = interactedComments?.upvotes?.some( i => i.commentId === reply.id )
+                                const alreadyDownvotedReply = interactedComments?.downvotes?.some( i => i.commentId === reply.id )
                                 return (
 
 
@@ -454,7 +449,7 @@ const ReviewScreen = () => {
                                         <Text className='text-mainGray text-sm'>Reply</Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={()=>{console.log('REPLY OBJECT', item);handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
+                                    <TouchableOpacity onPress={()=>{handleCommentInteraction('upvotes',reply, alreadyUpvotedReply,item.id )}}  >
                                     <View className='flex-row  justify-center items-center  gap-1 ' style={{height:32, borderColor:Colors.mainGray}}>
                                         <ThumbsUp  size={20} color={ alreadyUpvotedReply ? Colors.secondary : Colors.mainGray} />
                                             <Text className='text-xs font-pbold text-gray-400' style={{color:alreadyUpvotedReply ? Colors.secondary : Colors.mainGray}}>{reply.upvotes}</Text>
@@ -568,7 +563,7 @@ ReviewScreen.options = {
       backgroundColor: '#111',
       position: 'absolute',
       bottom:100,
-      height:200,
+      height:150,
       left: 0,
       right: 0,
       paddingBottom: 50,

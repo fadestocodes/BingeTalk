@@ -1,4 +1,5 @@
 import * as nodeServer from '../lib/ipaddresses'
+import { apiFetch } from './auth';
 
 export const uploadToS3 = async ( fileUri, fileName, fileType ) => {
   

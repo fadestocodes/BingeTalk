@@ -6,7 +6,7 @@ import PagerView from 'react-native-pager-view';
 import ShowcasePage from '../Showcase';
 import ProfileMainPage from '../ProfileMainPage';
 import Credits from '../Credits';
-import { SignOutButton, useAuth } from '@clerk/clerk-react'
+
 import { useFetchUser } from '../../api/user';
 import UserListsPage from './UserListsPage';
 
@@ -30,14 +30,16 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
     pagerRef.current?.setPage(id);
   }
 
+  if (!user){
+    return (
+      <ActivityIndicator />
+    )
+  }
+
   return (
     
-    <View className='flex flex-1 justify-center items-center w-full h-full bg-primary  relative' style={{paddingBottom:50}}>
-      { !user || isFetchingUser ? (
-      <View className='bg-primary justify-center items-center h-full'>
-        <ActivityIndicator></ActivityIndicator>  
-      </View> 
-      ) : (
+    <View className='flex flex-1 justify-center items-center w-full h-full bg-primary  relative' style={{paddingBottom:0}}>
+    
         <>
 
 
@@ -65,14 +67,14 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
             // }}
           >
             {/* Tab Content */}
-            <View key="1" className='pb-10' >
+            <View key="1" className='' >
               
                <ProfileMainPage user={user} isFetchingUser={isFetchingUser} refetchUser={refetchUser}  ></ProfileMainPage> 
             </View>
             {/* <View key="2" className='pt-32 items-center w-full' >
                   <ShowcasePage></ShowcasePage>
             </View> */}
-            <View key="2" className='pb-8'>
+            <View key="2" className=''>
               <UserListsPage  userId={user.id}></UserListsPage>
             </View>
             {/* <View key="4" className='pt-20' >
@@ -80,7 +82,7 @@ const ProfileHomepage = ( { user, isFetchingUser, refetchUser } ) => {
             </View> */}
           </PagerView>
           </>
-      ) }
+
      
    
 
