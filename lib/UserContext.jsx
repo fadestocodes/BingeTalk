@@ -11,6 +11,9 @@ export const UserProvider = ({ children }) => {
     setUser(userData);
   };
 
+  global.userContextSetter = setUser;
+
+
   return (
     <UserContext.Provider value={{ user, updateUser }}>
       {children}

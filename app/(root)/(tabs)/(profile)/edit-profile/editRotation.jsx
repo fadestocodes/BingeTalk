@@ -151,18 +151,10 @@ const editRotation = () => {
         return rotationObj;
     });
       try {
-          // const params = {
-          //     id : userId,
-          //     clerkId : user.id,
-          //     bio,
-          //     bioLink,
-          //     profilePic : image,
-          // }
-          // const response = await updateUser(params,user.emailAddresses[0].emailAddress )
+       
           const rotationResponse = await updateRotation( userId, rotationItems, listItemObj )
           refetch();
           router.back()
-          // updateUserDB(response)
           
       } catch (err) {
           console.log(err)

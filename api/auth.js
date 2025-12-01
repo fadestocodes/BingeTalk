@@ -59,11 +59,26 @@ async function refreshAccessToken() {
     }
 }
 
-// Central fetch wrapper
+
+export async function forceLogout() {
+  try {
+    await SecureStore.deleteItemAsync('accessToken');
+    await SecureStore.deleteItemAsync('refreshToken');
+    await AsyncStorage.removeItem("user-data");
+    
+    console.log('trying to force logout')
+    // Optional: clear your user context if you export a setter
+    global.userContextSetter?.(null);
+
+    router.replace("/"); // or your login route
+    console.log('succesfully forced logout')
+  } catch (err) {
+    console.error("Error forcing logout:", err);
+  }
+}
+
 export async function apiFetch(url, options = {}) {
-
   let accessToken = await getAccessToken();
-
   let res = await fetch(url, {
     ...options,
     headers: {
@@ -71,31 +86,44 @@ export async function apiFetch(url, options = {}) {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+  if (res.status !== 401) {
+    return res;
+  }
 
+  // Token expired → attempt refresh
+  try {
+    const newAccessToken = await refreshAccessToken();
 
-    if (res.status !== 401) return res; // success or other error
-
-    
-    // Access token expired → refresh
-    try {
-        const newAccessToken = await refreshAccessToken();
-        
-        if (!newAccessToken) return
-            // Retry original request
-        res = await fetch(url, {
-        ...options,
-        headers: {
-            ...(options.headers || {}),
-            Authorization: `Bearer ${newAccessToken}`,
-        },
-        });
-        return res;
-    } catch (err) {
-        console.error(err); // Refresh failed → force logout
-        
+    // If refresh failed → logout immediately
+    if (!newAccessToken) {
+      await forceLogout();
+      return;
     }
 
+    // Retry original request with new token
+    res = await fetch(url, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        Authorization: `Bearer ${newAccessToken}`,
+      },
+    });
+
+
+    if (res.status === 401) {
+      await forceLogout();
+      return ;
+    }
+
+
+    return res;
+
+  } catch (err) {
+    await forceLogout();
+    console.error(err);
+  }
 }
+
 
 export const loginLocal = async (login, password) => {
     try {
@@ -309,6 +337,8 @@ export const useSignOutUser = () => {
             await clearAuthTokens()
             updateUser(null)
             await AsyncStorage.removeItem('user-data')
+      
+
     
         } catch(err){
             console.error(err)
@@ -499,3 +529,4 @@ export const resetUserPassword = async (params) => {
     return {success:false}
   }
 }
+

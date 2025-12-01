@@ -1,11 +1,10 @@
-import { isDevelopmentBuild } from "expo-dev-client";
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 export default {
   "expo": {
     "name": IS_DEV ? "Bingeable (dev)" :  "Bingeable",
     "slug": "bingeable-app",
-    "version": "1.4.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": IS_DEV ? "bingeable-dev" : "bingeable",
@@ -115,9 +114,6 @@ export default {
       "typedRoutes": true
     },
     "extra": {
-      CLERK_PUBLISHABLE_KEY: IS_DEV
-      ? process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV
-      : process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD,
       "router": {
         "origin": false
       },

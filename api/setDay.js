@@ -26,9 +26,9 @@ export const useGetSetDayGraph = (userId) => {
         try {
             if (!userId) return
             setLoading(true)
-            const res = await fetch(`${nodeServer.currentIP}/set-days/graph?userId=${userId}`)
-            const resData = await res.json()
+            const res = await apiFetch(`${nodeServer.currentIP}/set-days/graph?userId=${userId}`)
             if (!res.ok) throw new Error (resData?.error || "Invalid request")
+            const resData = await res.json()
             setData(resData)
             
         } catch (err){

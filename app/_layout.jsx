@@ -56,17 +56,6 @@ export default Sentry.wrap(function RootLayout() {
 
   
 
-  // const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
-  const publishableKey = Constants.expoConfig.extra.CLERK_PUBLISHABLE_KEY
-  
-  
-
-  if (!publishableKey) {
-    throw new Error(
-      'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
-    )
-  }
-
   const [fontsLoaded, error] = useFonts({
     "Geist-Black": require("../assets/fonts/Geist-Black.ttf"),
     "Geist-Bold": require("../assets/fonts/Geist-Bold.ttf"),

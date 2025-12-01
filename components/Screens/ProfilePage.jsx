@@ -47,9 +47,6 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
     const [hasInstagramInstalled, setHasInstagramInstalled] = useState(false); // State to track if Instagram is installed on user's device or not
 
 
-    const [hiddenShareView, setHiddenShareView] = useState(null)
-    const [isSharing, setIsSharing] = useState(false);
-
     const [ isFollowing, setIsFollowing ] = useState(null)
 
     const {criticProgression} = useGetCriticProgression(ownerUser?.id)
@@ -207,25 +204,12 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
         })
     }
 
-    // const handleShareProfile = async () => {
-    //     try {
-    //       const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
-    //       const res = await Sharing.shareAsync(uri, { mimeType: 'image/png' });
-    //       console.log('uri', uri)
-    //       console.log('res', res)
-
-    //     } catch (e) {
-    //       console.log(e);
-    //     }
-    // };
+   
 
   const handleShareProfile = async () => {
     if (!userFetched) return;
 
     if (!shareRef.current) return;
-
-
-
 
     try {
       const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
@@ -245,65 +229,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
       console.log('Capture failed:', e);
     }
 
-    setShareVisible(false);
   };
-
-//   const handleShareProfile = async () => {
-//     if (!userFetched) return;
-
-//     if (!viewShotRef.current) return console.log('Ref not ready!');
-
-
-//     const { default: ShareProfileCard } = await import('../../components/ui/ShareProfileCard');
-//     const shareRef = React.createRef();
-
-//     const shareView = (
-//         <ShareProfileCard ref={shareRef} user={userFetched} setDaysData={setDaysGraphData.graphData}/>
-//       );    
-
-//       setHiddenShareView(shareView);
-
-
-
-//       await new Promise(resolve => requestAnimationFrame(resolve));
-
-//       try {
-//         const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
-//         await Share.shareSingle({
-//           appId: 'YOUR_FACEBOOK_APP_ID',
-//           stickerImage: uri,
-//           social: Share.Social.INSTAGRAM_STORIES,
-//         });
-//       } catch (e) {
-//         console.log('Capture failed:', e);
-//       }
-    
-//       setHiddenShareView(null); // remove from UI after sharing
-//     };
-
-
-//     try {
-//       const uri = await captureRef(viewShotRef, { format: 'png', quality: 1 });
-
-//       const data = {
-//         appId: "1546768846366888", // Note: replace this with your own appId from facebook developer account, it won't work without it. (https://developers.facebook.com/docs/development/register/)
-//         stickerImage: uri,
-//         social: Share.Social.INSTAGRAM_STORIES,
-//         backgroundBottomColor: "#0e1010", // You can use any hexcode here and below
-//         backgroundTopColor: "#0e1010",
-//         // backgroundImage: '...', // This field is optional like the other fields (except appId) and you have to put a base64 encoded image here if you want to use it!
-//       }
-//       console.log('data', data)
-//       console.log('hasInstagraminstalled', hasInstagramInstalled)
-//         await shareToInstagramStory(data, hasInstagramInstalled)
-//       //   await Sharing.shareAsync(uri, { mimeType: 'image/png' }); 
-//     //   console.log('Shared:', uri)
-//     } catch (e) {
-//       console.log('Capture failed:', e);
-//     }
-
-//     setShareVisible(false);
-//   };
 
    
 
@@ -314,12 +240,9 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
     return (
     <SafeAreaView className='bg-primary flex-1'  edges={['top']}>
 
-            {/* {hiddenShareView && ( */}
             <View style={{ position: 'absolute', top: -9999 }}>
-                {/* {hiddenShareView} */}
                 <ShareProfileCard ref={shareRef} user={userFetched} setDaysData={setDaysGraphData} totalWorked = {setDaysGraphData?.totalWorked} />
             </View>
-            {/* )} */}
 
      
         <ScrollView 
