@@ -9,6 +9,10 @@ import { useRouter } from 'expo-router'
 const UserDialoguesPage = ({dialogues, refetchDialogues, fetchMoreDialogues, hasMore, loading}) => {
     const router = useRouter()
 
+    const handlePress = (item) => {
+        router.push(`/dialogue/${item.id}`)
+    }
+
     if (!dialogues) {
         return <ActivityIndicator/>
     }
@@ -36,7 +40,7 @@ const UserDialoguesPage = ({dialogues, refetchDialogues, fetchMoreDialogues, has
                 keyExtractor={(item, index) => `${item.id}-${index}`}
                 contentContainerStyle={{gap:15, paddingHorizontal:15,paddingTop:20, paddingBottom:100}}
                 renderItem={({item})=> (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>handlePress(item)}>
                         <DialogueCard dialogue={item} isBackground={true} />
                     </TouchableOpacity>
                 )}

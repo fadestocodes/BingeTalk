@@ -47,7 +47,7 @@ async function refreshAccessToken() {
           body: JSON.stringify({ refreshToken }),
         });
      
-        if (!res.ok) throw new Error('Refresh failed');
+        if (!res.ok) return
       
         const data = await res.json();
         await saveAccessToken(data.accessToken);
@@ -61,7 +61,8 @@ async function refreshAccessToken() {
 
 // Central fetch wrapper
 export async function apiFetch(url, options = {}) {
-    let accessToken = await getAccessToken();
+
+  let accessToken = await getAccessToken();
 
   let res = await fetch(url, {
     ...options,
@@ -168,6 +169,7 @@ export const useGetUser = () => {
 
       return userData;
     } catch (err) {
+      return
       console.error('Failed to fetch user', err);
 
     }
@@ -253,6 +255,7 @@ export const useGetUserFull = (id) => {
                 body : JSON.stringify({id})
             })
             if (!res.ok){
+              return
                 await signOutUser()
                 // throw new Error ("Couldn't get full user data")
             }

@@ -384,14 +384,14 @@ const SearchPage = () => {
                 
                 />
             </View>
-            <InView className='gap-3 flex items-start w-full h-[260px] overflow-hidden'  
+            
+            {/* <InView className='gap-3 flex items-start w-full h-[260px] overflow-hidden'  
               style={{ height: 260, overflow: "hidden" }}
               onChange={(inView) => {console.log('Inview:', inView); setVideosInView(inView)}}
             >
               <TouchableOpacity disabled style={{ flexDirection:'row' , gap:5, justifyContent:'center', alignItems:'center'}}>
                   <Popcorn   size={20} color={Colors.mainGray}/>
                   <Text className='text-mainGray font-pbold text-xl '>Recent Trailers</Text>
-                  {/* <ChevronRight strokeWidth={3} size={20} color={Colors.mainGray} /> */}
               </TouchableOpacity>
                 <FlatList
                   data={trailers}
@@ -413,7 +413,7 @@ const SearchPage = () => {
                   onScroll={onScroll}
                   scrollEventThrottle={16}
                 />
-            </InView>
+            </InView> */}
 
             <View className='gap-3'>
               <TouchableOpacity className='gap-2 items-center justify-start flex flex-row'>

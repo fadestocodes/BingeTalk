@@ -244,10 +244,10 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
   return (
 
    
-    <View  className=''  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
-            <View className='flex justify-center items-start  mb-1 w-full ' style={{gap:5}}>
+    <View  className='w-full'  style={{ backgroundColor:isBackground && Colors.mainGrayDark, paddingVertical:isBackground && 12, paddingHorizontal: isBackground && 15, borderRadius:15, gap:15 }}  >
+            <View className='flex flex-col  justify-center items-start  mb-1  ' style={{gap:5}}>
               
-                <View className='flex-row w-full justify-between items-center'>
+                <View className='flex-row w-full flex justify-between items-center'>
                         <View className="flex-row items-center gap-2">
                         { isReposted ? (
                     <RepostIcon size={18} color={Colors.mainGray} style={{marginRight:10}}/>    
@@ -270,7 +270,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                             <Text className= 'font-pbold text-primary text-xs ' style={{ backgroundColor: tag.color , padding:5, borderRadius:15}} >{tag.tagName}</Text>
                         </View>
                     ) : null}
-                <View className='my-0 justify-center items-center w-full gap-3  '>
+                <View className='my-0 justify-center items-center  flex flex-col gap-3 '>
                     <View className='flex gap-2 justify-center items-center'>
                         
                         <View className='justify-center items-center gap-0'>
@@ -279,7 +279,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                         
                     </View>
 
-                    <Text className='text-third font-pcourier  text-left w-full' numberOfLines={ fromSearchHome && 3 }> { dialogue.content } </Text>
+                    <Text className='text-third font-pcourier  text-left ' numberOfLines={ fromSearchHome && 3 }> { dialogue.content } </Text>
                     { dialogue.image && (
                         <Image 
                             source={{ uri: dialogue.image }}
@@ -298,7 +298,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                                 </TouchableOpacity>
                             </>
                         ) : (
-                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height: fromSearchHome ? 100 : 150, width:'100%', position:'relative'}}>
+                            <TouchableOpacity onPress={handleLinkPress} style={{ borderRadius:15, height: fromSearchHome ? 100 : 150, width:'auto', position:'relative'}}>
                             
                             <Image
                                 source ={{ uri :url.image }}
@@ -326,7 +326,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                 </View>
                 { dialogue?.mentions?.length > 0 && (
 
-                <View className='flex-row gap-3  item-center justify-center mt-3' >
+                <View className='flex-row gap-3  item-center justify-center mt-3 ' >
                 { dialogue.mentions ? dialogue.mentions.length > 0 && dialogue.mentions.map( mention => {; return (
                     <TouchableOpacity key={mention.id}  onPress={()=>handleMentionPress(mention)}  className=' items-center'>
                         <Image

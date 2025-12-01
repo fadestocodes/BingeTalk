@@ -9,7 +9,6 @@ import * as Notifications from 'expo-notifications'
 import { Linking } from 'react-native';
 
 export const useGetAllNotifs = (recipientId, limit, fetchAll=false) => {
-    console.log('recipient id is ',recipientId)
     const [ data, setData ] = useState([])
     const [ readNotifs, setReadNotifs ] = useState([])
     const [ unreadNotifs, setUnreadNotifs ] = useState([])

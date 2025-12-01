@@ -60,7 +60,7 @@ const MoviePage = () => {
     const {user:userSimple} = useGetUser()
     const {userFull : ownerUser, refetch:refetchOwnerUser} = useGetUserFull(userSimple?.id)
     // const {user: clerkUser} = useUser();
-    const { data:mentions, refetch:refetchMentinos, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
+    const { data:mentions, refetch:refetchMentions, isFetching:isFetchingMentions } = useFetchMovieMentions( movieId );
     // const { data : ownerUser, refetch : refetchOwnerUser } = useFetchOwnerUser({ email: clerkUser.emailAddresses[0].emailAddress })
     const alreadyWatched = ownerUser?.userWatchedItems.some( item => item.movieId === Number(DBmovieId) )
     const alreadyInWatchlist = ownerUser?.watchlistItems.some( item => item.movieId === Number(DBmovieId) )
@@ -510,7 +510,7 @@ const MoviePage = () => {
                     contentContainerStyle={{ gap:15 }}
                     renderItem = {({item}) => (
                         <TouchableOpacity onPress={()=>handleMentionPress(item)}  style={{ width:300 }}>
-                            <DialogueCard dialogue={item.dialogue} refetch={refetchMentionsThreads} isBackground={true} ></DialogueCard>
+                            <DialogueCard dialogue={item.dialogue} refetch={refetchMentions} isBackground={true} ></DialogueCard>
                         </TouchableOpacity>
                     )}
                 />

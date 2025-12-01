@@ -348,7 +348,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                             { userFetched?.accountType === 'FILMMAKER' ? (
                                 <Text style={{ alignSelf: 'baseline', lineHeight: 24 }}
                                 className='text-mainGray font-semibold'>{unparseDept(userFetched?.filmRole?.role) || 'Filmmaker'}</Text>
-                            ): userFetched?.accountType === 'FILMLOVER' && (
+                            ): userFetched?.accountType === 'FILMLOVER' || !userFetched?.accountType && (
                                 <Text style={{ alignSelf: 'baseline', lineHeight: 24 }}
                                 className='text-mainGray font-semibold'>Film Lover</Text>
                             )}
@@ -454,6 +454,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                             <FlatList
                                 data={userFetched.userWatchedItems}
                                 horizontal
+                                showsHorizontalScrollIndicator={false}
                                 key={(item,index) => `${item.title}-${index}`}
                                 contentContainerStyle={{gap:10}}
                                 renderItem={({item}) => {
@@ -478,10 +479,10 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
 
                 
                 {/* Dialogues */}
-                <View className='flex-1 gap-3  w-full'>
+                <View className='flex-1 gap-3  w-full justify-center items-center'>
                     {userFetched?.dialogues?.length > 0 && (
-                        <View className='gap-2 justify-start items-start  flex flex-col'>
-                            <Text className='text-mainGray font-bold text-xl '>Dialogues  ({userFetched._count.dialogues})</Text>
+                        <View className='gap-2 justify-center items-center w-full flex flex-col'>
+                            <Text className='text-mainGray font-bold text-xl text-left w-full'>Dialogues  ({userFetched._count.dialogues})</Text>
                             <FlatList
                                 data={userFetched.dialogues.slice(0,3)}
                                 scrollEnabled={false}
@@ -489,7 +490,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                 contentContainerStyle={{gap:10, justifyContent:'center', alignItems:'center', width:'100%'}}
                                 renderItem={({item}) => {
                                     return (
-                                    <TouchableOpacity onPress={() => handleTitlePress(item)} style={{ marginRight:0 }}>
+                                    <TouchableOpacity className='justify-center items-center self-center w-full' onPress={() => handleTitlePress(item)} style={{ marginRight:0 }}>
                                         <DialogueCard dialogue={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'} />
                                     </TouchableOpacity>
                                 )}}

@@ -502,7 +502,7 @@ const TVPage = () => {
                         contentContainerStyle={{ gap:15, marginTop:10 }}
                         renderItem = {({item}) => (
                             <TouchableOpacity onPress={()=>handleMentionPress(item)} style={{ width:300 }}>
-                                <DialogueCard dialogue={item.dialogue}  refetch={refetchMentionsThreads} isBackground={true} ></DialogueCard>
+                                <DialogueCard dialogue={item.dialogue}  refetch={refetchMentions} isBackground={true} ></DialogueCard>
                             </TouchableOpacity>
                         )}
                         />
