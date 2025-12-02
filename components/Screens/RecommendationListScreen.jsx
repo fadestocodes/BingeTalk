@@ -28,10 +28,10 @@ import { maybeAskForReview } from '../../lib/maybeAskForReview';
 const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
     const {userId} = useLocalSearchParams();
     const {user} = useGetUser()
-    const { data : recommendationsSent, loading, refetch, hasMore, fetchMore, removeSentItems  } = useGetRecommendationsSent(user?.id)
+    const { data : recommendationsSent, loading, refetch, hasMore:hasMoreSent, fetchMore, removeSentItems  } = useGetRecommendationsSent(user?.id)
     const { data : recommendationsReceived, loading:loadingReceived, refetchReceived, fetchMoreReceived, hasMore:hasMoreReceived,  removeReceivedItems} = useGetRecommendationsReceived(user?.id)
-    const {data : acceptedRecommendations, refetchAccepted, fetchMoreAccepted,  removeAcceptedItem} = useGetRecommendationsAccepted(user?.id)
-    const {data : declinedRecommendations, refetchDeclined, fetchMoreDeclined,  removeDeclineItem} = useGetRecommendationsDeclined(user?.id)
+    const {data : acceptedRecommendations, refetchAccepted, fetchMoreAccepted,  removeAcceptedItem, hasMore: hasMoreAccepted} = useGetRecommendationsAccepted(user?.id)
+    const {data : declinedRecommendations, refetchDeclined, fetchMoreDeclined,  removeDeclineItem, hasMore: hasMoreDeclined} = useGetRecommendationsDeclined(user?.id)
     const [ tab, setTab ] = useState('accepted')
     const { pendingRecsNotifCount, updatePendingRecsNotifCount } = useNotificationCountContext()
     const {showBadgeModal} = useBadgeContext()
@@ -43,12 +43,7 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
 
     const router = useRouter()
 
-    useFocusEffect(
-        useCallback(() => {
-          refetch() // refetch from server
-          refetchReceived()
-        }, [])
-      )
+  
 
 
 
@@ -220,7 +215,7 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                         <Text className=' font-pmedium' style={{ color : tab==='accepted' ? Colors.primary : 'white' }}>Accepted</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>{setTab('pending') }} style={{ borderRadius:15, backgroundColor:tab==='pending' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
-                        <Text className=' font-pmedium' style={{ color : tab==='pending' ? Colors.primary : 'white' }}>Pending{recommendationsReceived.length > 0 && ` (${recommendationsReceived.length})`}</Text>
+                        <Text className=' font-pmedium' style={{ color : tab==='pending' ? Colors.primary : 'white' }}>Pending{recommendationsReceived.length > 0 && ` (${pendingRecsNotifCount})`}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>{setTab('sent') }} style={{ borderRadius:15, backgroundColor:tab==='sent' ? 'white' : 'transparent', paddingHorizontal:8, paddingVertical:3, borderWidth:1, borderColor:'white' }}>
                         <Text className=' font-pmedium' style={{ color : tab==='sent' ? Colors.primary : 'white' }}>Sent</Text>
@@ -355,7 +350,7 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                         keyExtractor={(item,index) => `${item.id}-${index}`}
                         contentContainerStyle={{ width:'100%', gap:10, paddingBottom:100 }}
                         onEndReached={() => {
-                        if ( hasMore  ){
+                        if ( hasMoreSent  ){
                             fetchMore()
                         }
                         }}
@@ -438,7 +433,7 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                         keyExtractor={(item,index) => `${item.id}-${index}`}
                         contentContainerStyle={{ width:'100%', gap:10, paddingBottom:100 }}
                         onEndReached={() => {
-                        if ( hasMore  ){
+                        if ( hasMoreAccepted  ){
                             fetchMoreAccepted()
                         }
                         }}
@@ -519,7 +514,7 @@ const RecommendationListScreen = ({undeterminedAndFlagged, handleYes}) => {
                         keyExtractor={(item,index) => `${item.id}-${index}`}
                         contentContainerStyle={{ width:'100%', gap:10, paddingBottom:100 }}
                         onEndReached={() => {
-                        if ( hasMore  ){
+                        if ( hasMoreDeclined  ){
                             fetchMoreDeclined()
                         }
                         }}

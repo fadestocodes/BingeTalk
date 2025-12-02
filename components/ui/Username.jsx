@@ -42,7 +42,7 @@ const Username = ({user, size='md' , color='white', onPress=null, bold=false, re
     }
 
   return (
-    <TouchableOpacity onPress={onPress} className='flex flex-row justify-start items-center  gap-2'>
+    <View  className='flex flex-row justify-start items-center  gap-2'>
         { reverse ? (
             <>
             <Text style={{color:color}} className={ `${bold && 'font-bold'} text-lg  `}>@{user.username}</Text>
@@ -73,7 +73,7 @@ const Username = ({user, size='md' , color='white', onPress=null, bold=false, re
 
         ) }
 
-    </TouchableOpacity>
+    </View>
   )
 }
 

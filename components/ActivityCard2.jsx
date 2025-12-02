@@ -189,7 +189,7 @@ const ActivityCard2 = ({activity, fromHome, disableCommentsModal, isBackground})
                 contentFit='cover'
                 style={{ width:30, height:30, borderRadius:50 }}
             />
-            <Username size='sm' user={activity.user} color={Colors.mainGrayDark2} reverse={true}/>
+            <Username    size='sm' user={activity.user} color={Colors.mainGrayDark2} reverse={true}/>
             </TouchableOpacity>
             <Text className='  text-mainGrayDark'>{formatDateNotif(activity.createdAt)}</Text>
         </View>

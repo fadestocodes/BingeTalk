@@ -258,7 +258,7 @@ const DialogueCard = (  {dialogue , isBackground, disableCommentsModal, fromHome
                                 contentFit='cover'
                                 style={{ borderRadius:'50%', overflow:'hidden', width:30, height:30 }}
                             />
-                    <Username size='sm' user={userDB} color={Colors.mainGrayDark2} reverse={true}/>
+                    <Username  size='sm' user={userDB} color={Colors.mainGrayDark2} reverse={true}/>
                     </TouchableOpacity>
                         </View>
                     <Text className='text-mainGrayDark '>{formatDateNotif(dialogue.createdAt)}</Text>

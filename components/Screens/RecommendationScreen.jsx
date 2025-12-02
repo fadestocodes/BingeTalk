@@ -34,12 +34,15 @@ const RecommendationScreen = () => {
     const { DBmovieId, DBtvId, DBcastId } = useLocalSearchParams();
    
     const useGetAllMutuals = async () => {
+
         const mutuals = await getAllMutuals(ownerUser.id);
         const filtered = mutuals.filter(i => i.id !== ownerUser.id)
         setMutuals(filtered)
     }
 
     useEffect(()=>{
+
+        if (!ownerUser) return
         setLoadingMutuals(true)
         try {
             useGetAllMutuals();

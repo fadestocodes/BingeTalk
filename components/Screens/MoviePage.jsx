@@ -217,7 +217,7 @@ const MoviePage = () => {
         }
 
         const checkAuteur = await checkAuteurBadge(movie, ownerUser?.id)
-        if (checkAuteur.hasLeveledUp){
+        if (checkAuteur?.hasLeveledUp){
             levelUpData = {
                 badgeType: 'AUTEUR',
                 level: `${checkAuteur.newLevel}`,
@@ -294,7 +294,7 @@ const MoviePage = () => {
     }
 
 
-    if ( !ownerUser || !movie || !DBmovieId){
+    if ( !ownerUser || !movie || !DBmovieId || loading){
         return (
             <View className='h-full justify-center items-center bg-primary'>
                 <ActivityIndicator/>
