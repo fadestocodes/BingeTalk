@@ -409,7 +409,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
     
                             <View className='w-full  justify-center items-center gap-3 my-3'>
                             <View className='flex-row w-full justify-between items-center'>
-                                    <View className="flex-row items-center gap-2">
+                                    <TouchableOpacity className="flex-row items-center gap-2">
                                         <Image
                                             source={{ uri: item.user.profilePic || avatarFallbackCustom }}
                                             contentFit='cover'
@@ -418,7 +418,7 @@ const CommentsComponent = ({ postType, dialogueId, threadId, reviewId, listId, a
 
                                         <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
 
-                                    </View>
+                                    </TouchableOpacity>
                                     <Text className='text-mainGrayDark '>{formatDateNotif(item.createdAt)}</Text>
                                 </View>
                                 <Text className='text-secondary text-lg uppercase font-pcourier'>{item.user.firstName}</Text>

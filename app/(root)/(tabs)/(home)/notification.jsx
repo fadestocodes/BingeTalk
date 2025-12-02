@@ -257,7 +257,7 @@ const Notification = () => {
                     contentFit='cover'
                   />
                   {/* <Text className='text-mainGrayDark'>@{item.user.username}</Text> */}
-                  <Username size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
+                  <Username  size='sm' user={item.user} color={Colors.mainGrayDark2} reverse={true}/>
 
                 </TouchableOpacity>
                 <Text className='text-mainGrayDark'>{ formatDateNotif(item.createdAt)}</Text>

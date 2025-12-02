@@ -414,7 +414,7 @@ const ProfilePage = ({userFetched, refetchUserFetched, loadingUser}) => {
                                 renderItem={({item}) => {
                                     return (
                                     <TouchableOpacity className='justify-center items-center self-center w-full' onPress={() => handleTitlePress(item)} style={{ marginRight:0 }}>
-                                        <DialogueCard dialogue={item} isBackground={true} fromHome={true} isReposted={item.activityType === 'REPOST'} />
+                                        <DialogueCard dialogue={item} isBackground={true}  isReposted={item.activityType === 'REPOST'} />
                                     </TouchableOpacity>
                                 )}}
                                 ListFooterComponent={(
